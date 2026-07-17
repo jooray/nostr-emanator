@@ -1,0 +1,102 @@
+<div class="space-y-6">
+  <div class="flex items-center gap-2">
+    <%= link_to account_path(@account), class: "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors" do %>
+      <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+    <% end %>
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Re-pair Signer</h1>
+  </div>
+
+  <div class="max-w-lg mx-auto">
+    <!-- Account being re-paired -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-4 mb-4">
+      <div class="flex items-center gap-3">
+        <% if @account.picture_url.present? %>
+          <img src="<%= @account.picture_url %>" alt="<%= @account.display_name_or_npub %>" class="h-10 w-10 rounded-full object-cover flex-shrink-0">
+        <% else %>
+          <div class="h-10 w-10 rounded-full bg-amber-100 dark:bg-amber-900 flex items-center justify-center flex-shrink-0">
+            <span class="text-amber-600 dark:text-amber-400 font-medium text-sm"><%= @account.display_name_or_npub[0].upcase %></span>
+          </div>
+        <% end %>
+        <div>
+          <p class="text-sm font-medium text-gray-900 dark:text-white"><%= @account.display_name_or_npub %></p>
+          <p class="text-xs text-gray-500 dark:text-gray-400"><%= @account.npub&.truncate(30) %></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 space-y-6 border border-gray-200 dark:border-gray-700"
+         data-controller="account-pairing"
+         data-account-pairing-poll-url-value="<%= re_pair_poll_account_path(@account) %>"
+         data-account-pairing-re-pair-value="true">
+
+      <!-- Instructions -->
+      <div class="text-center">
+        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-amber-100 dark:bg-amber-900">
+          <svg class="h-6 w-6 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+        </div>
+        <h2 class="mt-4 text-lg font-semibold text-gray-900 dark:text-white">Re-connect Signer</h2>
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+          Scan the QR code with Amber to re-pair the signer on a new relay. Your posts and settings will be preserved.
+        </p>
+      </div>
+
+      <!-- QR Code -->
+      <div id="qr-section">
+        <div class="flex justify-center">
+          <div class="bg-white p-4 rounded-lg w-full max-w-[18rem] [&>svg]:block [&>svg]:w-full [&>svg]:h-auto">
+            <%= @qr_code.as_svg(
+              color: "000",
+              shape_rendering: "crispEdges",
+              module_size: 4,
+              standalone: true,
+              use_path: true,
+              viewbox: true
+            ).html_safe %>
+          </div>
+        </div>
+
+        <details class="mt-4 text-center text-xs text-gray-500 dark:text-gray-400">
+          <summary class="cursor-pointer hover:text-gray-700 dark:hover:text-gray-300">Show connection details</summary>
+          <div class="mt-2 p-2 bg-gray-100 dark:bg-gray-700 rounded text-left break-all">
+            <p class="font-medium mb-1">URI:</p>
+            <code class="text-xs select-all"><%= @connect_data[:uri] %></code>
+            <p class="font-medium mt-2 mb-1">Relays:</p>
+            <code class="text-xs"><%= @connect_data[:relay_urls].join(", ") %></code>
+          </div>
+        </details>
+      </div>
+
+      <!-- Polling Status -->
+      <div data-account-pairing-target="status" class="flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+        <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+        </svg>
+        Waiting for signer connection...
+      </div>
+
+      <!-- Pairing Steps -->
+      <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+        <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-3">How to re-pair</h3>
+        <ol class="space-y-3 text-sm text-gray-600 dark:text-gray-400">
+          <li class="flex items-start gap-3">
+            <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900 text-amber-600 dark:text-amber-400 font-medium text-xs">1</span>
+            <span>Open Amber (or your NIP-46 signer)</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900 text-amber-600 dark:text-amber-400 font-medium text-xs">2</span>
+            <span>Scan the QR code or paste the connection URI</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900 text-amber-600 dark:text-amber-400 font-medium text-xs">3</span>
+            <span>Approve the connection — signer fields update, everything else stays</span>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+
+# Ensure we use homebrew ruby and gems
+export PATH="/opt/homebrew/opt/ruby/bin:/opt/homebrew/lib/ruby/gems/3.4.0/bin:$PATH"
+
+if ! command -v foreman > /dev/null; then
+  echo "Installing foreman..."
+  gem install foreman
+fi
+
+# Default to port 3001 (3000 is used by lievik)
+export PORT="${PORT:-3001}"
+
+exec foreman start -f Procfile.dev "$@"

@@ -1,0 +1,136 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <%= link_to accounts_path, class: "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors" do %>
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+      <% end %>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Account</h1>
+    </div>
+    <div class="flex items-center gap-3">
+      <%= link_to new_account_post_path(@account), class: "inline-flex items-center gap-2 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-amber-600 hover:bg-amber-700 transition-colors" do %>
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        New Post
+      <% end %>
+      <%= link_to settings_account_path(@account), class: "inline-flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors" do %>
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        Settings
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Compact Profile Header -->
+  <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+    <div class="p-4 flex items-center gap-4">
+      <% if @account.picture_url.present? %>
+        <img src="<%= @account.picture_url %>" alt="<%= @account.display_name_or_npub %>" class="h-14 w-14 rounded-full object-cover flex-shrink-0">
+      <% else %>
+        <div class="h-14 w-14 rounded-full bg-amber-100 dark:bg-amber-900 flex items-center justify-center flex-shrink-0">
+          <span class="text-xl font-medium text-amber-600 dark:text-amber-400">
+            <%= @account.display_name_or_npub[0].upcase %>
+          </span>
+        </div>
+      <% end %>
+      <div class="flex-1 min-w-0">
+        <h2 class="text-lg font-bold text-gray-900 dark:text-white truncate">
+          <%= @account.display_name.presence || "Unnamed Account" %>
+        </h2>
+        <% if @account.username.present? %>
+          <p class="text-sm text-gray-500 dark:text-gray-400">@<%= @account.username %></p>
+        <% end %>
+      </div>
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <% if @account.has_signer? %>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+            <span class="flex h-2 w-2 rounded-full bg-green-500"></span>
+            Signer connected
+          </span>
+        <% else %>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+            <span class="flex h-2 w-2 rounded-full bg-yellow-500"></span>
+            No signer
+          </span>
+        <% end %>
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
+          <%= @account.posts.count %> posts
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scheduled Posts -->
+  <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white">Scheduled Posts</h3>
+      <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Upcoming posts queued for this account</p>
+    </div>
+    <% if @scheduled_posts.any? %>
+      <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+        <% @scheduled_posts.each do |post| %>
+          <li>
+            <%= link_to post_path(post), class: "block px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors" do %>
+              <div class="flex items-start justify-between gap-4">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 mb-1">
+                    <% status_colors = { "awaiting_signature" => "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300",
+                                         "scheduled" => "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300" } %>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium <%= status_colors[post.status] || 'bg-gray-100 text-gray-800' %>">
+                      <%= post.status.humanize %>
+                    </span>
+                    <% if post.reposts.any? %>
+                      <span class="text-xs text-gray-400 dark:text-gray-500"><%= pluralize(post.reposts.size, "repost") %></span>
+                    <% end %>
+                  </div>
+                  <p class="text-sm text-gray-900 dark:text-gray-100 line-clamp-2"><%= render_nostr_content(truncate(post.content, length: 200)) %></p>
+                </div>
+                <div class="flex-shrink-0 text-right text-xs text-gray-500 dark:text-gray-400">
+                  <p><%= local_time(post.scheduled_at, format: "date") %></p>
+                  <p><%= local_time(post.scheduled_at, format: "time") %></p>
+                </div>
+              </div>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <div class="px-6 py-10 text-center text-sm text-gray-500 dark:text-gray-400">
+        No scheduled posts.
+        <%= link_to "Create one", new_account_post_path(@account), class: "font-medium text-amber-600 dark:text-amber-400 hover:text-amber-500 dark:hover:text-amber-300" %>.
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Recent Events (lazy loaded) -->
+  <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white">Recent Events</h3>
+      <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Latest notes fetched from relays</p>
+    </div>
+    <%= turbo_frame_tag "recent_events", src: recent_events_account_path(@account), loading: :lazy do %>
+      <%= render "shared/loading_skeleton", lines: 4 %>
+    <% end %>
+  </div>
+
+  <!-- Recent Interactions (lazy loaded) -->
+  <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+      <div>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white">Recent Interactions</h3>
+        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Replies, quotes, and mentions from others</p>
+      </div>
+      <%= link_to interactions_path(account_id: @account.id), class: "text-sm font-medium text-amber-600 dark:text-amber-400 hover:text-amber-500 dark:hover:text-amber-300 transition-colors" do %>
+        View all
+      <% end %>
+    </div>
+    <%= turbo_frame_tag "recent_interactions", src: recent_interactions_account_path(@account), loading: :lazy do %>
+      <%= render "shared/loading_skeleton", lines: 3 %>
+    <% end %>
+  </div>
+</div>

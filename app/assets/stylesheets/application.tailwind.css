@@ -1,0 +1,307 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Solarized-inspired dark theme colors */
+@theme {
+  --color-dark-base: #0a0a0a;
+  --color-dark-surface: #141414;
+  --color-dark-elevated: #1c1c1c;
+  --color-dark-hover: #262626;
+  --color-dark-border: #2a2a2a;
+  --color-dark-muted: #525252;
+  --color-dark-text: #e5e5e5;
+  --color-dark-text-secondary: #a3a3a3;
+
+  /* Accent - warm amber/orange */
+  --color-accent: #d97706;
+  --color-accent-light: #fbbf24;
+  --color-accent-muted: #92400e;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.dark {
+  --tw-bg-opacity: 1;
+}
+
+.dark body {
+  background-color: var(--color-dark-base);
+}
+
+.dark .bg-gray-800 {
+  background-color: var(--color-dark-surface) !important;
+}
+
+.dark .bg-gray-700,
+.dark .dark\:bg-gray-700 {
+  background-color: var(--color-dark-elevated) !important;
+}
+
+.dark .bg-gray-900,
+.dark .dark\:bg-gray-900 {
+  background-color: var(--color-dark-base) !important;
+}
+
+.dark .hover\:bg-gray-50:hover,
+.dark .dark\:hover\:bg-gray-700:hover,
+.dark .dark\:hover\:bg-gray-750:hover {
+  background-color: var(--color-dark-hover) !important;
+}
+
+.dark .border-gray-200,
+.dark .dark\:border-gray-700,
+.dark .border-gray-700,
+.dark .divide-gray-700 > * + * {
+  border-color: var(--color-dark-border) !important;
+}
+
+.dark .text-gray-900,
+.dark .dark\:text-white,
+.dark .dark\:text-gray-100 {
+  color: var(--color-dark-text) !important;
+}
+
+.dark .text-gray-500,
+.dark .dark\:text-gray-400,
+.dark .text-gray-400 {
+  color: var(--color-dark-text-secondary) !important;
+}
+
+.dark .text-purple-600,
+.dark .dark\:text-purple-400 {
+  color: var(--color-accent-light) !important;
+}
+
+.dark .bg-purple-600 {
+  background-color: var(--color-accent) !important;
+}
+
+.dark .bg-purple-600:hover,
+.dark .hover\:bg-purple-700:hover {
+  background-color: var(--color-accent-muted) !important;
+}
+
+.dark .bg-purple-50,
+.dark .dark\:bg-purple-900\/20 {
+  background-color: rgba(217, 119, 6, 0.1) !important;
+}
+
+.dark .text-purple-800,
+.dark .dark\:text-purple-200 {
+  color: var(--color-accent-light) !important;
+}
+
+.dark .text-purple-700,
+.dark .dark\:text-purple-300 {
+  color: #fcd34d !important;
+}
+
+.dark .text-green-600,
+.dark .dark\:text-green-400 {
+  color: #4ade80 !important;
+}
+
+.dark nav {
+  background-color: var(--color-dark-surface) !important;
+  border-color: var(--color-dark-border) !important;
+}
+
+.dark .shadow,
+.dark .shadow-sm {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5), 0 1px 2px -1px rgba(0, 0, 0, 0.5) !important;
+}
+
+.dark input,
+.dark textarea,
+.dark select {
+  background-color: var(--color-dark-elevated) !important;
+  border-color: var(--color-dark-border) !important;
+  color: var(--color-dark-text) !important;
+}
+
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus {
+  border-color: var(--color-accent) !important;
+  --tw-ring-color: var(--color-accent) !important;
+}
+
+/* EasyMDE dark mode */
+.dark .EasyMDEContainer .CodeMirror {
+  background-color: var(--color-dark-elevated);
+  color: var(--color-dark-text);
+  border-color: var(--color-dark-border);
+}
+
+.dark .EasyMDEContainer .CodeMirror-cursor {
+  border-left-color: var(--color-dark-text);
+}
+
+.dark .EasyMDEContainer .editor-toolbar {
+  background-color: var(--color-dark-surface);
+  border-color: var(--color-dark-border);
+}
+
+.dark .EasyMDEContainer .editor-toolbar button {
+  color: var(--color-dark-text-secondary);
+}
+
+.dark .EasyMDEContainer .editor-toolbar button:hover {
+  background-color: var(--color-dark-hover);
+}
+
+.dark .EasyMDEContainer .editor-toolbar button.active {
+  background-color: var(--color-dark-elevated);
+}
+
+.dark .EasyMDEContainer .editor-preview {
+  background-color: var(--color-dark-elevated);
+  color: var(--color-dark-text);
+}
+
+.dark .EasyMDEContainer .editor-preview-side {
+  background-color: var(--color-dark-elevated);
+  border-color: var(--color-dark-border);
+}
+
+.dark .EasyMDEContainer .CodeMirror .CodeMirror-selected {
+  background-color: var(--color-dark-hover);
+}
+
+.dark .EasyMDEContainer .cm-header {
+  color: var(--color-accent-light);
+}
+
+.dark .EasyMDEContainer .cm-link {
+  color: #38bdf8;
+}
+
+.dark .EasyMDEContainer .cm-url {
+  color: #4ade80;
+}
+
+.dark .lg\:hidden.fixed {
+  background-color: var(--color-dark-surface) !important;
+  border-color: var(--color-dark-border) !important;
+}
+
+/* Flatpickr dark mode */
+.dark .flatpickr-calendar {
+  background: var(--color-dark-surface) !important;
+  border-color: var(--color-dark-border) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5) !important;
+}
+
+.dark .flatpickr-calendar.arrowTop::before,
+.dark .flatpickr-calendar.arrowTop::after {
+  border-bottom-color: var(--color-dark-surface) !important;
+}
+
+.dark .flatpickr-months .flatpickr-month,
+.dark .flatpickr-current-month .flatpickr-monthDropdown-months {
+  background: var(--color-dark-surface) !important;
+  color: var(--color-dark-text) !important;
+}
+
+.dark .flatpickr-current-month input.cur-year {
+  color: var(--color-dark-text) !important;
+}
+
+.dark .flatpickr-months .flatpickr-prev-month,
+.dark .flatpickr-months .flatpickr-next-month {
+  color: var(--color-dark-text-secondary) !important;
+  fill: var(--color-dark-text-secondary) !important;
+}
+
+.dark .flatpickr-months .flatpickr-prev-month:hover,
+.dark .flatpickr-months .flatpickr-next-month:hover {
+  color: var(--color-dark-text) !important;
+}
+
+.dark .flatpickr-months .flatpickr-prev-month svg,
+.dark .flatpickr-months .flatpickr-next-month svg {
+  fill: var(--color-dark-text-secondary) !important;
+}
+
+.dark .flatpickr-weekdays {
+  background: var(--color-dark-surface) !important;
+}
+
+.dark span.flatpickr-weekday {
+  color: var(--color-dark-text-secondary) !important;
+  background: var(--color-dark-surface) !important;
+}
+
+.dark .flatpickr-day {
+  color: var(--color-dark-text) !important;
+  border-color: transparent !important;
+}
+
+.dark .flatpickr-day:hover {
+  background: var(--color-dark-hover) !important;
+  border-color: var(--color-dark-hover) !important;
+}
+
+.dark .flatpickr-day.today {
+  border-color: var(--color-accent) !important;
+}
+
+.dark .flatpickr-day.selected,
+.dark .flatpickr-day.selected:hover {
+  background: var(--color-accent) !important;
+  border-color: var(--color-accent) !important;
+  color: white !important;
+}
+
+.dark .flatpickr-day.flatpickr-disabled,
+.dark .flatpickr-day.prevMonthDay,
+.dark .flatpickr-day.nextMonthDay {
+  color: var(--color-dark-muted) !important;
+}
+
+.dark .flatpickr-time {
+  border-top-color: var(--color-dark-border) !important;
+}
+
+.dark .flatpickr-time input,
+.dark .flatpickr-time .flatpickr-am-pm {
+  color: var(--color-dark-text) !important;
+  background: var(--color-dark-surface) !important;
+}
+
+.dark .flatpickr-time input:hover,
+.dark .flatpickr-time input:focus,
+.dark .flatpickr-time .flatpickr-am-pm:hover,
+.dark .flatpickr-time .flatpickr-am-pm:focus {
+  background: var(--color-dark-hover) !important;
+}
+
+.dark .numInputWrapper:hover {
+  background: var(--color-dark-hover) !important;
+}
+
+.dark .numInputWrapper span {
+  border-color: var(--color-dark-border) !important;
+}
+
+.dark .numInputWrapper span::after {
+  border-top-color: var(--color-dark-text-secondary) !important;
+  border-bottom-color: var(--color-dark-text-secondary) !important;
+}
+
+.dark .flatpickr-time .flatpickr-time-separator {
+  color: var(--color-dark-text-secondary) !important;
+}

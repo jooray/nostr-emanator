@@ -1,0 +1,94 @@
+<%= turbo_frame_tag "recent_interactions" do %>
+  <% if @interactions.present? && @interactions.any? %>
+    <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+      <% @interactions.first(10).each do |interaction| %>
+        <li class="px-6 py-4">
+          <% if interaction[:original_post_content].present? %>
+            <div class="mb-2 pl-3 border-l-2 border-gray-200 dark:border-gray-600">
+              <p class="text-xs text-gray-400 dark:text-gray-500 mb-0.5">
+                <% if interaction[:original_post_db_id] %>
+                  <%= link_to post_path(interaction[:original_post_db_id]), class: "hover:text-amber-500 dark:hover:text-amber-400 underline" do %>
+                    Your post
+                  <% end %>:
+                <% elsif interaction[:original_post_event_id] %>
+                  <%= link_to nevent_url(Nostr::KeyConverter.hex_to_nevent(interaction[:original_post_event_id])), target: "_blank", rel: "noopener", class: "hover:text-amber-500 dark:hover:text-amber-400 underline" do %>
+                    Your post
+                  <% end %>:
+                <% else %>
+                  Your post:
+                <% end %>
+              </p>
+              <p class="text-xs text-gray-400 dark:text-gray-500 line-clamp-2"><%= interaction[:original_post_content].truncate(150) %></p>
+            </div>
+          <% end %>
+          <div class="flex items-start gap-3">
+            <% if interaction[:author_picture].present? %>
+              <img src="<%= interaction[:author_picture] %>" alt="" class="h-8 w-8 rounded-full object-cover flex-shrink-0">
+            <% else %>
+              <div class="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center flex-shrink-0">
+                <span class="text-xs font-medium text-gray-500 dark:text-gray-400">
+                  <%= (interaction[:author_name] || interaction[:author_pubkey][0..1])&.first&.upcase %>
+                </span>
+              </div>
+            <% end %>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="text-sm font-medium text-gray-900 dark:text-white truncate">
+                  <%= interaction[:author_name] || interaction[:author_pubkey]&.truncate(16) %>
+                </span>
+                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium <%= interaction_type_badge_class(interaction[:interaction_type]) %>">
+                  <%= interaction[:interaction_type] %>
+                </span>
+                <span class="text-xs text-gray-400 dark:text-gray-500">
+                  <%= time_ago_in_words(Time.at(interaction[:created_at])) %> ago
+                </span>
+              </div>
+              <p class="mt-1 text-sm text-gray-700 dark:text-gray-300 line-clamp-2"><%= interaction[:content]&.truncate(200) %></p>
+            </div>
+          </div>
+          <%# Inline reply %>
+          <% if interaction[:target_account]&.has_signer? %>
+            <div class="mt-2" data-controller="inline-reply"
+                 data-inline-reply-account-id-value="<%= interaction[:target_account].id %>"
+                 data-inline-reply-event-id-value="<%= interaction[:event_id] %>"
+                 data-inline-reply-author-pubkey-value="<%= interaction[:author_pubkey] %>"
+                 data-inline-reply-root-event-id-value="<%= interaction[:referenced_event_ids]&.first %>">
+              <div class="flex justify-end">
+                <button data-inline-reply-target="replyButton" data-action="inline-reply#toggle"
+                        class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-amber-600 dark:text-amber-400 hover:text-amber-500 dark:hover:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded transition-colors">
+                  <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+                  </svg>
+                  Reply
+                </button>
+              </div>
+              <div data-inline-reply-target="form" class="hidden mt-2">
+                <textarea data-inline-reply-target="textarea"
+                          rows="2"
+                          placeholder="Write your reply..."
+                          class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm p-2 focus:ring-amber-500 focus:border-amber-500 resize-none"></textarea>
+                <div class="mt-1 flex items-center justify-between">
+                  <div data-inline-reply-target="status" class="text-xs text-gray-500 dark:text-gray-400"></div>
+                  <div class="flex gap-2">
+                    <button data-action="inline-reply#toggle"
+                            class="px-2 py-1 text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 rounded transition-colors">
+                      Cancel
+                    </button>
+                    <button data-inline-reply-target="submitButton" data-action="inline-reply#submit"
+                            class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-white bg-amber-600 hover:bg-amber-500 rounded transition-colors">
+                      Sign & Publish
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <div class="px-6 py-8 text-center">
+      <p class="text-sm text-gray-500 dark:text-gray-400">No recent interactions found.</p>
+    </div>
+  <% end %>
+<% end %>

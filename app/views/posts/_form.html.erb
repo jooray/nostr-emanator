@@ -1,0 +1,86 @@
+<%= form_with(model: post.persisted? ? post : [@account, post], class: "space-y-6") do |form| %>
+  <% if post.errors.any? %>
+    <div class="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
+      <div class="flex">
+        <svg class="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800 dark:text-red-200">
+            <%= pluralize(post.errors.count, "error") %> prevented this post from being saved:
+          </h3>
+          <ul class="mt-2 text-sm text-red-700 dark:text-red-300 list-disc list-inside">
+            <% post.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <% if post.is_reply? && (defined?(reply_context) && reply_context.present? || @reply_context.present?) %>
+    <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-4">
+      <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Replying to:</p>
+      <p class="text-sm text-gray-700 dark:text-gray-300 line-clamp-3"><%= reply_context.presence || @reply_context %></p>
+    </div>
+  <% end %>
+
+  <div data-controller="media-preview blossom-upload"
+       data-blossom-upload-upload-url-value="<%= account_blossom_uploads_path(@account) %>">
+    <div class="flex items-center justify-between mb-2">
+      <label for="post_content" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        Content
+      </label>
+      <div class="flex items-center gap-3">
+        <span data-blossom-upload-target="status" class="text-xs text-gray-400"></span>
+        <button type="button"
+          data-action="blossom-upload#openPicker"
+          class="inline-flex items-center gap-1 text-xs font-medium text-amber-600 hover:text-amber-700 cursor-pointer">
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+          </svg>
+          Attach
+        </button>
+      </div>
+    </div>
+    <%= form.text_area :content,
+      rows: 8,
+      class: "w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-4 py-3 text-sm focus:ring-2 focus:ring-amber-500 focus:border-transparent placeholder-gray-400 dark:placeholder-gray-500 resize-y",
+      placeholder: post.is_reply? ? "Write your reply..." : "What's on your mind? (drag & drop or paste images to attach)",
+      data: {
+        media_preview_target: "content",
+        content_builder_target: "textarea",
+        blossom_upload_target: "textarea",
+        action: "input->media-preview#updatePreview dragover->blossom-upload#dragover dragleave->blossom-upload#dragleave drop->blossom-upload#drop paste->blossom-upload#paste"
+      } %>
+
+    <%= file_field_tag :file, multiple: true, class: "hidden",
+      data: { blossom_upload_target: "input", action: "change->blossom-upload#picked" } %>
+
+    <!-- Media Preview -->
+    <div data-media-preview-target="preview"></div>
+  </div>
+
+  <%= form.hidden_field :event_kind, value: post.event_kind || 1 %>
+
+  <% if post.is_reply? %>
+    <%= form.hidden_field :reply_to_event_id %>
+    <%= form.hidden_field :reply_to_pubkey %>
+    <%= form.hidden_field :root_event_id %>
+    <%= form.hidden_field :is_reply, value: true %>
+  <% end %>
+
+  <div class="flex items-center justify-end gap-3">
+    <%= link_to "Cancel",
+      post.persisted? ? post_path(post) : account_posts_path(post.account),
+      class: "px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" %>
+    <% if post.is_reply? %>
+      <%= form.submit "Sign & Publish Reply",
+        class: "px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors cursor-pointer" %>
+    <% else %>
+      <%= form.submit post.persisted? ? "Update Post" : "Save as Draft",
+        class: "px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors cursor-pointer" %>
+    <% end %>
+  </div>
+<% end %>

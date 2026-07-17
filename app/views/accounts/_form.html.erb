@@ -1,0 +1,57 @@
+<%= form_with(model: account, class: "space-y-6") do |form| %>
+  <% if account.errors.any? %>
+    <div class="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
+      <div class="flex">
+        <svg class="h-5 w-5 text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800 dark:text-red-200">
+            <%= pluralize(account.errors.count, "error") %> prevented this account from being saved:
+          </h3>
+          <ul class="mt-2 list-disc list-inside text-sm text-red-700 dark:text-red-300">
+            <% account.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Personality -->
+  <div>
+    <div class="flex items-center justify-between mb-2">
+      <%= form.label :personality, class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
+      <span class="text-xs text-gray-400 dark:text-gray-500">Markdown supported</span>
+    </div>
+    <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
+      Define the writing style and personality for AI-generated posts on this account. This guides the tone, vocabulary, and structure of generated content.
+    </p>
+    <div data-controller="markdown-editor" data-markdown-editor-placeholder-value="Describe the writing personality for this account...">
+      <%= form.text_area :personality,
+        data: { markdown_editor_target: "textarea" },
+        class: "hidden",
+        rows: 10 %>
+    </div>
+  </div>
+
+  <!-- Blossom media server -->
+  <div>
+    <%= form.label :blossom_server, "Blossom media server", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+    <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
+      Where attached images/files are uploaded for this account. Leave blank to use the default
+      (<code class="font-mono"><%= Account.default_blossom_server %></code>).
+    </p>
+    <%= form.text_field :blossom_server,
+      value: account.settings&.dig("blossom_server"),
+      placeholder: Account.default_blossom_server,
+      class: "w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-4 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-transparent placeholder-gray-400 dark:placeholder-gray-500" %>
+  </div>
+
+  <!-- Submit -->
+  <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+    <%= link_to "Cancel", account.persisted? ? account_path(account) : accounts_path, class: "px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-200 transition-colors" %>
+    <%= form.submit "Save Account", class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 dark:focus:ring-offset-gray-800 transition-colors cursor-pointer" %>
+  </div>
+<% end %>

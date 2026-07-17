@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#f7f5f0" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+    <meta name="description" content="Emanator schedules your Nostr posts and coordinates reposts across the accounts you run.">
+    <title>Emanator - Give every Nostr identity a head start</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f7f5f0;
+        --bg-soft: #efebe2;
+        --surface: rgba(255, 255, 255, 0.78);
+        --surface-solid: #fffdfa;
+        --surface-raised: #ffffff;
+        --ink: #171511;
+        --muted: #6f6a60;
+        --faint: #9a9387;
+        --line: rgba(45, 39, 29, 0.13);
+        --line-strong: rgba(45, 39, 29, 0.22);
+        --amber: #d97706;
+        --amber-bright: #f59e0b;
+        --amber-deep: #92400e;
+        --amber-soft: #fff1ce;
+        --green: #16825d;
+        --green-soft: #dcf6e9;
+        --device-bezel: #1b1a17;
+        --shadow: 0 24px 70px rgba(60, 45, 20, 0.12);
+        --shadow-small: 0 8px 30px rgba(60, 45, 20, 0.09);
+      }
+
+      :root[data-theme="dark"] {
+        color-scheme: dark;
+        --bg: #0a0a0a;
+        --bg-soft: #11100e;
+        --surface: rgba(20, 20, 19, 0.82);
+        --surface-solid: #141413;
+        --surface-raised: #1b1a18;
+        --ink: #f1eee8;
+        --muted: #aaa49a;
+        --faint: #777168;
+        --line: rgba(255, 245, 225, 0.11);
+        --line-strong: rgba(255, 245, 225, 0.2);
+        --amber: #f59e0b;
+        --amber-bright: #fbbf24;
+        --amber-deep: #d97706;
+        --amber-soft: rgba(217, 119, 6, 0.14);
+        --green: #54d6a2;
+        --green-soft: rgba(22, 130, 93, 0.16);
+        --device-bezel: #050505;
+        --shadow: 0 28px 80px rgba(0, 0, 0, 0.38);
+        --shadow-small: 0 10px 34px rgba(0, 0, 0, 0.3);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          color-scheme: dark;
+          --bg: #0a0a0a;
+          --bg-soft: #11100e;
+          --surface: rgba(20, 20, 19, 0.82);
+          --surface-solid: #141413;
+          --surface-raised: #1b1a18;
+          --ink: #f1eee8;
+          --muted: #aaa49a;
+          --faint: #777168;
+          --line: rgba(255, 245, 225, 0.11);
+          --line-strong: rgba(255, 245, 225, 0.2);
+          --amber: #f59e0b;
+          --amber-bright: #fbbf24;
+          --amber-deep: #d97706;
+          --amber-soft: rgba(217, 119, 6, 0.14);
+          --green: #54d6a2;
+          --green-soft: rgba(22, 130, 93, 0.16);
+          --device-bezel: #050505;
+          --shadow: 0 28px 80px rgba(0, 0, 0, 0.38);
+          --shadow-small: 0 10px 34px rgba(0, 0, 0, 0.3);
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        min-width: 320px;
+        background:
+          radial-gradient(circle at 78% 8%, rgba(245, 158, 11, 0.12), transparent 27rem),
+          radial-gradient(circle at 7% 36%, rgba(217, 119, 6, 0.07), transparent 24rem),
+          var(--bg);
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.5;
+        transition: background-color 180ms ease, color 180ms ease;
+      }
+
+      body::before {
+        position: fixed;
+        z-index: -1;
+        inset: 0;
+        background-image: radial-gradient(var(--line-strong) 0.7px, transparent 0.7px);
+        background-size: 22px 22px;
+        mask-image: linear-gradient(to bottom, black, transparent 70%);
+        content: "";
+        opacity: 0.35;
+        pointer-events: none;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      button,
+      a {
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      img {
+        max-width: 100%;
+      }
+
+      .skip-link {
+        position: fixed;
+        z-index: 100;
+        top: 0.75rem;
+        left: 0.75rem;
+        padding: 0.65rem 0.9rem;
+        border-radius: 0.6rem;
+        background: var(--ink);
+        color: var(--bg);
+        font-weight: 700;
+        transform: translateY(-150%);
+      }
+
+      .skip-link:focus {
+        transform: translateY(0);
+      }
+
+      .shell {
+        width: min(1160px, calc(100% - 40px));
+        margin-inline: auto;
+      }
+
+      .site-header {
+        position: relative;
+        z-index: 10;
+        padding-top: 1.2rem;
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 4rem;
+        padding: 0.6rem 0.7rem 0.6rem 1rem;
+        border: 1px solid var(--line);
+        border-radius: 1rem;
+        background: var(--surface);
+        box-shadow: 0 6px 24px rgba(35, 27, 14, 0.04);
+        backdrop-filter: blur(18px);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.72rem;
+        color: var(--ink);
+        font-size: 1.08rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        text-decoration: none;
+      }
+
+      .brand-mark {
+        position: relative;
+        display: grid;
+        width: 2rem;
+        height: 2rem;
+        place-items: center;
+        border-radius: 0.62rem;
+        background: var(--amber);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22), 0 5px 16px rgba(217, 119, 6, 0.24);
+        color: #fff;
+      }
+
+      .brand-mark svg {
+        width: 1.15rem;
+        height: 1.15rem;
+      }
+
+      .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+      }
+
+      .theme-toggle {
+        display: grid;
+        width: 2.7rem;
+        height: 2.7rem;
+        padding: 0;
+        place-items: center;
+        border: 1px solid transparent;
+        border-radius: 0.75rem;
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+      }
+
+      .theme-toggle:hover {
+        border-color: var(--line);
+        background: var(--bg-soft);
+        color: var(--ink);
+      }
+
+      .theme-toggle svg {
+        width: 1.15rem;
+        height: 1.15rem;
+      }
+
+      .sun-icon {
+        display: none;
+      }
+
+      :root[data-theme="dark"] .moon-icon {
+        display: none;
+      }
+
+      :root[data-theme="dark"] .sun-icon {
+        display: block;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) .moon-icon {
+          display: none;
+        }
+
+        :root:not([data-theme="light"]) .sun-icon {
+          display: block;
+        }
+      }
+
+      .button {
+        display: inline-flex;
+        min-height: 2.75rem;
+        align-items: center;
+        justify-content: center;
+        gap: 0.55rem;
+        padding: 0.72rem 1.05rem;
+        border: 1px solid var(--line-strong);
+        border-radius: 0.75rem;
+        background: var(--surface-raised);
+        color: var(--ink);
+        font-size: 0.9rem;
+        font-weight: 750;
+        line-height: 1;
+        text-decoration: none;
+        transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease;
+      }
+
+      .button:hover {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-small);
+      }
+
+      .button-primary {
+        border-color: var(--amber-deep);
+        background: var(--amber);
+        color: #fff;
+        box-shadow: 0 8px 22px rgba(217, 119, 6, 0.2);
+      }
+
+      .button-primary:hover {
+        background: var(--amber-deep);
+      }
+
+      .button svg {
+        width: 1rem;
+        height: 1rem;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 0.9fr) minmax(500px, 1.1fr);
+        gap: clamp(3rem, 7vw, 6rem);
+        align-items: center;
+        padding-block: 5.5rem 5rem;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        margin-bottom: 1.35rem;
+        color: var(--amber-deep);
+        font-size: 0.76rem;
+        font-weight: 850;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      :root[data-theme="dark"] .eyebrow {
+        color: var(--amber-bright);
+      }
+
+      .eyebrow::before {
+        width: 1.5rem;
+        height: 1px;
+        background: currentColor;
+        content: "";
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        max-width: 680px;
+        margin-bottom: 1.45rem;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(3.2rem, 5.6vw, 5.6rem);
+        font-weight: 500;
+        letter-spacing: -0.064em;
+        line-height: 0.96;
+      }
+
+      .accent-word {
+        position: relative;
+        color: var(--amber);
+        white-space: nowrap;
+      }
+
+      .accent-word::after {
+        position: absolute;
+        right: 0.03em;
+        bottom: -0.08em;
+        left: 0.03em;
+        height: 0.08em;
+        border-radius: 999px;
+        background: var(--amber);
+        content: "";
+        opacity: 0.28;
+        transform: rotate(-1.5deg);
+      }
+
+      .hero-copy > p {
+        max-width: 570px;
+        margin-bottom: 1.8rem;
+        color: var(--muted);
+        font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+        line-height: 1.72;
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .hero-actions .button {
+        min-height: 3.25rem;
+        padding-inline: 1.35rem;
+      }
+
+      .key-note {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        color: var(--faint);
+        font-size: 0.82rem;
+      }
+
+      .key-note svg {
+        width: 0.95rem;
+        height: 0.95rem;
+        color: var(--green);
+      }
+
+      /* Real screenshot frames — scoped + specific enough to beat `.device img` */
+      .device img.shot-dark {
+        display: none;
+      }
+
+      :root[data-theme="dark"] .device img.shot-light {
+        display: none;
+      }
+
+      :root[data-theme="dark"] .device img.shot-dark {
+        display: block;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) .device img.shot-light {
+          display: none;
+        }
+
+        :root:not([data-theme="light"]) .device img.shot-dark {
+          display: block;
+        }
+      }
+
+      .browser-frame {
+        overflow: hidden;
+        border: 1px solid var(--line-strong);
+        border-radius: 0.95rem;
+        background: var(--surface-solid);
+        box-shadow: var(--shadow);
+      }
+
+      .browser-bar {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        height: 2.4rem;
+        padding-inline: 0.85rem;
+        border-bottom: 1px solid var(--line);
+        background: var(--surface);
+      }
+
+      .browser-bar i {
+        width: 0.6rem;
+        height: 0.6rem;
+        border-radius: 50%;
+        background: var(--line-strong);
+      }
+
+      .browser-url {
+        margin-left: 0.7rem;
+        padding: 0.18rem 0.7rem;
+        border-radius: 999px;
+        background: var(--bg-soft);
+        color: var(--faint);
+        font-size: 0.66rem;
+        font-weight: 650;
+      }
+
+      .browser-frame img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+      .device {
+        overflow: hidden;
+        border: 7px solid var(--device-bezel);
+        border-radius: 1.7rem;
+        background: var(--device-bezel);
+        box-shadow: var(--shadow);
+      }
+
+      .device img {
+        display: block;
+        width: 100%;
+        height: auto;
+        border-radius: 1.1rem;
+      }
+
+      .product-stage {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        isolation: isolate;
+      }
+
+      .orbit {
+        position: absolute;
+        z-index: -1;
+        top: 50%;
+        left: 50%;
+        width: 560px;
+        height: 560px;
+        border: 1px dashed var(--line-strong);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0.6;
+      }
+
+      .orbit::before,
+      .orbit::after {
+        position: absolute;
+        border: 1px solid var(--line);
+        border-radius: inherit;
+        content: "";
+      }
+
+      .orbit::before {
+        inset: 72px;
+      }
+
+      .orbit::after {
+        inset: 155px;
+      }
+
+      .relay-dot {
+        position: absolute;
+        width: 0.48rem;
+        height: 0.48rem;
+        border: 2px solid var(--bg);
+        border-radius: 50%;
+        background: var(--amber-bright);
+        box-shadow: 0 0 0 4px var(--amber-soft);
+      }
+
+      .relay-dot:nth-child(1) {
+        top: 15%;
+        right: 4%;
+      }
+
+      .relay-dot:nth-child(2) {
+        right: 11%;
+        bottom: 14%;
+      }
+
+      .relay-dot:nth-child(3) {
+        bottom: 1%;
+        left: 19%;
+      }
+
+      .hero-shot {
+        position: relative;
+        z-index: 1;
+        width: min(100%, 560px);
+        transform: rotate(1deg);
+      }
+
+      .hero-phone {
+        position: absolute;
+        right: -0.6rem;
+        bottom: -2.4rem;
+        z-index: 2;
+        width: 150px;
+        transform: rotate(-3deg);
+      }
+
+      .proof-strip {
+        display: grid;
+        grid-template-columns: 1.15fr repeat(3, 1fr);
+        border-block: 1px solid var(--line);
+      }
+
+      .proof-item {
+        min-height: 130px;
+        padding: 1.7rem 2rem;
+        border-left: 1px solid var(--line);
+      }
+
+      .proof-item:first-child {
+        display: flex;
+        align-items: center;
+        padding-left: 0;
+        border-left: 0;
+        color: var(--muted);
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.2rem;
+        line-height: 1.35;
+      }
+
+      .proof-number {
+        display: block;
+        margin-bottom: 0.35rem;
+        color: var(--amber);
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.8rem;
+      }
+
+      .proof-item p {
+        margin-bottom: 0;
+        color: var(--muted);
+        font-size: 0.78rem;
+      }
+
+      .section {
+        padding-block: 7rem;
+      }
+
+      .section-heading {
+        display: grid;
+        grid-template-columns: minmax(0, 0.9fr) minmax(300px, 0.6fr);
+        gap: 3rem;
+        align-items: end;
+        margin-bottom: 3.2rem;
+      }
+
+      .section-heading h2 {
+        max-width: 700px;
+        margin-bottom: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(2.5rem, 4.4vw, 4.35rem);
+        font-weight: 500;
+        letter-spacing: -0.05em;
+        line-height: 1.02;
+      }
+
+      .section-heading p {
+        margin-bottom: 0.25rem;
+        color: var(--muted);
+        font-size: 1rem;
+        line-height: 1.7;
+      }
+
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border: 1px solid var(--line);
+        border-radius: 1.2rem;
+        background: var(--surface);
+        box-shadow: var(--shadow-small);
+        overflow: hidden;
+      }
+
+      .step {
+        position: relative;
+        min-height: 310px;
+        padding: 2rem;
+        border-left: 1px solid var(--line);
+      }
+
+      .step:first-child {
+        border-left: 0;
+      }
+
+      .step-number {
+        margin-bottom: 3rem;
+        color: var(--amber);
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1rem;
+        font-style: italic;
+      }
+
+      .step-icon {
+        display: grid;
+        width: 2.8rem;
+        height: 2.8rem;
+        margin-bottom: 1.3rem;
+        place-items: center;
+        border: 1px solid var(--line);
+        border-radius: 0.8rem;
+        background: var(--amber-soft);
+        color: var(--amber-deep);
+      }
+
+      .step-icon svg {
+        width: 1.2rem;
+        height: 1.2rem;
+      }
+
+      .step h3 {
+        margin-bottom: 0.65rem;
+        font-size: 1.12rem;
+        letter-spacing: -0.025em;
+      }
+
+      .step p {
+        margin-bottom: 0;
+        color: var(--muted);
+        font-size: 0.9rem;
+        line-height: 1.65;
+      }
+
+      /* Screenshot tour */
+      .tour-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.1rem;
+        margin-bottom: 1.6rem;
+      }
+
+      .tour-card {
+        margin: 0;
+        padding: 1.5rem 1.5rem 0;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 1.2rem;
+        background: var(--surface-solid);
+      }
+
+      .tour-card figcaption {
+        padding: 1.15rem 0.25rem 1.35rem;
+        color: var(--muted);
+        font-size: 0.86rem;
+        line-height: 1.55;
+      }
+
+      .tour-card figcaption strong {
+        display: block;
+        margin-bottom: 0.2rem;
+        color: var(--ink);
+        font-size: 0.95rem;
+        letter-spacing: -0.01em;
+      }
+
+      .tour-card .browser-frame {
+        border-radius: 0.75rem 0.75rem 0 0;
+        box-shadow: none;
+        transform: translateY(1px);
+      }
+
+      .tour-phones {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.4rem;
+        justify-content: center;
+      }
+
+      .tour-phones figure {
+        margin: 0;
+        text-align: center;
+      }
+
+      .tour-phones .device {
+        width: min(215px, 44vw);
+        margin-inline: auto;
+      }
+
+      .tour-phones figcaption {
+        margin-top: 0.85rem;
+        color: var(--faint);
+        font-size: 0.78rem;
+        font-weight: 700;
+      }
+
+      .feature-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 1rem;
+      }
+
+      .feature-card {
+        position: relative;
+        min-height: 260px;
+        padding: 2rem;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 1.2rem;
+        background: var(--surface-solid);
+      }
+
+      .feature-card.wide {
+        display: flex;
+        flex-direction: column;
+        grid-row: span 2;
+        background:
+          linear-gradient(155deg, transparent 55%, var(--amber-soft)),
+          var(--surface-solid);
+      }
+
+      .feature-tag {
+        display: inline-flex;
+        margin-bottom: 1.2rem;
+        padding: 0.35rem 0.55rem;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--faint);
+        font-size: 0.6rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .feature-card h3 {
+        max-width: 420px;
+        margin-bottom: 0.7rem;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.8rem;
+        font-weight: 500;
+        letter-spacing: -0.035em;
+        line-height: 1.08;
+      }
+
+      .feature-card p {
+        max-width: 490px;
+        color: var(--muted);
+        font-size: 0.9rem;
+        line-height: 1.65;
+      }
+
+      .feature-shot {
+        margin-top: 1.6rem;
+      }
+
+      .feature-shot.browser-frame {
+        box-shadow: var(--shadow-small);
+      }
+
+      .privacy-line {
+        display: flex;
+        gap: 0.45rem;
+        align-items: center;
+        margin-top: 1.5rem;
+        color: var(--green);
+        font-size: 0.75rem;
+        font-weight: 750;
+      }
+
+      .privacy-line svg {
+        width: 1rem;
+        height: 1rem;
+      }
+
+      .cta {
+        position: relative;
+        margin-bottom: 2rem;
+        padding: clamp(2.5rem, 7vw, 5.5rem);
+        overflow: hidden;
+        border: 1px solid var(--line-strong);
+        border-radius: 1.4rem;
+        background: var(--ink);
+        color: var(--bg);
+        text-align: center;
+      }
+
+      .cta::before,
+      .cta::after {
+        position: absolute;
+        width: 26rem;
+        height: 26rem;
+        border: 1px solid rgba(245, 158, 11, 0.22);
+        border-radius: 50%;
+        content: "";
+      }
+
+      .cta::before {
+        top: -18rem;
+        left: -8rem;
+      }
+
+      .cta::after {
+        right: -8rem;
+        bottom: -18rem;
+      }
+
+      .cta h2 {
+        position: relative;
+        max-width: 760px;
+        margin: 0 auto 1rem;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(2.6rem, 5.2vw, 5rem);
+        font-weight: 500;
+        letter-spacing: -0.055em;
+        line-height: 1;
+      }
+
+      .cta p {
+        position: relative;
+        max-width: 560px;
+        margin: 0 auto 1.7rem;
+        color: color-mix(in srgb, var(--bg) 66%, transparent);
+      }
+
+      .cta .button-primary {
+        position: relative;
+        min-height: 3.35rem;
+        padding-inline: 1.5rem;
+      }
+
+      footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-block: 1.3rem 2.3rem;
+        color: var(--faint);
+        font-size: 0.76rem;
+      }
+
+      footer .brand {
+        font-size: 0.9rem;
+      }
+
+      footer .brand-mark {
+        width: 1.55rem;
+        height: 1.55rem;
+        border-radius: 0.45rem;
+      }
+
+      footer .brand-mark svg {
+        width: 0.85rem;
+        height: 0.85rem;
+      }
+
+      :focus-visible {
+        outline: 3px solid color-mix(in srgb, var(--amber) 72%, transparent);
+        outline-offset: 3px;
+      }
+
+      @media (max-width: 980px) {
+        .hero {
+          grid-template-columns: 1fr;
+          padding-top: 4rem;
+        }
+
+        .hero-copy {
+          max-width: 720px;
+        }
+
+        .product-stage {
+          width: min(100%, 620px);
+          margin-inline: auto;
+        }
+
+        .proof-strip {
+          grid-template-columns: repeat(3, 1fr);
+        }
+
+        .proof-item:first-child {
+          grid-column: 1 / -1;
+          min-height: auto;
+          padding: 1.5rem 0;
+          border-bottom: 1px solid var(--line);
+        }
+
+        .proof-item:nth-child(2) {
+          padding-left: 0;
+          border-left: 0;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .shell {
+          width: min(100% - 28px, 1160px);
+        }
+
+        .site-header {
+          padding-top: 0.7rem;
+        }
+
+        .nav {
+          padding-left: 0.7rem;
+        }
+
+        .nav .button {
+          min-height: 2.55rem;
+          padding-inline: 0.8rem;
+        }
+
+        .hero {
+          gap: 3.5rem;
+          padding-block: 3.5rem 3.5rem;
+        }
+
+        h1 {
+          font-size: clamp(3rem, 14vw, 5rem);
+        }
+
+        .hero-phone {
+          width: 120px;
+          right: 0;
+          bottom: -1.6rem;
+        }
+
+        .section {
+          padding-block: 5rem;
+        }
+
+        .section-heading {
+          grid-template-columns: 1fr;
+          gap: 1.3rem;
+          margin-bottom: 2rem;
+        }
+
+        .steps {
+          grid-template-columns: 1fr;
+        }
+
+        .step {
+          min-height: 0;
+          border-top: 1px solid var(--line);
+          border-left: 0;
+        }
+
+        .step:first-child {
+          border-top: 0;
+        }
+
+        .step-number {
+          margin-bottom: 1.5rem;
+        }
+
+        .tour-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .feature-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .proof-item {
+          padding-inline: 1rem;
+        }
+      }
+
+      @media (max-width: 520px) {
+        .brand-word {
+          display: none;
+        }
+
+        .nav-actions {
+          gap: 0.25rem;
+        }
+
+        .theme-toggle {
+          width: 2.5rem;
+        }
+
+        .hero-actions {
+          display: grid;
+        }
+
+        .hero-actions .button {
+          width: 100%;
+        }
+
+        .proof-strip {
+          grid-template-columns: 1fr;
+        }
+
+        .proof-item {
+          min-height: auto;
+          padding: 1.2rem 0;
+          border-top: 1px solid var(--line);
+          border-left: 0;
+        }
+
+        .proof-item:first-child {
+          border-top: 0;
+          border-bottom: 0;
+        }
+
+        .feature-card,
+        .tour-card {
+          padding: 1.5rem;
+        }
+
+        .tour-card .browser-frame {
+          margin-inline: -0.25rem;
+        }
+
+        footer {
+          align-items: flex-start;
+          gap: 1rem;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+    <script>
+      (function () {
+        try {
+          var savedTheme = localStorage.getItem("emanator-landing-theme")
+          if (savedTheme === "light" || savedTheme === "dark") {
+            document.documentElement.dataset.theme = savedTheme
+          }
+        } catch (_) {}
+      })()
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header shell">
+      <nav class="nav" aria-label="Main navigation">
+        <a class="brand" href="#main" aria-label="Emanator home">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="6" cy="12" r="2"></circle>
+              <circle cx="18" cy="6" r="2"></circle>
+              <circle cx="18" cy="18" r="2"></circle>
+              <path d="m8 11 8-4M8 13l8 4"></path>
+            </svg>
+          </span>
+          <span class="brand-word">Emanator</span>
+        </a>
+        <div class="nav-actions">
+          <button class="theme-toggle" type="button" aria-label="Switch to dark mode" title="Toggle color theme">
+            <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M20.5 14.2A8.2 8.2 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"></path>
+            </svg>
+            <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+            </svg>
+          </button>
+          <a class="button button-primary" href="/auth/nostr">
+            Launch app
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6"></path>
+            </svg>
+          </a>
+        </div>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="hero shell" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <div class="eyebrow">Scheduling for Nostr</div>
+          <h1 id="hero-title">Give every identity a <span class="accent-word">head start.</span></h1>
+          <p>
+            A new Nostr account starts with no audience. Emanator lets the accounts you already run give it a push: write a post once, schedule when it goes out, and line up reposts from your other accounts to follow.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="/auth/nostr">
+              Launch app
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M5 12h14M13 6l6 6-6 6"></path>
+              </svg>
+            </a>
+            <a class="button" href="#workflow">See how it works</a>
+          </div>
+          <div class="key-note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path>
+              <path d="m9 12 2 2 4-4"></path>
+            </svg>
+            Your keys stay with your Nostr signer.
+          </div>
+        </div>
+
+        <div class="product-stage" aria-label="Emanator running on desktop and mobile">
+          <div class="orbit" aria-hidden="true">
+            <i class="relay-dot"></i>
+            <i class="relay-dot"></i>
+            <i class="relay-dot"></i>
+          </div>
+
+          <div class="browser-frame hero-shot">
+            <div class="browser-bar" aria-hidden="true">
+              <i></i><i></i><i></i>
+              <span class="browser-url">emanator.cypherpunk.today</span>
+            </div>
+            <img src="/landing/shots/dashboard-desktop.png" width="1261" height="836" alt="Emanator dashboard showing account, scheduled, published and total post counts, with a list of upcoming posts across managed Nostr accounts">
+          </div>
+
+          <div class="device hero-phone" aria-hidden="true">
+            <img class="shot-light" src="/landing/shots/dashboard-mobile-light.png" width="472" height="782" alt="">
+            <img class="shot-dark" src="/landing/shots/dashboard-mobile-dark.png" width="472" height="782" alt="">
+          </div>
+        </div>
+      </section>
+
+      <section class="proof-strip shell" aria-label="Product principles">
+        <div class="proof-item">Built for accounts that need reach, not another social dashboard.</div>
+        <div class="proof-item"><span class="proof-number">01</span><p>One calendar for every account you manage.</p></div>
+        <div class="proof-item"><span class="proof-number">NIP-46</span><p>Remote signing through Amber. Emanator never stores your private key.</p></div>
+        <div class="proof-item"><span class="proof-number">24/7</span><p>Posts and reposts go out on time, even when your devices are offline.</p></div>
+      </section>
+
+      <section class="section shell" id="workflow" aria-labelledby="workflow-title">
+        <div class="section-heading">
+          <h2 id="workflow-title">From a quiet identity to a coordinated launch.</h2>
+          <p>Use the accounts you already run to back each other up, so you are not posting to each one by hand.</p>
+        </div>
+        <div class="steps">
+          <article class="step">
+            <div class="step-number">01 / Connect</div>
+            <div class="step-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"></path></svg>
+            </div>
+            <h3>Pair your accounts</h3>
+            <p>Connect the accounts you manage through Amber, using NIP-46 remote signing.</p>
+          </article>
+          <article class="step">
+            <div class="step-number">02 / Compose</div>
+            <div class="step-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"></path></svg>
+            </div>
+            <h3>Write the post</h3>
+            <p>Draft the note and attach media. Each account keeps its own style guide, so the AI assist can help without making everything sound the same.</p>
+          </article>
+          <article class="step">
+            <div class="step-number">03 / Emanate</div>
+            <div class="step-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="12" r="2"></circle><circle cx="19" cy="5" r="2"></circle><circle cx="19" cy="19" r="2"></circle><path d="m7 11 10-5M7 13l10 5"></path></svg>
+            </div>
+            <h3>Schedule and sign</h3>
+            <p>Pick when it publishes, set random delays for the reposts, and sign once. Emanator sends everything at the right time.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section shell" aria-labelledby="control-title">
+        <div class="section-heading">
+          <h2 id="control-title">Automation with a clear chain of custody.</h2>
+          <p>Built on how Nostr already works: your identity is portable, the relays are open, and you hold the signing keys.</p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature-card wide">
+            <span class="feature-tag">Publishing control</span>
+            <h3>See every post and repost before it goes out.</h3>
+            <p>One calendar shows what each account has queued across the month, so nothing publishes that you have not looked at.</p>
+            <div class="feature-shot browser-frame">
+              <div class="browser-bar" aria-hidden="true">
+                <i></i><i></i><i></i>
+                <span class="browser-url">emanator.cypherpunk.today/calendar</span>
+              </div>
+              <img src="/landing/shots/calendar-desktop.png" width="1276" height="829" alt="Emanator calendar for September 2026, with scheduled posts and reposts laid out day by day across every managed account">
+            </div>
+          </article>
+          <article class="feature-card">
+            <span class="feature-tag">Identity first</span>
+            <h3>Your signer holds the keys.</h3>
+            <p>Emanator asks your signer to approve each event over NIP-46. Your Nostr private key stays in Amber, where it belongs.</p>
+            <div class="privacy-line">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path><path d="m9 12 2 2 4-4"></path></svg>
+              No nsec custody
+            </div>
+          </article>
+          <article class="feature-card">
+            <span class="feature-tag">Account-aware AI</span>
+            <h3>Keep each account sounding like itself.</h3>
+            <p>Give every account its own style guide. The AI drafts and edits in that voice, instead of flattening them all into one generic tone.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section shell" id="tour" aria-labelledby="tour-title">
+        <div class="section-heading">
+          <h2 id="tour-title">The whole workflow, on the web and your phone.</h2>
+          <p>Draft, schedule, and keep an eye on replies from wherever you are. The interface follows your system light or dark theme.</p>
+        </div>
+        <div class="tour-grid">
+          <figure class="tour-card">
+            <div class="browser-frame">
+              <div class="browser-bar" aria-hidden="true">
+                <i></i><i></i><i></i>
+                <span class="browser-url">emanator.cypherpunk.today/interactions</span>
+              </div>
+              <img src="/landing/shots/interactions-desktop.png" width="1258" height="830" alt="Emanator interactions view showing mentions and replies to a managed account, with follow, mute and reply actions">
+            </div>
+            <figcaption>
+              <strong>One inbox for replies and mentions</strong>
+              Read the mentions and replies for each account you run, then reply without leaving the app.
+            </figcaption>
+          </figure>
+          <figure class="tour-card">
+            <div class="browser-frame">
+              <div class="browser-bar" aria-hidden="true">
+                <i></i><i></i><i></i>
+                <span class="browser-url">emanator.cypherpunk.today/calendar</span>
+              </div>
+              <img src="/landing/shots/calendar-desktop.png" width="1276" height="829" alt="Emanator month calendar with scheduled posts marked in color and reposts shown in italics">
+            </div>
+            <figcaption>
+              <strong>A month you can plan against</strong>
+              Scheduled posts and their reposts sit side by side, so a launch week is easy to read at a glance.
+            </figcaption>
+          </figure>
+        </div>
+        <div class="tour-phones" aria-label="Emanator on mobile">
+          <figure>
+            <div class="device">
+              <img class="shot-light" src="/landing/shots/newpost-mobile-light.png" width="487" height="773" alt="Composing a new post on Emanator mobile, with an AI generation prompt below the editor">
+              <img class="shot-dark" src="/landing/shots/newpost-mobile-dark.png" width="487" height="773" alt="Composing a new post on Emanator mobile in dark theme">
+            </div>
+            <figcaption>Compose</figcaption>
+          </figure>
+          <figure>
+            <div class="device">
+              <img class="shot-light" src="/landing/shots/schedule-mobile-light.png" width="476" height="811" alt="Picking a publish date and time on Emanator mobile, with accounts to repost from listed below">
+              <img class="shot-dark" src="/landing/shots/schedule-mobile-dark.png" width="476" height="811" alt="Picking a publish date and time on Emanator mobile in dark theme">
+            </div>
+            <figcaption>Schedule</figcaption>
+          </figure>
+          <figure>
+            <div class="device">
+              <img class="shot-light" src="/landing/shots/calendar-mobile-light.png" width="485" height="797" alt="Emanator calendar on mobile showing the month with scheduled posts">
+              <img class="shot-dark" src="/landing/shots/calendar-mobile-dark.png" width="485" height="797" alt="Emanator calendar on mobile in dark theme">
+            </div>
+            <figcaption>Review</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="cta shell" aria-labelledby="cta-title">
+        <h2 id="cta-title">Let the right accounts carry the signal.</h2>
+        <p>Run your next Nostr launch from one calendar. Every account stays independently yours.</p>
+        <a class="button button-primary" href="/auth/nostr">
+          Launch Emanator
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+        </a>
+      </section>
+    </main>
+
+    <footer class="shell">
+      <a class="brand" href="#main" aria-label="Back to top">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="12" r="2"></circle><circle cx="18" cy="6" r="2"></circle><circle cx="18" cy="18" r="2"></circle><path d="m8 11 8-4M8 13l8 4"></path></svg>
+        </span>
+        Emanator
+      </a>
+      <span>Post scheduling for the open social web.</span>
+    </footer>
+
+    <script>
+      (function () {
+        var root = document.documentElement
+        var button = document.querySelector(".theme-toggle")
+        var systemDark = window.matchMedia("(prefers-color-scheme: dark)")
+
+        function currentTheme() {
+          return root.dataset.theme || (systemDark.matches ? "dark" : "light")
+        }
+
+        function updateLabel() {
+          button.setAttribute("aria-label", "Switch to " + (currentTheme() === "dark" ? "light" : "dark") + " mode")
+        }
+
+        button.addEventListener("click", function () {
+          var nextTheme = currentTheme() === "dark" ? "light" : "dark"
+          root.dataset.theme = nextTheme
+          try {
+            localStorage.setItem("emanator-landing-theme", nextTheme)
+          } catch (_) {}
+          updateLabel()
+        })
+
+        if (systemDark.addEventListener) {
+          systemDark.addEventListener("change", updateLabel)
+        }
+        updateLabel()
+      })()
+    </script>
+  </body>
+</html>

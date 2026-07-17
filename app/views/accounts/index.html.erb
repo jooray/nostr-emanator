@@ -1,0 +1,108 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Accounts</h1>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        Manage your paired Nostr accounts
+      </p>
+    </div>
+    <%= link_to new_account_path, class: "inline-flex items-center gap-2 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-amber-600 hover:bg-amber-700 transition-colors" do %>
+      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+      </svg>
+      Pair Account
+    <% end %>
+  </div>
+
+  <% if @accounts.any? %>
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <% @accounts.each do |account| %>
+        <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow">
+          <div class="p-5 relative">
+            <%= link_to new_account_post_path(account), class: "absolute top-3 right-3 p-1.5 text-gray-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg transition-colors", title: "New Post" do %>
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+              </svg>
+            <% end %>
+            <div class="flex items-center gap-4">
+              <% if account.picture_url.present? %>
+                <img src="<%= account.picture_url %>" alt="<%= account.display_name_or_npub %>" class="h-14 w-14 rounded-full object-cover flex-shrink-0">
+              <% else %>
+                <div class="h-14 w-14 rounded-full bg-amber-100 dark:bg-amber-900 flex items-center justify-center flex-shrink-0">
+                  <span class="text-xl font-medium text-amber-600 dark:text-amber-400">
+                    <%= account.display_name_or_npub[0].upcase %>
+                  </span>
+                </div>
+              <% end %>
+              <div class="flex-1 min-w-0">
+                <h3 class="text-base font-semibold text-gray-900 dark:text-white truncate">
+                  <%= account.display_name.presence || "Unnamed Account" %>
+                </h3>
+                <% if account.username.present? %>
+                  <p class="text-sm text-gray-500 dark:text-gray-400 truncate">@<%= account.username %></p>
+                <% end %>
+                <div class="flex items-center gap-1 mt-0.5">
+                  <span class="text-xs text-gray-400 dark:text-gray-500 truncate font-mono cursor-pointer hover:text-amber-500 dark:hover:text-amber-400 transition-colors"
+                        data-controller="clipboard"
+                        data-clipboard-text-value="<%= account.npub %>"
+                        data-action="click->clipboard#copy"
+                        title="Click to copy npub">
+                    <%= account.npub&.truncate(24) || account.pubkey_hex.truncate(16) %>
+                  </span>
+                  <% if account.npub.present? %>
+                    <a href="<%= nprofile_url(account.npub) %>" target="_blank" rel="noopener noreferrer" class="text-gray-400 dark:text-gray-500 hover:text-amber-500 dark:hover:text-amber-400 transition-colors flex-shrink-0" title="View profile">
+                      <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                      </svg>
+                    </a>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4 flex items-center gap-4">
+              <div class="flex items-center gap-1.5">
+                <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+                <span class="text-sm text-gray-600 dark:text-gray-300"><%= account.posts.count %> posts</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <% if account.has_signer? %>
+                  <span class="flex h-2.5 w-2.5 rounded-full bg-green-500"></span>
+                  <span class="text-sm text-green-600 dark:text-green-400">Signer connected</span>
+                <% else %>
+                  <span class="flex h-2.5 w-2.5 rounded-full bg-yellow-500"></span>
+                  <span class="text-sm text-yellow-600 dark:text-yellow-400">No signer</span>
+                <% end %>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-gray-50 dark:bg-gray-700 px-5 py-3 flex items-center justify-between">
+            <%= link_to "View", account_path(account), class: "text-sm font-medium text-amber-600 dark:text-amber-400 hover:text-amber-500 dark:hover:text-amber-300 transition-colors" %>
+            <%= link_to "Settings", settings_account_path(account), class: "text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-200 transition-colors" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-12 text-center border border-gray-200 dark:border-gray-700">
+      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+      </svg>
+      <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">No accounts paired</h3>
+      <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+        Pair your first Nostr account to get started with scheduling posts.
+      </p>
+      <div class="mt-6">
+        <%= link_to new_account_path, class: "inline-flex items-center gap-2 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-amber-600 hover:bg-amber-700 transition-colors" do %>
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          Pair Account
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

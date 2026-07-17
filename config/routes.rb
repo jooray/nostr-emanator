@@ -1,0 +1,94 @@
+Rails.application.routes.draw do
+  # Authentication
+  get "auth/nostr", to: "sessions#new", as: :nostr_login
+  post "auth/nostr/poll", to: "sessions#poll", as: :auth_nostr_poll
+  post "auth/nostr/callback", to: "sessions#callback", as: :auth_nostr_callback
+  post "auth/nostr/refresh_profile", to: "sessions#refresh_profile", as: :refresh_profile
+  delete "logout", to: "sessions#destroy", as: :logout
+
+  # Public landing page
+  root "home#index"
+
+  # Dashboard (the app home for signed-in users)
+  get "dashboard", to: "dashboard#index", as: :dashboard
+
+  # New post account picker — must precede the shallow `/posts/:id` route
+  get "posts/new", to: "posts#select_account", as: :new_post
+
+  # Accounts
+  post "accounts/pair_poll", to: "accounts#pair_poll", as: :account_pair_poll
+  resources :accounts do
+    member do
+      post :refresh_profile
+      post :refresh_relays
+      get :re_pair
+      post :re_pair_poll
+      get :settings
+      get :recent_events
+      get :recent_interactions
+    end
+    resources :posts, shallow: true
+    resources :nostr_actions, only: [:create], shallow: true
+    resources :blossom_uploads, only: [:create]
+  end
+
+  resources :nostr_actions, only: [:show] do
+    member do
+      post :retry
+    end
+  end
+
+  # Interactions (global view across all accounts)
+  resources :interactions, only: [:index] do
+    collection do
+      get :list
+    end
+  end
+
+  # Posts (all posts view)
+  resources :posts, only: [:index] do
+    member do
+      get :schedule
+      post :sign
+      post :retry_sign
+      post :publish_now
+      post :retry_publish
+      post :rebroadcast
+      post :cancel
+      post :reschedule
+    end
+    resources :reposts, only: [:destroy] do
+      member do
+        post :retry_sign
+        post :rebroadcast
+        post :publish_now
+      end
+    end
+  end
+
+  # Calendar
+  get "calendar", to: "calendar#index", as: :calendar
+
+  # AI assist
+  post "ai/generate", to: "ai_assist#generate"
+  get "ai/generate_stream", to: "ai_assist#generate_stream"
+  post "ai/refine", to: "ai_assist#refine"
+  get "ai/refine_stream", to: "ai_assist#refine_stream"
+
+  # User settings
+  get "user/edit", to: "users#edit", as: :edit_user
+  patch "user", to: "users#update", as: :user
+
+  # API tokens (for MCP access)
+  resources :api_tokens, only: [:create, :destroy]
+
+  # MCP (Model Context Protocol) endpoint — auth via Authorization: Bearer <api token>
+  post "/mcp", to: "mcp/server#handle"
+
+  # PWA
+  get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
+  get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+
+  # Health check
+  get "up" => "rails/health#show", as: :rails_health_check
+end

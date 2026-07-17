@@ -1,0 +1,210 @@
+<div class="max-w-3xl mx-auto space-y-6" data-controller="post-scheduler"
+     data-post-scheduler-suggested-time-value="<%= @suggested_time&.strftime('%Y-%m-%dT%H:%M') %>">
+  <!-- Header -->
+  <div>
+    <div class="flex items-center gap-3 mb-1">
+      <%= link_to post_path(@post), class: "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors" do %>
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+      <% end %>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Schedule Post</h1>
+    </div>
+    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+      Configure when to publish and set up reposts.
+    </p>
+  </div>
+
+  <!-- Post Content Preview -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+    <h2 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">Post Preview</h2>
+    <div class="flex items-start gap-3">
+      <div class="h-8 w-8 rounded-full bg-amber-100 dark:bg-amber-900 flex items-center justify-center flex-shrink-0">
+        <span class="text-amber-600 dark:text-amber-400 font-medium text-xs">
+          <%= @post.account.display_name_or_npub[0].upcase %>
+        </span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-medium text-gray-900 dark:text-white mb-1">
+          <%= @post.account.display_name_or_npub %>
+        </p>
+        <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap"><%= render_nostr_content(@post.content) %></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Schedule Form -->
+  <%= form_with url: sign_post_path(@post), method: :post, class: "space-y-6" do |form| %>
+    <input type="hidden" name="timezone" data-post-scheduler-target="timezoneInput">
+
+    <!-- Date/Time Picker -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+      <h2 class="text-sm font-medium text-gray-900 dark:text-white mb-4">
+        <svg class="h-4 w-4 inline-block mr-1 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        Schedule Time
+      </h2>
+
+      <div class="space-y-4">
+        <div>
+          <label for="scheduled_at" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Publish Date &amp; Time
+          </label>
+          <input type="text"
+                 id="scheduled_at"
+                 name="scheduled_at"
+                 placeholder="Select date and time"
+                 class="w-full sm:w-auto rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-4 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                 data-post-scheduler-target="datetimeInput">
+        </div>
+
+        <% if @suggested_time.present? %>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-gray-500 dark:text-gray-400">Suggested:</span>
+            <button type="button"
+                    class="text-xs text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 underline"
+                    data-action="click->post-scheduler#useSuggestion"
+                    data-time="<%= @suggested_time.strftime('%Y-%m-%dT%H:%M') %>">
+              <%= local_time(@suggested_time) %>
+            </button>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Repost Accounts -->
+    <% if @other_accounts.any? %>
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-sm font-medium text-gray-900 dark:text-white">
+            <svg class="h-4 w-4 inline-block mr-1 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+            </svg>
+            Repost To Other Accounts
+          </h2>
+          <label class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 cursor-pointer">
+            <input type="checkbox"
+                   class="rounded border-gray-300 dark:border-gray-600 text-amber-600 focus:ring-amber-500"
+                   data-action="change->post-scheduler#toggleReposts">
+            Select All
+          </label>
+        </div>
+
+        <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">
+          Select accounts that should repost this content after the original is published.
+        </p>
+
+        <div class="space-y-3">
+          <% @other_accounts.each do |account| %>
+            <%
+              already_reposting = @existing_reposts&.any? { |r| r.account_id == account.id } ||
+                                  @preselected_repost_ids&.include?(account.id)
+            %>
+            <label class="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer <%= 'bg-amber-50 dark:bg-amber-900/10 border-amber-200 dark:border-amber-800' if already_reposting %>">
+              <input type="checkbox"
+                     name="repost_account_ids[]"
+                     value="<%= account.id %>"
+                     class="rounded border-gray-300 dark:border-gray-600 text-amber-600 focus:ring-amber-500"
+                     data-repost-checkbox
+                     <%= "checked" if already_reposting %>>
+              <div class="h-8 w-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+                <span class="text-gray-600 dark:text-gray-300 font-medium text-xs">
+                  <%= account.display_name_or_npub[0].upcase %>
+                </span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-900 dark:text-white truncate">
+                  <%= account.display_name_or_npub %>
+                </p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
+                  <%= account.npub&.truncate(25) %>
+                </p>
+              </div>
+              <% if already_reposting %>
+                <span class="text-xs text-amber-600 dark:text-amber-400">Already scheduled</span>
+              <% end %>
+            </label>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Max Delay -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+      <h2 class="text-sm font-medium text-gray-900 dark:text-white mb-4">
+        <svg class="h-4 w-4 inline-block mr-1 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        Repost Delay
+      </h2>
+      <div>
+        <label for="max_delay_hours" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Maximum delay for reposts (hours)
+        </label>
+        <input type="number"
+               id="max_delay_hours"
+               name="max_delay_hours"
+               value="24"
+               min="1"
+               max="168"
+               class="w-32 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-4 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+               data-post-scheduler-target="delayInput">
+        <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+          Reposts will be randomly spread out within this time window after the original post is published.
+        </p>
+      </div>
+    </div>
+
+    <!-- Existing Reposts -->
+    <% if @existing_reposts.present? && @existing_reposts.any? %>
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h2 class="text-sm font-medium text-gray-900 dark:text-white">
+            Existing Reposts
+            <span class="ml-1 text-gray-400">(<%= @existing_reposts.count %>)</span>
+          </h2>
+        </div>
+        <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+          <% @existing_reposts.each do |repost| %>
+            <li class="px-6 py-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="h-7 w-7 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+                    <span class="text-gray-600 dark:text-gray-300 font-medium text-xs">
+                      <%= repost.account.display_name_or_npub[0].upcase %>
+                    </span>
+                  </div>
+                  <p class="text-sm text-gray-900 dark:text-white"><%= repost.account.display_name_or_npub %></p>
+                </div>
+                <div class="flex items-center gap-3">
+                  <% if repost.scheduled_at.present? %>
+                    <span class="text-xs text-gray-500 dark:text-gray-400">
+                      <%= local_time(repost.scheduled_at, format: "short") %>
+                    </span>
+                  <% end %>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
+                    <%= repost.status.humanize %>
+                  </span>
+                </div>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <!-- Submit -->
+    <div class="flex items-center justify-end gap-3">
+      <%= link_to "Cancel", post_path(@post),
+        class: "px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" %>
+      <button type="submit"
+              class="inline-flex items-center gap-2 px-6 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+        </svg>
+        Sign &amp; Schedule
+      </button>
+    </div>
+  <% end %>
+</div>

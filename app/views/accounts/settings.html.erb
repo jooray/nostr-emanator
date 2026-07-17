@@ -1,0 +1,141 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <%= link_to account_path(@account), class: "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors" do %>
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+      <% end %>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Account Settings</h1>
+    </div>
+  </div>
+
+  <!-- Profile Card -->
+  <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+    <div class="p-6">
+      <div class="flex items-start gap-5">
+        <% if @account.picture_url.present? %>
+          <img src="<%= @account.picture_url %>" alt="<%= @account.display_name_or_npub %>" class="h-20 w-20 rounded-full object-cover flex-shrink-0">
+        <% else %>
+          <div class="h-20 w-20 rounded-full bg-amber-100 dark:bg-amber-900 flex items-center justify-center flex-shrink-0">
+            <span class="text-2xl font-medium text-amber-600 dark:text-amber-400">
+              <%= @account.display_name_or_npub[0].upcase %>
+            </span>
+          </div>
+        <% end %>
+        <div class="flex-1 min-w-0">
+          <h2 class="text-xl font-bold text-gray-900 dark:text-white">
+            <%= @account.display_name.presence || "Unnamed Account" %>
+          </h2>
+          <% if @account.username.present? %>
+            <p class="text-sm text-gray-500 dark:text-gray-400">@<%= @account.username %></p>
+          <% end %>
+          <p class="mt-1 text-xs text-gray-400 dark:text-gray-500 font-mono break-all">
+            <%= @account.npub %>
+          </p>
+          <% if @account.about.present? %>
+            <p class="mt-3 text-sm text-gray-700 dark:text-gray-300"><%= @account.about %></p>
+          <% end %>
+
+          <div class="mt-3 flex items-center gap-2">
+            <% if @account.has_signer? %>
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                <span class="flex h-2 w-2 rounded-full bg-green-500"></span>
+                Signer connected
+              </span>
+            <% else %>
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                <span class="flex h-2 w-2 rounded-full bg-yellow-500"></span>
+                No signer
+              </span>
+            <% end %>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
+              <%= @account.posts.count %> posts
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-gray-50 dark:bg-gray-700 px-6 py-3 flex items-center gap-4 flex-wrap">
+      <%= link_to edit_account_path(@account), class: "inline-flex items-center gap-1.5 text-sm font-medium text-amber-600 dark:text-amber-400 hover:text-amber-500 dark:hover:text-amber-300 transition-colors" do %>
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+        </svg>
+        Edit
+      <% end %>
+      <%= button_to refresh_profile_account_path(@account), method: :post, class: "inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-200 transition-colors" do %>
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+        Refresh Profile
+      <% end %>
+      <%= button_to refresh_relays_account_path(@account), method: :post, class: "inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-200 transition-colors" do %>
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.14 0M1.394 9.393c5.857-5.858 15.355-5.858 21.213 0"/>
+        </svg>
+        Refresh Relays
+      <% end %>
+      <% if @account.has_signer? %>
+        <%= link_to re_pair_account_path(@account), class: "inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-200 transition-colors" do %>
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+          </svg>
+          Re-pair Signer
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Personality Section -->
+  <% if @account.personality.present? %>
+    <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+      <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white">Personality</h3>
+      </div>
+      <div class="px-6 py-4">
+        <div class="prose prose-sm dark:prose-invert max-w-none text-gray-700 dark:text-gray-300">
+          <%= simple_format(@account.personality) %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Write Relays -->
+  <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white">Write Relays</h3>
+    </div>
+    <div class="px-6 py-4">
+      <% if @account.write_relays.present? && @account.write_relays.any? %>
+        <ul class="space-y-2">
+          <% @account.write_relays.each do |relay| %>
+            <li class="flex items-center gap-2">
+              <span class="flex h-2 w-2 rounded-full bg-green-500 flex-shrink-0"></span>
+              <code class="text-sm text-gray-700 dark:text-gray-300 font-mono"><%= relay %></code>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="text-sm text-gray-500 dark:text-gray-400">No write relays found. Click "Refresh Relays" to fetch from the network.</p>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Danger Zone -->
+  <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden border border-red-200 dark:border-red-800">
+    <div class="px-6 py-4 border-b border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20">
+      <h3 class="text-lg font-medium text-red-800 dark:text-red-200">Danger Zone</h3>
+    </div>
+    <div class="px-6 py-4 flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-gray-900 dark:text-white">Remove this account</p>
+        <p class="text-xs text-gray-500 dark:text-gray-400">This will remove the account pairing and all associated posts.</p>
+      </div>
+      <%= button_to account_path(@account), method: :delete, class: "inline-flex items-center px-3 py-1.5 border border-red-300 dark:border-red-700 text-sm font-medium rounded-md text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors", data: { turbo_confirm: "Are you sure? This will remove the account and all its posts." } do %>
+        Remove Account
+      <% end %>
+    </div>
+  </div>
+</div>

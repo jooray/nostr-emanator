@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html class="h-full">
+  <head>
+    <title><%= content_for(:title) || "Emanator" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Emanator">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#d97706" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#111827" media="(prefers-color-scheme: dark)">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <link rel="manifest" href="/manifest">
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "easymde", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "flatpickr", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+    <script>
+      if ("serviceWorker" in navigator) {
+        // Auto-refresh to a new release: when an updated worker activates and
+        // takes control, reload once so the user never has to hard-refresh.
+        // Guard against reloading on the very first install (no prior controller)
+        // and against reload loops.
+        const hadController = !!navigator.serviceWorker.controller
+        let reloading = false
+        navigator.serviceWorker.addEventListener("controllerchange", () => {
+          if (reloading || !hadController) return
+          reloading = true
+          window.location.reload()
+        })
+        navigator.serviceWorker.register("/service-worker.js")
+      }
+    </script>
+  </head>
+
+  <body class="h-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100" data-controller="local-time">
+    <% if user_signed_in? %>
+      <%= render "layouts/navigation" %>
+    <% end %>
+
+    <main class="<%= user_signed_in? ? 'lg:pl-64' : '' %>">
+      <div class="<%= user_signed_in? ? 'px-4 py-8 sm:px-6 lg:px-8' : '' %>">
+        <% if flash[:notice] %>
+          <div class="mb-4 rounded-md bg-green-50 dark:bg-green-900 p-4">
+            <p class="text-sm text-green-700 dark:text-green-200"><%= flash[:notice] %></p>
+          </div>
+        <% end %>
+
+        <% if flash[:alert] %>
+          <div class="mb-4 rounded-md bg-red-50 dark:bg-red-900 p-4">
+            <p class="text-sm text-red-700 dark:text-red-200"><%= flash[:alert] %></p>
+          </div>
+        <% end %>
+
+        <%= yield %>
+      </div>
+    </main>
+  </body>
+</html>

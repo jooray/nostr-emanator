@@ -1,0 +1,81 @@
+<div class="space-y-6" data-controller="account-picker">
+  <div>
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">New Post</h1>
+    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+      Choose which account will publish this post.
+    </p>
+  </div>
+
+  <% if @accounts.any? %>
+    <div class="relative">
+      <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 10a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      </svg>
+      <input
+        type="text"
+        placeholder="Filter accounts by name, username, or npub…"
+        autocomplete="off"
+        data-account-picker-target="input"
+        data-action="input->account-picker#filter keydown.enter->account-picker#submit"
+        class="block w-full pl-10 pr-3 py-2.5 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+      >
+    </div>
+
+    <ul class="space-y-2">
+      <% @accounts.each do |account| %>
+        <% search_text = [account.display_name, account.username, account.npub, account.pubkey_hex].compact.join(" ").downcase %>
+        <li data-account-picker-target="row" data-search-text="<%= search_text %>">
+          <%= link_to new_account_post_path(account), class: "flex items-center gap-4 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-amber-500 dark:hover:border-amber-400 hover:shadow-md transition-all group" do %>
+            <% if account.picture_url.present? %>
+              <img src="<%= account.picture_url %>" alt="<%= account.display_name_or_npub %>" class="h-12 w-12 rounded-full object-cover flex-shrink-0">
+            <% else %>
+              <div class="h-12 w-12 rounded-full bg-amber-100 dark:bg-amber-900 flex items-center justify-center flex-shrink-0">
+                <span class="text-lg font-medium text-amber-600 dark:text-amber-400">
+                  <%= account.display_name_or_npub[0].upcase %>
+                </span>
+              </div>
+            <% end %>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline gap-2">
+                <h3 class="text-base font-semibold text-gray-900 dark:text-white truncate">
+                  <%= account.display_name.presence || "Unnamed Account" %>
+                </h3>
+                <% if account.username.present? %>
+                  <span class="text-sm text-gray-500 dark:text-gray-400 truncate">@<%= account.username %></span>
+                <% end %>
+              </div>
+              <p class="text-xs text-gray-400 dark:text-gray-500 truncate font-mono mt-0.5">
+                <%= account.npub&.truncate(32) || account.pubkey_hex.truncate(20) %>
+              </p>
+            </div>
+            <svg class="h-5 w-5 text-gray-300 dark:text-gray-600 group-hover:text-amber-500 dark:group-hover:text-amber-400 transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+
+    <div data-account-picker-target="empty" class="hidden bg-white dark:bg-gray-800 shadow rounded-lg p-8 text-center border border-gray-200 dark:border-gray-700">
+      <p class="text-sm text-gray-500 dark:text-gray-400">No accounts match your filter.</p>
+    </div>
+  <% else %>
+    <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-12 text-center border border-gray-200 dark:border-gray-700">
+      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+      </svg>
+      <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">No accounts paired</h3>
+      <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+        Pair your first Nostr account to get started with scheduling posts.
+      </p>
+      <div class="mt-6">
+        <%= link_to new_account_path, class: "inline-flex items-center gap-2 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-amber-600 hover:bg-amber-700 transition-colors" do %>
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          Pair Account
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,57 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Calendar</h1>
+    <div class="flex items-center gap-4">
+      <%= link_to calendar_path(month: @month.prev_month.strftime("%Y-%m-%d")), class: "p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400" do %>
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+      <% end %>
+      <h2 class="text-lg font-medium text-gray-900 dark:text-white"><%= @month.strftime("%B %Y") %></h2>
+      <%= link_to calendar_path(month: @month.next_month.strftime("%Y-%m-%d")), class: "p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400" do %>
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Calendar grid -->
+  <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+    <!-- Day headers -->
+    <div class="grid grid-cols-7 border-b border-gray-200 dark:border-gray-700">
+      <% %w[Mon Tue Wed Thu Fri Sat Sun].each do |day| %>
+        <div class="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+          <%= day %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Calendar days -->
+    <div class="grid grid-cols-7">
+      <% (@start_date..@end_date).each do |date| %>
+        <% events = @events_by_date[date] || [] %>
+        <div class="min-h-[120px] border-b border-r border-gray-200 dark:border-gray-700 p-1 <%= date.month != @month.month ? 'bg-gray-50 dark:bg-gray-900/50' : '' %> <%= date == Date.current ? 'bg-amber-50 dark:bg-amber-900/10' : '' %>">
+          <div class="text-xs font-medium <%= date == Date.current ? 'text-amber-600 dark:text-amber-400' : 'text-gray-500 dark:text-gray-400' %> mb-1">
+            <%= date.day %>
+          </div>
+          <% events.first(5).each do |event| %>
+            <% color = @account_colors[event[:item].account.id] || "gray" %>
+            <% if event[:type] == :post %>
+              <%= link_to post_path(event[:item]), class: "block mb-0.5 px-1 py-0.5 text-xs rounded bg-#{color}-100 dark:bg-#{color}-900/30 text-#{color}-800 dark:text-#{color}-200 truncate hover:opacity-80" do %>
+                <%= local_time(event[:item].scheduled_at, format: "time") %> <%= event[:item].content.truncate(50) %>
+              <% end %>
+            <% else %>
+              <%= link_to post_path(event[:item].post), class: "block mb-0.5 px-1 py-0.5 text-xs rounded bg-#{color}-50 dark:bg-#{color}-900/20 text-#{color}-600 dark:text-#{color}-300 truncate hover:opacity-80 italic" do %>
+                <%= local_time(event[:item].scheduled_at, format: "time") %> repost
+              <% end %>
+            <% end %>
+          <% end %>
+          <% if events.length > 5 %>
+            <%= link_to "+#{events.length - 5} more", posts_path(date: date.to_s), class: "block text-xs text-amber-600 dark:text-amber-400 hover:text-amber-500 dark:hover:text-amber-300 px-1 cursor-pointer" %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
