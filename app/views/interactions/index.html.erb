@@ -1,0 +1,66 @@
+<div class="space-y-6" data-controller="interactions-filter"
+     data-interactions-filter-account-ids-value="<%= @accounts.map(&:id).to_json %>">
+  <!-- Header -->
+  <div>
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Interactions</h1>
+    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+      Replies, quotes, and mentions across your accounts
+    </p>
+  </div>
+
+  <!-- Account Filter Tabs -->
+  <% if @accounts.size > 1 %>
+    <div class="flex items-center gap-2 flex-wrap">
+      <button data-interactions-filter-target="toggleAllButton"
+              data-action="interactions-filter#toggleAll"
+              class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium transition-colors bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200 hover:bg-amber-200 dark:hover:bg-amber-800 cursor-pointer">
+        Unselect All
+      </button>
+      <% @accounts.each do |account| %>
+        <button data-interactions-filter-target="accountButton"
+                data-account-id="<%= account.id %>"
+                data-action="interactions-filter#toggleAccount"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200 hover:bg-amber-200 dark:hover:bg-amber-800 cursor-pointer">
+          <% if account.picture_url.present? %>
+            <img src="<%= account.picture_url %>" alt="" class="h-4 w-4 rounded-full object-cover">
+          <% end %>
+          <%= account.display_name.presence || account.username.presence || account.npub&.truncate(12) %>
+        </button>
+      <% end %>
+    </div>
+  <% end %>
+
+  <!-- Turbo Stream subscription for async updates -->
+  <%= turbo_stream_from @stream_name %>
+
+  <!-- Loading toast: visible while FetchInteractionsJob is in flight; cleared by the job's final broadcast. -->
+  <%= render "interactions/loading_toast", refreshing: @refreshing %>
+
+  <!-- Interactions Content — cached render on load, replaced by background job on refresh -->
+  <% if @interactions.present? %>
+    <%= render "interactions/interactions_content", interactions: @interactions %>
+  <% else %>
+    <div id="interactions_content" data-interactions-filter-target="content">
+      <div class="space-y-3">
+        <% 5.times do %>
+          <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+            <div class="p-4 animate-pulse">
+              <div class="mb-3 pl-3 border-l-2 border-gray-200 dark:border-gray-600">
+                <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-2/3 mb-1"></div>
+                <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+              </div>
+              <div class="flex items-start gap-3">
+                <div class="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 flex-shrink-0"></div>
+                <div class="flex-1 space-y-2">
+                  <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
+                  <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                  <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

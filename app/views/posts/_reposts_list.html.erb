@@ -1,0 +1,113 @@
+<div id="reposts-list">
+  <% reposts = post.reposts.includes(:account) %>
+  <% if reposts.any? %>
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <h2 class="text-sm font-medium text-gray-900 dark:text-white">
+          Reposts
+          <span class="ml-1 text-gray-400">(<%= reposts.count %>)</span>
+        </h2>
+      </div>
+      <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+        <% reposts.each do |repost| %>
+          <li class="px-6 py-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="h-8 w-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+                  <span class="text-gray-600 dark:text-gray-300 font-medium text-xs">
+                    <%= repost.account.display_name_or_npub[0].upcase %>
+                  </span>
+                </div>
+                <div>
+                  <p class="text-sm font-medium text-gray-900 dark:text-white"><%= repost.account.display_name_or_npub %></p>
+                  <% if repost.scheduled_at.present? %>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                      Scheduled for <%= local_time(repost.scheduled_at, format: "short") %>
+                    </p>
+                  <% end %>
+                </div>
+              </div>
+              <%
+                repost_badge = case repost.status
+                               when "published" then "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                               when "scheduled" then "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                               when "awaiting_signature" then "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200"
+                               when "failed" then "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+                               else "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
+                               end
+              %>
+              <div class="flex items-center gap-2">
+                <% if repost.publish_results.present? %>
+                  <% ok = repost.publish_results.values.count { |v| v == "ok" } %>
+                  <% total = repost.publish_results.size %>
+                  <span class="text-xs text-gray-400"><%= ok %>/<%= total %> relays</span>
+                <% end %>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium <%= repost_badge %>">
+                  <%= status_label(repost.status) %>
+                </span>
+                <% if repost.failed? && repost.signed_event.blank? && repost.unsigned_event.present? %>
+                  <%= button_to retry_sign_post_repost_path(post, repost),
+                    method: :post,
+                    class: "text-amber-500 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-200 p-1 transition-colors",
+                    title: "Retry signing" do %>
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                  <% end %>
+                <% end %>
+                <% if repost.can_rebroadcast? %>
+                  <%= button_to rebroadcast_post_repost_path(post, repost),
+                    method: :post,
+                    class: "text-amber-500 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-200 p-1 transition-colors",
+                    title: "Rebroadcast" do %>
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                  <% end %>
+                <% end %>
+                <% if repost.scheduled? %>
+                  <%= button_to publish_now_post_repost_path(post, repost),
+                    method: :post,
+                    data: { turbo_confirm: "This will re-sign and publish this repost now. Continue?" },
+                    class: "text-green-500 hover:text-green-700 dark:text-green-400 dark:hover:text-green-200 p-1 transition-colors",
+                    title: "Repost now" do %>
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                  <% end %>
+                <% end %>
+                <% if repost.can_cancel? %>
+                  <%= button_to post_repost_path(post, repost),
+                    method: :delete,
+                    data: { turbo_confirm: "Cancel this repost?" },
+                    class: "text-red-400 hover:text-red-600 dark:text-red-500 dark:hover:text-red-300 p-1 transition-colors" do %>
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
+            <% if repost.publish_results.present? %>
+              <details class="mt-2 ml-11">
+                <summary class="text-xs text-gray-400 dark:text-gray-500 cursor-pointer hover:text-gray-600 dark:hover:text-gray-300 select-none">
+                  Relay details
+                </summary>
+                <div class="mt-1 space-y-0.5">
+                  <% repost.publish_results.each do |relay, result| %>
+                    <div class="flex items-center gap-2 text-xs">
+                      <span class="<%= result == 'ok' ? 'text-green-500' : 'text-red-500' %>">&#9679;</span>
+                      <span class="text-gray-600 dark:text-gray-400 truncate flex-1"><%= relay %></span>
+                      <span class="text-gray-400"><%= result %></span>
+                    </div>
+                  <% end %>
+                </div>
+              </details>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+</div>

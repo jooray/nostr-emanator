@@ -1,0 +1,123 @@
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8">
+    <div class="text-center">
+      <h1 class="text-4xl font-bold text-amber-600 dark:text-amber-400">Emanator</h1>
+      <p class="mt-2 text-gray-600 dark:text-gray-400">Nostr Post Scheduler</p>
+      <p class="mt-4 text-sm text-gray-500 dark:text-gray-500">Sign in with your Nostr identity</p>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 space-y-6" data-controller="nostr-login">
+      <!-- NIP-07 Browser Extension -->
+      <div id="nip07-section" class="hidden" data-nostr-login-target="nip07Section">
+        <button
+          type="button"
+          class="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-medium transition-colors"
+          data-action="click->nostr-login#loginWithExtension"
+          data-nostr-login-target="extensionButton"
+        >
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+          </svg>
+          Sign in with Browser Extension
+        </button>
+        <p class="mt-2 text-center text-xs text-gray-500 dark:text-gray-400">
+          NIP-07 extension detected (nos2x, Alby, etc.)
+        </p>
+      </div>
+
+      <!-- Divider -->
+      <div id="divider" class="hidden relative" data-nostr-login-target="divider">
+        <div class="absolute inset-0 flex items-center">
+          <div class="w-full border-t border-gray-300 dark:border-gray-600"></div>
+        </div>
+        <div class="relative flex justify-center text-sm">
+          <span class="px-2 bg-white dark:bg-gray-800 text-gray-500">or</span>
+        </div>
+      </div>
+
+      <!-- NIP-46 QR Code -->
+      <div id="qr-section">
+        <p class="text-center text-sm text-gray-600 dark:text-gray-400 mb-4">
+          Scan with Amber or compatible NIP-46 signer
+        </p>
+        <%= render "shared/qr_phishing_warning", caption: "logs them into Emanator as you" %>
+        <div class="flex justify-center">
+          <%# Scale the SVG to the container so a denser QR (more relays => more
+              modules) never overflows the card. viewBox handles the crispness. %>
+          <div class="bg-white p-4 rounded-lg w-full max-w-[18rem] [&>svg]:block [&>svg]:w-full [&>svg]:h-auto">
+            <%= @qr_code.as_svg(
+              color: "000",
+              shape_rendering: "crispEdges",
+              module_size: 4,
+              standalone: true,
+              use_path: true,
+              viewbox: true
+            ).html_safe %>
+          </div>
+        </div>
+        <details class="mt-4 text-center text-xs text-gray-500 dark:text-gray-400">
+          <summary class="cursor-pointer hover:text-gray-700 dark:hover:text-gray-300">Show connection details</summary>
+          <div class="mt-2 p-2 bg-gray-100 dark:bg-gray-700 rounded text-left break-all">
+            <p class="font-medium mb-1">URI:</p>
+            <code class="text-xs select-all"><%= @connect_data[:uri] %></code>
+            <p class="font-medium mt-2 mb-1">Relays:</p>
+            <code class="text-xs"><%= @connect_data[:relay_urls]&.join(", ") %></code>
+          </div>
+        </details>
+      </div>
+
+      <!-- Polling indicator -->
+      <div class="flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-400" data-nostr-login-target="pollingIndicator">
+        <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+        </svg>
+        Waiting for connection...
+      </div>
+
+      <!-- Error message -->
+      <div id="error-message" class="hidden rounded-md bg-red-50 dark:bg-red-900/20 p-4" data-nostr-login-target="errorMessage">
+        <p class="text-sm text-red-700 dark:text-red-400" data-nostr-login-target="errorText"></p>
+      </div>
+
+      <!-- Data attributes for JS -->
+      <div
+        data-nostr-login-poll-url="<%= auth_nostr_poll_path %>"
+        data-nostr-login-callback-url="<%= auth_nostr_callback_path %>"
+        data-nostr-login-challenge="<%= session[:nip07_challenge] %>"
+        data-nostr-login-domain="<%= URI(Nostr::AuthService.new.canonical_url).host %>"
+        data-nostr-login-target="config"
+        class="hidden"
+      ></div>
+    </div>
+
+    <p class="text-center text-sm text-gray-500 dark:text-gray-500">
+      No account needed. Your identity is your Nostr key.
+    </p>
+
+    <details class="text-center text-sm text-gray-500 dark:text-gray-400">
+      <summary class="cursor-pointer hover:text-gray-700 dark:hover:text-gray-300">
+        New to Nostr? Get a signer first.
+      </summary>
+      <div class="mt-3 space-y-2 text-left bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+        <p>
+          <span class="font-medium text-gray-700 dark:text-gray-300">On desktop:</span>
+          install a NIP-07 browser extension, e.g.
+          <a href="https://getalby.com" target="_blank" rel="noopener noreferrer" class="text-amber-600 dark:text-amber-400 hover:underline">Alby</a>
+          or
+          <a href="https://github.com/fiatjaf/nos2x" target="_blank" rel="noopener noreferrer" class="text-amber-600 dark:text-amber-400 hover:underline">nos2x</a>.
+        </p>
+        <p>
+          <span class="font-medium text-gray-700 dark:text-gray-300">On mobile:</span>
+          install
+          <a href="https://github.com/greenart7c3/Amber" target="_blank" rel="noopener noreferrer" class="text-amber-600 dark:text-amber-400 hover:underline">Amber</a>
+          (Android) and scan the QR code above.
+        </p>
+        <p>
+          Either one generates a Nostr key and lets you approve sign-in/posting
+          requests — Emanator never sees your private key.
+        </p>
+      </div>
+    </details>
+  </div>
+</div>

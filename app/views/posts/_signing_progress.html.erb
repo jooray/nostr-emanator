@@ -1,0 +1,78 @@
+<div id="signing-progress">
+  <% if post.scheduled? || post.published? %>
+    <!-- Signing complete -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-green-200 dark:border-green-800 p-6">
+      <div class="flex items-center gap-3">
+        <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg>
+        <div>
+          <p class="text-sm font-medium text-gray-900 dark:text-white">Signing complete!</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400">
+            Post signed.
+            <% reposts_signed = post.reposts.where.not(signed_event: nil).count %>
+            <% reposts_total = post.reposts.count %>
+            <% if reposts_total > 0 %>
+              Reposts: <%= reposts_signed %>/<%= reposts_total %> signed.
+            <% end %>
+          </p>
+        </div>
+      </div>
+    </div>
+
+  <% elsif local_assigns[:failed] || (post.failed? && post.signed_event.blank? && post.unsigned_event.present?) %>
+    <!-- Signing failed/timed out -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-red-200 dark:border-red-800 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <svg class="h-5 w-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <div>
+            <p class="text-sm font-medium text-gray-900 dark:text-white">Signing failed</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              <%= local_assigns[:error] || "Could not get signature from your signer app." %>
+            </p>
+          </div>
+        </div>
+        <%= button_to retry_sign_post_path(post),
+          method: :post,
+          class: "inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors" do %>
+          <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+          Retry Signing
+        <% end %>
+      </div>
+    </div>
+
+  <% elsif post.awaiting_signature? %>
+    <!-- Waiting for signature -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-orange-200 dark:border-orange-800 p-6">
+      <div class="flex items-center gap-3 mb-4">
+        <svg class="h-5 w-5 text-orange-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+        </svg>
+        <div>
+          <p class="text-sm font-medium text-gray-900 dark:text-white">Waiting for signature...</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400">
+            Approve the signing request in your Nostr signer app.
+          </p>
+        </div>
+      </div>
+      <% reposts_signed = post.reposts.where.not(signed_event: nil).count %>
+      <% reposts_total = post.reposts.count %>
+      <% total_items = reposts_total + 1 %>
+      <% done = (post.signed_event.present? ? 1 : 0) + reposts_signed %>
+      <% pct = total_items > 0 ? (done * 100 / total_items) : 0 %>
+      <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+        <div class="bg-amber-600 h-2 rounded-full transition-all duration-300" style="width: <%= pct %>%"></div>
+      </div>
+      <% if post.signed_event.present? && reposts_total > 0 %>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+          Post signed. Reposts: <%= reposts_signed %>/<%= reposts_total %>
+        </p>
+      <% end %>
+    </div>
+  <% end %>
+</div>

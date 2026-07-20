@@ -1,0 +1,84 @@
+<div class="max-w-2xl mx-auto space-y-6">
+  <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Settings</h1>
+
+  <!-- Profile Info (read-only, from Nostr) -->
+  <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+    <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Profile</h2>
+    <div class="flex items-center gap-4 mb-4">
+      <% if @user.picture_url.present? %>
+        <img src="<%= @user.picture_url %>" alt="Profile" class="h-16 w-16 rounded-full object-cover">
+      <% else %>
+        <div class="h-16 w-16 rounded-full bg-amber-100 dark:bg-amber-900 flex items-center justify-center">
+          <span class="text-amber-600 dark:text-amber-400 font-bold text-xl"><%= @user.display_name_or_npub[0].upcase %></span>
+        </div>
+      <% end %>
+      <div>
+        <p class="text-lg font-medium text-gray-900 dark:text-white"><%= @user.display_name || @user.username || "Nostr User" %></p>
+        <p class="text-sm text-gray-500 dark:text-gray-400"><%= @user.npub %></p>
+      </div>
+    </div>
+    <% if @user.about.present? %>
+      <p class="text-sm text-gray-600 dark:text-gray-400"><%= @user.about %></p>
+    <% end %>
+    <div class="mt-4">
+      <%= button_to refresh_profile_path, method: :post, class: "inline-flex items-center gap-2 px-3 py-1.5 text-sm text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg" do %>
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+        Refresh from Relays
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Event Viewer -->
+  <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+    <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Event Viewer</h2>
+    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+      Choose which Nostr client opens when you click profile or event links.
+    </p>
+    <%= form_with url: user_path, method: :patch, class: "space-y-4" do |f| %>
+      <div class="flex items-center gap-4">
+        <% [["njump", "njump.me"], ["yakihonne", "YakiHonne"]].each do |value, label| %>
+          <label class="inline-flex items-center gap-2 cursor-pointer">
+            <input type="radio" name="user[event_viewer]" value="<%= value %>"
+                   <%= "checked" if @user.event_viewer == value %>
+                   class="text-amber-600 focus:ring-amber-500 dark:bg-gray-700 dark:border-gray-600">
+            <span class="text-sm text-gray-700 dark:text-gray-300"><%= label %></span>
+          </label>
+        <% end %>
+      </div>
+      <div>
+        <button type="submit" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors">
+          Save
+        </button>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Custom Relays -->
+  <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+    <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Custom Relays</h2>
+    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+      These relays will receive every post you publish, in addition to each account's NIP-65 write relays.
+    </p>
+    <%= form_with url: user_path, method: :patch, class: "space-y-4" do |f| %>
+      <div>
+        <label for="user_custom_relays" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Relay URLs (one per line)</label>
+        <textarea
+          name="user[custom_relays]"
+          id="user_custom_relays"
+          rows="4"
+          placeholder="wss://relay.damus.io&#10;wss://nos.lol"
+          class="block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+        ><%= @user.custom_relays.join("\n") %></textarea>
+      </div>
+      <div>
+        <button type="submit" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors">
+          Save Relays
+        </button>
+      </div>
+    <% end %>
+  </div>
+
+  <%= render "api_tokens" %>
+</div>

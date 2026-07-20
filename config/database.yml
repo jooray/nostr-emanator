@@ -1,0 +1,65 @@
+default: &default
+  adapter: sqlite3
+  max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 5000
+
+development:
+  primary:
+    <<: *default
+    database: storage/development.sqlite3
+  queue:
+    <<: *default
+    database: storage/development_queue.sqlite3
+    migrations_paths: db/queue_migrate
+  cable:
+    <<: *default
+    database: storage/development_cable.sqlite3
+    migrations_paths: db/cable_migrate
+
+test:
+  <<: *default
+  database: storage/test.sqlite3
+
+production:
+  # H6: explicit pools sized for actual peak concurrent checkouts (Puma
+  # threads + Solid Queue workers/dispatcher/scheduler + the Nip46Supervisor's
+  # 1s registry polls), rather than relying on the ActiveRecord default of 5.
+  primary:
+    adapter: mysql2
+    encoding: utf8mb4
+    collation: utf8mb4_unicode_ci
+    pool: <%= ENV.fetch("RAILS_PRIMARY_DB_POOL", 20) %>
+    database: emanator_production
+    username: nostr_tools
+    password: <%= ENV["DATABASE_PASSWORD"] %>
+    socket: /var/lib/mysql/mysql.sock
+  cache:
+    adapter: mysql2
+    encoding: utf8mb4
+    collation: utf8mb4_unicode_ci
+    pool: <%= ENV.fetch("RAILS_CACHE_DB_POOL", 5) %>
+    database: emanator_cache
+    username: nostr_tools
+    password: <%= ENV["DATABASE_PASSWORD"] %>
+    socket: /var/lib/mysql/mysql.sock
+    migrations_paths: db/cache_migrate
+  queue:
+    adapter: mysql2
+    encoding: utf8mb4
+    collation: utf8mb4_unicode_ci
+    pool: <%= ENV.fetch("RAILS_QUEUE_DB_POOL", 10) %>
+    database: emanator_queue
+    username: nostr_tools
+    password: <%= ENV["DATABASE_PASSWORD"] %>
+    socket: /var/lib/mysql/mysql.sock
+    migrations_paths: db/queue_migrate
+  cable:
+    adapter: mysql2
+    encoding: utf8mb4
+    collation: utf8mb4_unicode_ci
+    pool: <%= ENV.fetch("RAILS_CABLE_DB_POOL", 5) %>
+    database: emanator_cable
+    username: nostr_tools
+    password: <%= ENV["DATABASE_PASSWORD"] %>
+    socket: /var/lib/mysql/mysql.sock
+    migrations_paths: db/cable_migrate

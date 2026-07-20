@@ -1,0 +1,228 @@
+<div id="interaction_<%= interaction[:event_id] %>" data-account-id="<%= interaction[:target_account]&.id %>" data-author-pubkey="<%= interaction[:author_pubkey] %>" class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+  <div class="p-4">
+    <% if interaction[:original_post_content].present? %>
+      <% original_label = interaction[:original_post_is_owned] ? "Your post" : (interaction[:interaction_type] == :quote ? "Quoted post" : "In reply to") %>
+      <% original_author_label = interaction[:original_post_author].presence || (interaction[:original_post_author_pubkey] && interaction[:original_post_author_pubkey][0..7]) %>
+      <div class="mb-3 pl-3 border-l-2 border-gray-200 dark:border-gray-600">
+        <p class="text-xs text-gray-400 dark:text-gray-500 mb-0.5">
+          <% if interaction[:original_post_db_id] %>
+            <%= link_to post_path(interaction[:original_post_db_id]), class: "hover:text-amber-500 dark:hover:text-amber-400 underline" do %>
+              <%= original_label %><%= " (#{original_author_label})" if !interaction[:original_post_is_owned] && original_author_label %>
+            <% end %>:
+          <% elsif interaction[:original_post_event_id] %>
+            <% nevent = Nostr::KeyConverter.hex_to_nevent(interaction[:original_post_event_id], author_pubkey: interaction[:original_post_author_pubkey]) %>
+            <%= link_to nevent_url(nevent), target: "_blank", rel: "noopener", class: "hover:text-amber-500 dark:hover:text-amber-400 underline" do %>
+              <%= original_label %><%= " (#{original_author_label})" if original_author_label %>
+            <% end %>:
+          <% else %>
+            <%= original_label %><%= " (#{original_author_label})" if original_author_label %>:
+          <% end %>
+        </p>
+        <div data-controller="expandable">
+          <p data-expandable-target="content" class="text-sm text-gray-500 dark:text-gray-400 line-clamp-3 whitespace-pre-wrap break-words"><%= render_nostr_content(interaction[:original_post_content].truncate(4000)) %></p>
+          <button type="button" data-expandable-target="toggle" data-action="expandable#toggle"
+                  class="hidden mt-1 text-xs font-medium text-amber-600 dark:text-amber-400 hover:text-amber-500 dark:hover:text-amber-300">
+            Show more
+          </button>
+        </div>
+      </div>
+    <% end %>
+
+    <% author_npub = Nostr::KeyConverter.hex_to_npub(interaction[:author_pubkey]) %>
+    <% author_profile_url = author_npub ? nprofile_url(author_npub) : nil %>
+    <div class="flex items-start gap-3">
+      <% if author_profile_url %>
+        <%= link_to author_profile_url, target: "_blank", rel: "noopener", class: "flex-shrink-0", title: "Open profile in #{current_user&.event_viewer || 'njump'}" do %>
+          <% if interaction[:author_picture].present? %>
+            <img src="<%= interaction[:author_picture] %>" alt="" class="h-10 w-10 rounded-full object-cover">
+          <% else %>
+            <div class="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
+              <span class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                <%= (interaction[:author_name] || interaction[:author_pubkey][0..1])&.first&.upcase %>
+              </span>
+            </div>
+          <% end %>
+        <% end %>
+      <% else %>
+        <% if interaction[:author_picture].present? %>
+          <img src="<%= interaction[:author_picture] %>" alt="" class="h-10 w-10 rounded-full object-cover flex-shrink-0">
+        <% else %>
+          <div class="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center flex-shrink-0">
+            <span class="text-sm font-medium text-gray-500 dark:text-gray-400">
+              <%= (interaction[:author_name] || interaction[:author_pubkey][0..1])&.first&.upcase %>
+            </span>
+          </div>
+        <% end %>
+      <% end %>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 flex-wrap">
+          <% if author_profile_url %>
+            <%= link_to author_profile_url, target: "_blank", rel: "noopener", class: "text-sm font-medium text-gray-900 dark:text-white hover:text-amber-600 dark:hover:text-amber-400" do %>
+              <%= interaction[:author_name] || interaction[:author_pubkey]&.truncate(16) %>
+            <% end %>
+          <% else %>
+            <span class="text-sm font-medium text-gray-900 dark:text-white">
+              <%= interaction[:author_name] || interaction[:author_pubkey]&.truncate(16) %>
+            </span>
+          <% end %>
+          <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium <%= interaction_type_badge_class(interaction[:interaction_type]) %>">
+            <%= interaction[:interaction_type] %>
+          </span>
+          <% if interaction[:target_account] %>
+            <span class="text-xs text-gray-400 dark:text-gray-500">
+              to @<%= interaction[:target_account].username.presence || interaction[:target_account].display_name.presence || interaction[:target_account].npub&.truncate(12) %>
+            </span>
+          <% end %>
+          <span class="text-xs text-gray-400 dark:text-gray-500">
+            <%= time_ago_in_words(Time.at(interaction[:created_at])) %> ago
+          </span>
+        </div>
+        <p class="mt-2 text-sm text-gray-900 dark:text-gray-100 whitespace-pre-wrap break-words"><%= render_nostr_content(interaction[:content]&.truncate(500)) %></p>
+      </div>
+    </div>
+
+    <%# Action buttons + Inline reply section %>
+    <% if interaction[:target_account]&.has_signer? %>
+      <div class="mt-3" data-controller="interaction-actions inline-reply"
+           data-interaction-actions-account-id-value="<%= interaction[:target_account].id %>"
+           data-interaction-actions-event-id-value="<%= interaction[:event_id] %>"
+           data-interaction-actions-author-pubkey-value="<%= interaction[:author_pubkey] %>"
+           data-interaction-actions-target-event-kind-value="1"
+           data-interaction-actions-relay-hint-value="<%= interaction[:relay_hint] || '' %>"
+           data-interaction-actions-already-following-value="<%= interaction[:already_following] || false %>"
+           data-interaction-actions-already-liked-value="<%= interaction[:already_liked] || false %>"
+           data-inline-reply-account-id-value="<%= interaction[:target_account].id %>"
+           data-inline-reply-event-id-value="<%= interaction[:event_id] %>"
+           data-inline-reply-author-pubkey-value="<%= interaction[:author_pubkey] %>"
+           data-inline-reply-root-event-id-value="<%= interaction[:referenced_event_ids]&.first %>"
+           data-inline-reply-relay-hint-value="<%= interaction[:relay_hint] || '' %>"
+           data-inline-reply-already-following-value="<%= interaction[:already_following] || false %>">
+
+        <%# Action button row %>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-1">
+            <%# Like button %>
+            <button data-interaction-actions-target="likeButton" data-action="interaction-actions#like"
+                    class="inline-flex items-center p-1.5 rounded-md transition-colors text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                    title="Like">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+              </svg>
+            </button>
+
+            <%# Follow button (hidden if already following) %>
+            <button data-interaction-actions-target="followButton" data-action="interaction-actions#follow"
+                    class="inline-flex items-center gap-1 px-2 py-1.5 rounded-md text-xs font-medium transition-colors text-gray-400 dark:text-gray-500 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 <%= 'hidden' if interaction[:already_following] %>"
+                    title="Follow">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+              </svg>
+              <span>Follow</span>
+            </button>
+
+            <%# Mute button — explicit label so it's clear whose posts will be hidden %>
+            <% mute_label = interaction[:author_name].presence || interaction[:author_pubkey]&.truncate(12) %>
+            <button data-interaction-actions-target="muteButton" data-action="interaction-actions#mute"
+                    class="inline-flex items-center gap-1 px-2 py-1.5 rounded-md text-xs font-medium transition-colors text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                    title="Hide all posts from @<%= mute_label %>">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+              </svg>
+              <span>Mute @<%= mute_label %></span>
+            </button>
+
+            <%# Status messages %>
+            <div class="flex items-center gap-1.5 min-h-6">
+              <span data-interaction-actions-target="likeStatus" class="text-xs"></span>
+              <button type="button"
+                      data-interaction-actions-target="likeRefreshButton"
+                      data-action="interaction-actions#retryLike"
+                      class="hidden items-center gap-1 px-2 py-1 text-xs font-medium text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/30 border border-amber-300 dark:border-amber-700 rounded-md hover:bg-amber-200 dark:hover:bg-amber-900/50 transition-colors">
+                Retry
+              </button>
+            </div>
+            <div class="flex items-center gap-1.5 min-h-6">
+              <span data-interaction-actions-target="followStatus" class="text-xs"></span>
+              <button type="button"
+                      data-interaction-actions-target="followRefreshButton"
+                      data-action="interaction-actions#retryFollow"
+                      class="hidden items-center gap-1 px-2 py-1 text-xs font-medium text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/30 border border-amber-300 dark:border-amber-700 rounded-md hover:bg-amber-200 dark:hover:bg-amber-900/50 transition-colors">
+                Retry
+              </button>
+            </div>
+            <div class="flex items-center gap-1.5 min-h-6">
+              <span data-interaction-actions-target="muteStatus" class="text-xs"></span>
+              <button type="button"
+                      data-interaction-actions-target="muteRefreshButton"
+                      data-action="interaction-actions#retryMute"
+                      class="hidden items-center gap-1 px-2 py-1 text-xs font-medium text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/30 border border-amber-300 dark:border-amber-700 rounded-md hover:bg-amber-200 dark:hover:bg-amber-900/50 transition-colors">
+                Retry
+              </button>
+            </div>
+          </div>
+
+          <%# Reply button %>
+          <button data-inline-reply-target="replyButton" data-action="inline-reply#toggle"
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-amber-600 dark:text-amber-400 hover:text-amber-500 dark:hover:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-md transition-colors">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+            </svg>
+            Reply
+          </button>
+        </div>
+
+        <%# Inline reply form %>
+        <div data-inline-reply-target="form" class="hidden mt-3">
+          <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">
+            Replying as <span class="font-medium text-gray-700 dark:text-gray-300"><%= interaction[:target_account].display_name_or_npub %></span>
+          </p>
+
+          <%# Checkboxes for like + follow alongside reply %>
+          <div class="flex items-center gap-4 mb-2">
+            <label class="inline-flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 cursor-pointer">
+              <input type="checkbox" checked data-inline-reply-target="likeCheckbox"
+                     class="rounded border-gray-300 dark:border-gray-600 text-amber-600 focus:ring-amber-500 h-3.5 w-3.5">
+              Like this post
+            </label>
+            <% unless interaction[:already_following] %>
+              <label class="inline-flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 cursor-pointer">
+                <input type="checkbox" checked data-inline-reply-target="followCheckbox"
+                       class="rounded border-gray-300 dark:border-gray-600 text-amber-600 focus:ring-amber-500 h-3.5 w-3.5">
+                Follow @<%= interaction[:author_name] || interaction[:author_pubkey]&.truncate(12) %>
+              </label>
+            <% end %>
+          </div>
+
+          <textarea data-inline-reply-target="textarea"
+                    rows="3"
+                    placeholder="Write your reply..."
+                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm p-3 focus:ring-amber-500 focus:border-amber-500 resize-none"></textarea>
+            <div class="mt-2 flex items-center justify-between gap-3">
+              <div class="flex items-center gap-2 min-w-0">
+                <div data-inline-reply-target="status" class="text-sm text-gray-500 dark:text-gray-400"></div>
+                <button type="button"
+                        data-inline-reply-target="refreshButton"
+                        data-action="inline-reply#retry"
+                        class="hidden items-center gap-1 px-2 py-1 text-xs font-medium text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/30 border border-amber-300 dark:border-amber-700 rounded-md hover:bg-amber-200 dark:hover:bg-amber-900/50 transition-colors">
+                  Retry
+                </button>
+              </div>
+              <div class="flex gap-2">
+              <button data-action="inline-reply#toggle"
+                      class="px-3 py-1.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 rounded-md transition-colors">
+                Cancel
+              </button>
+              <button data-inline-reply-target="submitButton" data-action="inline-reply#submit"
+                      class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-amber-600 hover:bg-amber-500 rounded-md transition-colors">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                </svg>
+                Sign & Publish
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

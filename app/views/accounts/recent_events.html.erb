@@ -1,0 +1,18 @@
+<%= turbo_frame_tag "recent_events" do %>
+  <% if @recent_events.present? && @recent_events.any? %>
+    <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+      <% @recent_events.each do |event| %>
+        <li class="px-6 py-4">
+          <p class="text-sm text-gray-900 dark:text-gray-100 whitespace-pre-wrap break-words"><%= render_nostr_content(event["content"]&.truncate(500)) %></p>
+          <p class="mt-2 text-xs text-gray-400 dark:text-gray-500">
+            <%= local_time(Time.at(event["created_at"])) %>
+          </p>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <div class="px-6 py-8 text-center">
+      <p class="text-sm text-gray-500 dark:text-gray-400">No recent events found on relays.</p>
+    </div>
+  <% end %>
+<% end %>

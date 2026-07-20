@@ -1,0 +1,11 @@
+<%# I1: scanning someone else's QR hands them the session. The protocol cannot
+    tell the difference, so warn the person holding the phone. %>
+<div class="mt-4 flex items-start gap-2 rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/30 p-3 text-xs text-amber-900 dark:text-amber-200">
+  <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+  </svg>
+  <span>
+    Only scan a QR code shown on <strong>your own screen</strong>. Scanning a code
+    someone sent or showed you <%= caption %>.
+  </span>
+</div>

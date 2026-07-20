@@ -1,0 +1,22 @@
+enqueue_scheduled_posts:
+  class: EnqueueScheduledPostsJob
+  schedule: every minute
+
+# Reconcile posts/reposts stuck in publishing / awaiting_signature (C4, H15, L17).
+sweep_stuck_records:
+  class: SweepStuckRecordsJob
+  schedule: every 5 minutes
+
+clear_solid_queue_finished_jobs:
+  command: "SolidQueue::Job.clear_finished_in_batches(sleep_between_batches: 0.3)"
+  schedule: every hour at minute 12
+
+cleanup_nostr_auth_sessions:
+  command: "NostrAuthSession.cleanup_expired!"
+  schedule: every hour at minute 17
+
+# Safety net: if logins are pending but the multiplexed NIP-46 supervisor isn't
+# running (e.g. after a deploy/restart), start it. No-op while one holds the lock.
+ensure_nip46_supervisor:
+  command: "Nip46SupervisorJob.ensure_running if NostrAuthSession.active.where(authenticated_pubkey: nil).exists?"
+  schedule: every minute

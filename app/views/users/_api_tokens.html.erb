@@ -1,0 +1,97 @@
+<!-- API Tokens (MCP access) -->
+<div id="api-tokens" class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+  <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">API Tokens (MCP)</h2>
+  <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+    Connect an AI agent to Emanator over the
+    <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener" class="text-amber-600 dark:text-amber-400 hover:underline">Model Context Protocol</a>.
+    Point your MCP client at <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-xs"><%= request.base_url %>/mcp</code>
+    and send the token as <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-xs">Authorization: Bearer &lt;token&gt;</code>.
+    A token can read your accounts and posts (including scheduled ones) and create drafts.
+  </p>
+
+  <% if flash[:plain_token].present? %>
+    <div class="mb-4 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-300 dark:border-amber-800 rounded-lg">
+      <p class="text-sm font-medium text-amber-900 dark:text-amber-100 mb-2">
+        Token <strong><%= flash[:plain_token_name] %></strong> created. Copy it now — it will not be shown again.
+      </p>
+      <div class="flex items-center gap-2">
+        <input type="text" readonly value="<%= flash[:plain_token] %>"
+               class="flex-1 font-mono text-xs px-2 py-1.5 rounded border border-amber-300 dark:border-amber-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+               data-controller="clipboard"
+               data-clipboard-text-value="<%= flash[:plain_token] %>"
+               data-action="click->clipboard#selectAll" />
+        <button type="button"
+                data-controller="clipboard"
+                data-clipboard-text-value="<%= flash[:plain_token] %>"
+                data-action="click->clipboard#copy"
+                class="px-3 py-1.5 text-xs font-medium rounded border border-amber-300 dark:border-amber-700 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 hover:bg-amber-100 dark:hover:bg-amber-900/40">
+          Copy
+        </button>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="mb-6">
+    <%= form_with url: api_tokens_path, method: :post, data: { turbo: false }, class: "flex items-end gap-3" do %>
+      <div class="flex-1">
+        <label for="api_token_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Token name</label>
+        <%= text_field_tag :name, "", id: "api_token_name", placeholder: "e.g. content-agent",
+            class: "block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm" %>
+      </div>
+      <div>
+        <label for="api_token_expires_in_days" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Expires</label>
+        <%= select_tag :expires_in_days,
+            options_for_select([["30 days", 30], ["90 days", 90], ["180 days", 180], ["1 year", 365], ["Never", 0]], 90),
+            id: "api_token_expires_in_days",
+            class: "block rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm" %>
+      </div>
+      <button type="submit" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors">
+        Generate token
+      </button>
+    <% end %>
+  </div>
+
+  <% tokens = current_user.api_tokens.order(created_at: :desc) %>
+  <% if tokens.any? %>
+    <div class="overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-lg">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
+        <thead class="bg-gray-50 dark:bg-gray-800">
+          <tr>
+            <th class="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-300">Name</th>
+            <th class="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-300">Created</th>
+            <th class="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-300">Expires</th>
+            <th class="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-300">Last used</th>
+            <th class="px-4 py-2"></th>
+          </tr>
+        </thead>
+        <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
+          <% tokens.each do |token| %>
+            <tr>
+              <td class="px-4 py-2 text-gray-900 dark:text-gray-100"><%= token.name %></td>
+              <td class="px-4 py-2 text-gray-500 dark:text-gray-400"><%= token.created_at.strftime("%b %d, %Y") %></td>
+              <td class="px-4 py-2 <%= token.expired? ? 'text-red-600 dark:text-red-400' : 'text-gray-500 dark:text-gray-400' %>">
+                <% if token.expires_at.nil? %>
+                  Never
+                <% elsif token.expired? %>
+                  Expired <%= token.expires_at.strftime("%b %d, %Y") %>
+                <% else %>
+                  <%= token.expires_at.strftime("%b %d, %Y") %>
+                <% end %>
+              </td>
+              <td class="px-4 py-2 text-gray-500 dark:text-gray-400">
+                <%= token.last_used_at ? "#{time_ago_in_words(token.last_used_at)} ago" : "Never" %>
+              </td>
+              <td class="px-4 py-2 text-right">
+                <%= button_to "Revoke", api_token_path(token), method: :delete,
+                    data: { turbo_confirm: "Revoke this token? Anything using it will lose access." },
+                    class: "text-sm text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <p class="text-sm text-gray-400 dark:text-gray-500">No tokens yet.</p>
+  <% end %>
+</div>

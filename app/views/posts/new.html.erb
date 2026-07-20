@@ -1,0 +1,78 @@
+<div class="max-w-3xl mx-auto space-y-6"
+     data-controller="content-builder"
+     data-content-builder-stream-url-value="<%= ai_generate_stream_path(account_id: @account.id) %>"
+     data-content-builder-refine-url-value="<%= ai_refine_stream_path(account_id: @account.id) %>">
+  <!-- Header -->
+  <div>
+    <div class="flex items-center gap-3 mb-1">
+      <%= link_to account_posts_path(@account), class: "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors" do %>
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+      <% end %>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">New Post</h1>
+    </div>
+    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+      Posting as
+      <%= link_to @account.display_name_or_npub, account_path(@account),
+        class: "font-medium text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 hover:underline" %>
+    </p>
+  </div>
+
+  <!-- Post Form -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+    <%= render "form", post: @post %>
+  </div>
+
+  <!-- AI Generation Section -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+    <div class="flex items-center gap-2 mb-4">
+      <svg class="h-5 w-5 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+      </svg>
+      <h2 class="text-lg font-medium text-gray-900 dark:text-white">AI Generation</h2>
+    </div>
+    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+      Describe what you want to post and let AI generate content for you.
+    </p>
+    <div class="space-y-4">
+      <div>
+        <label for="ai_prompt" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Prompt
+        </label>
+        <div class="flex gap-3">
+          <input type="text" id="ai_prompt" name="prompt"
+                 class="flex-1 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-4 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-transparent placeholder-gray-400 dark:placeholder-gray-500"
+                 placeholder="e.g., Write a short note about the importance of privacy...">
+          <button type="button"
+                  class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors"
+                  data-action="click->content-builder#startStreaming">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            Generate
+          </button>
+        </div>
+      </div>
+      <div id="editor-container" data-content-builder-target="editorContainer"></div>
+    </div>
+
+    <!-- Refine Section (shown after generation completes) -->
+    <div class="mt-4 hidden" data-content-builder-target="refineSection">
+      <div class="flex gap-3">
+        <input type="text" name="user_prompt"
+               class="flex-1 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-4 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-transparent placeholder-gray-400 dark:placeholder-gray-500"
+               placeholder="e.g., Make it shorter and more punchy..."
+               data-content-builder-target="refineInput">
+        <button type="button"
+                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors"
+                data-action="click->content-builder#startRefineStreaming">
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+          Refine
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

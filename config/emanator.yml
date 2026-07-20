@@ -1,0 +1,43 @@
+default: &default
+  app:
+    canonical_url: https://emanator.cypherpunk.today
+  nostr:
+    relays:
+      - wss://relay.damus.io
+      - wss://nos.lol
+      - wss://relay.primal.net
+      - wss://nostr.cypherpunk.today
+    # NIP-46 login/pairing relays. The app subscribes on ALL of these at once and
+    # Amber publishes the connect/get_public_key replies to the same set, so more
+    # healthy relays = more chances the handshake completes if one is flaky. Keep
+    # only relays verified to accept WS + relay ephemeral kind-24133 events.
+    # relay.nsec.app (the canonical bunker relay) is omitted while it returns 502;
+    # re-add it once it recovers.
+    auth_relays:
+      - wss://nos.lol
+      - wss://relay.primal.net
+      - wss://nostr.mom
+    fetch_timeout: 10
+    # Deprecated NIP-04 (AES-256-CBC, unauthenticated) fallback for NIP-46
+    # payloads. Off by default — see Nostr::Nip04Policy. Turn on only to pair a
+    # signer that cannot do NIP-44.
+    allow_nip04_fallback: false
+
+  ai:
+    provider: venice
+    endpoint: https://api.venice.ai/api/v1
+    content_model: claude-sonnet-4-6
+
+  blossom:
+    server: https://blossom.primal.net
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+  ai:
+    provider: mock
+
+production:
+  <<: *default
