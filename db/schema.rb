@@ -10,10 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_15_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_20_163718) do
   create_table "accounts", force: :cascade do |t|
     t.text "about"
-    t.string "app_privkey"
+    t.text "app_privkey"
     t.string "app_pubkey"
     t.datetime "created_at", null: false
     t.string "display_name"
@@ -44,6 +44,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_000000) do
     t.index ["user_id"], name: "index_api_tokens_on_user_id"
   end
 
+  create_table "blossom_uploads", force: :cascade do |t|
+    t.integer "account_id", null: false
+    t.bigint "byte_size"
+    t.string "content_type"
+    t.datetime "created_at", null: false
+    t.string "error"
+    t.string "file_path"
+    t.string "filename"
+    t.datetime "finished_at"
+    t.string "sha256"
+    t.string "status", default: "pending", null: false
+    t.string "step"
+    t.datetime "updated_at", null: false
+    t.string "url"
+    t.integer "user_id", null: false
+    t.index ["account_id"], name: "index_blossom_uploads_on_account_id"
+    t.index ["status", "created_at"], name: "index_blossom_uploads_on_status_and_created_at"
+    t.index ["user_id", "created_at"], name: "index_blossom_uploads_on_user_id_and_created_at"
+    t.index ["user_id"], name: "index_blossom_uploads_on_user_id"
+  end
+
   create_table "nostr_actions", force: :cascade do |t|
     t.integer "account_id", null: false
     t.integer "action_type", null: false
@@ -59,6 +80,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_000000) do
     t.json "unsigned_event"
     t.datetime "updated_at", null: false
     t.index ["account_id", "action_type", "status"], name: "index_nostr_actions_on_account_id_and_action_type_and_status"
+    t.index ["account_id", "action_type", "target_event_id", "target_pubkey"], name: "index_nostr_actions_on_natural_key", unique: true
     t.index ["account_id", "target_event_id"], name: "index_nostr_actions_on_account_id_and_target_event_id"
     t.index ["account_id", "target_pubkey"], name: "index_nostr_actions_on_account_id_and_target_pubkey"
     t.index ["account_id"], name: "index_nostr_actions_on_account_id"
@@ -75,9 +97,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_000000) do
     t.string "listener_token"
     t.string "pending_rpc_id"
     t.string "relay_url", null: false
-    t.string "secret", null: false
+    t.text "secret", null: false
     t.string "session_id", null: false
-    t.string "temp_privkey", null: false
+    t.text "temp_privkey", null: false
     t.string "temp_pubkey", null: false
     t.datetime "updated_at", null: false
     t.index ["expires_at"], name: "index_nostr_auth_sessions_on_expires_at"
@@ -86,7 +108,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_000000) do
 
   create_table "posts", force: :cascade do |t|
     t.integer "account_id", null: false
-    t.text "content"
+    t.text "content", null: false
     t.datetime "created_at", null: false
     t.string "event_id"
     t.integer "event_kind", default: 1
@@ -98,15 +120,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_000000) do
     t.string "root_event_id"
     t.datetime "scheduled_at"
     t.json "signed_event"
-    t.integer "status", default: 0
+    t.integer "status", default: 0, null: false
     t.json "unsigned_event"
     t.datetime "updated_at", null: false
     t.json "version_history", default: []
     t.index ["account_id", "status"], name: "index_posts_on_account_id_and_status"
     t.index ["account_id"], name: "index_posts_on_account_id"
+    t.index ["event_id"], name: "index_posts_on_event_id"
     t.index ["is_reply"], name: "index_posts_on_is_reply"
     t.index ["reply_to_event_id"], name: "index_posts_on_reply_to_event_id"
     t.index ["scheduled_at"], name: "index_posts_on_scheduled_at"
+    t.index ["status", "scheduled_at"], name: "index_posts_on_status_and_scheduled_at"
   end
 
   create_table "reposts", force: :cascade do |t|
@@ -119,13 +143,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_000000) do
     t.datetime "published_at"
     t.datetime "scheduled_at"
     t.json "signed_event"
-    t.integer "status", default: 0
+    t.integer "status", default: 0, null: false
     t.json "unsigned_event"
     t.datetime "updated_at", null: false
     t.index ["account_id"], name: "index_reposts_on_account_id"
     t.index ["post_id", "account_id"], name: "index_reposts_on_post_id_and_account_id", unique: true
     t.index ["post_id"], name: "index_reposts_on_post_id"
     t.index ["scheduled_at"], name: "index_reposts_on_scheduled_at"
+    t.index ["status", "scheduled_at"], name: "index_reposts_on_status_and_scheduled_at"
   end
 
   create_table "users", force: :cascade do |t|
@@ -135,6 +160,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_000000) do
     t.string "npub", null: false
     t.string "picture_url"
     t.string "pubkey_hex", null: false
+    t.integer "session_version", default: 0, null: false
     t.json "settings", default: {}
     t.datetime "updated_at", null: false
     t.string "username"

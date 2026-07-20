@@ -1,6 +1,19 @@
 # frozen_string_literal: true
 
 class AiAssistController < ApplicationController
+  # H5: these actions burn paid Venice API credits and pin a Puma thread for up
+  # to ~300s (streams do 2 upstream calls each). Cap per-user usage so a script,
+  # a crafted link, or a runaway client can't rack up unbounded cost/thread
+  # pressure. Numbers are generous for normal composing (a handful of drafts
+  # per session) but bound the worst case.
+  GENERATE_RATE_LIMIT = 20
+  REFINE_RATE_LIMIT = 40
+
+  rate_limit to: GENERATE_RATE_LIMIT, within: 1.hour, only: [ :generate, :generate_stream ],
+             by: -> { current_user&.id || request.remote_ip }, with: :ai_rate_limited
+  rate_limit to: REFINE_RATE_LIMIT, within: 1.hour, only: [ :refine, :refine_stream ],
+             by: -> { current_user&.id || request.remote_ip }, with: :ai_rate_limited
+
   def generate
     account = current_user.accounts.find(params[:account_id])
     user_prompt = params[:prompt]
@@ -103,6 +116,24 @@ class AiAssistController < ApplicationController
   end
 
   private
+
+  # Shared by both rate limiters (via `with:`). Streams need an SSE-shaped
+  # response (the client is mid-fetch expecting `event:`/`data:` frames);
+  # the plain JSON actions get a normal 429.
+  def ai_rate_limited
+    message = "AI request limit reached — please wait a bit before trying again."
+
+    if action_name.end_with?("_stream")
+      response.headers["Content-Type"] = "text/event-stream"
+      response.headers["Cache-Control"] = "no-cache"
+      response.headers["X-Accel-Buffering"] = "no"
+      sse = SSE.new(response.stream)
+      sse.write({ message: message }, event: "error")
+      sse.close
+    else
+      render json: { error: message }, status: :too_many_requests
+    end
+  end
 
   class SSE
     def initialize(stream)

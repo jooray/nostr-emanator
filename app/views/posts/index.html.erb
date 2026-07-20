@@ -23,7 +23,7 @@
                                          "published" => "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
                                          "failed" => "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300" } %>
                     <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium <%= status_colors[post.status] || 'bg-gray-100 text-gray-800' %>">
-                      <%= post.status.humanize %>
+                      <%= status_label(post.status) %>
                     </span>
                     <% if post.reposts.any? %>
                       <%
@@ -71,9 +71,8 @@
     </div>
 
     <% if @posts.respond_to?(:total_pages) && @posts.total_pages > 1 %>
-      <nav class="flex justify-center">
-        <%= paginate @posts %>
-      </nav>
+      <%# app/views/kaminari/_paginator.html.erb already renders its own styled <nav> %>
+      <%= paginate @posts %>
     <% end %>
   <% else %>
     <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-12 text-center border border-gray-200 dark:border-gray-700">
@@ -84,6 +83,13 @@
       <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
         Create your first post from one of your paired accounts.
       </p>
+      <%= link_to new_post_path,
+        class: "mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors" do %>
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        New Post
+      <% end %>
     </div>
   <% end %>
 </div>

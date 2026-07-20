@@ -1,4 +1,14 @@
 module ApplicationHelper
+  # `awaiting_signature` reads as internal jargon to end users — show a
+  # friendlier label everywhere a post/repost status is displayed (L28).
+  STATUS_LABELS = {
+    "awaiting_signature" => "Waiting for approval in signer"
+  }.freeze
+
+  def status_label(status)
+    STATUS_LABELS[status.to_s] || status.to_s.humanize
+  end
+
   def local_time(time, format: "datetime")
     return "" if time.nil?
     fallback = case format
@@ -10,6 +20,10 @@ module ApplicationHelper
     tag.time(
       fallback,
       datetime: time.iso8601,
+      # The rendered text reformats client-side to local time (local_time_controller.js)
+      # and can flash the server-rendered UTC fallback first — a title with the
+      # unambiguous absolute instant is always correct either way (L24).
+      title: time.strftime("%Y-%m-%d %H:%M:%S UTC"),
       data: { local_time_format: format }
     )
   end

@@ -8,12 +8,16 @@ export default class extends Controller {
   connect() {
     this.applyTheme()
     this.mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
-    this.mediaQuery.addEventListener("change", () => this.applyTheme())
+    // Bind once and keep the reference — passing a fresh arrow function to
+    // removeEventListener (as before) never actually removes anything, so
+    // every Turbo visit leaked another listener.
+    this.handleMediaQueryChange = () => this.applyTheme()
+    this.mediaQuery.addEventListener("change", this.handleMediaQueryChange)
   }
 
   disconnect() {
     if (this.mediaQuery) {
-      this.mediaQuery.removeEventListener("change", () => this.applyTheme())
+      this.mediaQuery.removeEventListener("change", this.handleMediaQueryChange)
     }
   }
 

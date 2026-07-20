@@ -13,22 +13,34 @@ export default class extends Controller {
 
     const mediaUrls = this.extractMediaUrls(content)
 
-    if (mediaUrls.length === 0) {
-      this.previewTarget.innerHTML = ""
-      return
-    }
+    // Build with DOM APIs (property assignment) rather than interpolating the
+    // URL into an HTML string — a URL containing a stray quote could otherwise
+    // break out of the src="..." attribute.
+    this.previewTarget.replaceChildren()
+    if (mediaUrls.length === 0) return
 
-    let html = '<div class="grid grid-cols-2 gap-2 mt-4">'
+    const grid = document.createElement("div")
+    grid.className = "grid grid-cols-2 gap-2 mt-4"
+
     for (const url of mediaUrls) {
       if (this.isImage(url)) {
-        html += `<img src="${this.escapeHtml(url)}" class="rounded-lg max-h-48 object-cover w-full" loading="lazy" />`
+        const img = document.createElement("img")
+        img.src = url
+        img.alt = ""
+        img.loading = "lazy"
+        img.className = "rounded-lg max-h-48 object-cover w-full"
+        grid.appendChild(img)
       } else if (this.isVideo(url)) {
-        html += `<video src="${this.escapeHtml(url)}" class="rounded-lg max-h-48 w-full" controls preload="metadata"></video>`
+        const video = document.createElement("video")
+        video.src = url
+        video.controls = true
+        video.preload = "metadata"
+        video.className = "rounded-lg max-h-48 w-full"
+        grid.appendChild(video)
       }
     }
-    html += '</div>'
 
-    this.previewTarget.innerHTML = html
+    this.previewTarget.appendChild(grid)
   }
 
   extractMediaUrls(text) {
@@ -42,11 +54,5 @@ export default class extends Controller {
 
   isVideo(url) {
     return /\.(mp4|webm|mov)$/i.test(url)
-  }
-
-  escapeHtml(text) {
-    const div = document.createElement('div')
-    div.textContent = text
-    return div.innerHTML
   }
 }

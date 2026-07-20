@@ -6,10 +6,30 @@ class ApplicationController < ActionController::Base
 
   helper_method :current_user, :user_signed_in?
 
+  # L2: malformed event ids / pubkeys are rejected before signing; surface that
+  # as a 422 instead of a 500.
+  rescue_from Nostr::EventSignerService::InvalidReferenceError do |error|
+    respond_to do |format|
+      format.json { render json: { success: false, error: error.message }, status: :unprocessable_entity }
+      format.html { redirect_back fallback_location: root_path, alert: error.message }
+    end
+  end
+
   private
 
   def current_user
-    @current_user ||= User.find_by(id: session[:user_id]) if session[:user_id]
+    return @current_user if defined?(@current_user) && @current_user
+    return nil if session[:user_id].blank?
+
+    user = User.find_by(id: session[:user_id])
+    # I2: a cookie minted before the user last logged out (or before an explicit
+    # "sign out everywhere") carries a stale version and is no longer accepted.
+    # Sessions created before this column existed have no stamp; those are only
+    # honoured while the user has never bumped their version.
+    stamped = session[:session_version] || 0
+    return nil if user && stamped != user.session_version.to_i
+
+    @current_user = user
   end
 
   def user_signed_in?

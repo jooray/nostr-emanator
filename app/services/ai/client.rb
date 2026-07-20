@@ -84,16 +84,20 @@ module Ai
       headers = { "Content-Type" => "application/json" }
       headers["Authorization"] = "Bearer #{@api_key}" if @api_key.present?
 
-      @http_client ||= HTTPX.plugin(:retries)
-        .with(
-          headers: headers,
-          timeout: {
-            connect_timeout: 30,
-            read_timeout: 300,
-            write_timeout: 60,
-            request_timeout: 300
-          }
-        )
+      # H5: this POST is not idempotent — each call burns a paid Venice
+      # credit — so it must not be auto-retried (dropped the :retries
+      # plugin), and the timeout is short enough that a stalled upstream
+      # can't pin a Puma thread for minutes on a request the rate limiter
+      # already caps per user.
+      @http_client ||= HTTPX.with(
+        headers: headers,
+        timeout: {
+          connect_timeout: 10,
+          read_timeout: 60,
+          write_timeout: 30,
+          request_timeout: 60
+        }
+      )
     end
 
     def handle_response(response)

@@ -12,7 +12,18 @@ module Nostr
 
     class ConnectionError < StandardError; end
 
+    # H4: every relay socket in the app is opened here, so this is the one place
+    # that has to refuse relay URLs coming from unverified NIP-65 lists or user
+    # settings (private/loopback/metadata addresses, plaintext ws:// in
+    # production). Callers already treat nil as "relay unreachable".
     def self.open(uri, deadline:)
+      begin
+        Security::UrlGuard.validate_relay!(uri.to_s)
+      rescue Security::UrlGuard::UnsafeUrlError => e
+        Rails.logger.warn("Refusing to connect to relay #{uri}: #{e.message}")
+        return nil
+      end
+
       remaining = remaining_time(deadline)
       tcp_socket = Socket.tcp(uri.host, uri.port, connect_timeout: [ CONNECT_TIMEOUT, remaining ].min)
       tcp_socket.setsockopt(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, 1)
@@ -56,6 +67,51 @@ module Nostr
         return socket if result == socket
         wait_for_io(socket, result, deadline)
       end
+    end
+
+    # Encode a text payload as a masked client->server WebSocket frame.
+    # Every relay client in the app frames through here (RFC 6455 requires the
+    # mask to be unpredictable, hence SecureRandom rather than rand).
+    def self.frame_text(data)
+      frame(0x1, data)
+    end
+
+    # Build any masked client frame (0x1 text, 0xA pong, …).
+    def self.frame(opcode, data)
+      payload = data.to_s.b
+      length = payload.bytesize
+      header = [ 0x80 | opcode ]
+
+      if length < 126
+        header << (0x80 | length)
+      elsif length < 65_536
+        header << (0x80 | 126) << (length >> 8) << (length & 0xFF)
+      else
+        header << (0x80 | 127)
+        8.times { |i| header << ((length >> (56 - i * 8)) & 0xFF) }
+      end
+
+      mask = SecureRandom.random_bytes(4).bytes
+      header.concat(mask)
+      masked = payload.bytes.each_with_index.map { |b, i| b ^ mask[i % 4] }
+      (header + masked).pack("C*")
+    end
+
+    # Frame and write a text message, honouring the deadline (a blocking
+    # socket.write against a stalled relay could otherwise hang a worker).
+    def self.send_text(socket, data, deadline)
+      write_all(socket, frame_text(data), deadline)
+    end
+
+    # Answer a server ping (opcode 0x9) with a pong carrying the same payload.
+    def self.send_pong(socket, payload, deadline)
+      write_all(socket, frame(0xA, payload), deadline)
+    end
+
+    # Seconds to hand IO.select: clamped to [0, cap] so a deadline that has just
+    # elapsed can never produce a negative timeout (IO.select raises on those).
+    def self.select_timeout(deadline, cap = 1)
+      [ deadline.to_f - Time.current.to_f, cap.to_f ].min.clamp(0.0, cap.to_f)
     end
 
     def self.write_all(socket, content, deadline)
@@ -171,6 +227,6 @@ module Nostr
 
     # read_exact / read_until / readable_now? are public: WebsocketFrameReader and
     # the relay read loops call them directly.
-    private_class_method :connect_tls, :write_all, :read_buffer, :fill_buffer, :wait_for_io, :remaining_time, :validate_upgrade!
+    private_class_method :connect_tls, :read_buffer, :fill_buffer, :wait_for_io, :remaining_time, :validate_upgrade!
   end
 end

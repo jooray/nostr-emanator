@@ -24,6 +24,7 @@
         <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
           Scan the QR code below with Amber or a compatible NIP-46 signer app to pair this Nostr account.
         </p>
+        <%= render "shared/qr_phishing_warning", caption: "pairs your Nostr key to someone else's Emanator account" %>
       </div>
 
       <!-- QR Code -->

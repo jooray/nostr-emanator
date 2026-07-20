@@ -20,6 +20,24 @@ class NostrActionsController < ApplicationController
     else
       render json: { success: false, error: nostr_action.errors.full_messages.join(", ") }, status: :unprocessable_entity
     end
+  rescue ActiveRecord::RecordNotUnique
+    # M13: lost a race against a concurrent create for the same natural key
+    # (account_id, action_type, target_event_id, target_pubkey) — reload the
+    # row that won instead of 500ing. If it had permanently failed, resurrect
+    # it for a retry rather than leaving the user stuck with no way to redo
+    # the action from the UI they just used.
+    existing = @account.nostr_actions.find_by(
+      action_type: action_params[:action_type],
+      target_event_id: action_params[:target_event_id],
+      target_pubkey: action_params[:target_pubkey]
+    )
+    return render json: { success: false, error: "Duplicate action" }, status: :unprocessable_entity unless existing
+
+    if existing.failed?
+      existing.update!(status: :pending, error_message: nil, publish_results: nil)
+      ProcessNostrActionJob.perform_later(existing.id)
+    end
+    render json: { success: true, nostr_action_id: existing.id, status: existing.status }
   end
 
   def show

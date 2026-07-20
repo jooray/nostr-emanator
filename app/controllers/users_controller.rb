@@ -31,8 +31,12 @@ class UsersController < ApplicationController
 
     if params[:user] && params[:user].key?(:custom_relays)
       @user.custom_relays = params[:user][:custom_relays]
-      @user.save!
-      redirect_to edit_user_path, notice: "Custom relays updated."
+      # H4: unsafe relay URLs are rejected by the model — show why.
+      if @user.save
+        redirect_to edit_user_path, notice: "Custom relays updated."
+      else
+        redirect_to edit_user_path, alert: @user.errors.full_messages.join(" ")
+      end
       return
     end
 

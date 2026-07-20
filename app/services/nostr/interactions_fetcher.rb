@@ -151,11 +151,22 @@ module Nostr
       account_pubkeys = accounts.map(&:pubkey_hex).to_set
       account_ids = accounts.map(&:id)
 
+      # M16: this used to run one `Post.where(event_id: …).first` plus a
+      # separate `.account` load per interaction (up to ~50 queries per
+      # render). Batch the lookup by event_id in one query and preload the
+      # accounts so accessing `db_post.account` below doesn't hit the DB again.
+      target_ids = interactions.map { |i| i[:target_event_id] }.compact.uniq
+      db_posts_by_event_id = if target_ids.any?
+        Post.where(event_id: target_ids, account_id: account_ids).includes(:account).index_by(&:event_id)
+      else
+        {}
+      end
+
       interactions.each do |interaction|
         target_id = interaction[:target_event_id]
         next if target_id.blank?
 
-        db_post = Post.where(event_id: target_id, account_id: account_ids).first
+        db_post = db_posts_by_event_id[target_id]
         if db_post
           interaction[:original_post_content] = db_post.content
           interaction[:original_post_author] = db_post.account.display_name || db_post.account.username || db_post.account.npub

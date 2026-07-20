@@ -25,8 +25,10 @@ module Nostr
 
         if opcode >= 8
           raise FrameError, "invalid control frame" unless fin && length <= 125
-          read_exact(socket, length, deadline) if length.positive?
+          control_payload = length.positive? ? read_exact(socket, length, deadline) : "".b
           return nil if opcode == 8
+          # Relays that enforce liveness drop peers that never pong.
+          pong(socket, control_payload, deadline) if opcode == 9
           next if [ 9, 10 ].include?(opcode)
           raise FrameError, "unsupported control opcode"
         end
@@ -57,6 +59,13 @@ module Nostr
       raise FrameError, e.message
     end
 
-    private_class_method :read_exact
+    # Best effort: a pong we cannot write is not worth failing the read for.
+    def self.pong(socket, payload, deadline)
+      WebsocketConnection.send_pong(socket, payload, deadline)
+    rescue WebsocketConnection::ConnectionError, IOError, SystemCallError, OpenSSL::SSL::SSLError
+      nil
+    end
+
+    private_class_method :read_exact, :pong
   end
 end

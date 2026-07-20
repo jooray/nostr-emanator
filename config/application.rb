@@ -36,8 +36,16 @@ module NostrEmanator
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
-    # Persist login sessions for 30 days (Nostr login is cumbersome to repeat)
-    config.session_store :cookie_store, expire_after: 30.days
+    # Persist login sessions for 30 days (Nostr login is cumbersome to repeat).
+    # M1: `secure: true` in production (the app always runs behind an
+    # SSL-terminating nginx there — see config/environments/production.rb's
+    # `assume_ssl`/`force_ssl`) so a plaintext HTTP request can never carry
+    # the session cookie; `same_site: :lax` blocks cross-site sends except
+    # top-level navigations, without breaking normal same-site form posts.
+    config.session_store :cookie_store,
+      expire_after: 30.days,
+      secure: Rails.env.production?,
+      same_site: :lax
 
     # Don't generate system test files.
     config.generators.system_tests = nil

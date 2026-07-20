@@ -25,10 +25,17 @@ Rails.application.configure do
   config.active_storage.service = :local
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
-  # config.assume_ssl = true
+  # M1: emanator.cypherpunk.today sits behind an SSL-terminating nginx (see
+  # CLAUDE.md "Production Deployment"), so Rails itself never sees a plain
+  # HTTP request — safe to assume SSL and enforce it.
+  config.assume_ssl = true
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  # config.force_ssl = true
+  config.force_ssl = true
+
+  # H4/SSRF: outbound relay and Blossom URLs may only point at public hosts over
+  # TLS in production (see Security::UrlGuard).
+  config.x.allow_private_network_urls = false
 
   # Skip http-to-https redirect for the default health check endpoint.
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }

@@ -140,7 +140,16 @@ module Nostr
 
       plaintext = padded.byteslice(prefix_len, plaintext_len)
 
-      (+plaintext).force_encoding("UTF-8")
+      # Conformance hardening: the padding must be all zeros and the plaintext
+      # must be valid UTF-8. The HMAC upstream already makes tampering
+      # infeasible, so these only reject malformed peers, never attackers.
+      padding = padded.byteslice(prefix_len + plaintext_len, padded.bytesize - prefix_len - plaintext_len).to_s
+      raise DecryptionError, "invalid padding bytes" unless padding.each_byte.all?(&:zero?)
+
+      plaintext = (+plaintext).force_encoding("UTF-8")
+      raise DecryptionError, "plaintext is not valid UTF-8" unless plaintext.valid_encoding?
+
+      plaintext
     end
 
     private_class_method :hkdf_expand, :message_keys, :chacha20, :pad, :unpad

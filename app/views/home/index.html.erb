@@ -1089,7 +1089,7 @@
         }
       }
     </style>
-    <script>
+    <%= javascript_tag nonce: true do %>
       (function () {
         try {
           var savedTheme = localStorage.getItem("emanator-landing-theme")
@@ -1098,7 +1098,7 @@
           }
         } catch (_) {}
       })()
-    </script>
+    <% end %>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -1343,7 +1343,7 @@
       </div>
     </footer>
 
-    <script>
+    <%= javascript_tag nonce: true do %>
       (function () {
         var root = document.documentElement
         var button = document.querySelector(".theme-toggle")
@@ -1371,6 +1371,6 @@
         }
         updateLabel()
       })()
-    </script>
+    <% end %>
   </body>
 </html>

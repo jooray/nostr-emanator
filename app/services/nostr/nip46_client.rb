@@ -9,7 +9,7 @@ require "digest"
 module Nostr
   # NIP-46 protocol helpers: decrypt signer-sent events, validate connect
   # responses, build and sign outgoing request events, and WebSocket I/O.
-  # The per-relay listener loop lives in Nip46Listener.
+  # The per-relay listener loop lives in Nip46Supervisor.
   class Nip46Client
     def initialize(auth_session)
       @auth_session = auth_session
@@ -27,11 +27,22 @@ module Nostr
         return nil
       end
 
+      unless fresh?(event_data)
+        Rails.logger.warn("NIP-46: rejected stale signer event (created_at #{event_data["created_at"].inspect})")
+        return nil
+      end
+
       signer_pubkey = event_data["pubkey"]
       encrypted_content = event_data["content"]
 
       decrypted = try_decrypt_nip44(encrypted_content, signer_pubkey)
-      decrypted ||= decrypt_nip04(encrypted_content, signer_pubkey)
+      if decrypted.nil?
+        if Nip04Policy.fallback_allowed?
+          decrypted = decrypt_nip04(encrypted_content, signer_pubkey)
+        else
+          Nip04Policy.log_refusal("NIP-46 handshake")
+        end
+      end
 
       unless decrypted
         Rails.logger.warn("NIP-46: decrypt failed for event from #{signer_pubkey}")
@@ -51,7 +62,8 @@ module Nostr
 
       if message["result"]
         return true if message["result"] == @secret
-        Rails.logger.warn("NIP-46: connect result '#{message["result"]}' does not match secret")
+        # .inspect so a newline in relay-supplied text cannot forge log lines.
+        Rails.logger.warn("NIP-46: connect result #{message["result"].inspect} does not match secret")
         return false
       end
 
@@ -66,6 +78,22 @@ module Nostr
       encrypted = Nip44.encrypt(Nip44.conversation_key(@temp_privkey, signer_pubkey), JSON.generate(payload))
       event = build_and_sign_event(encrypted, signer_pubkey)
       { event: event, request_id: request_id }
+    end
+
+    # Defense-in-depth freshness check (NIP-46 recommends one). Cross-session
+    # replay is already impossible — every session has its own random key,
+    # secret and request ids — so the window is deliberately wide: some signers
+    # tweak `created_at` for privacy, and rejecting those would break logins for
+    # no real gain.
+    MAX_EVENT_AGE = 24 * 60 * 60
+    MAX_EVENT_SKEW = 15 * 60
+
+    def fresh?(event_data)
+      created_at = event_data["created_at"]
+      return false unless created_at.is_a?(Integer)
+
+      age = Time.now.to_i - created_at
+      age <= MAX_EVENT_AGE && age >= -MAX_EVENT_SKEW
     end
 
     def try_decrypt_nip44(encrypted_content, signer_pubkey)
@@ -148,26 +176,7 @@ module Nostr
     end
 
     def frame_text(data)
-      bytes = data.bytes
-      frame = [0x81]
-
-      if bytes.length < 126
-        frame << (0x80 | bytes.length)
-      elsif bytes.length < 65536
-        frame << (0x80 | 126)
-        frame << (bytes.length >> 8)
-        frame << (bytes.length & 0xFF)
-      else
-        frame << (0x80 | 127)
-        8.times { |i| frame << ((bytes.length >> (56 - i * 8)) & 0xFF) }
-      end
-
-      mask = 4.times.map { rand(256) }
-      frame.concat(mask)
-
-      bytes.each_with_index { |b, i| frame << (b ^ mask[i % 4]) }
-
-      frame.pack("C*")
+      WebsocketConnection.frame_text(data)
     end
 
     def read_websocket_frame(socket, deadline:)

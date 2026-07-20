@@ -3,6 +3,12 @@
 class NostrAuthSession < ApplicationRecord
   LISTENER_LEASE = 30.seconds
 
+  # H2: temp_privkey is the session's ephemeral NIP-46 signing key and
+  # `secret` is the pairing/auth secret exchanged with the signer — both
+  # sensitive even though short-lived. See
+  # config/initializers/active_record_encryption.rb.
+  encrypts :temp_privkey, :secret
+
   validates :session_id, presence: true, uniqueness: true
   validates :temp_pubkey, presence: true
   validates :temp_privkey, presence: true

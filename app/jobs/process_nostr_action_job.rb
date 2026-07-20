@@ -59,6 +59,14 @@ class ProcessNostrActionJob < ApplicationJob
       return
     end
 
+    # H3: refuse to re-sign a list older than the newest one we already signed —
+    # a relay replaying a stale kind 3 would otherwise silently drop every
+    # follow added since.
+    if stale_list?(contact_list)
+      @action.update!(status: :failed, error_message: "Relays returned an outdated contact list. Follow aborted to prevent data loss.")
+      return
+    end
+
     existing_follows = (contact_list["tags"] || []).select { |t| t[0] == "p" }
 
     # Safety: abort if p-tags list is empty (likely a relay fetch issue, not a real empty list)
@@ -108,6 +116,13 @@ class ProcessNostrActionJob < ApplicationJob
       end
     end
 
+    # H3: same replay guard as the follow path (a stale kind 10000 would
+    # un-mute everyone muted since).
+    if mute_event && stale_list?(mute_event)
+      @action.update!(status: :failed, error_message: "Relays returned an outdated mute list. Mute aborted to prevent data loss.")
+      return
+    end
+
     existing_tags = (mute_event&.dig("tags") || []).reject do |tag|
       tag[0] == "p" && tag[1] == @action.target_pubkey
     end
@@ -138,6 +153,34 @@ class ProcessNostrActionJob < ApplicationJob
     if @action.reload.published? && @action.signed_event.present?
       update_mute_caches(@action.signed_event)
     end
+  end
+
+  # H3: relay-supplied replaceable lists (kind 3 / kind 10000) are only usable
+  # as a base for re-signing if they are at least as new as the newest version
+  # we already know about: the last list of this kind this account signed here,
+  # and (for mutes) the cached event. Anything older is a replay.
+  def stale_list?(event)
+    known = latest_known_created_at
+    return false if known.nil?
+
+    event["created_at"].to_i < known
+  end
+
+  def latest_known_created_at(cached: cached_list_event)
+    signed = @action.account.nostr_actions
+      .where(action_type: @action.action_type, status: :published)
+      .order(id: :desc)
+      .limit(20)
+      .filter_map { |action| action.signed_event&.dig("created_at")&.to_i }
+      .max
+
+    [ signed, cached&.dig("created_at")&.to_i ].compact.max
+  end
+
+  def cached_list_event
+    return nil unless @action.mute?
+
+    InteractionsCache.read_mute_event(@action.account.pubkey_hex)
   end
 
   def update_mute_caches(event)

@@ -27,6 +27,9 @@ export default class extends Controller {
         if (data.paired) {
           this.stopPolling()
           this.onPaired(data)
+        } else if (data.expired) {
+          this.stopPolling()
+          this.onExpired()
         } else if (data.error) {
           this.stopPolling()
           this.onError(data.error)
@@ -58,6 +61,25 @@ export default class extends Controller {
         </div>
       `
     }
+  }
+
+  onExpired() {
+    if (!this.hasStatusTarget) return
+
+    this.statusTarget.innerHTML = `
+      <div class="flex items-center gap-2 text-amber-600 dark:text-amber-400">
+        <svg class="h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span class="text-sm">QR expired —</span>
+      </div>
+    `
+    const button = document.createElement("button")
+    button.type = "button"
+    button.className = "mt-1 text-sm font-medium text-amber-600 dark:text-amber-400 underline"
+    button.textContent = "click to generate a new one"
+    button.addEventListener("click", () => window.location.reload())
+    this.statusTarget.appendChild(button)
   }
 
   showAuthUrl(url) {

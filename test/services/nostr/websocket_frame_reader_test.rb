@@ -26,6 +26,23 @@ class NostrWebsocketFrameReaderTest < ActiveSupport::TestCase
     writer&.close
   end
 
+  def test_answers_ping_with_a_pong_carrying_the_same_payload
+    reader, writer = Socket.pair(:UNIX, :STREAM, 0)
+    writer.write([0x89, 4].pack("CC") + "ping" + [0x81, 2].pack("CC") + "hi")
+
+    assert_equal "hi", Nostr::WebsocketFrameReader.read(reader, deadline: 1.second.from_now)
+
+    header = writer.read(2).bytes
+    assert_equal 0x8A, header[0], "expected a FIN pong frame (opcode 0xA)"
+    assert_equal 0x80 | 4, header[1], "pong must be masked and carry the ping payload"
+    mask = writer.read(4).bytes
+    payload = writer.read(4).bytes.each_with_index.map { |b, i| b ^ mask[i % 4] }.pack("C*")
+    assert_equal "ping", payload
+  ensure
+    reader&.close
+    writer&.close
+  end
+
   def test_exact_read_honors_deadline
     reader, writer = Socket.pair(:UNIX, :STREAM, 0)
 

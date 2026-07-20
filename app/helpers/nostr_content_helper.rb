@@ -97,32 +97,22 @@ module NostrContentHelper
     HTML
   end
 
+  # Rendering must never block on a relay. Both lookups read the cache only; on
+  # a miss we enqueue a background warm-up and render the plain fallback, so the
+  # reference resolves on a later render instead of stalling this one.
   def cached_profile(pubkey_hex, relay_hints: [])
-    Rails.cache.fetch("nostr_profile:#{pubkey_hex}", expires_in: 1.day) do
-      fetcher = Nostr::ProfileFetcher.new
-      # Try relay hints first, then fall back to default relays
-      if relay_hints.any?
-        # ProfileFetcher doesn't accept relay_hints, but we can try fetching
-        fetcher.fetch(pubkey_hex)
-      else
-        fetcher.fetch(pubkey_hex)
-      end
-    end
-  rescue => e
-    Rails.logger.warn "Failed to fetch profile #{pubkey_hex}: #{e.message}"
+    cached = Rails.cache.read(WarmNostrReferenceJob.profile_cache_key(pubkey_hex))
+    return cached unless cached.nil?
+
+    WarmNostrReferenceJob.enqueue_once(:profile, pubkey_hex)
     nil
   end
 
   def cached_event(event_id_hex)
-    Rails.cache.fetch("nostr_event:#{event_id_hex}", expires_in: 1.day) do
-      result = Nostr::EventFetcher.new.fetch_by_ids([event_id_hex])
-      event = result&.values&.first
-      if event
-        { content: event["content"], pubkey: event["pubkey"], kind: event["kind"] }
-      end
-    end
-  rescue => e
-    Rails.logger.warn "Failed to fetch event #{event_id_hex}: #{e.message}"
+    cached = Rails.cache.read(WarmNostrReferenceJob.event_cache_key(event_id_hex))
+    return cached unless cached.nil?
+
+    WarmNostrReferenceJob.enqueue_once(:event, event_id_hex)
     nil
   end
 

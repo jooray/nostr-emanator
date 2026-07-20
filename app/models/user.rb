@@ -8,6 +8,7 @@ class User < ApplicationRecord
 
   validates :npub, presence: true, uniqueness: true
   validates :pubkey_hex, presence: true, uniqueness: true
+  validate :custom_relays_must_be_safe
 
   def display_name_or_npub
     display_name.presence || username.presence || npub.truncate(20)
@@ -41,9 +42,22 @@ class User < ApplicationRecord
     settings&.dig("custom_relays") || []
   end
 
+  # H4: these URLs are opened by the server on every publish, so a scheme
+  # prefix check is not enough — each one goes through Security::UrlGuard
+  # (wss:// only in production, public addresses only). Unsafe entries are not
+  # stored and are reported back to the user as a validation error.
   def custom_relays=(value)
     relays = value.is_a?(Array) ? value : value.to_s.split("\n")
-    relays = relays.map(&:strip).select { |r| r.start_with?("wss://", "ws://") }
-    self.settings = (settings || {}).merge("custom_relays" => relays)
+    relays = relays.map { |r| r.to_s.strip }.reject(&:blank?)
+    safe, @rejected_custom_relays = relays.partition { |r| Security::UrlGuard.safe_relay?(r) }
+    self.settings = (settings || {}).merge("custom_relays" => safe)
+  end
+
+  private
+
+  def custom_relays_must_be_safe
+    Array(@rejected_custom_relays).each do |relay|
+      errors.add(:custom_relays, "#{relay} is not usable: relays must be wss:// URLs on public hosts")
+    end
   end
 end

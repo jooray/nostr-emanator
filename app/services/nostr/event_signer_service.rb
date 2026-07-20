@@ -35,10 +35,23 @@ module Nostr
       event
     end
 
+    # Raised when an id/pubkey handed to a builder is not a NIP-01 32-byte hex
+    # value. These come from the browser (the inline reply / interactions UI),
+    # so they are checked before they end up inside an event we sign.
+    class InvalidReferenceError < ArgumentError; end
+
+    HEX_32 = /\A[0-9a-f]{64}\z/
+
     # Build unsigned reply event with NIP-10 tags
     def build_unsigned_reply(content:, pubkey:, created_at:,
                              parent_event_id:, parent_author_pubkey:,
                              root_event_id: nil, relay_hint: "")
+      # L2: reject anything that is not a 64-char lowercase hex id/pubkey.
+      validate_hex32!(parent_event_id, "parent event id")
+      validate_hex32!(parent_author_pubkey, "parent author pubkey")
+      validate_hex32!(root_event_id, "root event id") if root_event_id.present?
+      validate_hex32!(pubkey, "author pubkey")
+
       tags = []
 
       if root_event_id && root_event_id != parent_event_id
@@ -138,11 +151,18 @@ module Nostr
       nil
     end
 
+    def validate_hex32!(value, label)
+      return if value.to_s.match?(HEX_32)
+
+      raise InvalidReferenceError, "Invalid #{label}"
+    end
+
     private
 
     def sign_on_relay(relay_url, account, sign_request_event, request_id, unsigned_event, deadline)
       uri = URI.parse(relay_url)
       backoff = 1
+      socket = nil
 
       while Time.now < deadline
         socket = create_websocket(uri, deadline: deadline)
@@ -160,23 +180,30 @@ module Nostr
           "authors" => [account.signer_pubkey],
           "since" => Time.now.to_i - 5
         }]
-        socket.write(frame_text(req.to_json))
+        write_message(socket, req, deadline)
 
-        socket.write(frame_text(["EVENT", sign_request_event].to_json))
+        write_message(socket, ["EVENT", sign_request_event], deadline)
 
         while Time.now < deadline
-          ready = WebsocketConnection.readable_now?(socket) || IO.select([socket], nil, nil, [1, deadline - Time.now].min)
+          ready = WebsocketConnection.readable_now?(socket) ||
+            IO.select([socket], nil, nil, WebsocketConnection.select_timeout(deadline))
           next unless ready
 
           data = read_websocket_frame(socket, deadline: deadline)
           break unless data
 
           begin
+            # L8: relay/signer-supplied strings are logged with .inspect so an
+            # embedded newline cannot forge log entries.
             parsed = JSON.parse(data)
             case parsed[0]
             when "OK"
+              # Only the OK for the request event we just published is ours;
+              # an OK for anything else must not abort this relay's attempt.
+              next unless parsed[1] == sign_request_event["id"]
+
               accepted = parsed[2]
-              Rails.logger.info("NIP-46: Relay #{relay_url} #{accepted ? 'accepted' : 'REJECTED'} sign_event#{accepted ? '' : ": #{parsed[3]}"}")
+              Rails.logger.info("NIP-46: Relay #{relay_url} #{accepted ? 'accepted' : 'REJECTED'} sign_event#{accepted ? '' : ": #{parsed[3].inspect}"}")
               unless accepted
                 close_socket(socket, sub_id)
                 return nil
@@ -190,7 +217,7 @@ module Nostr
                 next
               end
               response = JSON.parse(response_content)
-              Rails.logger.info("NIP-46: Decrypted response on #{relay_url}: id=#{response["id"]} has_result=#{response["result"].present?} has_error=#{response["error"].present?}")
+              Rails.logger.info("NIP-46: Decrypted response on #{relay_url}: id=#{response["id"].inspect} has_result=#{response["result"].present?} has_error=#{response["error"].present?}")
               next unless response["id"] == request_id
 
               if response["result"] == "auth_url"
@@ -199,7 +226,7 @@ module Nostr
               end
 
               if response["error"].present?
-                Rails.logger.warn("NIP-46: Signer error for #{request_id}: #{response["error"]}")
+                Rails.logger.warn("NIP-46: Signer error for #{request_id}: #{response["error"].inspect}")
                 close_socket(socket, sub_id)
                 return nil
               end
@@ -215,7 +242,7 @@ module Nostr
                 return signed_event
               end
             when "NOTICE"
-              Rails.logger.info("NIP-46: Relay #{relay_url} notice: #{parsed[1]}")
+              Rails.logger.info("NIP-46: Relay #{relay_url} notice: #{parsed[1].inspect}")
             end
           rescue JSON::ParserError => e
             Rails.logger.warn("NIP-46: JSON parse error on #{relay_url}: #{e.message}")
@@ -231,11 +258,20 @@ module Nostr
     rescue => e
       Rails.logger.error("NIP-46 signing error on #{relay_url}: #{e.class} - #{e.message}")
       nil
+    ensure
+      # request_signature kills these threads at the deadline; without this the
+      # socket (and its TLS session) leaks until GC.
+      socket&.close rescue nil
     end
 
     def decrypt_nip44_or_nip04(content, pubkey, privkey)
       Nip44.decrypt(Nip44.conversation_key(privkey, pubkey), content)
     rescue StandardError
+      unless Nip04Policy.fallback_allowed?
+        Nip04Policy.log_refusal("NIP-46 signer response")
+        return nil
+      end
+
       decrypt_nip04(content, pubkey, privkey)
     end
 
@@ -257,10 +293,16 @@ module Nostr
     end
 
     def close_socket(socket, sub_id)
-      socket.write(frame_text(["CLOSE", sub_id].to_json)) rescue nil
+      write_message(socket, ["CLOSE", sub_id], 1.second.from_now) rescue nil
       socket.close rescue nil
     end
 
+    # I9: signing always uses the relays configured in config/emanator.yml, not
+    # the per-account `signer_relay` column. `signer_relay` is only a record of
+    # the relay the signer advertised at pairing time (shown in the UI /
+    # useful for debugging) — it is deliberately NOT live configuration, since
+    # an attacker-supplied pairing URI must not be able to redirect our signing
+    # traffic. Don't read it here expecting it to take effect.
     def signing_relays
       @config.dig(:nostr, :auth_relays) ||
         [@config.dig(:nostr, :auth_relay)].compact.presence ||
@@ -340,21 +382,8 @@ module Nostr
       WebsocketConnection.open(uri, deadline: deadline)
     end
 
-    def frame_text(data)
-      bytes = data.bytes
-      frame = [0x81]
-      if bytes.length < 126
-        frame << (0x80 | bytes.length)
-      elsif bytes.length < 65536
-        frame << (0x80 | 126) << (bytes.length >> 8) << (bytes.length & 0xFF)
-      else
-        frame << (0x80 | 127)
-        8.times { |i| frame << ((bytes.length >> (56 - i * 8)) & 0xFF) }
-      end
-      mask = 4.times.map { rand(256) }
-      frame.concat(mask)
-      bytes.each_with_index { |b, i| frame << (b ^ mask[i % 4]) }
-      frame.pack("C*")
+    def write_message(socket, message, deadline)
+      WebsocketConnection.send_text(socket, message.to_json, deadline)
     end
 
     def read_websocket_frame(socket, deadline:)

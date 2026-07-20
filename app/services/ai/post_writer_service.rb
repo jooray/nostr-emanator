@@ -2,6 +2,12 @@
 
 module Ai
   class PostWriterService
+    # H5: `personality` is free text the account owner controls; injecting it
+    # unbounded into every prompt lets a huge value inflate token cost (and
+    # latency) on every generate/refine/humanize call. This is generous for
+    # a legitimate style guide while capping the worst case.
+    MAX_PERSONALITY_CHARS = 4000
+
     def initialize
       @client = Ai::Client.new
     end
@@ -65,7 +71,7 @@ module Ai
       prompt += "\n\nThe post will be published under the account: #{account.display_name || account.username || account.npub}"
 
       if account.personality.present?
-        prompt += "\n\n## Writing Personality & Style Guide\n#{account.personality}"
+        prompt += "\n\n## Writing Personality & Style Guide\n#{truncated_personality(account.personality)}"
       end
 
       if language.present?
@@ -81,11 +87,15 @@ module Ai
       prompt = "You are editing a Nostr post. Apply the requested changes while maintaining the post's voice and style."
 
       if account.personality.present?
-        prompt += "\n\n## Account Personality\n#{account.personality}"
+        prompt += "\n\n## Account Personality\n#{truncated_personality(account.personality)}"
       end
 
       prompt += "\n\nOutput ONLY the revised post content, no explanations."
       prompt
+    end
+
+    def truncated_personality(text)
+      text.truncate(MAX_PERSONALITY_CHARS, omission: "… [truncated]")
     end
   end
 end

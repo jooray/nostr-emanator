@@ -17,14 +17,14 @@ class SessionsController < ApplicationController
     admission_token = SecureRandom.hex(16)
     admitted = Rails.cache.write("nostr-auth-session-admission", admission_token, expires_in: 10.seconds, unless_exist: true)
     unless admitted
-      render plain: "Authentication is temporarily at capacity. Please try again shortly.", status: :service_unavailable
+      render_capacity_error
       return
     end
 
     begin
       NostrAuthSession.cleanup_expired!
       if NostrAuthSession.active.where(authenticated_pubkey: nil).count >= MAX_ACTIVE_AUTH_SESSIONS
-        render plain: "Authentication is temporarily at capacity. Please try again shortly.", status: :service_unavailable
+        render_capacity_error
         return
       end
 
@@ -56,7 +56,15 @@ class SessionsController < ApplicationController
     # DB-only check — background job handles the relay subscription
     result = Nostr::AuthService.new.check_session(session_id)
 
-    if result && result[:authenticated]
+    # check_session returns nil once the session is expired, consumed, or gone
+    # — surface that distinctly so the poller can stop and prompt for a fresh QR
+    # instead of polling "authenticated: false" forever (H9).
+    if result.nil?
+      render json: { authenticated: false, expired: true }
+      return
+    end
+
+    if result[:authenticated]
       auth_session = pending_nip46_session
       unless auth_session&.authenticated_user_pubkey == result[:pubkey]
         return render json: { authenticated: false, error: "Authentication session mismatch" }
@@ -73,21 +81,15 @@ class SessionsController < ApplicationController
   end
 
   def refresh_profile
-    user = current_user
-    if user
-      profile = Nostr::ProfileFetcher.new.fetch(user.pubkey_hex)
-      if profile
-        user.update!(
-          display_name: profile[:display_name],
-          username: profile[:username],
-          about: profile[:about],
-          picture_url: profile[:picture]
-        )
-        notice = "Profile updated from relays!"
-      else
-        notice = "Could not fetch profile from relays."
-      end
+    # H11: fetching a kind-0 from relays blocks for seconds; do it in a job and
+    # say only what is actually true at this point.
+    notice = if current_user
+      FetchUserProfileJob.perform_later(current_user.id)
+      "Refreshing your profile from relays in the background — reload in a few seconds to see changes."
+    else
+      "Not signed in."
     end
+
     redirect_back fallback_location: dashboard_path, notice: notice
   end
 
@@ -121,6 +123,9 @@ class SessionsController < ApplicationController
 
   def destroy
     consume_pending_sessions!
+    # I2: bump the version so a cookie captured earlier in this session's life
+    # stops working the moment the user logs out.
+    current_user&.increment!(:session_version)
     reset_session
     redirect_to nostr_login_path, notice: "Logged out successfully"
   end
@@ -129,7 +134,15 @@ class SessionsController < ApplicationController
 
   def rate_limit_exceeded
     response.set_header("Retry-After", "60")
-    render plain: "Too many authentication attempts. Please try again shortly.", status: :too_many_requests
+    render "sessions/rate_limited",
+      locals: { title: "Too many attempts", message: "Too many authentication attempts. Please try again shortly." },
+      status: :too_many_requests
+  end
+
+  def render_capacity_error
+    render "sessions/rate_limited",
+      locals: { title: "Temporarily at capacity", message: "Authentication is temporarily at capacity. Please try again shortly." },
+      status: :service_unavailable
   end
 
   def import_primary_account(user, auth_session = nil)
@@ -154,6 +167,12 @@ class SessionsController < ApplicationController
 
     # Fetch write relays in background
     FetchRelayListJob.perform_later(account.id) if account.write_relays.blank?
+  rescue ActiveRecord::RecordNotUnique
+    # L16: find_or_initialize_by + save! races another request importing the
+    # same (user_id, pubkey_hex) account — e.g. an overlapping login poll.
+    # Reload the row the other request created instead of 500ing.
+    account = user.accounts.find_by!(pubkey_hex: user.pubkey_hex)
+    FetchRelayListJob.perform_later(account.id) if account.write_relays.blank?
   end
 
   def pending_nip46_session
@@ -172,5 +191,6 @@ class SessionsController < ApplicationController
     consume_pending_sessions!
     reset_session
     session[:user_id] = user.id
+    session[:session_version] = user.session_version.to_i
   end
 end

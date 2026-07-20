@@ -82,7 +82,7 @@
                     <% status_colors = { "awaiting_signature" => "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300",
                                          "scheduled" => "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300" } %>
                     <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium <%= status_colors[post.status] || 'bg-gray-100 text-gray-800' %>">
-                      <%= post.status.humanize %>
+                      <%= status_label(post.status) %>
                     </span>
                     <% if post.reposts.any? %>
                       <span class="text-xs text-gray-400 dark:text-gray-500"><%= pluralize(post.reposts.size, "repost") %></span>

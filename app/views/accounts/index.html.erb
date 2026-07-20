@@ -42,11 +42,14 @@
                   <p class="text-sm text-gray-500 dark:text-gray-400 truncate">@<%= account.username %></p>
                 <% end %>
                 <div class="flex items-center gap-1 mt-0.5">
-                  <span class="text-xs text-gray-400 dark:text-gray-500 truncate font-mono cursor-pointer hover:text-amber-500 dark:hover:text-amber-400 transition-colors"
+                  <span class="text-xs text-gray-400 dark:text-gray-500 truncate font-mono cursor-pointer hover:text-amber-500 dark:hover:text-amber-400 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500 rounded"
                         data-controller="clipboard"
                         data-clipboard-text-value="<%= account.npub %>"
-                        data-action="click->clipboard#copy"
-                        title="Click to copy npub">
+                        data-action="click->clipboard#copy keydown.enter->clipboard#copy"
+                        role="button"
+                        tabindex="0"
+                        title="Click to copy npub"
+                        aria-label="Copy npub to clipboard">
                     <%= account.npub&.truncate(24) || account.pubkey_hex.truncate(16) %>
                   </span>
                   <% if account.npub.present? %>
@@ -65,7 +68,7 @@
                 <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                 </svg>
-                <span class="text-sm text-gray-600 dark:text-gray-300"><%= account.posts.count %> posts</span>
+                <span class="text-sm text-gray-600 dark:text-gray-300"><%= @post_counts.fetch(account.id, 0) %> posts</span>
               </div>
               <div class="flex items-center gap-1.5">
                 <% if account.has_signer? %>

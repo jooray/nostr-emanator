@@ -95,6 +95,23 @@
           <p class="text-xs text-gray-500 dark:text-gray-400">Sending your post to Nostr relays.</p>
         </div>
       </div>
+
+      <%# C4: publishing used to be a dead end — if the job died the spinner span
+          forever. It is swept after 15 minutes, but offer a way out before that. %>
+      <% if post.updated_at < Post::STALE_PUBLISHING_AFTER.ago %>
+        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
+            This has been publishing for a while — the publish job may have died. The event may already be
+            live on relays, so check before retrying.
+          </p>
+          <%= button_to retry_publish_post_path(post),
+                method: :post,
+                class: "text-sm px-3 py-1.5 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white",
+                form: { data: { turbo_confirm: "Retry publishing? If the event already reached relays this is a no-op." } } do %>
+            Retry publishing
+          <% end %>
+        </div>
+      <% end %>
     </div>
 
   <% elsif post.scheduled? %>

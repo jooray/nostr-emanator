@@ -18,6 +18,10 @@ default: &default
       - wss://relay.primal.net
       - wss://nostr.mom
     fetch_timeout: 10
+    # Deprecated NIP-04 (AES-256-CBC, unauthenticated) fallback for NIP-46
+    # payloads. Off by default — see Nostr::Nip04Policy. Turn on only to pair a
+    # signer that cannot do NIP-44.
+    allow_nip04_fallback: false
 
   ai:
     provider: venice

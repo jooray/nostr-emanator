@@ -43,7 +43,7 @@
                   <span class="text-xs text-gray-400"><%= ok %>/<%= total %> relays</span>
                 <% end %>
                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium <%= repost_badge %>">
-                  <%= repost.status.humanize %>
+                  <%= status_label(repost.status) %>
                 </span>
                 <% if repost.failed? && repost.signed_event.blank? && repost.unsigned_event.present? %>
                   <%= button_to retry_sign_post_repost_path(post, repost),

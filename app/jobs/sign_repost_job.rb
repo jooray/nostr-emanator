@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 class SignRepostJob < ApplicationJob
-  queue_as :default
+  queue_as :signing
+  discard_on ActiveRecord::RecordNotFound
 
   def perform(repost_id)
     repost = Repost.find(repost_id)
@@ -13,11 +14,17 @@ class SignRepostJob < ApplicationJob
     signed = signer.request_signature(repost.account, repost.unsigned_event)
 
     if signed
-      repost.update!(signed_event: signed, event_id: signed["id"], status: :scheduled)
-      Rails.logger.info("SignRepostJob: Repost #{repost_id} signed successfully")
-    else
-      repost.update!(status: :failed)
+      if repost.transition_status(from: :awaiting_signature, to: :scheduled,
+                                  attributes: { signed_event: signed, event_id: signed["id"] })
+        Rails.logger.info("SignRepostJob: Repost #{repost_id} signed successfully")
+      else
+        Rails.logger.info("SignRepostJob: Repost #{repost_id} is now #{repost.status}; discarding late signature")
+      end
+    # C3: only fail a repost that is still waiting on this job's signature.
+    elsif repost.fail_if_awaiting_signature!
       Rails.logger.warn("SignRepostJob: Repost #{repost_id} signing failed or timed out for account #{repost.account.npub}")
+    else
+      Rails.logger.info("SignRepostJob: signing timed out for repost #{repost_id} but it is now #{repost.status}; leaving as is")
     end
 
     broadcast_progress(repost.post)
@@ -37,5 +44,7 @@ class SignRepostJob < ApplicationJob
         locals: { post: post }
       )
     end
+  rescue => e
+    Rails.logger.error("Failed to broadcast repost signing progress: #{e.message}")
   end
 end

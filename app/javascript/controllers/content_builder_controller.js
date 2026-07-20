@@ -5,7 +5,7 @@ export default class extends Controller {
   static values = { streamUrl: String, refineUrl: String, autoGenerate: Boolean }
 
   connect() {
-    this.eventSource = null
+    this.streamAbortController = null
 
     if (this.autoGenerateValue) {
       setTimeout(() => this.startStreaming(), 100)
@@ -13,17 +13,57 @@ export default class extends Controller {
   }
 
   disconnect() {
-    if (this.eventSource) {
-      this.eventSource.close()
-    }
+    this.streamAbortController?.abort()
+    this.streamAbortController = null
   }
 
   insertContentIntoTextarea(content) {
     if (!this.hasTextareaTarget) return
 
+    // Generate/Refine used to overwrite whatever the user had already typed
+    // with no way back. Snapshot it so an accidental overwrite is recoverable.
+    const previousContent = this.textareaTarget.value
+    const hadDifferentContent = previousContent.trim().length > 0 && previousContent !== content
+
     this.textareaTarget.value = content
     this.textareaTarget.dispatchEvent(new Event("input", { bubbles: true }))
     this.textareaTarget.scrollIntoView({ behavior: "smooth", block: "center" })
+
+    if (hadDifferentContent) {
+      this.showUndoBanner(previousContent)
+    } else {
+      this.removeUndoBanner()
+    }
+  }
+
+  showUndoBanner(previousContent) {
+    this.removeUndoBanner()
+
+    const banner = document.createElement("div")
+    banner.dataset.contentBuilderUndoBanner = "true"
+    banner.className = "mt-2 flex items-center gap-2 text-xs text-amber-700 dark:text-amber-300"
+
+    const label = document.createElement("span")
+    label.textContent = "Your previous text was replaced."
+    banner.appendChild(label)
+
+    const button = document.createElement("button")
+    button.type = "button"
+    button.className = "font-medium underline"
+    button.textContent = "Undo"
+    button.addEventListener("click", () => {
+      this.textareaTarget.value = previousContent
+      this.textareaTarget.dispatchEvent(new Event("input", { bubbles: true }))
+      banner.remove()
+    })
+    banner.appendChild(button)
+
+    this.textareaTarget.insertAdjacentElement("afterend", banner)
+  }
+
+  removeUndoBanner() {
+    if (!this.hasTextareaTarget) return
+    this.textareaTarget.parentElement?.querySelector("[data-content-builder-undo-banner]")?.remove()
   }
 
   showRefineSection() {
@@ -72,68 +112,49 @@ export default class extends Controller {
     const statusEl = document.getElementById("streaming-status")
     const spinnerEl = document.getElementById("streaming-spinner")
 
-    const url = new URL(streamUrl, window.location.origin)
-    url.searchParams.set("prompt", prompt)
-    this.eventSource = new EventSource(url.toString())
-
-    this.eventSource.addEventListener("phase", (event) => {
-      const data = JSON.parse(event.data)
-      if (data.phase === "generating") {
-        statusEl.textContent = "Generating content..."
-      } else if (data.phase === "humanizing") {
-        contentEl.textContent = ""
-        statusEl.textContent = "Humanizing content..."
-      }
-    })
-
-    this.eventSource.addEventListener("chunk", (event) => {
-      const chunk = JSON.parse(event.data)
-      contentEl.textContent += chunk
-    })
-
-    this.eventSource.addEventListener("complete", (event) => {
-      this.eventSource.close()
-      statusEl.textContent = "Generation complete!"
+    const markComplete = () => {
       spinnerEl.classList.remove("animate-spin")
       spinnerEl.innerHTML = `
         <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
         </svg>
       `
-
-      try {
-        const data = JSON.parse(event.data)
-        if (data.content) {
-          this.insertContentIntoTextarea(data.content)
-        }
-      } catch (e) {
-        // Fallback: use the streamed content from the preview
-        const finalContent = contentEl.textContent
-        if (finalContent) {
-          this.insertContentIntoTextarea(finalContent)
-        }
-      }
-
-      this.showRefineSection()
-    })
-
-    this.eventSource.addEventListener("error", (event) => {
-      let errorMsg = "An error occurred"
-      try {
-        const data = JSON.parse(event.data)
-        errorMsg = data.message || errorMsg
-      } catch (e) {
-        errorMsg = "Connection lost. Please try again."
-      }
-      this.eventSource.close()
-      statusEl.textContent = "Error: " + errorMsg
-      spinnerEl.classList.remove("animate-spin")
-    })
-
-    this.eventSource.onerror = () => {
-      if (this.eventSource.readyState === EventSource.CLOSED) return
-      this.eventSource.close()
     }
+
+    this.streamSSE(streamUrl, { prompt }, {
+      onPhase: (data) => {
+        if (data.phase === "generating") {
+          statusEl.textContent = "Generating content..."
+        } else if (data.phase === "humanizing") {
+          contentEl.textContent = ""
+          statusEl.textContent = "Humanizing content..."
+        }
+      },
+      onChunk: (chunk) => {
+        contentEl.textContent += chunk
+      },
+      onComplete: (data) => {
+        statusEl.textContent = "Generation complete!"
+        markComplete()
+
+        if (data && typeof data === "object" && data.content) {
+          this.insertContentIntoTextarea(data.content)
+        } else {
+          // Fallback: use the streamed content from the preview
+          const finalContent = contentEl.textContent
+          if (finalContent) {
+            this.insertContentIntoTextarea(finalContent)
+          }
+        }
+
+        this.showRefineSection()
+      },
+      onError: (data) => {
+        const errorMsg = (data && data.message) || "Connection lost. Please try again."
+        statusEl.textContent = "Error: " + errorMsg
+        spinnerEl.classList.remove("animate-spin")
+      }
+    })
   }
 
   startRefineStreaming(event = null) {
@@ -157,10 +178,6 @@ export default class extends Controller {
 
     const container = this.hasEditorContainerTarget ? this.editorContainerTarget : document.getElementById("editor-container")
     if (!container) return
-
-    const url = new URL(refineUrl, window.location.origin)
-    url.searchParams.set("user_prompt", prompt)
-    url.searchParams.set("current_content", currentContent)
 
     container.innerHTML = `
       <div class="space-y-4">
@@ -187,62 +204,143 @@ export default class extends Controller {
 
     if (this.hasRefineInputTarget) this.refineInputTarget.value = ""
 
-    this.eventSource = new EventSource(url.toString())
-
-    this.eventSource.addEventListener("phase", (event) => {
-      const data = JSON.parse(event.data)
-      if (data.phase === "refining") {
-        statusEl.textContent = "Refining content..."
-      } else if (data.phase === "humanizing") {
-        contentEl.textContent = ""
-        statusEl.textContent = "Humanizing content..."
-      }
-    })
-
-    this.eventSource.addEventListener("chunk", (event) => {
-      const chunk = JSON.parse(event.data)
-      contentEl.textContent += chunk
-    })
-
-    this.eventSource.addEventListener("complete", (event) => {
-      this.eventSource.close()
-      statusEl.textContent = "Refinement complete!"
+    const markComplete = () => {
       spinnerEl.classList.remove("animate-spin")
       spinnerEl.innerHTML = `
         <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
         </svg>
       `
+    }
 
-      try {
-        const data = JSON.parse(event.data)
-        if (data.content) {
+    this.streamSSE(refineUrl, { user_prompt: prompt, current_content: currentContent }, {
+      onPhase: (data) => {
+        if (data.phase === "refining") {
+          statusEl.textContent = "Refining content..."
+        } else if (data.phase === "humanizing") {
+          contentEl.textContent = ""
+          statusEl.textContent = "Humanizing content..."
+        }
+      },
+      onChunk: (chunk) => {
+        contentEl.textContent += chunk
+      },
+      onComplete: (data) => {
+        statusEl.textContent = "Refinement complete!"
+        markComplete()
+
+        if (data && typeof data === "object" && data.content) {
           this.insertContentIntoTextarea(data.content)
+        } else {
+          const finalContent = contentEl.textContent
+          if (finalContent) {
+            this.insertContentIntoTextarea(finalContent)
+          }
         }
-      } catch (e) {
-        const finalContent = contentEl.textContent
-        if (finalContent) {
-          this.insertContentIntoTextarea(finalContent)
+      },
+      onError: (data) => {
+        const errorMsg = (data && data.message) || "Connection lost. Please try again."
+        statusEl.textContent = "Error: " + errorMsg
+        spinnerEl.classList.remove("animate-spin")
+      }
+    })
+  }
+
+  // H5: generate_stream/refine_stream are POST endpoints (rate-limited, and no
+  // longer triggerable by a bare top-level GET navigation), so they can't be
+  // consumed with EventSource, which only ever issues GET. This POSTs with
+  // fetch() and reads the response body as a stream, parsing the same
+  // `event: <name>\ndata: <payload>\n\n` frames the server already emits —
+  // the phase/chunk/complete/error handling is unchanged from the EventSource
+  // version, just invoked via callbacks instead of addEventListener.
+  async streamSSE(url, params, { onPhase, onChunk, onComplete, onError }) {
+    this.streamAbortController?.abort()
+    const controller = new AbortController()
+    this.streamAbortController = controller
+
+    let response
+    try {
+      response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Accept": "text/event-stream",
+          "X-CSRF-Token": document.querySelector("meta[name='csrf-token']")?.content
+        },
+        body: new URLSearchParams(params).toString(),
+        signal: controller.signal
+      })
+    } catch (error) {
+      if (error.name !== "AbortError") onError?.({ message: "Connection lost. Please try again." })
+      return
+    }
+
+    // A non-2xx here means the server never got as far as opening the SSE
+    // stream (e.g. a 404/500 before ai_assist_controller's action body runs)
+    // — there are no `event:`/`data:` frames to parse, just show the status.
+    if (!response.ok || !response.body) {
+      onError?.({ message: `Request failed (${response.status})` })
+      return
+    }
+
+    const reader = response.body.getReader()
+    const decoder = new TextDecoder()
+    let buffer = ""
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        buffer += decoder.decode(value, { stream: true })
+
+        let boundary
+        while ((boundary = buffer.indexOf("\n\n")) !== -1) {
+          const rawEvent = buffer.slice(0, boundary)
+          buffer = buffer.slice(boundary + 2)
+          if (rawEvent.trim()) this.dispatchSSEFrame(rawEvent, { onPhase, onChunk, onComplete, onError })
         }
+      }
+    } catch (error) {
+      if (error.name !== "AbortError") onError?.({ message: "Connection lost. Please try again." })
+    } finally {
+      if (this.streamAbortController === controller) this.streamAbortController = null
+    }
+  }
+
+  dispatchSSEFrame(rawEvent, { onPhase, onChunk, onComplete, onError }) {
+    let eventName = "message"
+    const dataLines = []
+
+    rawEvent.split("\n").forEach((line) => {
+      if (line.startsWith("event:")) {
+        eventName = line.slice(6).trim()
+      } else if (line.startsWith("data:")) {
+        dataLines.push(line.slice(5).replace(/^ /, ""))
       }
     })
 
-    this.eventSource.addEventListener("error", (event) => {
-      let errorMsg = "An error occurred"
-      try {
-        const data = JSON.parse(event.data)
-        errorMsg = data.message || errorMsg
-      } catch (e) {
-        errorMsg = "Connection lost. Please try again."
-      }
-      this.eventSource.close()
-      statusEl.textContent = "Error: " + errorMsg
-      spinnerEl.classList.remove("animate-spin")
-    })
+    const raw = dataLines.join("\n")
+    let data
+    try {
+      data = JSON.parse(raw)
+    } catch (e) {
+      data = raw
+    }
 
-    this.eventSource.onerror = () => {
-      if (this.eventSource.readyState === EventSource.CLOSED) return
-      this.eventSource.close()
+    switch (eventName) {
+      case "phase":
+        onPhase?.(data)
+        break
+      case "chunk":
+        onChunk?.(data)
+        break
+      case "complete":
+        onComplete?.(data)
+        break
+      case "error":
+        onError?.(data)
+        break
     }
   }
 

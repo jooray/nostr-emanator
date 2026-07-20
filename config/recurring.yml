@@ -1,5 +1,10 @@
 enqueue_scheduled_posts:
   class: EnqueueScheduledPostsJob
+  schedule: every minute
+
+# Reconcile posts/reposts stuck in publishing / awaiting_signature (C4, H15, L17).
+sweep_stuck_records:
+  class: SweepStuckRecordsJob
   schedule: every 5 minutes
 
 clear_solid_queue_finished_jobs:

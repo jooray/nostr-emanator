@@ -4,6 +4,12 @@ class Account < ApplicationRecord
   attribute :settings, :json, default: -> { {} }
   attribute :write_relays, :json, default: -> { [] }
 
+  # H2: the NIP-46 app private key is a long-lived signing-delegation
+  # credential — Amber signs kind-1 notes without manual confirmation, so a
+  # stolen plaintext value would mean silent, unlimited posting as this
+  # account. See config/initializers/active_record_encryption.rb.
+  encrypts :app_privkey
+
   belongs_to :user
   has_many :posts, dependent: :destroy
   has_many :reposts, dependent: :destroy
@@ -11,6 +17,12 @@ class Account < ApplicationRecord
 
   validates :pubkey_hex, presence: true
   validates :pubkey_hex, uniqueness: { scope: :user_id }
+  validate :blossom_server_must_be_safe
+
+  # Personality text is injected verbatim into every AI prompt; unbounded text
+  # would let one account blow up (and pay for) every completion.
+  MAX_PERSONALITY_LENGTH = 8_000
+  validates :personality, length: { maximum: MAX_PERSONALITY_LENGTH }
 
   before_validation :set_npub, on: :create
 
@@ -56,6 +68,18 @@ class Account < ApplicationRecord
   end
 
   private
+
+  # H1: the per-account Blossom server is a URL the *server* connects to (and
+  # PUTs attacker-chosen bytes at), so an unvalidated value is an SSRF primitive
+  # against internal hosts. Only a public https endpoint is acceptable.
+  def blossom_server_must_be_safe
+    configured = settings&.dig("blossom_server").presence
+    return if configured.blank?
+
+    Security::UrlGuard.validate!(blossom_server, schemes: Security::UrlGuard.http_schemes)
+  rescue Security::UrlGuard::UnsafeUrlError => e
+    errors.add(:blossom_server, e.message)
+  end
 
   def set_npub
     if pubkey_hex.present? && npub.blank?

@@ -32,6 +32,9 @@ Rails.application.routes.draw do
     resources :blossom_uploads, only: [:create]
   end
 
+  # Upload progress polling (C6): created nested under an account, polled by id.
+  resources :blossom_uploads, only: [:show]
+
   resources :nostr_actions, only: [:show] do
     member do
       post :retry
@@ -39,11 +42,7 @@ Rails.application.routes.draw do
   end
 
   # Interactions (global view across all accounts)
-  resources :interactions, only: [:index] do
-    collection do
-      get :list
-    end
-  end
+  resources :interactions, only: [:index]
 
   # Posts (all posts view)
   resources :posts, only: [:index] do
@@ -70,10 +69,15 @@ Rails.application.routes.draw do
   get "calendar", to: "calendar#index", as: :calendar
 
   # AI assist
+  # H5: generate_stream/refine_stream used to be GET, so a SameSite=Lax
+  # top-level navigation (a crafted link) could trigger a paid AI call from a
+  # logged-in user's browser with no confirmation. POST only — the client
+  # streams the SSE response via fetch()/ReadableStream instead of EventSource
+  # (which cannot POST).
   post "ai/generate", to: "ai_assist#generate"
-  get "ai/generate_stream", to: "ai_assist#generate_stream"
+  post "ai/generate_stream", to: "ai_assist#generate_stream"
   post "ai/refine", to: "ai_assist#refine"
-  get "ai/refine_stream", to: "ai_assist#refine_stream"
+  post "ai/refine_stream", to: "ai_assist#refine_stream"
 
   # User settings
   get "user/edit", to: "users#edit", as: :edit_user

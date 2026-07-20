@@ -18,9 +18,10 @@ class Nip46SupervisorJob < ApplicationJob
     return unless Rails.cache.write(LOCK_KEY, token, unless_exist: true, expires_in: LOCK_TTL)
 
     Rails.logger.info("Nip46SupervisorJob acquired lock #{token}")
-    heartbeat = start_heartbeat(token)
+    supervisor = Nostr::Nip46Supervisor.new
+    heartbeat = start_heartbeat(token, supervisor)
     begin
-      Nostr::Nip46Supervisor.new.run
+      supervisor.run
     ensure
       heartbeat.kill
       heartbeat.join
@@ -37,16 +38,23 @@ class Nip46SupervisorJob < ApplicationJob
   private
 
   # Keep the singleton lock fresh while we run, and stop the supervisor promptly
-  # if the lock is lost (e.g. another process took over).
-  def start_heartbeat(token)
+  # if the lock is lost (e.g. another process took over) or cannot be renewed.
+  # Without the stop! the lock would expire, a second supervisor would start and
+  # this one would keep running until MAX_RUNTIME anyway.
+  def start_heartbeat(token, supervisor)
     Thread.new do
       loop do
         sleep(LOCK_TTL / 3)
-        break unless Rails.cache.read(LOCK_KEY) == token
+        unless Rails.cache.read(LOCK_KEY) == token
+          Rails.logger.warn("Nip46SupervisorJob lost lock #{token}; stopping supervisor")
+          supervisor.stop!
+          break
+        end
         Rails.cache.write(LOCK_KEY, token, expires_in: LOCK_TTL)
       end
     rescue => e
-      Rails.logger.warn("Nip46SupervisorJob heartbeat error: #{e.class} - #{e.message}")
+      Rails.logger.warn("Nip46SupervisorJob heartbeat error: #{e.class} - #{e.message}; stopping supervisor")
+      supervisor.stop!
     end
   end
 

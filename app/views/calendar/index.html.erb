@@ -2,13 +2,13 @@
   <div class="flex items-center justify-between">
     <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Calendar</h1>
     <div class="flex items-center gap-4">
-      <%= link_to calendar_path(month: @month.prev_month.strftime("%Y-%m-%d")), class: "p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400" do %>
+      <%= link_to calendar_path(month: @month.prev_month.strftime("%Y-%m-%d")), class: "p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400", "aria-label": "Previous month" do %>
         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>
       <% end %>
       <h2 class="text-lg font-medium text-gray-900 dark:text-white"><%= @month.strftime("%B %Y") %></h2>
-      <%= link_to calendar_path(month: @month.next_month.strftime("%Y-%m-%d")), class: "p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400" do %>
+      <%= link_to calendar_path(month: @month.next_month.strftime("%Y-%m-%d")), class: "p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400", "aria-label": "Next month" do %>
         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
         </svg>
@@ -36,19 +36,21 @@
             <%= date.day %>
           </div>
           <% events.first(5).each do |event| %>
-            <% color = @account_colors[event[:item].account.id] || "gray" %>
+            <% chip = @account_chip_classes[event[:item].account.id] || @default_chip_classes %>
             <% if event[:type] == :post %>
-              <%= link_to post_path(event[:item]), class: "block mb-0.5 px-1 py-0.5 text-xs rounded bg-#{color}-100 dark:bg-#{color}-900/30 text-#{color}-800 dark:text-#{color}-200 truncate hover:opacity-80" do %>
+              <%= link_to post_path(event[:item]), class: "block mb-0.5 px-1 py-0.5 text-xs rounded #{chip[:post]} truncate hover:opacity-80" do %>
                 <%= local_time(event[:item].scheduled_at, format: "time") %> <%= event[:item].content.truncate(50) %>
               <% end %>
             <% else %>
-              <%= link_to post_path(event[:item].post), class: "block mb-0.5 px-1 py-0.5 text-xs rounded bg-#{color}-50 dark:bg-#{color}-900/20 text-#{color}-600 dark:text-#{color}-300 truncate hover:opacity-80 italic" do %>
+              <%= link_to post_path(event[:item].post), class: "block mb-0.5 px-1 py-0.5 text-xs rounded #{chip[:repost]} truncate hover:opacity-80 italic" do %>
                 <%= local_time(event[:item].scheduled_at, format: "time") %> repost
               <% end %>
             <% end %>
           <% end %>
           <% if events.length > 5 %>
-            <%= link_to "+#{events.length - 5} more", posts_path(date: date.to_s), class: "block text-xs text-amber-600 dark:text-amber-400 hover:text-amber-500 dark:hover:text-amber-300 px-1 cursor-pointer" %>
+            <%# posts#index has no date filter (and PostsController is off-limits here — see
+                KIMI-AUDIT M18); a functional link would be misleading, so show plain text. %>
+            <span class="block text-xs text-gray-400 dark:text-gray-500 px-1"><%= "+#{events.length - 5} more" %></span>
           <% end %>
         </div>
       <% end %>

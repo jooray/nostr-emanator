@@ -198,11 +198,16 @@ export default class extends Controller {
   }
 
   showRefreshButton() {
+    // The account-page "recent interactions" partial doesn't render a
+    // refreshButton target (only the main Interactions page card does) —
+    // guard so connect()/submit()/pollStatus() never throw there.
+    if (!this.hasRefreshButtonTarget) return
     this.refreshButtonTarget.classList.remove("hidden")
     this.refreshButtonTarget.classList.add("inline-flex")
   }
 
   hideRefreshButton() {
+    if (!this.hasRefreshButtonTarget) return
     this.refreshButtonTarget.classList.add("hidden")
     this.refreshButtonTarget.classList.remove("inline-flex")
   }

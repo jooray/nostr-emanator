@@ -1,11 +1,19 @@
 # frozen_string_literal: true
 
 class RebroadcastPostJob < ApplicationJob
-  queue_as :default
+  # M7: automatic retry cadence for posts that only reached some of their relays.
+  AUTO_RETRY_WAIT = 10.minutes
+  MAX_AUTO_ATTEMPTS = 3
 
-  def perform(post_id)
+  queue_as :default
+  discard_on ActiveRecord::RecordNotFound
+
+  # `attempt` is set only for automatic (partial-failure) rebroadcasts; manual
+  # rebroadcasts pass nil and never chain.
+  def perform(post_id, attempt = nil)
     post = Post.find(post_id)
     return unless post.can_rebroadcast?
+    return unless signed_event_verified?(post) # M4
 
     publisher = Nostr::EventPublisherService.new
     relays = (post.account.write_relays || []) + (post.account.user.custom_relays || [])
@@ -20,6 +28,7 @@ class RebroadcastPostJob < ApplicationJob
     # Also rebroadcast published reposts
     post.reposts.published.find_each do |repost|
       next unless repost.signed_event.present?
+      next unless signed_event_verified?(repost) # M4
 
       repost_relays = (repost.account.write_relays || []) + (repost.account.user.custom_relays || [])
       repost_results = publisher.publish(repost.signed_event, relays: repost_relays)
@@ -29,9 +38,19 @@ class RebroadcastPostJob < ApplicationJob
     end
 
     broadcast_progress(post)
+
+    schedule_next_attempt(post, results, attempt)
   end
 
   private
+
+  def schedule_next_attempt(post, results, attempt)
+    return if attempt.nil? || attempt >= MAX_AUTO_ATTEMPTS
+    return if results.blank?
+    return if results.values.all? { |v| v == :ok || v == "ok" }
+
+    self.class.set(wait: AUTO_RETRY_WAIT).perform_later(post.id, attempt + 1)
+  end
 
   def broadcast_progress(post)
     post.reload
@@ -47,5 +66,7 @@ class RebroadcastPostJob < ApplicationJob
       partial: "posts/reposts_list",
       locals: { post: post }
     )
+  rescue => e
+    Rails.logger.error("Failed to broadcast rebroadcast progress: #{e.message}")
   end
 end

@@ -42,6 +42,7 @@
         <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
           Scan the QR code with Amber to re-pair the signer on a new relay. Your posts and settings will be preserved.
         </p>
+        <%= render "shared/qr_phishing_warning", caption: "pairs your Nostr key to someone else's Emanator account" %>
       </div>
 
       <!-- QR Code -->

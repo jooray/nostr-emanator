@@ -88,7 +88,15 @@ export default class extends Controller {
     if (this.pollInterval) return
     const pollUrl = this.configTarget.dataset.nostrLoginPollUrl
 
+    this.pollRequestInFlight = false
+
     this.pollInterval = setInterval(async () => {
+      // M17: a first-login poll can take ~20s server-side (profile fetch);
+      // without this guard the 3s ticker fires again while it's still in
+      // flight, and overlapping polls can race find_or_create_user.
+      if (this.pollRequestInFlight) return
+      this.pollRequestInFlight = true
+
       this.pollAbortController = new AbortController()
       try {
         const response = await fetch(pollUrl, {
@@ -101,6 +109,9 @@ export default class extends Controller {
         if (data.authenticated) {
           this.stopPolling()
           window.location.href = data.redirect_url
+        } else if (data.expired) {
+          this.stopPolling()
+          this.showExpired()
         } else if (data.auth_url && data.auth_url !== this.authUrl) {
           this.authUrl = data.auth_url
           this.showAuthUrl(data.auth_url)
@@ -109,6 +120,7 @@ export default class extends Controller {
         if (error.name !== "AbortError") console.error("Polling error:", error)
       } finally {
         this.pollAbortController = null
+        this.pollRequestInFlight = false
       }
     }, 3000)
   }
@@ -149,4 +161,16 @@ export default class extends Controller {
     this.errorTextTarget.appendChild(link)
   }
 
+  showExpired() {
+    if (this.hasPollingIndicatorTarget) this.pollingIndicatorTarget.classList.add("hidden")
+
+    this.errorMessageTarget.classList.remove("hidden")
+    this.errorTextTarget.textContent = "QR expired — "
+    const button = document.createElement("button")
+    button.type = "button"
+    button.className = "font-medium underline"
+    button.textContent = "click to generate a new one"
+    button.addEventListener("click", () => window.location.reload())
+    this.errorTextTarget.appendChild(button)
+  }
 }

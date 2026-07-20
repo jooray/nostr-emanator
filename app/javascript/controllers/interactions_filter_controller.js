@@ -56,10 +56,41 @@ export default class extends Controller {
     if (!this.hasContentTarget || !this.selectedIds) return
 
     const cards = this.contentTarget.querySelectorAll("[data-account-id]")
+    let anyVisible = false
     cards.forEach(card => {
-      const cardAccountId = card.dataset.accountId
-      card.style.display = this.selectedIds.has(cardAccountId) ? "" : "none"
+      const visible = this.selectedIds.has(card.dataset.accountId)
+      card.style.display = visible ? "" : "none"
+      if (visible) anyVisible = true
     })
+
+    // "Unselect All" used to just hide every card with no explanation —
+    // show a message instead of a blank list (L23).
+    this.toggleEmptyFilterMessage(cards.length > 0 && !anyVisible)
+  }
+
+  toggleEmptyFilterMessage(show) {
+    const existing = this.contentTarget.querySelector("[data-interactions-filter-empty]")
+
+    if (!show) {
+      existing?.remove()
+      return
+    }
+    if (existing) return
+
+    const message = document.createElement("div")
+    message.dataset.interactionsFilterEmpty = "true"
+    message.className = "bg-white dark:bg-gray-800 shadow rounded-lg p-12 text-center border border-gray-200 dark:border-gray-700"
+
+    const heading = document.createElement("h3")
+    heading.className = "text-lg font-medium text-gray-900 dark:text-white"
+    heading.textContent = "No accounts selected"
+
+    const body = document.createElement("p")
+    body.className = "mt-2 text-sm text-gray-500 dark:text-gray-400"
+    body.textContent = "Select an account above to see its interactions."
+
+    message.append(heading, body)
+    this.contentTarget.prepend(message)
   }
 
   updateUI() {

@@ -17,9 +17,13 @@
       <div class="flex items-center gap-2">
         <input type="text" readonly value="<%= flash[:plain_token] %>"
                class="flex-1 font-mono text-xs px-2 py-1.5 rounded border border-amber-300 dark:border-amber-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-               onclick="this.select()" />
+               data-controller="clipboard"
+               data-clipboard-text-value="<%= flash[:plain_token] %>"
+               data-action="click->clipboard#selectAll" />
         <button type="button"
-                onclick="navigator.clipboard.writeText('<%= j flash[:plain_token] %>'); this.textContent='Copied'; setTimeout(() => this.textContent='Copy', 1500)"
+                data-controller="clipboard"
+                data-clipboard-text-value="<%= flash[:plain_token] %>"
+                data-action="click->clipboard#copy"
                 class="px-3 py-1.5 text-xs font-medium rounded border border-amber-300 dark:border-amber-700 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 hover:bg-amber-100 dark:hover:bg-amber-900/40">
           Copy
         </button>
@@ -34,6 +38,13 @@
         <%= text_field_tag :name, "", id: "api_token_name", placeholder: "e.g. content-agent",
             class: "block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm" %>
       </div>
+      <div>
+        <label for="api_token_expires_in_days" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Expires</label>
+        <%= select_tag :expires_in_days,
+            options_for_select([["30 days", 30], ["90 days", 90], ["180 days", 180], ["1 year", 365], ["Never", 0]], 90),
+            id: "api_token_expires_in_days",
+            class: "block rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm" %>
+      </div>
       <button type="submit" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors">
         Generate token
       </button>
@@ -42,12 +53,13 @@
 
   <% tokens = current_user.api_tokens.order(created_at: :desc) %>
   <% if tokens.any? %>
-    <div class="overflow-hidden border border-gray-200 dark:border-gray-700 rounded-lg">
+    <div class="overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-lg">
       <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
         <thead class="bg-gray-50 dark:bg-gray-800">
           <tr>
             <th class="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-300">Name</th>
             <th class="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-300">Created</th>
+            <th class="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-300">Expires</th>
             <th class="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-300">Last used</th>
             <th class="px-4 py-2"></th>
           </tr>
@@ -57,6 +69,15 @@
             <tr>
               <td class="px-4 py-2 text-gray-900 dark:text-gray-100"><%= token.name %></td>
               <td class="px-4 py-2 text-gray-500 dark:text-gray-400"><%= token.created_at.strftime("%b %d, %Y") %></td>
+              <td class="px-4 py-2 <%= token.expired? ? 'text-red-600 dark:text-red-400' : 'text-gray-500 dark:text-gray-400' %>">
+                <% if token.expires_at.nil? %>
+                  Never
+                <% elsif token.expired? %>
+                  Expired <%= token.expires_at.strftime("%b %d, %Y") %>
+                <% else %>
+                  <%= token.expires_at.strftime("%b %d, %Y") %>
+                <% end %>
+              </td>
               <td class="px-4 py-2 text-gray-500 dark:text-gray-400">
                 <%= token.last_used_at ? "#{time_ago_in_words(token.last_used_at)} ago" : "Never" %>
               </td>

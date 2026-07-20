@@ -15,13 +15,6 @@ class DashboardController < ApplicationController
       .order("posts.scheduled_at ASC")
       .limit(10)
 
-    @recent_posts = Post.joins(:account)
-      .where(accounts: { user_id: current_user.id })
-      .where(status: :published)
-      .includes(:account)
-      .order(published_at: :desc)
-      .limit(5)
-
     @failed_posts = Post.joins(:account)
       .where(accounts: { user_id: current_user.id })
       .where(status: :failed)

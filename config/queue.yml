@@ -7,6 +7,13 @@ default: &default
       threads: <%= ENV.fetch("AUTH_JOB_CONCURRENCY", 1) %>
       processes: 1
       polling_interval: 1
+    # H7: dedicated queue for NIP-46 signing jobs (each can block up to 120s
+    # waiting on Amber) so they no longer share worker threads with
+    # publishing jobs and cause head-of-line blocking.
+    - queues: "signing"
+      threads: <%= ENV.fetch("SIGNING_JOB_CONCURRENCY", 2) %>
+      processes: 1
+      polling_interval: 1
     - queues: "default"
       threads: 3
       processes: <%= ENV.fetch("JOB_CONCURRENCY", 1) %>

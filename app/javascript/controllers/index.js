@@ -48,3 +48,6 @@ application.register("expandable", ExpandableController)
 import BlossomUploadController from "./blossom_upload_controller"
 application.register("blossom-upload", BlossomUploadController)
 
+import FlashController from "./flash_controller"
+application.register("flash", FlashController)
+

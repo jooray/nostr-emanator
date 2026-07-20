@@ -23,7 +23,7 @@
     <%= stylesheet_link_tag "easymde", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "flatpickr", "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
-    <script>
+    <%= javascript_tag nonce: true do %>
       if ("serviceWorker" in navigator) {
         // Auto-refresh to a new release: when an updated worker activates and
         // takes control, reload once so the user never has to hard-refresh.
@@ -38,7 +38,7 @@
         })
         navigator.serviceWorker.register("/service-worker.js")
       }
-    </script>
+    <% end %>
   </head>
 
   <body class="h-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100" data-controller="local-time">
@@ -49,13 +49,13 @@
     <main class="<%= user_signed_in? ? 'lg:pl-64' : '' %>">
       <div class="<%= user_signed_in? ? 'px-4 py-8 sm:px-6 lg:px-8' : '' %>">
         <% if flash[:notice] %>
-          <div class="mb-4 rounded-md bg-green-50 dark:bg-green-900 p-4">
+          <div class="mb-4 rounded-md bg-green-50 dark:bg-green-900 p-4" data-controller="flash">
             <p class="text-sm text-green-700 dark:text-green-200"><%= flash[:notice] %></p>
           </div>
         <% end %>
 
         <% if flash[:alert] %>
-          <div class="mb-4 rounded-md bg-red-50 dark:bg-red-900 p-4">
+          <div class="mb-4 rounded-md bg-red-50 dark:bg-red-900 p-4" data-controller="flash" data-flash-delay-value="9000">
             <p class="text-sm text-red-700 dark:text-red-200"><%= flash[:alert] %></p>
           </div>
         <% end %>

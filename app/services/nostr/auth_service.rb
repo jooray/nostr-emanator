@@ -66,16 +66,12 @@ module Nostr
 
       if user.new_record? || user.display_name.blank?
         user.npub = npub
-
-        profile = ProfileFetcher.new.fetch(pubkey_hex)
-        if profile
-          user.display_name = profile[:display_name]
-          user.username = profile[:username]
-          user.about = profile[:about]
-          user.picture_url = profile[:picture]
-        end
-
         user.save!
+
+        # H11: the profile fetch is a blocking relay round-trip (up to ~20s)
+        # — do it in the background instead of holding the login poll open;
+        # the caller already has a usable user record (npub) immediately.
+        FetchUserProfileJob.perform_later(user.id)
       end
 
       user

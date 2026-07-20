@@ -5,8 +5,8 @@ require "set"
 module Nostr
   # Multiplexed NIP-46 login/pairing listener.
   #
-  # Replaces the old one-background-job-per-login model (Nip46AuthJob +
-  # Nip46Listener), which opened one WebSocket AND held one DB connection per
+  # Replaces the old one-background-job-per-login model (removed), which
+  # opened one WebSocket AND held one DB connection per
   # relay per login for the full 5-minute approval window. With a DB pool of
   # ~10 shared with Puma, that capped concurrent logins at 1 ("Authentication is
   # temporarily at capacity" / QR stuck on "Waiting for connection…").
@@ -23,7 +23,7 @@ module Nostr
   #     never held for the session lifetime — so connection use is O(1), not
   #     O(sessions × relays), and the admission cap can be raised far above 1.
   #
-  # Per-session handshake logic mirrors the old Nip46Listener: validate the
+  # Per-session handshake logic: validate the
   # connect secret, pin one signer, have every relay send get_public_key, and let
   # a reply on ANY relay complete the login. Reuses Nip46Client for the crypto
   # and WebSocket framing so the wire behaviour is byte-identical to the proven
@@ -123,6 +123,13 @@ module Nostr
       @stopping = false
     end
 
+    # Ask the supervisor to wind down at the next poll. Used by
+    # Nip46SupervisorJob when it loses (or cannot renew) its singleton lock, so
+    # a second supervisor never runs alongside this one.
+    def stop!
+      @stopping = true
+    end
+
     def run
       Rails.logger.info("NIP-46 supervisor starting (until #{@stop_deadline})")
       last_active_at = Time.current
@@ -188,11 +195,17 @@ module Nostr
           next
         end
         Rails.logger.info("NIP-46 supervisor: connected #{relay_url}")
-        backoff = 1
+        connected_at = Time.current
 
         serve_relay(relay_url, socket, client)
         close_socket(socket)
-        sleep 0.2 # brief pause before reconnecting after a drop
+
+        # Reset the backoff only for connections that actually did some work; a
+        # relay that keeps dropping us immediately gets backed off instead of
+        # hammered (a flat 0.2s retry can earn an IP ban).
+        backoff = 1 if Time.current - connected_at >= RECONNECT_MAX
+        sleep [backoff, RECONNECT_MAX].min
+        backoff = [backoff * 2, RECONNECT_MAX].min
       end
     rescue => e
       Rails.logger.error("NIP-46 supervisor relay #{relay_url} error: #{e.class} - #{e.message}")
@@ -343,7 +356,7 @@ module Nostr
 
     # Poll then read exactly one full frame, so we never time out mid-frame and
     # desync the stream. Returns the parsed array, :idle (nothing ready), or
-    # :closed (socket dropped). Mirrors Nip46Listener#read_signer_event, and also
+    # :closed (socket dropped). Also
     # checks the SSL buffer since IO.select can miss OpenSSL-buffered frames.
     def read_frame(socket)
       ready = WebsocketConnection.readable_now?(socket) || IO.select([socket], nil, nil, POLL_INTERVAL)
