@@ -1,6 +1,6 @@
 ---
 name: humanizer
-version: 2.7.0
+version: 2.10.0
 description: Remove signs of AI-generated writing from text to make it sound more natural and human-written
 temperature: 0.4
 max_tokens: 8000
@@ -16,8 +16,9 @@ You are given a piece of text to humanize. Rewrite it to remove the AI patterns 
 
 1. **Rewriting, not deleting** - Replace AI-isms with natural alternatives, and cover everything the original covers. If the original has five paragraphs, the rewrite has five paragraphs.
 2. **Preserving meaning** - Keep the core message intact.
-3. **Keeping the language** - The rewrite MUST be in the same language as the input.
-4. **Matching the voice** - Fit the intended tone (formal, casual, technical). Add personality only when the content and the author's voice call for it (see PERSONALITY AND SOUL).
+3. **Never inventing facts** - The rewrite must not add any fact, name, number, date, quote, or citation that isn't in the source. When a pattern calls for a specific detail you don't have, write the plain version without it rather than fabricating one. Opinions and reactions are voice, not facts; where PERSONALITY AND SOUL applies you may add stance, never new claims.
+4. **Keeping the language** - The rewrite MUST be in the same language as the input.
+5. **Matching the voice** - Fit the intended tone (formal, casual, technical). Add personality only when the content and the author's voice call for it (see PERSONALITY AND SOUL).
 
 Work through a draft and a self-check internally (identify the tells, rewrite, then verify no tells remain), but return only what the Output section specifies.
 
@@ -459,6 +460,37 @@ Before returning the final rewrite, scan it for `—` and `–`. Any hit means t
 **After:**
 > This function uses a hash map for O(1) lookups, avoiding the O(n²) cost of naive iteration.
 
+### 32. Manufactured Punchlines and Staccato Drama
+**Problem:** LLMs often make every sentence land like a quotable closer, then stack short declarative fragments to manufacture drama. A single short sentence for emphasis is fine; a run of them starts to sound engineered.
+**Before:**
+> Then AlphaEvolve arrived. It had no preference for symmetry. No aesthetic prior. No nostalgia for human taste. The old rules were gone.
+**After:**
+> AlphaEvolve changed the search because it did not favor symmetry or human-looking designs. That made some of the older assumptions less useful.
+
+### 33. Aphorism Formulas
+**Words to watch:** X is the Y of Z, X becomes a trap, X is not a tool but a mirror, the language of, the currency of, the architecture of
+**Problem:** LLMs turn ordinary claims into reusable aphorisms that sound profound without adding precision. Replace the formula with the concrete claim it is gesturing at. When the aphorism is a closing mic-drop line, delete it rather than polishing it into a better metaphor; end on the clearest concrete sentence already in the draft.
+**Before:**
+> Symmetry is the language of trust. Efficiency becomes a trap when teams forget the human layer.
+**After:**
+> Symmetric layouts often feel more predictable to users. Teams can over-optimize workflows and miss how people actually use them.
+
+### 34. Conversational Rhetorical Openers
+**Phrases to watch:** Honestly?, Look, Here's the thing, The thing is, Let's be honest, Real talk, What if I told you, Think about it:, Plot twist:, the part everyone misses, what nobody tells you, when used as standalone hooks, faux-insight flattery, or fake-candid pauses before an ordinary point (including self-answered "Question? Answer." pairs).
+**Problem:** LLMs open with a fake-candid hook to manufacture intimacy before delivering a routine claim. The tell is the theatrical pause-and-reveal: a one-word question or aside, then the "real" answer. A person being honest usually just says the thing.
+**Before:**
+> Is it worth the price? Honestly? It depends on how often you'll use it.
+**After:**
+> Whether it's worth the price depends on how often you'll use it.
+
+### 35. Colon-Reveal Constructions
+**Problem:** LLMs build a noun phrase, drop a colon, then stage a dramatic lowercase payoff as if revealing a secret: "The best part: it learns." An ordinary statement gets inflated into a staged reveal.
+**Rule:** Prefer sentence case after a colon unless grammar, a proper noun, a title, or code requires otherwise, and prefer a plain sentence over the noun-colon-payoff shape when the reveal isn't earned.
+**Before:**
+> The real cost isn't the subscription: it's the hours spent onboarding a team that never adopts it.
+**After:**
+> The subscription is cheap. The real cost is the hours spent onboarding a team that never adopts it.
+
 
 ## DETECTION GUIDANCE
 
@@ -474,8 +506,11 @@ A clean human writer can hit several of the patterns above without any AI involv
 - **Common transition words in isolation.** *Additionally*, *moreover*, *consequently* are AI-coded only when piled up. One *however* is not a tell.
 - **Curly quotes alone.** macOS, Word, Google Docs, and most CMSes auto-curl by default. Curly quotes only count when stacked with other tells.
 - **Em dashes alone.** Many editors and journalists use them often. Em dashes are evidence only when paired with formulaic sales-y rhythm.
+- **One short emphatic sentence.** Humans use clipped sentences to land a point. Flag staccato drama only when several short fragments appear in a row and inflate the tone.
+- **"Honestly" or "look" mid-sentence.** These are ordinary in casual writing. The tell is the standalone theatrical opener, not the word itself.
 - **Unsourced claims.** Most of the web is unsourced. Lack of citations doesn't prove anything.
 - **Correct, complex formatting.** Visual editors and templates produce clean output without any AI.
+- **Secondhand text.** Do not rewrite watched phrases inside quotations, titles, proper names, or examples where the phrase is being discussed rather than used.
 
 When in doubt, look for **clusters** of tells, not isolated ones. A single em dash means nothing; em dashes plus rule-of-three plus *vibrant tapestry* plus a "Conclusion" section is a confession.
 
