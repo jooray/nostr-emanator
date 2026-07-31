@@ -1,0 +1,45 @@
+<%# Consolidated "these accounts need re-pairing" prompt for the Messages inbox.
+
+    The per-account banner is right on an account's own settings page, but this
+    page spans every paired account — and one real user has 20 of them, so
+    rendering it once each would bury the inbox under a wall of identical boxes. %>
+<% return if accounts.blank? %>
+
+<% if accounts.one? %>
+  <%= render "accounts/messaging_banner", account: accounts.first %>
+<% else %>
+  <div class="rounded-lg border border-amber-300 bg-amber-50 p-4 dark:border-amber-700 dark:bg-amber-900/30">
+    <div class="flex items-start gap-3">
+      <svg class="h-5 w-5 flex-shrink-0 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+      </svg>
+      <div class="min-w-0 flex-1">
+        <p class="text-sm font-medium text-amber-900 dark:text-amber-200">
+          <%= accounts.size %> accounts need re-pairing before they can send or receive private messages
+        </p>
+        <p class="mt-1 text-sm text-amber-800 dark:text-amber-300">
+          They were paired before private messaging existed, so their signers have not
+          granted permission to encrypt, seal or decrypt messages. Re-pairing keeps
+          each account's posts and settings.
+        </p>
+        <details class="mt-3">
+          <summary class="cursor-pointer text-sm font-medium text-amber-900 dark:text-amber-200">
+            Show accounts
+          </summary>
+          <ul class="mt-2 space-y-1">
+            <% accounts.each do |account| %>
+              <li>
+                <%= link_to re_pair_account_path(account, reason: "messaging"),
+                      class: "inline-flex items-center gap-2 rounded px-2 py-1 text-sm text-amber-900 hover:bg-amber-100 dark:text-amber-200 dark:hover:bg-amber-900/50" do %>
+                  <%= render "shared/avatar", pubkey: account.pubkey_hex, size: :sm %>
+                  <%= account.display_name_or_npub %>
+                  <span class="text-xs underline">Enable messaging</span>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        </details>
+      </div>
+    </div>
+  </div>
+<% end %>

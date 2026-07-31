@@ -35,14 +35,9 @@ module Nostr
       signer_pubkey = event_data["pubkey"]
       encrypted_content = event_data["content"]
 
-      decrypted = try_decrypt_nip44(encrypted_content, signer_pubkey)
-      if decrypted.nil?
-        if Nip04Policy.fallback_allowed?
-          decrypted = decrypt_nip04(encrypted_content, signer_pubkey)
-        else
-          Nip04Policy.log_refusal("NIP-46 handshake")
-        end
-      end
+      decrypted = Nip46Envelope.decrypt(
+        encrypted_content, signer_pubkey, @temp_privkey, context: "NIP-46 handshake"
+      )
 
       unless decrypted
         Rails.logger.warn("NIP-46: decrypt failed for event from #{signer_pubkey}")
@@ -73,11 +68,13 @@ module Nostr
     # Build an encrypted + signed kind-24133 request event for the signer.
     # Returns { event:, request_id: }.
     def build_request_event(signer_pubkey, method, params = [])
-      request_id = SecureRandom.hex(16)
-      payload = { "id" => request_id, "method" => method, "params" => params }
-      encrypted = Nip44.encrypt(Nip44.conversation_key(@temp_privkey, signer_pubkey), JSON.generate(payload))
-      event = build_and_sign_event(encrypted, signer_pubkey)
-      { event: event, request_id: request_id }
+      Nip46Envelope.build_request(
+        method: method,
+        params: params,
+        recipient_pubkey: signer_pubkey,
+        sender_privkey: @temp_privkey,
+        sender_pubkey: @temp_pubkey
+      )
     end
 
     # Defense-in-depth freshness check (NIP-46 recommends one). Cross-session
@@ -94,81 +91,6 @@ module Nostr
 
       age = Time.now.to_i - created_at
       age <= MAX_EVENT_AGE && age >= -MAX_EVENT_SKEW
-    end
-
-    def try_decrypt_nip44(encrypted_content, signer_pubkey)
-      conv_key = Nip44.conversation_key(@temp_privkey, signer_pubkey)
-      Nip44.decrypt(conv_key, encrypted_content)
-    rescue => e
-      Rails.logger.debug("NIP-44 decryption failed: #{e.message}")
-      nil
-    end
-
-    def decrypt_nip04(encrypted_content, signer_pubkey)
-      parts = encrypted_content.split("?iv=")
-      return nil unless parts.length == 2
-
-      ciphertext = Base64.decode64(parts[0])
-      iv = Base64.decode64(parts[1])
-      shared_secret = compute_shared_secret(signer_pubkey)
-
-      cipher = OpenSSL::Cipher.new("aes-256-cbc")
-      cipher.decrypt
-      cipher.iv = iv
-      cipher.key = shared_secret
-
-      decrypted = cipher.update(ciphertext) + cipher.final
-      (+decrypted).force_encoding("UTF-8")
-    rescue OpenSSL::Cipher::CipherError, ArgumentError => e
-      Rails.logger.error("NIP-04 decryption failed: #{e.message}")
-      nil
-    end
-
-    def encrypt_nip04(plaintext, recipient_pubkey)
-      shared_secret = compute_shared_secret(recipient_pubkey)
-
-      cipher = OpenSSL::Cipher.new("aes-256-cbc")
-      cipher.encrypt
-      iv = cipher.random_iv
-      cipher.key = shared_secret
-
-      encrypted = cipher.update(plaintext) + cipher.final
-      "#{Base64.strict_encode64(encrypted)}?iv=#{Base64.strict_encode64(iv)}"
-    end
-
-    def compute_shared_secret(their_pubkey_hex)
-      require "ecdsa"
-
-      group = ECDSA::Group::Secp256k1
-      their_point = ECDSA::Format::PointOctetString.decode(
-        ["02#{their_pubkey_hex}"].pack("H*"),
-        group
-      )
-
-      our_private_key = @temp_privkey.to_i(16)
-      shared_point = their_point.multiply_by_scalar(our_private_key)
-
-      [shared_point.x.to_s(16).rjust(64, "0")].pack("H*")
-    end
-
-    def build_and_sign_event(content, recipient_pubkey)
-      event = {
-        "pubkey" => @temp_pubkey,
-        "created_at" => Time.now.to_i,
-        "kind" => 24133,
-        "tags" => [["p", recipient_pubkey]],
-        "content" => content
-      }
-
-      event["id"] = EventValidator.event_id(event)
-
-      require "schnorr"
-      message = [event["id"]].pack("H*")
-      privkey_bytes = [@temp_privkey].pack("H*")
-      signature = Schnorr.sign(message, privkey_bytes)
-      event["sig"] = signature.encode.unpack1("H*")
-
-      event
     end
 
     def create_websocket(uri, deadline:)

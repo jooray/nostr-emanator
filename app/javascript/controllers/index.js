@@ -51,3 +51,15 @@ application.register("blossom-upload", BlossomUploadController)
 import FlashController from "./flash_controller"
 application.register("flash", FlashController)
 
+import DmFilterController from "./dm_filter_controller"
+application.register("dm-filter", DmFilterController)
+
+import DmThreadController from "./dm_thread_controller"
+application.register("dm-thread", DmThreadController)
+
+import DmComposerController from "./dm_composer_controller"
+application.register("dm-composer", DmComposerController)
+
+import DmDeliveryController from "./dm_delivery_controller"
+application.register("dm-delivery", DmDeliveryController)
+

@@ -5,6 +5,8 @@ require_relative "../config/environment"
 require "minitest/autorun"
 require "rails/test_help"
 
+Dir[File.expand_path("support/**/*.rb", __dir__)].each { |file| require file }
+
 module NostrTestHelper
   def keypair
     pair = ::Nostr::Keygen.new.generate_key_pair

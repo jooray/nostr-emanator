@@ -1,0 +1,112 @@
+<%# Sending is asynchronous — the signer can take a minute or two of human
+    approvals — and inbound messages arrive whenever they arrive. Without this
+    subscription the only way to see either was to reload the page.
+
+    What arrives on the stream is a bare refresh signal (ThreadBroadcaster
+    explains why it must never be rendered content); morph + scroll preserve turn
+    that reload into an in-place patch, so the thread's scroll position and the
+    composer survive. %>
+<% content_for :head do %>
+  <%= turbo_refreshes_with method: :morph, scroll: :preserve %>
+<% end %>
+<%= turbo_stream_from @conversation %>
+
+<div class="space-y-4" data-controller="dm-thread">
+  <div class="flex items-center gap-2">
+    <%= link_to messages_path, class: "text-gray-400 transition-colors hover:text-gray-600 dark:hover:text-gray-300" do %>
+      <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+    <% end %>
+    <h1 class="text-lg font-semibold text-gray-900 dark:text-white">Conversation</h1>
+  </div>
+
+  <div class="overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+    <%# Both sides, explicitly. With one inbox spanning several identities, "which
+        of my accounts is this?" must never require inference. Each name is a
+        click-to-copy npub button.
+
+        The avatars stay OUTSIDE the clipboard buttons on purpose: the controller's
+        flash() replaces the element's textContent to show "Copied!", which would
+        wipe an <img> nested inside it. %>
+    <div class="flex flex-wrap items-center justify-center gap-3 border-b border-gray-200 px-4 py-4 dark:border-gray-700">
+      <%= render "shared/avatar", pubkey: @conversation.account.pubkey_hex, size: :md %>
+      <%= render "conversations/copyable_name",
+            pubkey: @conversation.account.pubkey_hex,
+            label: @conversation.account.display_name_or_npub %>
+
+      <span class="text-gray-400 dark:text-gray-500" aria-label="conversation between">&harr;</span>
+
+      <% peers = @conversation.peer_pubkeys %>
+      <% if peers.empty? %>
+        <span class="text-sm text-gray-500 dark:text-gray-400">yourself</span>
+      <% else %>
+        <%= render "conversations/copyable_name", pubkey: peers.first, label: dm_display_name(peers.first) %>
+        <%= render "shared/avatar", pubkey: peers.first, size: :md %>
+        <% if peers.size > 1 %>
+          <span class="text-sm text-gray-500 dark:text-gray-400">and <%= peers.size - 1 %> more</span>
+        <% end %>
+      <% end %>
+    </div>
+
+    <% if peers.size > 1 %>
+      <div class="border-b border-gray-200 bg-gray-50 px-4 py-2 dark:border-gray-700 dark:bg-gray-700/40">
+        <p class="mb-1 text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">All participants</p>
+        <div class="flex flex-wrap gap-2">
+          <% peers.each do |peer| %>
+            <%= render "conversations/copyable_name", pubkey: peer, label: dm_display_name(peer), small: true %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @conversation.subject.present? %>
+      <div class="border-b border-gray-200 px-4 py-2 dark:border-gray-700">
+        <p class="text-sm font-medium text-gray-700 dark:text-gray-200"><%= @conversation.subject %></p>
+      </div>
+    <% end %>
+
+    <% if @conversation.legacy? %>
+      <div class="border-b border-orange-200 bg-orange-50 px-4 py-3 dark:border-orange-800 dark:bg-orange-900/30">
+        <p class="text-sm font-medium text-orange-900 dark:text-orange-200">Legacy NIP-04 conversation</p>
+        <p class="mt-1 text-sm text-orange-800 dark:text-orange-300">
+          The message text is encrypted, but the sender, the recipient and the timing
+          are public on every relay this thread touched.
+        </p>
+      </div>
+    <% end %>
+
+    <% if @conversation.request? %>
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-700/40">
+        <p class="text-sm text-gray-700 dark:text-gray-200">
+          You do not follow this person, and neither does any of your other accounts.
+        </p>
+        <div class="flex gap-2">
+          <%= button_to "Accept", accept_conversation_path(@conversation), method: :post,
+                class: "rounded-md bg-amber-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-500" %>
+          <%= button_to "Block", block_conversation_path(@conversation), method: :post,
+                class: "rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700" %>
+        </div>
+      </div>
+    <% end %>
+
+    <div id="<%= dom_id(@conversation, :messages) %>"
+         class="max-h-[60vh] space-y-3 overflow-y-auto p-4"
+         data-dm-thread-target="scroll">
+      <% if @has_more %>
+        <p class="text-center text-xs text-gray-400 dark:text-gray-500">
+          Showing the most recent <%= ConversationsController::THREAD_LIMIT %> messages.
+        </p>
+      <% end %>
+
+      <% if @messages.empty? %>
+        <p class="py-8 text-center text-sm text-gray-500 dark:text-gray-400">No messages in this conversation yet.</p>
+      <% else %>
+        <%= render partial: "conversations/message_bubble", collection: @messages, as: :message,
+                   locals: { delivery: @delivery } %>
+      <% end %>
+    </div>
+
+    <%= render "conversations/composer", conversation: @conversation, delivery: @delivery %>
+  </div>
+</div>

@@ -29,6 +29,22 @@ default: &default
     # turns the string "default,solid_queue_recurring" into one bogus queue name
     # containing a comma rather than into two names — the worker then matches
     # nothing at all, including the queue that used to work.
+    # NIP-17 messaging. Kept off `default` for the same reason as `signing`: a
+    # gift-wrap backfill can occupy a thread for minutes at a time (two signer
+    # round-trips per message, each with a 200 ms floor), and it must not be able
+    # to starve scheduled posts. Three threads so a long decrypt run still leaves
+    # capacity for sending and for read-state flushes.
+    - queues: [ "messaging" ]
+      threads: <%= ENV.fetch("MESSAGING_JOB_CONCURRENCY", 3) %>
+      processes: 1
+      polling_interval: 1
+    # The live gift-wrap listener holds one thread for the best part of an hour,
+    # so it gets its own pool. On `messaging` it would compete with decrypt and
+    # send jobs — and a long backfill could leave no thread free to restart it.
+    - queues: [ "dm_supervisor" ]
+      threads: 1
+      processes: 1
+      polling_interval: 1
     - queues: [ "default", "solid_queue_recurring" ]
       threads: 3
       processes: <%= ENV.fetch("JOB_CONCURRENCY", 1) %>

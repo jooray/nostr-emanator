@@ -56,6 +56,7 @@
             Interactions
           <% end %>
         </li>
+        <%= render "layouts/messages_nav_item" %>
         <li>
           <%= link_to calendar_path, class: "flex items-center gap-3 rounded-lg px-3 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 #{request.path == calendar_path ? 'bg-gray-100 dark:bg-gray-700' : ''}" do %>
             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -189,6 +190,7 @@
             Interactions
           <% end %>
         </li>
+        <%= render "layouts/messages_nav_item", mobile: true %>
         <li>
           <%= link_to calendar_path, class: "flex items-center gap-3 rounded-lg px-3 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 #{request.path == calendar_path ? 'bg-gray-100 dark:bg-gray-700' : ''}", data: { action: "click->mobile-nav#close" } do %>
             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

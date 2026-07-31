@@ -24,7 +24,12 @@ class SyncMuteListsJob < ApplicationJob
       union.merge(p_tags)
     end
 
+    changed = InteractionsCache.read_muted_pubkeys(user) != union
     InteractionsCache.write_muted_pubkeys(user, union)
+
+    # Muting somebody has to hide any conversation with them, including one
+    # already accepted into the inbox.
+    ReclassifyConversationsJob.perform_later(user.id) if changed
   ensure
     InteractionsCache.release_inflight(:mutes, "user_#{user_id}")
   end

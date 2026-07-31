@@ -9,6 +9,7 @@ module Nostr
   module WebsocketConnection
     MAX_UPGRADE_SIZE = 16.kilobytes
     CONNECT_TIMEOUT = 5.seconds
+    DEFAULT_USER_AGENT = "Emanator (+https://github.com/jooray/nostr-emanator)"
 
     class ConnectionError < StandardError; end
 
@@ -16,7 +17,7 @@ module Nostr
     # that has to refuse relay URLs coming from unverified NIP-65 lists or user
     # settings (private/loopback/metadata addresses, plaintext ws:// in
     # production). Callers already treat nil as "relay unreachable".
-    def self.open(uri, deadline:)
+    def self.open(uri, deadline:, headers: {})
       begin
         Security::UrlGuard.validate_relay!(uri.to_s)
       rescue Security::UrlGuard::UnsafeUrlError => e
@@ -37,6 +38,12 @@ module Nostr
         "Connection: Upgrade",
         "Sec-WebSocket-Key: #{key}",
         "Sec-WebSocket-Version: 13",
+        # Some relays answer a User-Agent-less handshake with HTTP 403 rather than
+        # a 101 — inbox.nostr.wine does, and NIP-17 DM inbox relays are exactly
+        # where that bites. The failure surfaces to callers only as a nil socket,
+        # so it is worth sending a UA on every relay connection.
+        "User-Agent: #{header_value(user_agent)}",
+        *headers.map { |name, value| "#{header_value(name)}: #{header_value(value)}" },
         "",
         ""
       ].join("\r\n")
@@ -49,6 +56,21 @@ module Nostr
       socket&.close
       tcp_socket&.close unless tcp_socket&.closed?
       nil
+    end
+
+    # Configurable so an operator can identify this deployment to relays that
+    # rate-limit or allowlist by User-Agent. Memoized: this is on every connect.
+    def self.user_agent
+      return @user_agent if defined?(@user_agent) && @user_agent
+
+      configured = Rails.application.config_for(:emanator).dig(:nostr, :user_agent)
+      @user_agent = configured.presence || DEFAULT_USER_AGENT
+    end
+
+    # Header values come from config and from callers, never from relays, but a
+    # stray CR/LF would still splice extra headers into the handshake.
+    def self.header_value(value)
+      value.to_s.delete("\r\n")
     end
 
     def self.read_upgrade(socket, deadline:, max_size: MAX_UPGRADE_SIZE)
@@ -212,7 +234,13 @@ module Nostr
 
     def self.validate_upgrade!(response, key)
       lines = response.split("\r\n")
-      raise ConnectionError, "WebSocket upgrade rejected" unless lines.first&.match?(/\AHTTP\/1\.[01] 101\b/)
+      # Include the status line: a relay that refuses the handshake outright
+      # (403 for a missing/blocked User-Agent, 429, a paywall redirect) is
+      # otherwise indistinguishable from an unreachable host, since `open`
+      # rescues this into a bare nil.
+      unless lines.first&.match?(/\AHTTP\/1\.[01] 101\b/)
+        raise ConnectionError, "WebSocket upgrade rejected: #{lines.first.to_s.strip.inspect}"
+      end
 
       headers = lines.drop(1).filter_map do |line|
         name, value = line.split(":", 2)
@@ -227,6 +255,7 @@ module Nostr
 
     # read_exact / read_until / readable_now? are public: WebsocketFrameReader and
     # the relay read loops call them directly.
-    private_class_method :connect_tls, :read_buffer, :fill_buffer, :wait_for_io, :remaining_time, :validate_upgrade!
+    private_class_method :connect_tls, :read_buffer, :fill_buffer, :wait_for_io, :remaining_time,
+                         :validate_upgrade!, :header_value
   end
 end

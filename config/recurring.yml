@@ -20,3 +20,30 @@ cleanup_nostr_auth_sessions:
 ensure_nip46_supervisor:
   command: "Nip46SupervisorJob.ensure_running if NostrAuthSession.active.where(authenticated_pubkey: nil).exists?"
   schedule: every minute
+
+# --- NIP-17 messaging ---------------------------------------------------------
+# `class:` entries land on the job's own queue (:messaging), so config/queue.yml
+# must list it or these silently never run.
+
+# Pulls inbound gift wraps. Also the safety net once the persistent DM supervisor
+# exists, for when it is down mid-deploy.
+poll_direct_messages:
+  class: PollDirectMessagesJob
+  schedule: every 5 minutes
+
+# Requeues wraps left mid-decrypt by a worker that died.
+sweep_stuck_gift_wraps:
+  class: SweepStuckGiftWrapsJob
+  schedule: every 5 minutes
+
+# Publishes debounced NIP-RS read-state cursors (kind 30078).
+flush_read_states:
+  class: FlushReadStatesJob
+  schedule: every minute
+
+# Safety net for the live gift-wrap listener, mirroring ensure_nip46_supervisor:
+# restarts it after a deploy or a lost lock. No-op while one holds the lock, and
+# the 5-minute poller above still covers any gap.
+ensure_dm_supervisor:
+  command: "DmSupervisorJob.ensure_running if Account.exists?(messaging_enabled: true)"
+  schedule: every minute

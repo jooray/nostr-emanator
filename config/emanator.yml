@@ -13,15 +13,114 @@ default: &default
     # only relays verified to accept WS + relay ephemeral kind-24133 events.
     # relay.nsec.app (the canonical bunker relay) is omitted while it returns 502;
     # re-add it once it recovers.
+    # Kept deliberately short. Every relay lands in the nostrconnect:// URI that
+    # becomes the pairing QR code, and past ~600 characters phone cameras start
+    # failing to scan it. Two is enough: the signer subscribes to all of them, so
+    # this is redundancy against one being down, not throughput.
+    #
+    # nos.lol is the public fallback because it demonstrably carried this app's
+    # NIP-46 traffic in production. relay.primal.net and nostr.mom also worked and
+    # are equally good substitutes — they were dropped for QR size, not quality.
     auth_relays:
+      - wss://nostr.cypherpunk.today
       - wss://nos.lol
-      - wss://relay.primal.net
-      - wss://nostr.mom
     fetch_timeout: 10
+    # Sent on every relay WebSocket handshake. Some relays (inbox.nostr.wine)
+    # answer a User-Agent-less handshake with HTTP 403 instead of a 101.
+    user_agent: "Emanator (+https://github.com/jooray/nostr-emanator)"
     # Deprecated NIP-04 (AES-256-CBC, unauthenticated) fallback for NIP-46
     # payloads. Off by default — see Nostr::Nip04Policy. Turn on only to pair a
     # signer that cannot do NIP-44.
     allow_nip04_fallback: false
+    # Relays OFFERED in the "set up your DM inbox" picker. These are suggestions
+    # only — never applied automatically, and never used as a fallback.
+    #
+    # Emanator does not create Nostr identities: the accounts it manages are
+    # already in use in other clients, which have very likely already published a
+    # kind 10050. That published list is the only truth about where an account's
+    # DMs actually land, so imposing a default here would both overrule the user
+    # and cause us to look for messages in the wrong place.
+    #
+    # `auth` marks whether the relay enforces NIP-42 on reads. It matters: a relay
+    # that does NOT enforce it will serve kind 1059 to anyone, letting a third
+    # party enumerate when and how many DMs the account receives (not contents).
+    # Surfaced in the picker so the choice is the user's and is informed.
+    # This is the intersection of 0xchat's recommendDMRelays and Amethyst's
+    # user-facing suggestion string — the closest thing to consensus in the
+    # ecosystem. auth.nostr1.com is listed first because it is free AND enforces
+    # NIP-42, which is what NIP-17 asks inbox relays to do.
+    suggested_dm_relays:
+      - url: wss://auth.nostr1.com
+        auth: true
+        note: Free, and requires NIP-42 so only you can read your own wraps. Best default.
+      - url: wss://relay.0xchat.com
+        auth: false
+        note: Free and widely used by 0xchat, but no NIP-42 — anyone can see that you received a message.
+      - url: wss://inbox.nostr.wine
+        auth: true
+        paid: true
+        note: Paid (~2500 sats/30 days). Requires NIP-42.
+
+    # Unauthenticated probe targets for discovering somebody's kind 10050 before
+    # we conclude they have none.
+    #
+    # purplepag.es is FIRST despite Amethyst's code comment calling it a
+    # metadata indexer with weak kind-10050 coverage. Measured against real
+    # contacts, the opposite held: a peer we had recorded as having no DM inbox
+    # had published one, and purplepag.es was the ONLY relay of ten carrying it.
+    # It indexes replaceable events specifically, which is exactly what a 10050
+    # is. Leaving it out was manufacturing false negatives — and a false negative
+    # here is the expensive kind, because it tells the user someone cannot be
+    # messaged privately when they can.
+    #
+    # These are queried WITHOUT NIP-42 auth on purpose. Answering an AUTH
+    # challenge here would tell the relay "identity U wants to DM X", which is a
+    # worse leak than the one the probe exists to avoid.
+    dm_indexer_relays:
+      - wss://purplepag.es
+      - wss://relay.nos.social
+      - wss://relay.damus.io
+      - wss://nos.lol
+      - wss://relay.nostr.band
+      - wss://purplerelay.com
+    # Last-resort targets for a gift wrap when the recipient has published
+    # neither a kind 10050 nor a NIP-65 read list. Yakihonne-web does the same.
+    #
+    # It works at all only because of an asymmetry in the ecosystem: no client
+    # examined subscribes to kind 1059 on its own 10050 alone — they all fan out
+    # across their whole relay pool — so a wrap on a big popular relay is usually
+    # seen. It is still a best-effort guess, and the composer says so.
+    fallback_dm_relays:
+      - wss://relay.damus.io
+      - wss://nos.lol
+      - wss://relay.primal.net
+      - wss://relay.nostr.band
+
+    # Seeds the "this relay needs NIP-42" cache so we can authenticate on connect
+    # instead of paying a rejected-subscription round-trip to find out.
+    auth_required_relays:
+      - wss://inbox.nostr.wine
+      - wss://auth.nostr1.com
+
+  messaging:
+    # Gift wraps in flight against the signer at once. A safety limit, not a
+    # tuning knob: Amber waits >=200ms before publishing any response, so this
+    # costs no throughput — it is what stops a large backfill from wedging the
+    # user's signer (greenart7c3/Amber#169).
+    decrypt_concurrency: 6
+    decrypt_batch_size: 50
+    # Per account per day. A 5000-wrap spam history must not drain a phone
+    # battery in one run.
+    decrypt_daily_cap: 1500
+    # One-hop web-of-trust lookups per user per hour. Over budget, an unknown
+    # sender simply waits in Requests — the failure is always on the safe side.
+    wot_lookups_per_hour: 50
+    # Import legacy NIP-04 threads. ON by default: most Nostr identities have
+    # never published a kind 10050, so they receive no gift wraps at all and their
+    # whole DM history is kind 4 — without this the inbox is empty for most
+    # people. Opt out per account via settings["legacy_dm_import"] = false.
+    # Sending kind 4 is a separate, always-acknowledged downgrade.
+    legacy_dm_import: true
 
   ai:
     provider: venice

@@ -4,6 +4,10 @@ class User < ApplicationRecord
   attribute :settings, :json, default: -> { {} }
 
   has_many :accounts, dependent: :destroy
+  # Denormalised so the Messages tab can query one inbox across every paired
+  # account without joining through accounts on every page load.
+  has_many :conversations, dependent: :destroy
+  has_many :messages, dependent: :destroy
   has_many :api_tokens, dependent: :destroy
 
   validates :npub, presence: true, uniqueness: true

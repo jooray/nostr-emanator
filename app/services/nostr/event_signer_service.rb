@@ -7,6 +7,20 @@ module Nostr
   class EventSignerService
     SIGN_TIMEOUT = 120
 
+    # I9: signing always uses the relays configured in config/emanator.yml, not
+    # the per-account `signer_relay` column. `signer_relay` is only a record of
+    # the relay the signer advertised at pairing time (shown in the UI / useful
+    # for debugging) — it is deliberately NOT live configuration, since an
+    # attacker-supplied pairing URI must not be able to redirect our signing
+    # traffic. Don't read it here expecting it to take effect.
+    #
+    # Public so Nip46Rpc shares one definition of "where the signer listens".
+    def self.signing_relays(config = Rails.application.config_for(:emanator))
+      config.dig(:nostr, :auth_relays) ||
+        [ config.dig(:nostr, :auth_relay) ].compact.presence ||
+        [ "wss://relay.nsec.app" ]
+    end
+
     def initialize
       @config = Rails.application.config_for(:emanator)
     end
@@ -265,14 +279,7 @@ module Nostr
     end
 
     def decrypt_nip44_or_nip04(content, pubkey, privkey)
-      Nip44.decrypt(Nip44.conversation_key(privkey, pubkey), content)
-    rescue StandardError
-      unless Nip04Policy.fallback_allowed?
-        Nip04Policy.log_refusal("NIP-46 signer response")
-        return nil
-      end
-
-      decrypt_nip04(content, pubkey, privkey)
+      Nip46Envelope.decrypt(content, pubkey, privkey, context: "NIP-46 signer response")
     end
 
     def valid_signed_event?(signed_event, unsigned_event, account_pubkey)
@@ -297,84 +304,17 @@ module Nostr
       socket.close rescue nil
     end
 
-    # I9: signing always uses the relays configured in config/emanator.yml, not
-    # the per-account `signer_relay` column. `signer_relay` is only a record of
-    # the relay the signer advertised at pairing time (shown in the UI /
-    # useful for debugging) — it is deliberately NOT live configuration, since
-    # an attacker-supplied pairing URI must not be able to redirect our signing
-    # traffic. Don't read it here expecting it to take effect.
     def signing_relays
-      @config.dig(:nostr, :auth_relays) ||
-        [@config.dig(:nostr, :auth_relay)].compact.presence ||
-        ["wss://relay.nsec.app"]
-    end
-
-    def encrypt_nip04(plaintext, their_pubkey_hex, our_privkey_hex)
-      shared_secret = compute_shared_secret(their_pubkey_hex, our_privkey_hex)
-
-      cipher = OpenSSL::Cipher.new("aes-256-cbc")
-      cipher.encrypt
-      iv = cipher.random_iv
-      cipher.key = shared_secret
-
-      encrypted = cipher.update(plaintext) + cipher.final
-      "#{Base64.strict_encode64(encrypted)}?iv=#{Base64.strict_encode64(iv)}"
-    end
-
-    def decrypt_nip04(encrypted_content, their_pubkey_hex, our_privkey_hex)
-      parts = encrypted_content.split("?iv=")
-      return nil unless parts.length == 2
-
-      ciphertext = Base64.decode64(parts[0])
-      iv = Base64.decode64(parts[1])
-      shared_secret = compute_shared_secret(their_pubkey_hex, our_privkey_hex)
-
-      cipher = OpenSSL::Cipher.new("aes-256-cbc")
-      cipher.decrypt
-      cipher.iv = iv
-      cipher.key = shared_secret
-
-      decrypted = cipher.update(ciphertext) + cipher.final
-      (+decrypted).force_encoding("UTF-8")
-    rescue OpenSSL::Cipher::CipherError
-      nil
-    end
-
-    def compute_shared_secret(their_pubkey_hex, our_privkey_hex)
-      require "ecdsa"
-
-      group = ECDSA::Group::Secp256k1
-      their_point = ECDSA::Format::PointOctetString.decode(
-        ["02#{their_pubkey_hex}"].pack("H*"),
-        group
-      )
-
-      our_private_key = our_privkey_hex.to_i(16)
-      shared_point = their_point.multiply_by_scalar(our_private_key)
-
-      [shared_point.x.to_s(16).rjust(64, "0")].pack("H*")
+      self.class.signing_relays(@config)
     end
 
     def build_and_sign_nip46_event(content:, recipient_pubkey:, sender_privkey:, sender_pubkey:)
-      # Build the event structure
-      event = {
-        "pubkey" => sender_pubkey,
-        "created_at" => Time.now.to_i,
-        "kind" => 24133,
-        "tags" => [["p", recipient_pubkey]],
-        "content" => content
-      }
-
-      event["id"] = EventValidator.event_id(event)
-
-      # Sign with Schnorr (BIP-340) as required by Nostr
-      require "schnorr"
-      message = [event["id"]].pack("H*")
-      privkey_bytes = [sender_privkey].pack("H*")
-      signature = Schnorr.sign(message, privkey_bytes)
-      event["sig"] = signature.encode.unpack1("H*")
-
-      event
+      Nip46Envelope.build(
+        content: content,
+        recipient_pubkey: recipient_pubkey,
+        sender_privkey: sender_privkey,
+        sender_pubkey: sender_pubkey
+      )
     end
 
     # WebSocket helpers (same pattern as other services)

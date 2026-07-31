@@ -1,0 +1,112 @@
+<div class="border-t border-gray-200 p-4 dark:border-gray-700"
+     data-controller="dm-delivery"
+     data-dm-delivery-checking-value="<%= delivery == :checking %>"
+     data-dm-delivery-url-value="<%= composer_conversation_path(conversation) %>">
+  <%# if/elsif rather than case/when: ERB cannot have template output between a
+      `case` and its first `when`. %>
+  <% if delivery == :unavailable %>
+    <p class="text-sm text-gray-500 dark:text-gray-400">
+      This account's signer has not granted messaging permissions yet.
+      <%= link_to "Enable messaging", re_pair_account_path(conversation.account, reason: "messaging"),
+            class: "font-medium text-amber-600 underline dark:text-amber-400" %>
+    </p>
+
+  <% elsif delivery == :checking %>
+    <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400"
+         data-dm-delivery-target="status">
+      <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+      </svg>
+      <%# NOT the downgrade offer: we have simply not looked yet. Treating a cold
+          cache as "they have no inbox" would push people onto NIP-04 for nothing. %>
+      Checking where this person receives private messages…
+    </div>
+
+  <% elsif delivery == :best_effort %>
+    <div class="space-y-3">
+      <div class="rounded-lg border border-yellow-300 bg-yellow-50 p-3 dark:border-yellow-700 dark:bg-yellow-900/30">
+        <p class="text-sm font-medium text-yellow-900 dark:text-yellow-200">
+          This person has not published a DM inbox
+        </p>
+        <p class="mt-1 text-sm text-yellow-800 dark:text-yellow-300">
+          Your message is still fully encrypted and your identity stays hidden, but it
+          goes to relays they never designated for messages — so it may not arrive.
+          Clients with no private-messaging support at all (Primal, Damus) will not
+          look for it.
+        </p>
+      </div>
+
+      <p class="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-yellow-700 dark:text-yellow-400">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+        </svg>
+        Strong encryption — best-effort delivery
+      </p>
+      <%= render "conversations/private_composer_form", conversation: conversation %>
+    </div>
+
+    <details class="mt-3 rounded-lg border border-orange-300 bg-orange-50 p-3 dark:border-orange-700 dark:bg-orange-900/30">
+      <summary class="cursor-pointer text-sm font-medium text-orange-900 dark:text-orange-200">
+        Not getting through? Send a legacy message instead
+      </summary>
+
+      <p class="mt-3 text-sm text-orange-800 dark:text-orange-300">
+        A legacy message reaches every client, including those with no
+        private-messaging support — which is most of them. But it is a real
+        downgrade:
+      </p>
+      <ul class="mt-2 list-disc space-y-1 pl-5 text-sm text-orange-800 dark:text-orange-300">
+        <% Message::LEGACY_DOWNGRADE_RISKS.each do |risk| %>
+          <li><%= risk %></li>
+        <% end %>
+      </ul>
+
+      <%= form_with url: conversation_messages_path(conversation), method: :post,
+                    data: { turbo_frame: "_top" }, class: "mt-3 space-y-2" do %>
+        <%= hidden_field_tag :legacy_ack, "1" %>
+        <%= text_area_tag :content, nil, rows: 3, required: true,
+              placeholder: "Message (the text is encrypted; who you sent it to is not)",
+              class: "w-full rounded-md border border-orange-300 bg-white p-2 text-sm dark:border-orange-700 dark:bg-gray-800 dark:text-white" %>
+        <%# Deliberately not labelled "Send": accepting a downgrade must not look
+            like the ordinary action. %>
+        <%= submit_tag "Send with public metadata",
+              class: "rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-500" %>
+        <p class="text-xs text-orange-700 dark:text-orange-400">
+          This starts a separate legacy thread with the same person, kept apart
+          from your private one.
+        </p>
+      <% end %>
+    </details>
+
+  <% elsif delivery == :legacy %>
+    <div class="space-y-2">
+      <p class="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-orange-700 dark:text-orange-400">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+        </svg>
+        Basic encryption — metadata is public
+      </p>
+      <%= form_with url: conversation_messages_path(conversation), method: :post,
+                    data: { turbo_frame: "_top" }, class: "space-y-2" do %>
+        <%= hidden_field_tag :legacy_ack, "1" %>
+        <%= text_area_tag :content, nil, rows: 2, required: true,
+              placeholder: "Reply in this legacy thread…",
+              class: "w-full rounded-md border border-orange-300 bg-white p-2 text-sm dark:border-orange-700 dark:bg-gray-800 dark:text-white" %>
+        <%= submit_tag "Send with public metadata",
+              class: "rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-500" %>
+      <% end %>
+    </div>
+
+  <% else %>
+    <div class="space-y-2">
+      <p class="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-green-700 dark:text-green-400">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+        </svg>
+        Strong encryption — content and metadata are private
+      </p>
+      <%= render "conversations/private_composer_form", conversation: conversation %>
+    </div>
+  <% end %>
+</div>

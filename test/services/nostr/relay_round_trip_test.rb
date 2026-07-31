@@ -6,6 +6,27 @@ require_relative "../../test_helper"
 # RelayQuery, which backs ProfileFetcher / EventFetcher / RelayListFetcher)
 # against a minimal in-process WebSocket relay.
 class NostrRelayRoundTripTest < ActiveSupport::TestCase
+  include FakeRelay
+
+  # inbox.nostr.wine answers a User-Agent-less handshake with HTTP 403, and the
+  # rescue in WebsocketConnection.open turns that into a bare nil — so the header
+  # is the difference between "DM inbox relay works" and "silently unreachable".
+  def test_handshake_sends_a_user_agent
+    url = with_relay { |socket, message| send_text(socket, [ "EOSE", message[1] ].to_json) if message[0] == "REQ" }
+
+    Nostr::RelayQuery.run(url, { "kinds" => [ 0 ] }, timeout: 5, verify: false)
+
+    assert wait_until { relay_handshakes.any? }, "relay never completed a handshake"
+    assert_match(/^User-Agent: Emanator /, relay_handshakes.first, "handshake sent no User-Agent")
+  end
+
+  def test_a_relay_that_refuses_the_upgrade_is_unreachable_not_a_crash
+    refusal = [ "HTTP/1.1 403 Forbidden", "Content-Length: 0", "", "" ].join("\r\n")
+    url = with_relay(handshake_response: refusal)
+
+    assert_nil Nostr::RelayQuery.run(url, { "kinds" => [ 0 ] }, timeout: 2)
+  end
+
   def test_publisher_gets_ok_for_its_own_event
     event = { "id" => "a" * 64, "kind" => 1, "content" => "hello" }
 
@@ -52,76 +73,5 @@ class NostrRelayRoundTripTest < ActiveSupport::TestCase
     server.close
 
     assert_nil Nostr::RelayQuery.run("ws://127.0.0.1:#{port}", { "kinds" => [ 0 ] }, timeout: 1)
-  end
-
-  private
-
-  # Boot a one-connection WebSocket relay; `handler` receives each parsed client
-  # message. Returns the ws:// URL. Torn down when the test process moves on.
-  def with_relay(&handler)
-    server = TCPServer.new("127.0.0.1", 0)
-    port = server.addr[1]
-
-    @threads ||= []
-    @servers ||= []
-    @servers << server
-    @threads << Thread.new do
-      socket = server.accept
-      handshake(socket)
-      loop do
-        payload = read_client_frame(socket)
-        break unless payload
-        message = JSON.parse(payload)
-        instance_exec(socket, message, &handler)
-      end
-    rescue StandardError
-      nil
-    end
-
-    "ws://127.0.0.1:#{port}"
-  end
-
-  def teardown
-    @threads&.each(&:kill)
-    @servers&.each { |s| s.close rescue nil }
-  end
-
-  def handshake(socket)
-    request = +""
-    request << socket.readpartial(1024) until request.include?("\r\n\r\n")
-    key = request[/Sec-WebSocket-Key: (.+)\r\n/, 1]
-    accept = Base64.strict_encode64(Digest::SHA1.digest(key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"))
-    socket.write([
-      "HTTP/1.1 101 Switching Protocols",
-      "Upgrade: websocket",
-      "Connection: Upgrade",
-      "Sec-WebSocket-Accept: #{accept}",
-      "", ""
-    ].join("\r\n"))
-  end
-
-  def read_client_frame(socket)
-    header = socket.read(2)
-    return nil unless header
-    second = header.bytes[1]
-    length = second & 0x7F
-    length = socket.read(2).unpack1("n") if length == 126
-    length = socket.read(8).unpack1("Q>") if length == 127
-    mask = (second & 0x80).positive? ? socket.read(4).bytes : nil
-    payload = length.positive? ? socket.read(length) : ""
-    payload = payload.bytes.each_with_index.map { |b, i| b ^ mask[i % 4] }.pack("C*") if mask
-    payload.force_encoding("UTF-8")
-  end
-
-  # Server frames are unmasked per RFC 6455.
-  def send_text(socket, data)
-    payload = data.b
-    header = [ 0x81 ]
-    if payload.bytesize < 126
-      header << payload.bytesize
-    else
-      header << 126 << (payload.bytesize >> 8) << (payload.bytesize & 0xFF)
-    end
-    socket.write(header.pack("C*") + payload)
   end
 end

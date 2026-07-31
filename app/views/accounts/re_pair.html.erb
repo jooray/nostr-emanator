@@ -38,9 +38,17 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
           </svg>
         </div>
-        <h2 class="mt-4 text-lg font-semibold text-gray-900 dark:text-white">Re-connect Signer</h2>
+        <h2 class="mt-4 text-lg font-semibold text-gray-900 dark:text-white">
+          <%= @messaging_repair ? "Enable Messaging" : "Re-connect Signer" %>
+        </h2>
         <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-          Scan the QR code with Amber to re-pair the signer on a new relay. Your posts and settings will be preserved.
+          <% if @messaging_repair %>
+            Private messages need permissions your signer has not granted yet — encrypting,
+            sealing and decrypting messages. Re-pair to request them. Your posts and settings
+            will be preserved.
+          <% else %>
+            Scan the QR code with Amber to re-pair the signer on a new relay. Your posts and settings will be preserved.
+          <% end %>
         </p>
         <%= render "shared/qr_phishing_warning", caption: "pairs your Nostr key to someone else's Emanator account" %>
       </div>
@@ -84,18 +92,31 @@
       <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
         <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-3">How to re-pair</h3>
         <ol class="space-y-3 text-sm text-gray-600 dark:text-gray-400">
-          <li class="flex items-start gap-3">
-            <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900 text-amber-600 dark:text-amber-400 font-medium text-xs">1</span>
-            <span>Open Amber (or your NIP-46 signer)</span>
-          </li>
-          <li class="flex items-start gap-3">
-            <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900 text-amber-600 dark:text-amber-400 font-medium text-xs">2</span>
-            <span>Scan the QR code or paste the connection URI</span>
-          </li>
-          <li class="flex items-start gap-3">
-            <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900 text-amber-600 dark:text-amber-400 font-medium text-xs">3</span>
-            <span>Approve the connection — signer fields update, everything else stays</span>
-          </li>
+          <% steps = if @messaging_repair
+               [
+                 "Open Amber (or your NIP-46 signer)",
+                 "Scan the QR code or paste the connection URI",
+                 "Approve the connection — it now also covers message encryption and sealing",
+                 "On the first “decrypt” prompt, choose <strong>Always</strong> and scope <strong>All</strong>. Otherwise every single message needs a tap on your phone.".html_safe,
+                 # Amber's "Client auth whitelist" auto-rejects kind-22242 from any
+                 # host not on it, without prompting — which presents as an empty
+                 # inbox with nothing explaining why. Wording matches Amber's own
+                 # strings.xml; the list holds hostnames and has no wildcard.
+                 "When Amber asks about <strong>relay authentication</strong>, choose scope <strong>All relays</strong>. If you use Amber's <strong>Client auth whitelist</strong>, add your DM inbox relays to it — while that list is non-empty Amber rejects every other relay without asking.".html_safe
+               ]
+             else
+               [
+                 "Open Amber (or your NIP-46 signer)",
+                 "Scan the QR code or paste the connection URI",
+                 "Approve the connection — signer fields update, everything else stays"
+               ]
+             end %>
+          <% steps.each_with_index do |step, index| %>
+            <li class="flex items-start gap-3">
+              <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900 text-amber-600 dark:text-amber-400 font-medium text-xs"><%= index + 1 %></span>
+              <span><%= step %></span>
+            </li>
+          <% end %>
         </ol>
       </div>
     </div>

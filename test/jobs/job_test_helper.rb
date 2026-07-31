@@ -111,10 +111,15 @@ module JobTestHelper
     stub_class_method(Nostr::EventSignerService, :new, ->(*_a, **_k) { signer }, &block)
   end
 
+  # `**opts` so adding a keyword to EventPublisherService#publish (e.g.
+  # include_defaults:) does not make every publish-job test raise ArgumentError.
+  # `results` may be a callable taking (relays) or (relays, opts).
   def with_publisher(results, &block)
     publisher = Object.new
-    publisher.define_singleton_method(:publish) do |_event, relays:|
-      results.respond_to?(:call) ? results.call(relays) : results
+    publisher.define_singleton_method(:publish) do |_event, relays:, **opts|
+      next results unless results.respond_to?(:call)
+
+      results.arity == 1 ? results.call(relays) : results.call(relays, opts)
     end
     stub_class_method(Nostr::EventPublisherService, :new, ->(*_a, **_k) { publisher }, &block)
   end

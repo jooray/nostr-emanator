@@ -1,0 +1,65 @@
+<% mine = message.outbound? %>
+<div class="flex <%= mine ? 'justify-end' : 'justify-start' %>">
+  <div class="max-w-[80%] space-y-1">
+    <% unless mine %>
+      <p class="px-1 text-xs text-gray-500 dark:text-gray-400"><%= dm_display_name(message.sender_pubkey) %></p>
+    <% end %>
+
+    <div class="rounded-2xl px-4 py-2 <%= mine ? 'bg-amber-600 text-white' : 'bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-gray-100' %>">
+      <% if message.file? %>
+        <p class="text-sm italic opacity-80">
+          [encrypted file<%= " — #{message.file_metadata_hash['file-type']}" if message.file_metadata_hash["file-type"].present? %>]
+        </p>
+      <% end %>
+      <p class="whitespace-pre-wrap break-words text-sm"><%= message.content %></p>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2 px-1 <%= mine ? 'justify-end' : '' %>">
+      <span class="text-xs text-gray-400 dark:text-gray-500">
+        <%= local_time(message.rumor_created_at || message.sort_at, format: "short") %>
+      </span>
+
+      <% if message.legacy_downgrade? %>
+        <%# Permanent, not a toast: the user accepted this downgrade once and the
+            record of it has to survive for as long as the message does. %>
+        <span class="inline-flex items-center rounded-full bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-800 dark:bg-orange-900 dark:text-orange-200"
+              title="Sent as a legacy NIP-04 DM — the sender, recipient and timing are public">
+          Sent unencrypted-metadata
+        </span>
+      <% elsif message.legacy? %>
+        <span class="inline-flex items-center rounded-full bg-orange-100 px-2 py-0.5 text-xs text-orange-800 dark:bg-orange-900 dark:text-orange-200"
+              title="Legacy NIP-04 message — the sender, recipient and timing were public">
+          Legacy
+        </span>
+      <% end %>
+
+      <% if message.best_effort_delivery? %>
+        <%# Not an error — it was sent, and still fully encrypted with the sender
+            hidden. But the recipient never asked to receive DMs there, so
+            "delivered" would be overclaiming. %>
+        <span class="inline-flex items-center rounded-full bg-yellow-100 px-2 py-0.5 text-xs text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+              title="<%= message.delivery_note %>">
+          Best effort
+        </span>
+      <% end %>
+
+      <% if message.rumor_id_recomputed? || message.pubkey_recovered? %>
+        <%# Some clients omit fields NIP-17 marks required; we filled them in from
+            the signed seal. Surfaced so a mismatched id has a visible explanation. %>
+        <span class="text-xs text-gray-400 dark:text-gray-500"
+              title="This message omitted fields NIP-17 requires; recovered from the signed seal.">
+          repaired
+        </span>
+      <% end %>
+
+      <% if mine && message.sending? %>
+        <span class="text-xs text-gray-400 dark:text-gray-500"><%= message.step.presence || "Sending…" %></span>
+      <% end %>
+    </div>
+
+    <% if mine && message.failed? %>
+      <%= render "conversations/failed_message_actions",
+            message: message, delivery: local_assigns[:delivery] %>
+    <% end %>
+  </div>
+</div>

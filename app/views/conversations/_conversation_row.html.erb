@@ -1,0 +1,57 @@
+<li>
+  <%= link_to conversation_path(conversation),
+        class: "flex items-start gap-3 p-4 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50" do %>
+    <%= render "shared/avatar", pubkey: conversation.peer_pubkeys.first, size: :md %>
+
+    <div class="min-w-0 flex-1">
+      <div class="flex items-baseline justify-between gap-2">
+        <p class="truncate text-sm font-medium text-gray-900 dark:text-white">
+          <%= dm_peer_label(conversation) %>
+        </p>
+        <span class="flex-shrink-0 text-xs text-gray-500 dark:text-gray-400">
+          <%= local_time(conversation.last_message_at, format: "short") if conversation.last_message_at %>
+        </span>
+      </div>
+
+      <p class="mt-0.5 truncate text-sm text-gray-600 dark:text-gray-300">
+        <% if conversation.last_message_from_self %>
+          <span class="text-gray-400 dark:text-gray-500">You:</span>
+        <% end %>
+        <%= conversation.last_message_preview.presence || conversation.subject.presence || "(no preview)" %>
+      </p>
+
+      <div class="mt-1.5 flex flex-wrap items-center gap-2">
+        <%# Which of your identities this conversation belongs to. With one inbox
+            across every account, this is the thing that is otherwise ambiguous. %>
+        <span class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+          <%= render "shared/avatar", pubkey: conversation.account.pubkey_hex, size: :sm %>
+          <%= conversation.account.display_name_or_npub %>
+        </span>
+
+        <% if conversation.legacy? %>
+          <%# Kind 4: the metadata was never private. Say so wherever it appears. %>
+          <span class="inline-flex items-center rounded-full bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-800 dark:bg-orange-900 dark:text-orange-200"
+                title="Legacy NIP-04 thread — sender, recipient and timing are public">
+            Legacy · metadata public
+          </span>
+        <% end %>
+
+        <% if conversation.group? %>
+          <span class="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+            <%= conversation.participant_pubkeys.size %> people
+          </span>
+        <% end %>
+
+        <% if (reason = dm_classification_badge(conversation)) %>
+          <span class="text-xs text-gray-400 dark:text-gray-500"><%= reason %></span>
+        <% end %>
+      </div>
+    </div>
+
+    <% if conversation.unread? %>
+      <span class="mt-1 inline-flex h-5 min-w-5 flex-shrink-0 items-center justify-center rounded-full bg-amber-600 px-1.5 text-xs font-medium text-white">
+        <%= conversation.unread_count > 99 ? "99+" : conversation.unread_count %>
+      </span>
+    <% end %>
+  <% end %>
+</li>

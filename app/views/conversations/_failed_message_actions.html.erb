@@ -1,0 +1,46 @@
+<%# What to offer on a message that did not go out.
+
+    A plain Retry is only honest when retrying could work. A send to a recipient
+    with no kind 10050 already went out best-effort to relays they never
+    designated, so if it failed there, repeating it will fail the same way — offer
+    the legacy route instead, which is the one that actually reaches clients with
+    no private-messaging support. Same risks spelled out as in the composer. %>
+<% undeliverable = delivery == :best_effort && !message.legacy? %>
+
+<div class="mt-1 rounded-lg border border-red-300 bg-red-50 p-3 text-left dark:border-red-800 dark:bg-red-900/30">
+  <p class="text-xs font-medium text-red-900 dark:text-red-200">Not sent</p>
+  <% if message.error.present? %>
+    <p class="mt-1 text-xs text-red-800 dark:text-red-300"><%= message.error %></p>
+  <% end %>
+
+  <div class="mt-2 flex flex-wrap items-center gap-2">
+    <% unless undeliverable %>
+      <%= button_to "Try again", retry_message_path(message), method: :post,
+            class: "rounded-md bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-500" %>
+    <% end %>
+  </div>
+
+  <% if undeliverable %>
+    <details class="mt-2">
+      <summary class="cursor-pointer text-xs font-medium text-orange-800 dark:text-orange-300">
+        Send it as a legacy message instead?
+      </summary>
+      <p class="mt-2 text-xs text-orange-800 dark:text-orange-300">
+        They cannot receive private messages at all, so this is the only way it will
+        reach them — but it is a real downgrade:
+      </p>
+      <ul class="mt-1 list-disc space-y-0.5 pl-4 text-xs text-orange-800 dark:text-orange-300">
+        <% Message::LEGACY_DOWNGRADE_RISKS.each do |risk| %>
+          <li><%= risk %></li>
+        <% end %>
+      </ul>
+      <%# Same wording as the composer: accepting a downgrade must never look like
+          the ordinary action. %>
+      <%= button_to "Send with public metadata", downgrade_message_path(message), method: :post,
+            class: "mt-2 rounded-md bg-orange-600 px-3 py-1 text-xs font-medium text-white hover:bg-orange-500" %>
+      <p class="mt-1 text-xs text-orange-700 dark:text-orange-400">
+        This moves it to a separate legacy thread with the same person.
+      </p>
+    </details>
+  <% end %>
+</div>

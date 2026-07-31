@@ -1,0 +1,154 @@
+<div class="space-y-6" data-controller="dm-filter">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Messages</h1>
+    <p class="text-sm text-gray-500 dark:text-gray-400">
+      Private messages across all your accounts
+    </p>
+  </div>
+
+  <%= render "accounts/messaging_repair_list", accounts: @messaging_accounts %>
+
+  <%# The NIP-42 trap. Some DM inbox relays serve gift wraps only to an
+      authenticated client, and a signer that will not sign kind 22242 produces an
+      empty inbox with nothing explaining it — so it has to be said here.
+
+      We only know the signature did not come back, not why, so the copy names the
+      likeliest cause without asserting it. Wording checked against Amber's own
+      strings.xml: the setting is "Client auth whitelist", it takes hostnames, and
+      there is no wildcard — the `*` belongs to a different prompt. %>
+  <% @accounts.select { |a| a.settings&.dig("amber_auth_blocked_at").present? }.each do |account| %>
+    <% host = account.settings["amber_auth_blocked_relay"] %>
+    <div class="rounded-lg border border-red-300 bg-red-50 p-4 dark:border-red-700 dark:bg-red-900/30">
+      <p class="text-sm font-medium text-red-900 dark:text-red-200">
+        Your signer did not authenticate <%= account.display_name_or_npub %> to
+        <code><%= host %></code>
+      </p>
+      <p class="mt-1 text-sm text-red-800 dark:text-red-300">
+        That relay hands your messages only to an authenticated client, so anything
+        stored there cannot be fetched until this succeeds.
+      </p>
+      <ul class="mt-2 list-disc space-y-1 pl-5 text-sm text-red-800 dark:text-red-300">
+        <li>
+          If Amber prompted you and you missed it, just wait — it retries. When it
+          asks, <strong>Authentication scope → All relays</strong> stops it asking again.
+        </li>
+        <li>
+          If it never prompts, check <strong>Settings → Client auth whitelist</strong>
+          in Amber. While that list is non-empty, Amber rejects relay-auth requests
+          from any host that is not on it, without asking. Either add
+          <code><%= host %></code> to the list, or clear the list so Amber asks you
+          instead.
+        </li>
+      </ul>
+    </div>
+  <% end %>
+
+  <% if @accounts.empty? %>
+    <div class="rounded-lg border border-gray-200 bg-white p-8 text-center dark:border-gray-700 dark:bg-gray-800">
+      <p class="text-gray-600 dark:text-gray-400">Pair an account to start receiving private messages.</p>
+      <%= link_to "Add an account", new_account_path,
+            class: "mt-4 inline-block rounded-md bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-500" %>
+    </div>
+  <% else %>
+    <%# Known vs Requests. Everything not vouched for by a follow, a sibling
+        account's follow, the web of trust, or a reply of ours waits in Requests. %>
+    <div class="border-b border-gray-200 dark:border-gray-700">
+      <nav class="-mb-px flex gap-6">
+        <% [["known", "Inbox"], ["requests", "Requests"]].each do |tab, label| %>
+          <%= link_to messages_path(tab: tab, accounts: @account_filter),
+                class: "flex items-center gap-2 border-b-2 px-1 py-3 text-sm font-medium transition-colors #{@tab == tab ? 'border-amber-500 text-amber-600 dark:text-amber-400' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}" do %>
+            <%= label %>
+            <span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+              <%= @counts[tab] %>
+            </span>
+          <% end %>
+        <% end %>
+      </nav>
+    </div>
+
+    <% if @accounts.size > 1 %>
+      <%= form_with url: messages_path, method: :get, data: { dm_filter_target: "form" },
+                    class: "flex flex-wrap items-center gap-2" do %>
+        <%= hidden_field_tag :tab, @tab %>
+        <span class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Accounts</span>
+        <%# An empty filter means "every account" — this is a central inbox, so
+            showing all of them is the default. Render the pills as selected to
+            match, rather than leaving them all looking switched off. %>
+        <% showing_all = @account_filter.empty? %>
+        <% @accounts.each do |account| %>
+          <% active = showing_all || @account_filter.include?(account.id) %>
+          <label class="cursor-pointer">
+            <%= check_box_tag "accounts[]", account.id, active,
+                  id: "dm-account-#{account.id}", class: "peer sr-only",
+                  data: { action: "change->dm-filter#apply" } %>
+            <span class="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm transition-colors <%= active ? 'border-amber-500 bg-amber-50 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300' : 'border-gray-300 text-gray-600 hover:border-gray-400 dark:border-gray-600 dark:text-gray-300' %>">
+              <%= render "shared/avatar", pubkey: account.pubkey_hex, size: :sm %>
+              <%= account.display_name_or_npub %>
+            </span>
+          </label>
+        <% end %>
+        <%# "Select all" clears the filter, which is the same thing — but says so
+            in the user's terms rather than ours. Hidden when everything is
+            already shown, so it never reads as a no-op.
+
+            The empty `accounts` param is required, not decoration: the filter is
+            persisted, so a link without it leaves params[:accounts] absent, the
+            controller falls back to the stored subset, and the link does nothing
+            at all. %>
+        <% unless showing_all %>
+          <%= link_to "Select all", messages_path(tab: @tab, accounts: [ "" ]),
+                class: "text-sm font-medium text-amber-600 underline hover:text-amber-500 dark:text-amber-400" %>
+        <% end %>
+        <noscript><%= submit_tag "Filter", class: "rounded bg-gray-200 px-2 py-1 text-sm dark:bg-gray-700" %></noscript>
+      <% end %>
+    <% end %>
+
+    <div class="flex flex-wrap items-center gap-3">
+      <%# Both act on the tab and account filter currently in view, so they never
+          quietly touch conversations the user cannot see. %>
+      <% if @unread_only %>
+        <%= link_to messages_path(tab: @tab, accounts: @account_filter),
+              class: "inline-flex items-center gap-1.5 rounded-full border border-amber-500 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" do %>
+          Unread only
+          <span aria-hidden="true">&times;</span>
+        <% end %>
+      <% else %>
+        <%= link_to "Filter by unread", messages_path(tab: @tab, accounts: @account_filter, unread: "1"),
+              class: "rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-600 hover:border-gray-400 dark:border-gray-600 dark:text-gray-300" %>
+      <% end %>
+
+      <%= button_to "Mark all as read",
+            mark_all_read_messages_path(tab: @tab, accounts: @account_filter),
+            method: :post, form: { data: { turbo_confirm: "Mark every unread conversation in this view as read?" } },
+            class: "rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-600 hover:border-gray-400 dark:border-gray-600 dark:text-gray-300" %>
+    </div>
+
+    <% syncing = @sync_states.values.select { |s| s.step.present? } %>
+    <% if syncing.any? %>
+      <div class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-900/30 dark:text-amber-200">
+        <% syncing.each { |state| %><p><%= state.step %></p><% } %>
+      </div>
+    <% end %>
+
+    <div class="overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+      <% if @conversations.any? %>
+        <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+          <%= render partial: "conversations/conversation_row", collection: @conversations, as: :conversation %>
+        </ul>
+      <% else %>
+        <div class="p-10 text-center">
+          <p class="text-gray-600 dark:text-gray-400">
+            <%= @tab == "requests" ? "No message requests." : "No messages yet." %>
+          </p>
+          <% if @tab == "known" %>
+            <p class="mt-2 text-sm text-gray-500 dark:text-gray-500">
+              Messages from people you follow appear here. Everyone else waits in Requests.
+            </p>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <%= paginate @conversations if respond_to?(:paginate) %>
+  <% end %>
+</div>

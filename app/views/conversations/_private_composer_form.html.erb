@@ -1,0 +1,22 @@
+<%# The NIP-17 send form, shared by the :nip17 and :best_effort branches of the
+    composer — the delivery differs, the form does not. %>
+<%= form_with url: conversation_messages_path(conversation), method: :post,
+              data: { controller: "dm-composer", turbo_frame: "_top" }, class: "space-y-2" do %>
+  <%= text_area_tag :content, nil, rows: 2, required: true,
+        placeholder: "Write a private message…",
+        data: { dm_composer_target: "input", action: "keydown->dm-composer#maybeSend" },
+        class: "w-full rounded-md border border-gray-300 bg-white p-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white" %>
+  <div class="flex items-center justify-between">
+    <% if conversation.group? %>
+      <%# Each participant needs their own seal, so the signer prompts once
+          per person plus one for the self-copy. Say so before they tap. %>
+      <span class="text-xs text-gray-500 dark:text-gray-400">
+        Needs <%= conversation.participant_pubkeys.size %> approvals in your signer app.
+      </span>
+    <% else %>
+      <span class="text-xs text-gray-500 dark:text-gray-400">Enter to send, Shift+Enter for a new line.</span>
+    <% end %>
+    <%= submit_tag "Send",
+          class: "rounded-md bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-500" %>
+  </div>
+<% end %>

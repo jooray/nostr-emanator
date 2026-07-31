@@ -63,13 +63,8 @@ class AccountsController < ApplicationController
 
     user_pubkey = auth_session.authenticated_user_pubkey
     @account = current_user.accounts.find_or_initialize_by(pubkey_hex: user_pubkey)
-    @account.assign_attributes(
-      npub: Nostr::KeyConverter.hex_to_npub(user_pubkey),
-      signer_pubkey: auth_session.authenticated_pubkey,
-      signer_relay: auth_session.relay_urls.first,
-      app_pubkey: auth_session.temp_pubkey,
-      app_privkey: auth_session.temp_privkey
-    )
+    @account.assign_attributes(npub: Nostr::KeyConverter.hex_to_npub(user_pubkey))
+    @account.apply_signer(auth_session)
 
     if @account.save
       complete_pairing!(@account, auth_session)
@@ -114,6 +109,9 @@ class AccountsController < ApplicationController
   end
 
   def re_pair
+    # ?reason=messaging swaps the copy for the NIP-17 permission grant, which
+    # needs two extra steps the normal re-pair does not (see the view).
+    @messaging_repair = params[:reason] == "messaging"
     pending_pairing_session&.consume!
     @connect_data = Nostr::AuthService.new.generate_connect_uri
     session[:account_pairing_session_id] = @connect_data[:session_id]
@@ -139,12 +137,14 @@ class AccountsController < ApplicationController
         return
       end
 
-      @account.update!(
-        signer_pubkey: auth_session.authenticated_pubkey,
-        signer_relay: auth_session.relay_urls.first,
-        app_pubkey: auth_session.temp_pubkey,
-        app_privkey: auth_session.temp_privkey
-      )
+      # A save failure here used to escape as an HTML 422, which the poller then
+      # tried to JSON.parse — so the real reason never reached the user and the
+      # poll just spun. Answer in JSON whatever happens.
+      unless @account.apply_signer(auth_session).save
+        render json: { paired: false, error: "Could not save the signer: #{@account.errors.full_messages.to_sentence}" }
+        return
+      end
+
       auth_session.consume!
       session.delete(:account_pairing_session_id)
       render json: { paired: true, redirect_url: account_path(@account) }

@@ -1,0 +1,27 @@
+<%# The Messages nav entry. Extracted because the nav list is duplicated between
+    the desktop sidebar and the mobile panel, and a badge that drifts between the
+    two is worse than no badge.
+
+    `mobile: true` adds the panel-closing action. %>
+<li>
+  <%= link_to messages_path,
+        class: "flex items-center gap-3 rounded-lg px-3 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 #{request.path.start_with?('/messages') ? 'bg-gray-100 dark:bg-gray-700' : ''}",
+        data: local_assigns[:mobile] ? { action: "click->mobile-nav#close" } : {} do %>
+    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+    </svg>
+    Messages
+    <% unread = dm_unread_count(current_user) %>
+    <% if unread.positive? %>
+      <%# Counts unread in the Inbox only. Anyone can send you a gift wrap, so
+          letting Requests drive a numbered badge would hand strangers control of
+          your notification count. %>
+      <span class="ml-auto inline-flex items-center justify-center rounded-full bg-amber-600 px-2 py-0.5 text-xs font-medium text-white">
+        <%= unread > 99 ? "99+" : unread %>
+      </span>
+    <% elsif dm_has_requests?(current_user) %>
+      <span class="ml-auto h-2 w-2 rounded-full bg-gray-400 dark:bg-gray-500"
+            title="You have unread message requests"></span>
+    <% end %>
+  <% end %>
+</li>

@@ -17,8 +17,18 @@ module Nostr
 
     # Publish a pre-signed event to relays
     # Returns hash of { relay_url => :ok/:error }
-    def publish(signed_event, relays: [])
-      all_relays = select_relays(relays)
+    #
+    # `include_defaults: false` publishes to EXACTLY the given relays.
+    #
+    # That is a privacy requirement, not a convenience. NIP-17 says clients MUST
+    # publish gift wraps only to the relays in the recipient's kind 10050, and
+    # `select_relays` otherwise always folds in the configured defaults (with four
+    # of them, `reserved` is 4, so all four are added unconditionally). A gift
+    # wrap sent to damus.io/nos.lol would leak who-talks-to-whom to relays the
+    # recipient never nominated — and still not arrive, because they are not
+    # watching those relays for wraps.
+    def publish(signed_event, relays: [], include_defaults: true)
+      all_relays = select_relays(relays, include_defaults: include_defaults)
       results = {}
       mutex = Mutex.new
 
@@ -48,8 +58,12 @@ module Nostr
     # NIP-65 lists and user settings) and cap how many we fan out to. The
     # configured defaults are kept if the account's own list already fills the
     # cap, so a poisoned list cannot push us off our known-good relays.
-    def select_relays(relays)
+    def select_relays(relays, include_defaults: true)
       account_relays = Array(relays).select { |url| safe_relay?(url) }
+      # The guard still applies to a caller-supplied list; only the defaults are
+      # dropped.
+      return account_relays.uniq.first(MAX_RELAYS) unless include_defaults
+
       default_relays = @default_relays.select { |url| safe_relay?(url) }
       reserved = [ default_relays.size, MAX_RELAYS / 2 ].min
 

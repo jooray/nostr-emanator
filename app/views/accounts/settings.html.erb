@@ -11,6 +11,8 @@
     </div>
   </div>
 
+  <%= render "accounts/messaging_banner", account: @account %>
+
   <!-- Profile Card -->
   <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
     <div class="p-6">
@@ -48,6 +50,17 @@
               <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
                 <span class="flex h-2 w-2 rounded-full bg-yellow-500"></span>
                 No signer
+              </span>
+            <% end %>
+            <% if @account.messaging_capable? %>
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                <span class="flex h-2 w-2 rounded-full bg-green-500"></span>
+                Messaging enabled
+              </span>
+            <% elsif @account.has_signer? %>
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                <span class="flex h-2 w-2 rounded-full bg-yellow-500"></span>
+                Messaging needs re-pair
               </span>
             <% end %>
             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">

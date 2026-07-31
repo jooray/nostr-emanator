@@ -19,11 +19,49 @@ class RecurringQueueConfigTest < ActiveSupport::TestCase
       "`command:` entry in recurring.yml will enqueue forever and never run"
   end
 
+  # dm_supervisor is listed explicitly because DmSupervisorJob is reached from a
+  # `command:` entry, so the derived check below cannot see its queue.
   def test_the_normal_queues_are_still_listened_on
-    %w[auth signing default].each do |queue|
+    %w[auth signing default messaging dm_supervisor].each do |queue|
       assert_includes listened_queues, queue
     end
   end
+
+  # The long-lived supervisors must not share a pool with ordinary work: each
+  # holds a thread for its whole runtime, so a pool that also serves the decrypt
+  # and send jobs could be left with nothing free to restart them.
+  def test_the_long_running_supervisors_have_dedicated_pools
+    { "auth" => Nip46SupervisorJob, "dm_supervisor" => DmSupervisorJob }.each do |queue, job_class|
+      assert_equal queue, job_class.new.queue_name
+      worker = workers.find { |w| Array(w.fetch("queues")).include?(queue) }
+      assert_equal [ queue ], Array(worker.fetch("queues")),
+        "#{queue} shares a worker with #{(Array(worker.fetch('queues')) - [ queue ]).join(', ')}"
+    end
+  end
+
+  # The generic form of the bug above: derived from recurring.yml rather than a
+  # hardcoded list, so adding a `class:` entry whose job declares a queue nobody
+  # consumes fails here instead of in production four days later.
+  def test_every_scheduled_job_class_lands_on_a_queue_someone_consumes
+    scheduled_job_classes.each do |job_class|
+      queue = job_class.new.queue_name
+
+      assert_includes listened_queues, queue,
+        "#{job_class} is scheduled in recurring.yml on queue #{queue.inspect}, " \
+        "which no worker in queue.yml consumes — it would enqueue forever and never run"
+    end
+  end
+
+  private
+
+  def scheduled_job_classes
+    YAML.load_file(Rails.root.join("config/recurring.yml"), aliases: true)
+      .values
+      .filter_map { |entry| entry["class"] }
+      .map(&:constantize)
+  end
+
+  public
 
   # Solid Queue does `Array(options[:queues])`, so a comma-separated *string*
   # becomes a single queue name containing a comma and the worker matches

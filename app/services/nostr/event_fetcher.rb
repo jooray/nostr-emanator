@@ -200,6 +200,34 @@ module Nostr
 
     # Fetch kind 3 contact lists for multiple pubkeys
     # Returns: { pubkey_hex => Set[followed_pubkeys] }
+    # Run an arbitrary filter across every configured relay, deduplicated by id.
+    # For callers that need a filter the named fetchers do not cover.
+    def fetch_events(filter)
+      query_all_relays(filter)
+    end
+
+    # One-hop web of trust: "do any of `authors` follow `pubkey_hex`?"
+    #
+    # Deliberately a single filtered query rather than a materialised
+    # follows-of-follows set — the latter is ~10^5 rows and a refresh problem to
+    # answer one boolean per stranger. `limit: 1` because existence is the whole
+    # question.
+    #
+    # Some relays reject a filter with a very large `authors` array. On an empty
+    # result we retry without it and intersect locally, so a strict relay
+    # downgrades to a slower answer rather than a wrong one.
+    def fetch_contact_lists_mentioning(pubkey_hex, authors:)
+      authors = Array(authors).compact.uniq
+      return [] if pubkey_hex.blank? || authors.empty?
+
+      events = query_all_relays({ "kinds" => [ 3 ], "#p" => [ pubkey_hex ], "authors" => authors, "limit" => 1 })
+      return events if events.any?
+
+      wanted = authors.to_set
+      query_all_relays({ "kinds" => [ 3 ], "#p" => [ pubkey_hex ], "limit" => 500 })
+        .select { |event| wanted.include?(event["pubkey"]) }
+    end
+
     def fetch_contact_lists(pubkey_hexes)
       pubkey_hexes = Array(pubkey_hexes).compact.uniq
       return {} if pubkey_hexes.empty?
@@ -406,6 +434,21 @@ module Nostr
     # never reach the callers above (mentions, contact lists, mute lists…).
     def fetch_from_relay(relay_url, filter)
       RelayQuery.run(relay_url, filter, timeout: TIMEOUT) || []
+    end
+
+    # Fan out one filter across every configured relay, deduplicated by event id.
+    # Same thread-per-relay shape the other fetchers use.
+    def query_all_relays(filter)
+      threads = @relays.map do |relay_url|
+        Thread.new do
+          fetch_from_relay(relay_url, filter)
+        rescue StandardError => e
+          Rails.logger.warn("Query failed on #{relay_url.inspect}: #{e.message}")
+          []
+        end
+      end
+
+      threads.flat_map(&:value).uniq { |event| event["id"] }
     end
   end
 end

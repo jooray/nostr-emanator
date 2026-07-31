@@ -22,6 +22,16 @@ export default class extends Controller {
           method: "POST",
           headers: { "X-CSRF-Token": document.querySelector("meta[name='csrf-token']")?.content }
         })
+
+        // A server error renders HTML, so JSON.parse throws and the catch below
+        // only logs it — leaving the QR spinning forever with the real reason
+        // buried in the console. Stop and say something instead.
+        if (!response.ok) {
+          this.stopPolling()
+          this.onError(`Pairing failed (server error ${response.status}). Reload and try again.`)
+          return
+        }
+
         const data = await response.json()
 
         if (data.paired) {

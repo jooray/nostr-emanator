@@ -27,8 +27,14 @@ module Nostr
     # among the ones actually asked for. `kind:`/`author:` override what is
     # inferred from the filter. A relay that serves a forged or replayed event
     # for someone else's pubkey is therefore ignored, not trusted.
+    # `auth:` opts in to NIP-42. It is a callable `->(relay_url, challenge) {
+    # signed_22242_event | nil }`; passing nothing keeps the historical behaviour
+    # exactly, which matters because this method backs profiles, contact lists,
+    # mutes, mentions and relay lists. Only the DM read path needs authentication,
+    # and only because two of the common inbox relays refuse to serve kind 1059
+    # without it.
     def self.run(relay_url, filter, timeout: DEFAULT_TIMEOUT, stop_after_first: false,
-                 kind: nil, author: nil, verify: true, &matcher)
+                 kind: nil, author: nil, verify: true, auth: nil, &matcher)
       uri = URI.parse(relay_url)
       deadline = timeout.seconds.from_now
       socket = WebsocketConnection.open(uri, deadline: deadline)
@@ -36,6 +42,11 @@ module Nostr
 
       sub_id = SecureRandom.hex(4)
       events = []
+      challenge = nil
+      authenticated = false
+      # One re-subscription only: a relay that keeps demanding auth after a
+      # successful one is refusing us, not negotiating.
+      resubscribed = false
 
       begin
         WebsocketConnection.send_text(socket, ["REQ", sub_id, filter].to_json, deadline)
@@ -66,10 +77,26 @@ module Nostr
 
             events << event
             break if stop_after_first
+          when "AUTH"
+            # May arrive on connect AND again with the rejection, carrying the
+            # same value; last one wins.
+            challenge = parsed[1]
           when "EOSE"
             break
           when "CLOSED"
-            break
+            # A CLOSED destroys the subscription, so authenticating is not enough
+            # on its own — the REQ has to be sent again.
+            break unless auth && !resubscribed && RelayAuth.classify(parsed[2]) == :auth_required
+
+            RelayAuth.remember_requires_auth!(relay_url)
+            break unless challenge && !authenticated
+
+            authenticated = authenticate(socket, relay_url, challenge, auth, deadline)
+            break unless authenticated
+
+            resubscribed = true
+            sub_id = SecureRandom.hex(4)
+            WebsocketConnection.send_text(socket, ["REQ", sub_id, filter].to_json, deadline)
           end
         end
 
@@ -78,6 +105,39 @@ module Nostr
         # Fresh short deadline: the query deadline is usually already spent.
         close(socket, sub_id, 1.second.from_now)
       end
+    end
+
+    # Sign a kind-22242 for this challenge and wait for the relay's OK.
+    def self.authenticate(socket, relay_url, challenge, auth, deadline)
+      signed = auth.call(relay_url, challenge)
+      return false unless signed
+
+      WebsocketConnection.send_text(socket, ["AUTH", signed].to_json, deadline)
+
+      while Time.current < deadline
+        ready = WebsocketConnection.readable_now?(socket) ||
+          IO.select([socket], nil, nil, WebsocketConnection.select_timeout(deadline, 0.5))
+        next unless ready
+
+        data = read_frame(socket, deadline)
+        return false unless data
+
+        begin
+          parsed = JSON.parse(data)
+        rescue JSON::ParserError
+          next
+        end
+
+        next unless parsed[0] == "OK" && parsed[1] == signed["id"]
+
+        Rails.logger.warn("NIP-42 rejected by #{relay_url}: #{parsed[3].inspect}") unless parsed[2]
+        return parsed[2] == true
+      end
+
+      false
+    rescue StandardError => e
+      Rails.logger.warn("NIP-42 authentication failed on #{relay_url}: #{e.message}")
+      false
     end
 
     # Signature/id check plus "is this actually what we subscribed to": a relay

@@ -44,6 +44,25 @@ Rails.application.routes.draw do
   # Interactions (global view across all accounts)
   resources :interactions, only: [:index]
 
+  # Messages — one private-DM inbox across every paired account.
+  get "messages", to: "conversations#index", as: :messages
+  post "messages/mark_all_read", to: "conversations#mark_all_read", as: :mark_all_read_messages
+  resources :conversations, only: [:show], path: "messages" do
+    member do
+      post :accept
+      post :block
+      post :mark_read
+      # Just the composer, so it can re-resolve its delivery mode in place while
+      # a peer's DM relay list is still being looked up.
+      get :composer
+    end
+    resources :messages, only: [:create]
+  end
+  post "messages/:id/retry", to: "messages#retry", as: :retry_message
+  # Resend a failed private message as an acknowledged legacy one, for a
+  # recipient who cannot receive NIP-17 at all.
+  post "messages/:id/downgrade", to: "messages#downgrade", as: :downgrade_message
+
   # Posts (all posts view)
   resources :posts, only: [:index] do
     member do

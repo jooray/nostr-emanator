@@ -1,0 +1,23 @@
+<%# Avatar for a Nostr pubkey, falling back to an initial.
+
+    Extracted because the same block was copy-pasted into _navigation (twice),
+    re_pair and interactions/index.
+
+    size: :sm | :md | :lg. Classes are spelled out rather than interpolated —
+    Tailwind 4 cannot see a class name built at runtime. %>
+<% dimensions = { sm: "h-8 w-8", md: "h-10 w-10", lg: "h-12 w-12" }.fetch(size&.to_sym || :md) %>
+<% text_size = { sm: "text-xs", md: "text-sm", lg: "text-base" }.fetch(size&.to_sym || :md) %>
+<% url = local_assigns[:picture_url] || dm_avatar_url(pubkey) %>
+<% label = local_assigns[:name] || dm_display_name(pubkey) %>
+
+<% if url.present? %>
+  <img src="<%= url %>" alt="<%= label %>"
+       class="<%= dimensions %> flex-shrink-0 rounded-full object-cover"
+       loading="lazy" referrerpolicy="no-referrer">
+<% else %>
+  <div class="<%= dimensions %> flex flex-shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900">
+    <span class="<%= text_size %> font-medium text-amber-600 dark:text-amber-400">
+      <%= label.to_s.first&.upcase || "?" %>
+    </span>
+  </div>
+<% end %>

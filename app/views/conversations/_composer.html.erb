@@ -1,0 +1,16 @@
+<%# The composer, which always states which encryption it is about to use.
+
+    Modelled on Gossip's STRONG / BASIC ENCRYPTION indicator: the user should
+    never have to infer whether a message leaks its metadata.
+
+    Wrapped in its own Turbo Frame so the :checking state can resolve itself: the
+    Stimulus controller reloads just this frame until the peer's kind 10050 has
+    been looked up. Nothing else on the page moves.
+
+    turbo-permanent because live thread updates arrive as page refreshes (see
+    show.html.erb): morphing this frame would reset the textarea to the
+    server-rendered empty state, wiping a half-typed reply the moment a message
+    came in. Frame reloads (the :checking poll) are unaffected. %>
+<%= turbo_frame_tag dom_id(conversation, :composer), data: { turbo_permanent: "" } do %>
+  <%= render "conversations/composer_body", conversation: conversation, delivery: delivery %>
+<% end %>

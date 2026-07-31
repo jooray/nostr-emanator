@@ -156,12 +156,7 @@ class SessionsController < ApplicationController
     end
 
     # Store NIP-46 connection details if login was via NIP-46
-    if auth_session&.authenticated_pubkey.present?
-      account.signer_pubkey = auth_session.authenticated_pubkey
-      account.app_pubkey = auth_session.temp_pubkey
-      account.app_privkey = auth_session.temp_privkey
-      account.signer_relay = auth_session.relay_urls.first
-    end
+    account.apply_signer(auth_session) if auth_session&.authenticated_pubkey.present?
 
     account.save!
 

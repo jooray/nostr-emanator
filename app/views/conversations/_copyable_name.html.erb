@@ -1,0 +1,11 @@
+<%# A display name that copies its npub when clicked.
+
+    IMPORTANT: this button must contain ONLY text. clipboard_controller#flash
+    swaps this.element.textContent to show "Copied!", so any nested element —
+    an avatar image especially — would be destroyed on the first click. %>
+<button type="button"
+        data-controller="clipboard"
+        data-clipboard-text-value="<%= dm_npub(pubkey) %>"
+        data-action="click->clipboard#copy"
+        title="<%= dm_npub(pubkey) %> — click to copy"
+        class="<%= local_assigns[:small] ? 'text-xs' : 'text-sm' %> font-semibold text-gray-900 underline decoration-dotted underline-offset-4 transition-colors hover:text-amber-600 dark:text-white dark:hover:text-amber-400"><%= label %></button>
