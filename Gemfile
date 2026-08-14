@@ -22,7 +22,7 @@ group :production do
 end
 gem "kamal", require: false
 gem "thruster", require: false
-gem "image_processing", "~> 1.2"
+gem "image_processing", "~> 2.0"
 
 # ViewComponent for reusable UI components
 gem "view_component"
