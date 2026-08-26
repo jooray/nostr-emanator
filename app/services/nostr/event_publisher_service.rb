@@ -12,7 +12,7 @@ module Nostr
 
     def initialize
       @config = Rails.application.config_for(:emanator)
-      @default_relays = @config.dig("nostr", "relays") || []
+      @default_relays = @config.dig(:nostr, :relays) || []
     end
 
     # Publish a pre-signed event to relays

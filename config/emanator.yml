@@ -178,7 +178,7 @@ default: &default
   ai:
     provider: venice
     endpoint: https://api.venice.ai/api/v1
-    content_model: claude-sonnet-4-6
+    content_model: claude-sonnet-5
 
   blossom:
     server: https://blossom.primal.net

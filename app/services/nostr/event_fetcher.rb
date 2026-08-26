@@ -16,7 +16,7 @@ module Nostr
 
     def initialize(additional_relays: [])
       @config = Rails.application.config_for(:emanator)
-      global_relays = @config.dig("nostr", "relays") || ["wss://relay.damus.io"]
+      global_relays = @config.dig(:nostr, :relays) || ["wss://relay.damus.io"]
       @relays = (global_relays + Array(additional_relays)).map { |r| r.chomp("/") }.uniq
     end
 
@@ -376,6 +376,38 @@ module Nostr
       end
 
       result
+    end
+
+    # Latest replaceable list (kind 3 contacts, kind 10000 mutes, …) for one
+    # pubkey, together with how many relays actually answered.
+    #
+    # `fetch` cannot report the second half: RelayQuery returns nil for a relay
+    # it could not reach and `fetch_from_relay` flattens that to an empty array,
+    # so "this account has no mute list" and "no relay would talk to us" come
+    # back identical. Anything that re-signs a replaceable list has to tell those
+    # apart — a replaceable event overwrites its predecessor, so signing a
+    # one-entry list because every relay happened to be down silently wipes the
+    # real one.
+    #
+    # Returns { event: newest_or_nil, reachable: relays_that_answered }.
+    def fetch_replaceable(pubkey_hex, kind)
+      return { event: nil, reachable: 0 } if pubkey_hex.blank?
+
+      filter = { "authors" => [ pubkey_hex ], "kinds" => [ kind ], "limit" => 1 }
+
+      results = @relays.map do |relay_url|
+        Thread.new do
+          RelayQuery.run(relay_url, filter, timeout: TIMEOUT)
+        rescue StandardError => e
+          Rails.logger.warn("Failed to fetch kind #{kind} from #{relay_url}: #{e.message}")
+          nil
+        end
+      end.map(&:value)
+
+      {
+        event: results.compact.flatten.max_by { |event| event["created_at"].to_i },
+        reachable: results.count { |events| !events.nil? }
+      }
     end
 
     def fetch(pubkey_hex, options = {})

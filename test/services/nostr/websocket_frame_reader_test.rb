@@ -26,6 +26,20 @@ class NostrWebsocketFrameReaderTest < ActiveSupport::TestCase
     writer&.close
   end
 
+  # RFC 6455 encodes a 127-byte payload with the 16-bit form, so the length it
+  # yields is 127 — which a second, independent `if length == 127` then reads as
+  # "a 64-bit length follows", eating 8 payload bytes as a bogus length.
+  def test_reads_a_payload_of_exactly_127_bytes
+    payload = "x" * 127
+    reader, writer = Socket.pair(:UNIX, :STREAM, 0)
+    writer.write([0x81, 126, payload.bytesize].pack("CCn") + payload)
+
+    assert_equal payload, Nostr::WebsocketFrameReader.read(reader, deadline: 1.second.from_now)
+  ensure
+    reader&.close
+    writer&.close
+  end
+
   def test_answers_ping_with_a_pong_carrying_the_same_payload
     reader, writer = Socket.pair(:UNIX, :STREAM, 0)
     writer.write([0x89, 4].pack("CC") + "ping" + [0x81, 2].pack("CC") + "hi")

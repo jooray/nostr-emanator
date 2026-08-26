@@ -19,9 +19,16 @@ module Nostr
         masked = (second & 0x80) != 0
         raise FrameError, "server frames must not be masked" if masked
 
+        # elsif, not a second `if`: a 127-byte payload is encoded with the
+        # 16-bit form (126), and the length it yields is 127 — which a second
+        # `if` then reads as "64-bit length follows", consuming 8 payload bytes
+        # as a bogus length and killing the connection mid-subscription.
         length = second & 0x7f
-        length = read_exact(socket, 2, deadline).unpack1("n") if length == 126
-        length = read_exact(socket, 8, deadline).unpack1("Q>") if length == 127
+        if length == 126
+          length = read_exact(socket, 2, deadline).unpack1("n")
+        elsif length == 127
+          length = read_exact(socket, 8, deadline).unpack1("Q>")
+        end
 
         if opcode >= 8
           raise FrameError, "invalid control frame" unless fin && length <= 125

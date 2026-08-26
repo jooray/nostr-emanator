@@ -12,7 +12,7 @@ module Nostr
 
     def initialize(additional_relays: [])
       @config = Rails.application.config_for(:emanator)
-      global_relays = @config.dig("nostr", "relays") || ["wss://relay.damus.io", "wss://nos.lol"]
+      global_relays = @config.dig(:nostr, :relays) || ["wss://relay.damus.io", "wss://nos.lol"]
       @relays = (global_relays + Array(additional_relays)).map { |r| r.chomp("/") }.uniq
     end
 

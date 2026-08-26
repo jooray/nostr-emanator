@@ -6,7 +6,7 @@ module Nostr
 
     def initialize
       @config = Rails.application.config_for(:emanator)
-      @relays = @config.dig("nostr", "relays") || ["wss://relay.damus.io"]
+      @relays = @config.dig(:nostr, :relays) || ["wss://relay.damus.io"]
     end
 
     # Fetch kind 10002 (NIP-65) relay list for a pubkey

@@ -4,6 +4,10 @@ class ProcessNostrActionJob < ApplicationJob
   queue_as :default
   retry_on StandardError, wait: 5.seconds, attempts: 2
 
+  # How many of the account's own relays we add to the configured defaults when
+  # reading its lists back.
+  MAX_ACCOUNT_RELAYS = 8
+
   def perform(nostr_action_id)
     @action = NostrAction.find(nostr_action_id)
     return if @action.published?
@@ -49,13 +53,15 @@ class ProcessNostrActionJob < ApplicationJob
     @action.update!(status: :processing)
 
     # Fetch current contact list
-    fetcher = Nostr::EventFetcher.new
-    events = fetcher.fetch(@action.account.pubkey_hex, kinds: [3], limit: 1, include_replies: true)
-    contact_list = events.first
+    result = fetcher.fetch_replaceable(@action.account.pubkey_hex, 3)
+    contact_list = result[:event]
 
-    # Safety: abort if no kind 3 event found (relay fetch likely failed)
+    # Safety: abort if no kind 3 event came back. A first-ever kind 3 is not
+    # worth the risk here the way a first-ever mute list is — this event carries
+    # the entire social graph, and an account with no contact list at all is far
+    # rarer than one whose list simply did not reach us.
     unless contact_list
-      @action.update!(status: :failed, error_message: "Could not fetch contact list from relays. Follow aborted to prevent data loss.")
+      @action.update!(status: :failed, error_message: unreachable_message(result, "contact list", "Follow"))
       return
     end
 
@@ -101,17 +107,27 @@ class ProcessNostrActionJob < ApplicationJob
   def process_mute
     @action.update!(status: :processing)
 
-    fetcher = Nostr::EventFetcher.new
-    mute_event = fetcher.fetch(@action.account.pubkey_hex, kinds: [10000], limit: 1, include_replies: true).first
+    result = fetcher.fetch_replaceable(@action.account.pubkey_hex, Nostr::EventFetcher::KIND_MUTE_LIST)
+    mute_event = result[:event]
 
-    # Empty kind 10000 could mean "first-ever mute" OR "relays unreachable".
-    # Disambiguate by checking if a kind 3 (follow list) comes back — that's
-    # near-universal, so its absence signals a broken relay fetch and we abort
-    # rather than risk overwriting an existing mute list with a single entry.
+    # An empty kind 10000 means "first-ever mute" only if a relay actually
+    # answered; otherwise signing a one-entry list would replace whatever is
+    # really out there. This used to be inferred from whether a kind 3 came back
+    # — which is wrong twice over: an account that follows nobody has no kind 3,
+    # and a relay that refused the connection is indistinguishable from one that
+    # answered "nothing" once fetch has flattened it. fetch_replaceable reports
+    # reachability directly, so ask it.
     if mute_event.nil?
-      follow_probe = fetcher.fetch(@action.account.pubkey_hex, kinds: [3], limit: 1, include_replies: true).first
-      if follow_probe.nil?
-        @action.update!(status: :failed, error_message: "Could not fetch account state from relays. Mute aborted to prevent data loss.")
+      if result[:reachable].zero?
+        @action.update!(status: :failed, error_message: unreachable_message(result, "mute list", "Mute"))
+        return
+      end
+
+      # Relays answered, but we have seen a mute list for this account before —
+      # so it exists somewhere we did not just read, and re-signing from nothing
+      # would drop everyone on it.
+      if cached_list_event
+        @action.update!(status: :failed, error_message: "Relays did not return your existing mute list. Mute aborted to prevent data loss.")
         return
       end
     end
@@ -155,6 +171,26 @@ class ProcessNostrActionJob < ApplicationJob
     end
   end
 
+  # Reading an account's own lists means asking the relays it publishes to, not
+  # just the app's configured defaults — that is where its kind 3 / kind 10000
+  # actually live. Capped like a publish: the NIP-65 list is not ours and one
+  # thread per relay is not free.
+  def fetcher
+    account_relays = ((@action.account.write_relays || []) + (@action.account.user.custom_relays || []))
+      .uniq
+      .first(MAX_ACCOUNT_RELAYS)
+
+    @fetcher ||= Nostr::EventFetcher.new(additional_relays: account_relays)
+  end
+
+  def unreachable_message(result, list_name, action_name)
+    if result[:reachable].zero?
+      "Could not reach any relay to read your #{list_name}. #{action_name} aborted to prevent data loss."
+    else
+      "Relays returned no #{list_name}. #{action_name} aborted to prevent data loss."
+    end
+  end
+
   # H3: relay-supplied replaceable lists (kind 3 / kind 10000) are only usable
   # as a base for re-signing if they are at least as new as the newest version
   # we already know about: the last list of this kind this account signed here,
@@ -179,8 +215,9 @@ class ProcessNostrActionJob < ApplicationJob
 
   def cached_list_event
     return nil unless @action.mute?
+    return @cached_list_event if defined?(@cached_list_event)
 
-    InteractionsCache.read_mute_event(@action.account.pubkey_hex)
+    @cached_list_event = InteractionsCache.read_mute_event(@action.account.pubkey_hex)
   end
 
   def update_mute_caches(event)
