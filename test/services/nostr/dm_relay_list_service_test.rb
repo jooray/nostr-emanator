@@ -206,6 +206,75 @@ class NostrDmRelayListServiceTest < ActiveSupport::TestCase
     assert_equal relays.uniq, relays
   end
 
+  # The reason 0xchat and Keychat users can reach us at all. Neither client
+  # consults our kind 10050 before deciding where to publish a wrap addressed to
+  # us — Keychat has no notion of 10050 whatsoever — so a message can be perfectly
+  # compliant, addressed to us, and land only on a relay we never nominated.
+  def test_inbox_relays_always_include_the_cross_client_discovery_relays
+    account = build_account
+    account.update!(read_relays: [ "wss://my-nip65-read.example" ])
+    DmRelayList.create!(pubkey_hex: account.pubkey_hex, relays: [ "wss://my-10050.example" ], fetched_at: Time.current)
+
+    relays = @service.inbox_relays_for(account)
+    discovery = Rails.application.config_for(:emanator).dig(:nostr, :dm_discovery_relays)
+
+    assert discovery.present?, "the discovery list must not be empty or this feature is off"
+    discovery.each { |url| assert_includes relays, url }
+  end
+
+  # The cap truncates the tail and the discovery relays sit at the tail, so a
+  # busy account must not silently lose exactly the relays added to make those
+  # clients reachable.
+  def test_discovery_relays_survive_an_account_with_a_long_read_list
+    account = build_account
+    account.update!(read_relays: (1..20).map { |i| "wss://r#{i}.example" })
+    DmRelayList.create!(pubkey_hex: account.pubkey_hex,
+                        relays: (1..6).map { |i| "wss://inbox#{i}.example" }, fetched_at: Time.current)
+
+    relays = @service.inbox_relays_for(account)
+    discovery = Rails.application.config_for(:emanator).dig(:nostr, :dm_discovery_relays)
+
+    assert_operator relays.size, :<=, Nostr::DmRelayListService::MAX_INBOX_RELAYS
+    assert_equal "wss://inbox1.example", relays.first, "the account's own inbox still comes first"
+    discovery.each { |url| assert_includes relays, url }
+  end
+
+  # --- observed relays are appended to the send side, never substituted --------
+
+  def test_observed_relays_are_appended_to_a_published_inbox
+    with_relay_events([ relay_list_event([ "wss://inbox.example" ]) ]) do
+      targets = @service.publish_targets(@pubkey, observed: [ "wss://seen-here.example" ])
+
+      assert_equal [ "wss://inbox.example", "wss://seen-here.example" ], targets.relays
+      assert_equal [ "wss://seen-here.example" ], targets.observed
+      # An observation says where they publish, not that they advertised an
+      # inbox — so it must not upgrade or downgrade how the UI describes delivery.
+      assert_equal :inbox, targets.tier
+    end
+  end
+
+  def test_an_observed_relay_already_in_the_inbox_is_not_duplicated
+    with_relay_events([ relay_list_event([ "wss://inbox.example" ]) ]) do
+      targets = @service.publish_targets(@pubkey, observed: [ "wss://inbox.example" ])
+
+      assert_equal [ "wss://inbox.example" ], targets.relays
+      assert_empty targets.observed
+    end
+  end
+
+  # A gift wrap opens a socket to whatever this list says, and the list is built
+  # from relay-supplied event content. (A loopback address is not the case to
+  # assert on: UrlGuard deliberately tolerates private networks outside
+  # production, so it would pass here and fail on the server.)
+  def test_an_unsafe_observed_relay_is_dropped
+    with_relay_events([ relay_list_event([ "wss://inbox.example" ]) ]) do
+      targets = @service.publish_targets(@pubkey, observed: [ "http://not-a-relay.example" ])
+
+      assert_equal [ "wss://inbox.example" ], targets.relays
+      assert_empty targets.observed
+    end
+  end
+
   # Relay lists write a trailing slash and our config does not, so a plain uniq
   # saw two relays and we opened two sockets to the same host — receiving every
   # gift wrap twice.

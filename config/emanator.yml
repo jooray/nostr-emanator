@@ -96,6 +96,44 @@ default: &default
       - wss://relay.primal.net
       - wss://relay.nostr.band
 
+    # Relays we ALWAYS listen on for our own inbound gift wraps, on top of our
+    # kind 10050 and our NIP-65 read relays.
+    #
+    # These exist because two widely-used chat clients do not consult our kind
+    # 10050 before deciding where to publish a wrap addressed to us:
+    #
+    #   0xchat  sends to the recipient's dmRelayList + inboxRelayList, but when
+    #           none of those are connectable it falls back to the SENDER's own
+    #           general relays (contacts.dart) — which default to
+    #           recommendGeneralRelays, headed by relay.0xchat.com. Its own
+    #           recommendDMRelays are auth.nostr1.com, relay.0xchat.com and
+    #           inbox.nostr.wine, so the self-copy lands there too.
+    #
+    #   Keychat has no notion of kind 10050 at all (the string does not appear in
+    #           keychat-app) — sendNip17Message writes to every connected relay,
+    #           which defaults to relay.keychat.io, relay.damus.io,
+    #           relay.primal.net, relay.nostr.band and relay.0xchat.com.
+    #
+    # So a message from either client can be perfectly NIP-17 compliant, addressed
+    # to us, and still never touch a relay we were watching. Reading is the half
+    # of NIP-17 the spec leaves unconstrained, which is exactly what makes this
+    # legitimate: subscribing more widely can only ever find more of our own mail.
+    #
+    # The cost is a real one and worth stating: a `#p`-scoped REQ tells each of
+    # these relays that this pubkey collects its DMs here. That is the same thing
+    # the four `relays:` above already learn, not a new category of exposure — but
+    # it is the reason this is a short, deliberate list rather than a wide net.
+    #
+    # Both were verified live (2026-08-26): free, no NIP-42, and serving kind 1059
+    # to a `#p`-scoped filter. relay.keychat.io answers ONLY scoped filters — a
+    # bare `{"kinds":[1059]}` returns an immediate EOSE with nothing, which is a
+    # scraping guard, not a refusal. relay.nostr.band is deliberately absent: it
+    # refuses our WebSocket handshake outright, and it is a search index rather
+    # than anyone's DM inbox.
+    dm_discovery_relays:
+      - wss://relay.0xchat.com
+      - wss://relay.keychat.io
+
     # Seeds the "this relay needs NIP-42" cache so we can authenticate on connect
     # instead of paying a rejected-subscription round-trip to find out.
     auth_required_relays:
@@ -121,6 +159,21 @@ default: &default
     # people. Opt out per account via settings["legacy_dm_import"] = false.
     # Sending kind 4 is a separate, always-acknowledged downgrade.
     legacy_dm_import: true
+    # Also publish a reply to the relays we actually received that peer's
+    # messages on, on top of whatever their kind 10050 / NIP-65 nominates.
+    #
+    # This is a deliberate deviation from NIP-17's "publish only to the relays in
+    # the recipient's kind 10050", and it earns its place: a relay we saw their
+    # wrap arrive on is a relay their client demonstrably writes to, and both
+    # clients that make this necessary (0xchat, Keychat) read from the same pool
+    # they write to. It is better evidence of where they are reachable than a
+    # kind 10050 they may never have published — and for Keychat, which has no
+    # 10050 at all, it is the only evidence there is.
+    #
+    # The marginal leak is one extra relay learning "somebody gift-wrapped X",
+    # from a throwaway key, on a relay X's own client already published to. Set
+    # to false to follow the spec strictly.
+    reply_to_observed_relays: true
 
   ai:
     provider: venice

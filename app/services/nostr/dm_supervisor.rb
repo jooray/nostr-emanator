@@ -239,10 +239,17 @@ module Nostr
           record.wrap_created_at = Time.at(event["created_at"].to_i).utc
           record.seen_at = Time.current
           record.wrap_event = event
-          record.relays = []
+          record.relays = [ target.relay_url ]
         end
 
-        wake_decryptor(target.account_id) if wrap.previously_new_record?
+        if wrap.previously_new_record?
+          wake_decryptor(target.account_id)
+        else
+          # The same wrap reaches us from every relay we hold a subscription on.
+          # Each extra sighting is another relay this peer's client publishes to,
+          # which is exactly what a reply wants to know.
+          wrap.observed_on!(target.relay_url)
+        end
       end
     rescue ActiveRecord::RecordNotUnique
       nil

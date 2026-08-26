@@ -128,6 +128,24 @@ class MessagingMessageIngestorTest < ActiveSupport::TestCase
     assert_equal "known", Conversation.sole.classification
   end
 
+  # The relay a wrap arrived on is the evidence a reply is routed by, and it has
+  # to outlive the wrap: decode! drops the cached event and the ledger is swept.
+  def test_the_relays_a_wrap_arrived_on_are_copied_onto_the_message
+    message = @ingestor.ingest(parsed_message, relays: [ "wss://relay.keychat.io" ])
+
+    assert_equal [ "wss://relay.keychat.io" ], message.relays
+  end
+
+  # A re-delivery produces no second bubble, but it does carry a relay we had not
+  # seen yet — and dropping it would throw away a route to that peer.
+  def test_a_redelivery_from_another_relay_merges_its_relay_in
+    parsed = parsed_message
+    message = @ingestor.ingest(parsed, relays: [ "wss://a.example" ])
+
+    assert_nil @ingestor.ingest(parsed, relays: [ "wss://b.example" ])
+    assert_equal %w[wss://a.example wss://b.example], message.reload.relays
+  end
+
   private
 
   def parsed_message(sender: nil, content: "hello", participants: nil, subject: nil,

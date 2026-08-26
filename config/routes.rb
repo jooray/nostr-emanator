@@ -69,7 +69,6 @@ Rails.application.routes.draw do
       get :schedule
       post :sign
       post :retry_sign
-      post :publish_now
       post :retry_publish
       post :rebroadcast
       post :cancel

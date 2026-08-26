@@ -14,8 +14,10 @@ module Nostr
   #
   #   RECEIVING is unconstrained by the spec, so we cast a wide net. Several
   #   clients (0xchat, NDK, applesauce) do have send-side fallbacks, so wraps
-  #   addressed to us genuinely do land outside our 10050. Subscribing to more
-  #   relays can only find more of our own messages.
+  #   addressed to us genuinely do land outside our 10050 — and Keychat has no
+  #   concept of kind 10050 at all, so its wraps NEVER consult ours. Subscribing
+  #   to more relays can only find more of our own messages, which is why
+  #   `nostr.dm_discovery_relays` is folded in unconditionally.
   #
   # Does NOT reuse RelayListFetcher#parse_relay_list: NIP-65 uses `["r", url,
   # marker]`, kind 10050 uses `["relay", url]` with no markers. Different tag,
@@ -25,9 +27,16 @@ module Nostr
     # NIP-17 asks clients to keep these lists to 1-3 entries; 6 is a generous cap
     # on what we will accept from someone else's list.
     MAX_RELAYS = DmRelayList::MAX_RELAYS
+    # A publish fans out concurrently, so this only has to stay under
+    # EventPublisherService::MAX_RELAYS — which silently truncates, and would
+    # otherwise drop the observed relays appended last.
+    MAX_TARGET_RELAYS = EventPublisherService::MAX_RELAYS
     # How many relays to read our own gift wraps from. Each one is a live
     # subscription, so this is a resource bound rather than a policy.
-    MAX_INBOX_RELAYS = 8
+    #
+    # Raised from 8 when the discovery relays were added, because they are the
+    # tail of the union and the cap truncates the tail.
+    MAX_INBOX_RELAYS = 12
     # How many relays a single 10050 probe will fan out to. Each is a thread and
     # a socket, and phase 2 of fetch! feeds this somebody ELSE'S NIP-65 write
     # list, which can be arbitrarily long.
@@ -73,7 +82,8 @@ module Nostr
       DmRelayList.definitive_negative!(pubkey_hex)
     end
 
-    Targets = Data.define(:relays, :tier) do
+    Targets = Data.define(:relays, :tier, :observed) do
+      def initialize(relays:, tier:, observed: []) = super
       # Only `inbox` is what NIP-17 actually asks for; the rest are best effort.
       def compliant? = tier == :inbox
       def any? = relays.any?
@@ -95,27 +105,49 @@ module Nostr
     # by a throwaway key, whereas a kind 4 publishes the whole social-graph edge
     # in the clear. The lower tiers leak strictly less than the alternative the
     # user would otherwise reach for.
-    def publish_targets(pubkey_hex)
-      list = resolve(pubkey_hex)
-      return Targets.new(relays: list.relays.first(MAX_RELAYS), tier: :inbox) if list&.deliverable?
+    #
+    # `observed:` are relays we have actually seen this pubkey's gift wraps arrive
+    # on. They are appended to whichever tier was chosen rather than replacing it,
+    # and they do not change the tier: the tier describes how well the recipient
+    # advertised where to reach them, which an observation does not improve.
+    #
+    # Appending them even at the :inbox tier is deliberate. Keychat publishes no
+    # kind 10050 at all, and 0xchat falls back to its own general relays when the
+    # recipient's are unreachable — so for those peers the relay we heard them on
+    # is better evidence of reachability than any list they published. See
+    # `messaging.reply_to_observed_relays` for the privacy trade and the off
+    # switch.
+    def publish_targets(pubkey_hex, observed: [])
+      base = base_targets(pubkey_hex)
+      extra = safe_relays(observed) - base.relays
+      return base if extra.empty?
 
-      read = safe_relays(nip65_read_relays(pubkey_hex))
-      return Targets.new(relays: read.first(MAX_RELAYS), tier: :nip65) if read.any?
-
-      Targets.new(relays: safe_relays(fallback_relays).first(MAX_RELAYS), tier: :fallback)
+      Targets.new(relays: (base.relays + extra).first(MAX_TARGET_RELAYS), tier: base.tier, observed: extra)
     end
 
     # The wide union we listen on for our own inbound wraps:
-    #   our kind 10050  ∪  our NIP-65 read relays  ∪  the app's configured relays
+    #   our kind 10050
+    #     ∪ our NIP-65 read relays
+    #     ∪ the app's configured relays
+    #     ∪ the cross-client discovery relays
+    #
+    # Order is priority order: what the account itself nominated comes first, and
+    # the discovery relays — which are ours, not the account's — come last.
+    #
+    # The discovery relays get RESERVED slots rather than simply being appended,
+    # for the same reason EventPublisherService reserves slots for the configured
+    # defaults. An account with a full kind 10050 and a long NIP-65 read list
+    # fills the cap on its own, and a plain append would then truncate away
+    # precisely the relays that exist to make 0xchat and Keychat reachable —
+    # turning this feature off for exactly the busiest accounts, silently.
     def inbox_relays_for(account)
       own = cached(account.pubkey_hex)&.relays || []
+      discovery = clean(discovery_relays)
+      reserved = [ discovery.size, MAX_INBOX_RELAYS / 3 ].min
 
-      (own + Array(account.read_relays) + configured_relays)
-        .map { |url| normalize(url) }
-        .reject(&:blank?)
-        .uniq
-        .select { |url| safe?(url) }
-        .first(MAX_INBOX_RELAYS)
+      preferred = clean(own + Array(account.read_relays) + configured_relays)
+
+      (preferred.first(MAX_INBOX_RELAYS - reserved) + discovery).uniq.first(MAX_INBOX_RELAYS)
     end
 
     # Relay lists write "wss://nos.lol/" while our config writes "wss://nos.lol",
@@ -238,8 +270,26 @@ module Nostr
       []
     end
 
+    def base_targets(pubkey_hex)
+      list = resolve(pubkey_hex)
+      return Targets.new(relays: list.relays.first(MAX_RELAYS), tier: :inbox) if list&.deliverable?
+
+      read = safe_relays(nip65_read_relays(pubkey_hex))
+      return Targets.new(relays: read.first(MAX_RELAYS), tier: :nip65) if read.any?
+
+      Targets.new(relays: safe_relays(fallback_relays).first(MAX_RELAYS), tier: :fallback)
+    end
+
     def fallback_relays
       Array(@config.dig(:nostr, :fallback_dm_relays)).presence || configured_relays
+    end
+
+    def discovery_relays
+      Array(@config.dig(:nostr, :dm_discovery_relays))
+    end
+
+    def clean(urls)
+      Array(urls).map { |url| normalize(url) }.reject(&:blank?).uniq.select { |url| safe?(url) }
     end
 
     def safe_relays(urls)

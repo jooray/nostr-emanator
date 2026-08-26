@@ -15,9 +15,9 @@ module Messaging
     end
 
     # Returns the Message, or nil when this rumor was already stored.
-    def ingest(parsed, wrap_id: nil, seen_at: Time.current, protocol: "nip17")
+    def ingest(parsed, wrap_id: nil, seen_at: Time.current, protocol: "nip17", relays: [])
       conversation = upsert_conversation(parsed, seen_at, protocol)
-      message = upsert_message(conversation, parsed, wrap_id, seen_at)
+      message = upsert_message(conversation, parsed, wrap_id, seen_at, relays)
       return nil unless message
 
       conversation.apply_subject(parsed.subject, message.sort_at)
@@ -57,7 +57,7 @@ module Messaging
       others.size == 1 ? others.first : nil
     end
 
-    def upsert_message(conversation, parsed, wrap_id, seen_at)
+    def upsert_message(conversation, parsed, wrap_id, seen_at, relays)
       outbound = parsed.sender_pubkey == @account.pubkey_hex.downcase
 
       message = Message.create_or_find_by!(account_id: @account.id, rumor_id: parsed.rumor_id) do |record|
@@ -75,6 +75,10 @@ module Messaging
         record.seal_created_at = timestamp(parsed.seal_created_at)
         record.sort_at = Message.sort_at_for(timestamp(parsed.rumor_created_at), seen_at)
         record.wrap_id = wrap_id
+        # Copied off the gift wrap rather than joined to it: decode! drops the
+        # wrap's cached event, and the ledger is swept, but where a peer's mail
+        # arrives has to outlive both to be usable as a reply route.
+        record.relays = Array(relays).uniq
         record.direction = outbound ? "outbound" : "inbound"
         record.status = outbound ? "sent" : "received"
         record.pubkey_recovered = parsed.pubkey_recovered
@@ -85,7 +89,11 @@ module Messaging
       # arriving back through our own subscription — record which wrap carried it
       # and stop, rather than creating a duplicate bubble.
       unless message.previously_new_record?
-        message.update!(wrap_id: wrap_id) if wrap_id.present? && message.wrap_id.blank?
+        attrs = {}
+        attrs[:wrap_id] = wrap_id if wrap_id.present? && message.wrap_id.blank?
+        merged = (Array(message.relays) + Array(relays)).uniq
+        attrs[:relays] = merged if merged != Array(message.relays)
+        message.update!(attrs) if attrs.any?
         return nil
       end
 

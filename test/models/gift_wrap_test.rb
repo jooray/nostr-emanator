@@ -102,6 +102,39 @@ class GiftWrapTest < ActiveSupport::TestCase
     refute_includes stuck, claimed
   end
 
+  # The same wrap arrives from every relay we listen on, and create_or_find_by!
+  # runs its block only on creation — so without observed_on! the second and
+  # later sightings are thrown away and `relays` records one arbitrary relay
+  # instead of the set. That set is what a reply is routed by.
+  def test_every_relay_a_wrap_was_seen_on_is_remembered
+    wrap = build_wrap(relays: [ "wss://first.example" ])
+
+    wrap.observed_on!("wss://relay.0xchat.com")
+    wrap.observed_on!("wss://relay.keychat.io")
+
+    assert_equal %w[wss://first.example wss://relay.0xchat.com wss://relay.keychat.io], wrap.reload.relays
+  end
+
+  def test_seeing_the_same_relay_again_writes_nothing
+    wrap = build_wrap(relays: [ "wss://first.example" ])
+    before = wrap.updated_at
+
+    wrap.observed_on!("wss://first.example")
+
+    assert_equal [ "wss://first.example" ], wrap.reload.relays
+    assert_equal before.to_i, wrap.updated_at.to_i
+  end
+
+  # The list is written from relay input on a path that never blocks, so it needs
+  # its own bound rather than relying on how many relays we happen to poll.
+  def test_the_remembered_relay_list_is_bounded
+    wrap = build_wrap(relays: [])
+
+    (GiftWrap::MAX_OBSERVED_RELAYS + 5).times { |i| wrap.observed_on!("wss://r#{i}.example") }
+
+    assert_equal GiftWrap::MAX_OBSERVED_RELAYS, wrap.reload.relays.size
+  end
+
   private
 
   def build_wrap(**attrs)

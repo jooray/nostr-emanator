@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class PostsController < ApplicationController
-  before_action :set_post, only: [:show, :edit, :update, :destroy, :schedule, :sign, :retry_sign, :publish_now, :retry_publish, :rebroadcast, :cancel, :reschedule]
+  before_action :set_post, only: [:show, :edit, :update, :destroy, :schedule, :sign, :retry_sign, :retry_publish, :rebroadcast, :cancel, :reschedule]
   before_action :set_account, only: [:new, :create]
 
   def index
@@ -227,29 +227,11 @@ class PostsController < ApplicationController
     redirect_to @post, notice: notice
   end
 
-  def publish_now
-    unless @post.can_publish?
-      redirect_to @post, alert: "Post is not ready to publish."
-      return
-    end
-
-    # I10: the event was signed with created_at == scheduled_at. Publishing it
-    # early keeps that future timestamp (re-signing would need another signer
-    # round-trip), and strict relays may reject it — warn instead of failing
-    # with a generic error.
-    early = @post.scheduled_at.present? && @post.scheduled_at > Time.current
-
-    # L10: update the status before enqueueing so an inline/fast adapter can't
-    # run the job against a stale status.
-    @post.update!(status: :publishing)
-    PublishPostJob.perform_later(@post.id, resume: true)
-
-    notice = "Publishing post..."
-    if early
-      notice += " Note: it was signed for #{@post.scheduled_at.utc.strftime('%Y-%m-%d %H:%M UTC')}, so some relays may reject the future-dated event. If publishing fails, cancel and reschedule it instead."
-    end
-    redirect_to @post, notice: notice
-  end
+  # There is deliberately no #publish_now for a post. A scheduled post is signed
+  # with created_at == scheduled_at, so publishing it ahead of that time puts a
+  # future-dated event on the wire, which strict relays reject. Once the time has
+  # passed the post has already been published, so the action could only ever run
+  # in the case that cannot work. Use Reschedule (re-signs) to move a post earlier.
 
   def retry_sign
     unless (@post.awaiting_signature? || (@post.failed? && @post.signed_event.blank?)) && @post.unsigned_event.present?

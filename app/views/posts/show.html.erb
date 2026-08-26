@@ -192,18 +192,6 @@
         <% end %>
       <% end %>
 
-      <% if @post.can_publish? %>
-        <%= button_to publish_now_post_path(@post),
-          method: :post,
-          data: { turbo_confirm: "Publish this post to relays right now?" },
-          class: "inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg shadow-sm transition-colors" do %>
-          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3l14 9-14 9V3z"/>
-          </svg>
-          Publish Now
-        <% end %>
-      <% end %>
-
       <% if @post.can_reschedule? %>
         <%= button_to reschedule_post_path(@post),
           method: :post,

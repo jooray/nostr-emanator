@@ -184,7 +184,123 @@ class SendDirectMessageJobTest < ActiveSupport::TestCase
     assert_equal message.rumor_id, Nostr::EventValidator.event_id(message.rumor)
   end
 
+  # --- replying where the message actually came from --------------------------
+
+  # The Keychat case. Keychat has no notion of kind 10050 at all, so a peer using
+  # it looks undeliverable to a spec-following sender while in fact listening on
+  # five relays. The relay we heard them on is the only accurate route there is.
+  def test_a_reply_also_goes_to_the_relay_the_peer_was_heard_on
+    inbound_from_peer(relays: [ "wss://relay.keychat.io" ])
+    message = build_outbound
+
+    published = capture_publishes { SendDirectMessageJob.perform_now(message.id) }
+
+    peer_publish = published.find { |p| p[:relays].include?("wss://peer-inbox.example") }
+    assert_includes peer_publish[:relays], "wss://relay.keychat.io"
+    # Appended, not substituted: their published inbox is still the first target.
+    assert_equal "wss://peer-inbox.example", peer_publish[:relays].first
+  end
+
+  # The observation is about the peer, so it must not follow us into the wrap we
+  # address to ourselves — that one belongs on our own inbox.
+  def test_the_self_copy_is_not_routed_by_the_peers_observed_relays
+    inbound_from_peer(relays: [ "wss://relay.keychat.io" ])
+    message = build_outbound
+
+    published = capture_publishes { SendDirectMessageJob.perform_now(message.id) }
+
+    self_publish = published.find { |p| p[:relays].include?("wss://my-inbox.example") }
+    refute_includes self_publish[:relays], "wss://relay.keychat.io"
+  end
+
+  # An observation says where a peer publishes, not that they advertised an
+  # inbox. Letting it claim the compliant tier would make the composer promise a
+  # delivery guarantee the recipient never gave.
+  def test_observed_relays_do_not_claim_the_compliant_tier
+    DmRelayList.find_by(pubkey_hex: @peer.downcase).update!(relays: [], missing: true)
+    inbound_from_peer(relays: [ "wss://relay.keychat.io" ])
+    message = build_outbound
+
+    capture_publishes { SendDirectMessageJob.perform_now(message.id) }
+
+    assert_equal "observed", message.reload.delivery_tier
+    refute_equal "inbox", message.delivery_tier
+  end
+
+  # "may not arrive" is the right warning for a guess at popular relays. It is
+  # the wrong one once the wrap went to a relay we watched this peer's own
+  # messages come in on — which is the entire Keychat case.
+  def test_the_badge_stops_claiming_a_reply_may_not_arrive_once_it_went_where_they_were_heard
+    DmRelayList.find_by(pubkey_hex: @peer.downcase).update!(relays: [], missing: true)
+    inbound_from_peer(relays: [ "wss://relay.keychat.io" ])
+    message = build_outbound
+
+    capture_publishes { SendDirectMessageJob.perform_now(message.id) }
+
+    refute_includes message.reload.delivery_note, "may not arrive"
+  end
+
+  # If the observed relay refused the wrap, nothing was learned about
+  # reachability and the honest label is still the guess we fell back to.
+  def test_a_refused_observed_relay_leaves_the_pessimistic_tier_in_place
+    DmRelayList.find_by(pubkey_hex: @peer.downcase).update!(relays: [], missing: true)
+    inbound_from_peer(relays: [ "wss://paywalled.example" ])
+    message = build_outbound
+
+    reject_paywalled = ->(relays) { relays.index_with { |r| r.include?("paywalled") ? :rejected : :ok } }
+    capture_publishes(result_for: reject_paywalled) { SendDirectMessageJob.perform_now(message.id) }
+
+    refute_equal "observed", message.reload.delivery_tier
+    assert_includes message.delivery_note, "may not arrive"
+  end
+
+  # relay.keychat.io advertises a 1-sat Cashu fee on kinds 4 and 1059 and simply
+  # is not charging it yet. When that flips, every reply to a Keychat contact
+  # would otherwise keep spending an attempt on a relay that will never take it.
+  def test_a_relay_that_rejects_our_wrap_is_dropped_from_later_replies
+    inbound_from_peer(relays: [ "wss://paywalled.example" ])
+    first = build_outbound
+
+    reject_paywalled = ->(relays) { relays.index_with { |r| r.include?("paywalled") ? :rejected : :ok } }
+    attempted = capture_publishes(result_for: reject_paywalled) { SendDirectMessageJob.perform_now(first.id) }
+
+    assert attempted.any? { |p| p[:relays].include?("wss://paywalled.example") },
+           "the first reply must actually try the observed relay, or this proves nothing"
+
+    second = build_outbound("again")
+    published = capture_publishes { SendDirectMessageJob.perform_now(second.id) }
+
+    published.each { |p| refute_includes p[:relays], "wss://paywalled.example" }
+  end
+
+  # A timeout says nothing about relay policy. Evicting on one would let a bad
+  # afternoon throw away a peer's only working route.
+  def test_a_relay_that_merely_times_out_is_kept
+    inbound_from_peer(relays: [ "wss://flaky.example" ])
+    first = build_outbound
+
+    time_out_flaky = ->(relays) { relays.index_with { |r| r.include?("flaky") ? :timeout : :ok } }
+    capture_publishes(result_for: time_out_flaky) { SendDirectMessageJob.perform_now(first.id) }
+
+    second = build_outbound("again")
+    published = capture_publishes { SendDirectMessageJob.perform_now(second.id) }
+
+    peer_publish = published.find { |p| p[:relays].include?("wss://peer-inbox.example") }
+    assert_includes peer_publish[:relays], "wss://flaky.example"
+  end
+
   private
+
+  # An inbound message from the peer, carrying the relays its gift wrap arrived
+  # on — which is what a reply is routed by.
+  def inbound_from_peer(relays:)
+    @conversation.messages.create!(
+      account: @account, user: @account.user, sender_pubkey: @peer.downcase,
+      direction: "inbound", status: "received", kind: Nostr::Nip17::CHAT_KIND,
+      content: "hi", rumor_id: SecureRandom.hex(32), rumor_created_at: Time.current,
+      sort_at: Time.current, relays: relays
+    )
+  end
 
   def messaging_account
     _pubkey, @account_privkey = pending_keypair

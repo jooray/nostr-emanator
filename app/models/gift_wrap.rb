@@ -25,6 +25,10 @@ class GiftWrap < ApplicationRecord
   # A row left `decrypting` this long belongs to a worker that died.
   STUCK_AFTER = 10.minutes
 
+  # Distinct relays remembered per wrap. Bounded because the list is written from
+  # relay input and only ever read as a small set of reply targets.
+  MAX_OBSERVED_RELAYS = 8
+
   enum :status, {
     pending: "pending",
     decrypting: "decrypting",
@@ -72,6 +76,25 @@ class GiftWrap < ApplicationRecord
     self.last_error = error.to_s.truncate(240)
     self.status = attempts >= MAX_ATTEMPTS ? "undecryptable" : "pending"
     save!
+  end
+
+  # Note that we saw this wrap on one more relay.
+  #
+  # The same wrap arrives from every relay we listen on, and `create_or_find_by!`
+  # runs its block only on creation — so without this the second and later
+  # sightings would be thrown away, and `relays` would record one arbitrary relay
+  # instead of the set. That set is the whole point: it is the evidence used to
+  # decide where a reply is worth publishing.
+  #
+  # Cheap on the common path: an already-recorded relay writes nothing.
+  def observed_on!(relay_url)
+    url = relay_url.to_s.strip
+    return if url.blank?
+
+    current = Array(relays)
+    return if current.include?(url)
+
+    update_columns(relays: (current + [ url ]).first(MAX_OBSERVED_RELAYS), updated_at: Time.current)
   end
 
   def resolved? = %w[decoded undecryptable rejected].include?(status)

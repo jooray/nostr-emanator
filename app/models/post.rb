@@ -49,10 +49,6 @@ class Post < ApplicationRecord
     awaiting_signature? && unsigned_event.present?
   end
 
-  def can_publish?
-    scheduled? && signed_event.present?
-  end
-
   # C4: `publishing` is included so a post abandoned mid-publish can be
   # recovered from the UI instead of spinning forever.
   def can_cancel?

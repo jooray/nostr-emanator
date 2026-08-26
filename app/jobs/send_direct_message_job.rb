@@ -62,13 +62,24 @@ class SendDirectMessageJob < ApplicationJob
 
         message.update!(status: "publishing", step: "Delivering to #{recipient.first(12)}…")
         broadcast(message)
-        targets = Nostr::DmRelayListService.new.publish_targets(recipient)
-        tiers[recipient] = targets.tier
-        results[recipient] = publish(wrap, targets)
+        targets = targets_for(message, recipient)
+        outcome = publish(wrap, targets)
+        tiers[recipient] = effective_tier(targets, outcome)
+        results[recipient] = outcome
       end
     end
 
     finish(message, results, tiers, self_pubkey)
+  end
+
+  # Their published inbox, plus the relays we have actually seen this peer's own
+  # wraps arrive on. The observed ones are appended, never substituted: a kind
+  # 10050 stays authoritative about where they asked to be reached, and this only
+  # adds places they demonstrably publish to. For a Keychat contact — who has no
+  # 10050 at all — it is the only accurate route we have.
+  def targets_for(message, recipient)
+    observed = Messaging::ObservedRelays.for(message.conversation, recipient)
+    Nostr::DmRelayListService.new.publish_targets(recipient, observed: observed)
   end
 
   def seal_and_wrap(rpc, account, rumor_json, recipient)
@@ -93,7 +104,30 @@ class SendDirectMessageJob < ApplicationJob
   def publish(wrap, targets)
     return {} unless targets.any?
 
-    Nostr::EventPublisherService.new.publish(wrap, relays: targets.relays, include_defaults: false)
+    results = Nostr::EventPublisherService.new.publish(
+      wrap, relays: targets.relays, include_defaults: false
+    )
+
+    # Learn which observed relays have started refusing us, so the next reply to
+    # this peer does not spend an attempt on them again. Only the observed ones:
+    # a relay the recipient nominated themselves is theirs to keep choosing.
+    targets.observed.each { |url| Nostr::RelayWriteBlock.observe!(url, results[url]) }
+
+    results
+  end
+
+  # A peer with no published inbox is normally best-effort — we are guessing from
+  # their NIP-65 list or from popular relays, and the badge says "may not arrive".
+  # That warning is wrong once an observed relay actually took the wrap: we saw
+  # this peer's own messages arrive there, and both clients that make this
+  # necessary read from the same pool they write to. Recording it as its own tier
+  # keeps the badge honest in both directions — it is better evidence than
+  # `nip65` or `fallback`, and still not the inbox they never published.
+  def effective_tier(targets, results)
+    return targets.tier if targets.tier == :inbox
+    return targets.tier unless targets.observed.any? { |url| results[url] == :ok }
+
+    :observed
   end
 
   def finish(message, results, tiers, self_pubkey)
@@ -130,7 +164,7 @@ class SendDirectMessageJob < ApplicationJob
   # carried it — a "may not arrive" badge there would warn about a delivery that
   # works. A note-to-self therefore gets no tier (nil), hence no badge.
   def worst_tier(tiers, self_pubkey)
-    order = %w[fallback nip65 inbox]
+    order = %w[fallback nip65 observed inbox]
     tiers.except(self_pubkey).values.map(&:to_s).min_by { |tier| order.index(tier) || 0 }
   end
 

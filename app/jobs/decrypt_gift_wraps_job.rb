@@ -98,7 +98,9 @@ class DecryptGiftWrapsJob < ApplicationJob
     )
 
     ActiveRecord::Base.connection_pool.with_connection do
-      message = ingestor.ingest(parsed, wrap_id: wrap.wrap_id, seen_at: wrap.seen_at)
+      message = ingestor.ingest(
+        parsed, wrap_id: wrap.wrap_id, seen_at: wrap.seen_at, relays: Array(wrap.relays)
+      )
       # A duplicate rumor (the self-copy of something we sent) is still a
       # successfully resolved wrap — just one that produced no new bubble.
       wrap.decode!(message || existing_message(wrap, parsed))

@@ -91,12 +91,18 @@ class Message < ApplicationRecord
   # published no kind 10050. Still a gift wrap — the sender stays hidden — but
   # delivery depends on their client reading kind 1059 broadly, and a client with
   # no NIP-17 support at all (Primal, Damus) will never look.
-  def best_effort_delivery? = %w[nip65 fallback].include?(delivery_tier)
+  #
+  # `observed` is included because the recipient still published no inbox — but
+  # its note says something much weaker than the other two, because it is a relay
+  # we watched their own messages arrive on rather than a guess.
+  def best_effort_delivery? = %w[nip65 fallback observed].include?(delivery_tier)
 
   def delivery_note
     case delivery_tier
     when "nip65"    then "Sent to their public relays — they have no DM inbox, so it may not arrive"
     when "fallback" then "Sent to popular relays — they have no relay list at all, so it may not arrive"
+    when "observed" then "Sent to the relays their own messages reach us on — they have no DM inbox, " \
+                         "but their client is reading there"
     end
   end
 

@@ -54,6 +54,27 @@ class DmSyncState < ApplicationRecord
     update!(status: "idle", step: nil, last_error: nil, last_synced_at: Time.current)
   end
 
+  # Has the poll's relay set changed since the watermark was last trusted?
+  #
+  # A `since` cursor is only meaningful for relays we were already listening to.
+  # Adding one — a newly published kind 10050, a new discovery relay — makes the
+  # cursor wrong for that relay specifically, and there is no per-relay cursor to
+  # fix it with. Order is irrelevant, so the digest is over the sorted set.
+  def relays_unchanged?(relays)
+    relays_digest.present? && relays_digest == self.class.digest_for(relays)
+  end
+
+  def observe_relays!(relays)
+    digest = self.class.digest_for(relays)
+    return if relays_digest == digest
+
+    update!(relays_digest: digest)
+  end
+
+  def self.digest_for(relays)
+    Digest::SHA1.hexdigest(Array(relays).map(&:to_s).sort.join("\n"))
+  end
+
   # Advance the "newest wrap we have seen" watermark. Monotonic: an older wrap
   # arriving late must not rewind the cursor.
   def observe_wrap!(seen_at)

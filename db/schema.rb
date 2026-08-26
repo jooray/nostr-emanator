@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_31_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_26_122313) do
   create_table "accounts", force: :cascade do |t|
     t.text "about"
     t.text "app_privkey"
@@ -121,6 +121,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_31_100000) do
     t.datetime "last_wrap_seen_at"
     t.integer "pending_wraps", default: 0, null: false
     t.integer "processed_wraps", default: 0, null: false
+    t.string "relays_digest", limit: 40
     t.string "status", limit: 16, default: "idle", null: false
     t.string "step"
     t.datetime "updated_at", null: false
@@ -160,6 +161,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_31_100000) do
     t.json "publish_results"
     t.string "quoted_rumor_id", limit: 64
     t.text "raw_tags"
+    t.json "relays"
     t.string "reply_to_rumor_id", limit: 64
     t.datetime "rumor_created_at"
     t.string "rumor_id", limit: 64, null: false

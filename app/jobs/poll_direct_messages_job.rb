@@ -64,8 +64,10 @@ class PollDirectMessagesJob < ApplicationJob
       return
     end
 
-    wraps = fetch_wraps(account, relays, sync.since)
-    stored = wraps.count { |event| record(account, event) }
+    since = backfill_since(sync, relays)
+    wraps = fetch_wraps(account, relays, since)
+    stored = wraps.count { |(event, seen_on)| record(account, event, seen_on) }
+    sync.observe_relays!(relays)
 
     sync.observe_wrap!(newest_seen_at(wraps))
     sync.progress!(step: stored.positive? ? "Found #{stored} new message(s)." : nil,
@@ -90,17 +92,36 @@ class PollDirectMessagesJob < ApplicationJob
         # verify: true still applies — RelayQuery checks the id and signature, and
         # that the kind was one we asked for. It cannot check the author, because
         # a gift wrap is signed by a throwaway key by design.
-        Nostr::RelayQuery.run(
+        events = Nostr::RelayQuery.run(
           relay_url, filter, timeout: 8, kind: Nostr::Nip17::WRAP_KIND,
           auth: auth_callback(account)
         ) || []
+        events.map { |event| [ event, relay_url ] }
       rescue StandardError => e
         Rails.logger.warn("Gift wrap fetch failed on #{relay_url.inspect}: #{e.message}")
         []
       end
     end
 
-    threads.flat_map(&:value).uniq { |event| event["id"] }
+    # Which relay each wrap came from is the evidence a reply is routed by, so
+    # the dedupe keeps every sighting rather than collapsing to one event. Same
+    # wrap from four relays is four rows here and one GiftWrap row after
+    # `record`, which folds the extra relays in via `observed_on!`.
+    threads.flat_map(&:value).uniq { |(event, relay_url)| [ event["id"], relay_url ] }
+  end
+
+  # `since` is one watermark for the whole account, so it says nothing useful
+  # about a relay we have only just started listening to: everything already
+  # sitting there is older than the watermark and would be skipped forever.
+  #
+  # When the relay set changes, do one deep pass. It costs bandwidth and nothing
+  # else — wrap_id uniqueness means an already-recorded wrap is not decrypted
+  # again, and decryption is the only expensive part.
+  def backfill_since(sync, relays)
+    return sync.since if sync.relays_unchanged?(relays)
+
+    Rails.logger.info("DM poll: relay set changed for account #{sync.account_id}, re-scanning from scratch")
+    DmSyncState::MAX_BACKFILL_AGE.ago.to_i
   end
 
   # NIP-42 signer callback. Two of the commonly-listed DM inbox relays refuse to
@@ -131,17 +152,19 @@ class PollDirectMessagesJob < ApplicationJob
   end
 
   # Returns true when this wrap was new to us.
-  def record(account, event)
+  def record(account, event, seen_on)
     return false unless Nostr::Nip17.valid_wrap?(event, recipient_pubkey: account.pubkey_hex)
 
     wrap = account.gift_wraps.create_or_find_by!(wrap_id: event["id"]) do |record|
       record.wrap_created_at = Time.at(event["created_at"].to_i).utc
       record.seen_at = Time.current
       record.wrap_event = event
-      record.relays = []
+      record.relays = [ seen_on ].compact
     end
 
-    wrap.previously_new_record?
+    fresh = wrap.previously_new_record?
+    wrap.observed_on!(seen_on) unless fresh
+    fresh
   rescue ActiveRecord::RecordNotUnique
     false
   end
