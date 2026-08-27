@@ -78,7 +78,7 @@ GEM
     ast (2.4.3)
     base64 (0.3.0)
     bcrypt_pbkdf (1.1.2)
-    bech32 (1.5.0)
+    bech32 (1.5.1)
       thor (>= 1.1.0)
     bigdecimal (4.1.2)
     bindex (0.8.1)
@@ -459,7 +459,7 @@ CHECKSUMS
   ast (2.4.3) sha256=954615157c1d6a382bc27d690d973195e79db7f55e9765ac7c481c60bdb4d383
   base64 (0.3.0) sha256=27337aeabad6ffae05c265c450490628ef3ebd4b67be58257393227588f5a97b
   bcrypt_pbkdf (1.1.2) sha256=c2414c23ce66869b3eb9f643d6a3374d8322dfb5078125c82792304c10b94cf6
-  bech32 (1.5.0) sha256=04520e3bd899a8d9d27e698eb4fc0e9f9292b42d13628d9a1814b3b8a9a68a8a
+  bech32 (1.5.1) sha256=812fa2b2bfc0d77145eb508d12a94a0f2c605e72687f0bedf42dbf31db2f10da
   bigdecimal (4.1.2) sha256=53d217666027eab4280346fba98e7d5b66baaae1b9c3c1c0ffe89d48188a3fbd
   bindex (0.8.1) sha256=7b1ecc9dc539ed8bccfc8cb4d2732046227b09d6f37582ff12e50a5047ceb17e
   bip-schnorr (0.7.0) sha256=1a5db8ba06885319e67e3db12f3a6f5e7b3fb132b343985ff1cc1478d73dd1f1
