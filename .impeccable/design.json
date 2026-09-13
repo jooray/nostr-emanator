@@ -1,0 +1,280 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-13T00:00:00Z",
+  "title": "Design System: Emanator Console",
+  "extensions": {
+    "colorMeta": {
+      "chassis": {
+        "role": "neutral",
+        "displayName": "Chassis Graphite",
+        "canonical": "#211f1c",
+        "tonalRamp": ["#171512", "#211f1c", "#2e2b27", "#383430", "#554e44", "#6e665a", "#a49b8c", "#efebe4"]
+      },
+      "panel": {
+        "role": "neutral",
+        "displayName": "Panel Face",
+        "canonical": "#2e2b27",
+        "tonalRamp": ["#171512", "#211f1c", "#2e2b27", "#353128", "#413c35", "#554e44", "#a49b8c", "#e4dfd6"]
+      },
+      "panel-hi": {
+        "role": "neutral",
+        "displayName": "Panel Highlight",
+        "canonical": "#353128",
+        "tonalRamp": ["#171512", "#211f1c", "#2e2b27", "#353128", "#413c35", "#6e665a", "#bbb3a6", "#efebe4"]
+      },
+      "seam": {
+        "role": "neutral",
+        "displayName": "Seam",
+        "canonical": "#171512",
+        "tonalRamp": ["#0d0c0a", "#171512", "#211f1c", "#2e2b27", "#383430", "#554e44", "#a49b8c", "#e4dfd6"]
+      },
+      "well": {
+        "role": "neutral",
+        "displayName": "Unlit Well",
+        "canonical": "#413c35",
+        "tonalRamp": ["#171512", "#211f1c", "#2e2b27", "#383430", "#413c35", "#554e44", "#a49b8c", "#e4dfd6"]
+      },
+      "rule-dark": {
+        "role": "neutral",
+        "displayName": "Hairline Rule (dark)",
+        "canonical": "#403b34",
+        "tonalRamp": ["#171512", "#211f1c", "#2e2b27", "#383430", "#403b34", "#6e665a", "#bbb3a6", "#e4dfd6"]
+      },
+      "bone": {
+        "role": "neutral",
+        "displayName": "Bone (lit nominal)",
+        "canonical": "#cfc7bb",
+        "tonalRamp": ["#2e2b27", "#383430", "#554e44", "#6e665a", "#a49b8c", "#bbb3a6", "#cfc7bb", "#efebe4"]
+      },
+      "legend": {
+        "role": "neutral",
+        "displayName": "Engraved Legend",
+        "canonical": "#c4bbac",
+        "tonalRamp": ["#2e2b27", "#383430", "#554e44", "#6e665a", "#a49b8c", "#bbb3a6", "#c4bbac", "#e4dfd6"]
+      },
+      "warm-stock": {
+        "role": "neutral",
+        "displayName": "Warm Stock (light ground)",
+        "canonical": "#efebe4",
+        "tonalRamp": ["#211f1c", "#383430", "#554e44", "#6e665a", "#a49b8c", "#d3ccc1", "#efebe4", "#faf7f2"]
+      },
+      "paper-white": {
+        "role": "neutral",
+        "displayName": "Paper White",
+        "canonical": "#faf7f2",
+        "tonalRamp": ["#211f1c", "#383430", "#554e44", "#6e665a", "#bbb3a6", "#e4dfd6", "#efebe4", "#faf7f2"]
+      },
+      "amber-signal": {
+        "role": "primary",
+        "displayName": "Signal Amber",
+        "canonical": "#f0a017",
+        "tonalRamp": ["#5c3a05", "#8f5806", "#b8720a", "#d98a0c", "#f0a017", "#f5b950", "#f5c874", "#fdf2dc"]
+      },
+      "red-signal": {
+        "role": "secondary",
+        "displayName": "Signal Red",
+        "canonical": "#d93b1e",
+        "tonalRamp": ["#4e1208", "#7a1d0c", "#a02610", "#c22f14", "#d93b1e", "#e8614a", "#ee9683", "#fbeae6"]
+      },
+      "contact-black": {
+        "role": "neutral",
+        "displayName": "Contact Black",
+        "canonical": "#1a1714",
+        "tonalRamp": ["#0d0c0a", "#1a1714", "#211f1c", "#2e2b27", "#383430", "#554e44", "#a49b8c", "#e4dfd6"]
+      },
+      "ink-dark": {
+        "role": "neutral",
+        "displayName": "Panel Ink",
+        "canonical": "#ede8e0",
+        "tonalRamp": ["#2e2b27", "#383430", "#554e44", "#6e665a", "#a49b8c", "#cfc7bb", "#ede8e0", "#faf7f2"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "The one heading on the dashboard — '34 HELD'. Carries itself; no kicker plate above it." },
+      "headline": { "displayName": "Headline", "purpose": "Page titles such as the calendar month. Set globally on main h1." },
+      "title": { "displayName": "Identity Title", "purpose": "The account name inside the identity mark; wraps to two lines rather than truncating." },
+      "body": { "displayName": "Body", "purpose": "All operator prose at the 15.5px/1.55 base." },
+      "body-dense": { "displayName": "Note Copy", "purpose": "The two-line note excerpt in a forme row, 62ch measure." },
+      "label": { "displayName": "Engraved Legend", "purpose": "Every legend in the product; cut into the dark panel with a shadow above and a light lip below." },
+      "slug": { "displayName": "Status Slug", "purpose": "The bordered status chip and the default action button." },
+      "hour": { "displayName": "Release Hour", "purpose": "The scheduled hour at display scale in the forme row." },
+      "readout": { "displayName": "Readout", "purpose": "Elapsed counters, delivery tallies, calendar day numbers, npubs, relay URLs." }
+    },
+    "shadows": [
+      { "name": "lamp-recess-dark", "value": "inset 0 1.5px 2px rgba(0,0,0,0.75), 0 1px 0 rgba(255,255,255,0.05)", "purpose": "An unlit indicator lamp on the dark chassis: a well drilled into the panel." },
+      { "name": "lamp-recess-light", "value": "inset 0 1.5px 2px rgba(0,0,0,0.3)", "purpose": "The same unlit lamp on warm stock." },
+      { "name": "cell-recess-dark", "value": "inset 0 1.5px 3px rgba(0,0,0,0.7), 0 1px 0 rgba(255,255,255,0.05)", "purpose": "An unlit poll-strip cell: a relay that did not take the event." },
+      { "name": "bulb-bone", "value": "inset 0 1px 0 rgba(255,255,255,0.35), 0 0 5px rgba(207,199,187,0.22)", "purpose": "A lit nominal lamp. Restrained — nominal illuminates barely, and only when it is a lamp." },
+      { "name": "bulb-alarm", "value": "inset 0 1px 0 rgba(255,180,160,0.45), 0 0 9px rgba(217,59,30,0.5)", "purpose": "A red lamp or a red poll cell." },
+      { "name": "bulb-wait", "value": "inset 0 1px 0 rgba(255,225,170,0.4), 0 0 9px rgba(240,160,23,0.5)", "purpose": "An amber lamp: something is waiting on a human." },
+      { "name": "engraving", "value": "0 -1px 0 rgba(0,0,0,0.55), 0 1px 0 rgba(255,255,255,0.05)", "purpose": "text-shadow that cuts legend into the dark panel." },
+      { "name": "popover-drop-dark", "value": "0 14px 34px rgba(0,0,0,0.55)", "purpose": "The only true drop shadow in the system: the detached flatpickr overlay, dark theme." },
+      { "name": "popover-drop-light", "value": "0 12px 28px rgba(33,31,28,0.18)", "purpose": "The same detached overlay on warm stock." }
+    ],
+    "motion": [
+      { "name": "colour-only", "value": "transition: color 150ms, background-color 150ms, border-color 150ms", "purpose": "The default. State changes shift colour; nothing scales, lifts or bounces." },
+      { "name": "panel-slide", "value": "transform 300ms", "purpose": "The mobile navigation panel sliding in from the rail edge." },
+      { "name": "backdrop-fade", "value": "opacity 300ms", "purpose": "The mobile navigation backdrop." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one action a human must take on a screen; the only amber plate.",
+      "html": "<button class=\"ds-btn-primary\">New post</button>",
+      "css": ".ds-btn-primary { font-family: \"Barlow Condensed\", \"Barlow\", ui-sans-serif, system-ui, sans-serif; font-weight: 600; font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: #1a1714; background: #f0a017; border: 1px solid #f0a017; border-radius: 0; padding: 10px 16px; cursor: pointer; transition: background-color 150ms, border-color 150ms; } .ds-btn-primary:hover { background: #f5b950; border-color: #f5b950; } .ds-btn-primary:focus-visible { outline: 2px solid #f0a017; outline-offset: 2px; border-radius: 1px; }"
+    },
+    {
+      "name": "Slug Button",
+      "kind": "button",
+      "refersTo": "button-slug",
+      "description": "The default action shape: a bordered condensed-caps chip that hovers to amber. Used for Rebroadcast, Open, Today, Sign out.",
+      "html": "<button class=\"ds-btn-slug\">Rebroadcast</button>",
+      "css": ".ds-btn-slug { display: inline-block; font-family: \"Barlow Condensed\", \"Barlow\", ui-sans-serif, system-ui, sans-serif; font-weight: 600; font-size: 10px; line-height: 1; letter-spacing: 0.2em; text-transform: uppercase; color: #6e665a; background: transparent; border: 1px solid currentColor; border-radius: 0; padding: 5px 8px; white-space: nowrap; cursor: pointer; transition: color 150ms; } .ds-btn-slug:hover { color: #d98a0c; } .ds-btn-slug:focus-visible { outline: 2px solid #f0a017; outline-offset: 2px; }"
+    },
+    {
+      "name": "Status Slug",
+      "kind": "chip",
+      "refersTo": "slug-wait",
+      "description": "Record state as an engraved bordered chip. Nominal is unfilled neutral; only waiting-on-a-human (amber) and short delivery (red) carry colour and a wash.",
+      "html": "<span class=\"ds-slug\">Held</span> <span class=\"ds-slug ds-slug--wait\">Approve on phone</span> <span class=\"ds-slug ds-slug--short\">Barely out 1/6</span>",
+      "css": ".ds-slug { display: inline-block; font-family: \"Barlow Condensed\", \"Barlow\", ui-sans-serif, system-ui, sans-serif; font-weight: 600; font-size: 10px; line-height: 1; letter-spacing: 0.2em; text-transform: uppercase; color: #6e665a; border: 1px solid currentColor; border-radius: 0; padding: 5px 8px; white-space: nowrap; margin-right: 6px; } .ds-slug--wait { color: #d98a0c; background: rgba(240, 160, 23, 0.09); } .ds-slug--short { color: #c22f14; background: rgba(217, 59, 30, 0.08); }"
+    },
+    {
+      "name": "Indicator Lamp",
+      "kind": "custom",
+      "refersTo": "lamp",
+      "description": "The signature element. Four states, one doctrine: off is the default, because nominal does not illuminate. Always aria-hidden; the text beside it carries the meaning.",
+      "html": "<span class=\"ds-lamp\"></span><span class=\"ds-lamp ds-lamp--lit\"></span><span class=\"ds-lamp ds-lamp--wait\"></span><span class=\"ds-lamp ds-lamp--alarm\"></span>",
+      "css": ".ds-lamp { display: inline-block; width: 9px; height: 9px; border-radius: 2px; background: #413c35; box-shadow: inset 0 1.5px 2px rgba(0,0,0,0.75), 0 1px 0 rgba(255,255,255,0.05); margin-right: 10px; flex: none; } .ds-lamp--lit { background: #cfc7bb; box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 0 5px rgba(207,199,187,0.22); } .ds-lamp--wait { background: #f0a017; box-shadow: inset 0 1px 0 rgba(255,225,170,0.4), 0 0 9px rgba(240,160,23,0.5); } .ds-lamp--alarm { background: #d93b1e; box-shadow: inset 0 1px 0 rgba(255,180,160,0.45), 0 0 9px rgba(217,59,30,0.5); }"
+    },
+    {
+      "name": "Poll Strip",
+      "kind": "custom",
+      "refersTo": "poll-cell",
+      "description": "Delivery as a poll of N relay stations: one cell per relay, filled for accepted, recessed for declined, red only when the delivery as a whole grades thin or none. The tally is spelled out beside it.",
+      "html": "<span class=\"ds-poll\"><span class=\"ds-poll-cells\"><i class=\"is-ok\"></i><i class=\"is-ok\"></i><i class=\"is-ok\"></i><i class=\"is-ok\"></i><i class=\"is-ok\"></i><i></i></span><span class=\"ds-poll-tally\">5/6</span></span>",
+      "css": ".ds-poll { display: inline-flex; align-items: center; gap: 10px; } .ds-poll-cells { display: inline-flex; gap: 3px; vertical-align: middle; } .ds-poll-cells > i { display: block; width: 13px; height: 17px; background: #413c35; box-shadow: inset 0 1.5px 3px rgba(0,0,0,0.7), 0 1px 0 rgba(255,255,255,0.05); } .ds-poll-cells > i.is-ok { background: #cfc7bb; box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 1px 0 rgba(0,0,0,0.5); } .ds-poll-cells > i.is-short { background: #d93b1e; box-shadow: inset 0 1px 0 rgba(255,180,160,0.45), 0 0 10px rgba(217,59,30,0.55); } .ds-poll-tally { font-family: \"JetBrains Mono\", ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 700; font-size: 13px; font-variant-numeric: tabular-nums; color: #a49b8c; }"
+    },
+    {
+      "name": "Identity Mark",
+      "kind": "custom",
+      "refersTo": "title",
+      "description": "Wire + chop + name, identical on every surface. The 3px wire ink is derived from the account's pubkey so it can never reshuffle; it sits in the row's own flow, never as a border on a container. No npub — the name is the identifier.",
+      "html": "<a class=\"ds-identity\" href=\"#\"><span class=\"ds-wire\"></span><span class=\"ds-chop\">P</span><span class=\"ds-identity-name\">Pluto Broadcast</span></a>",
+      "css": ".ds-identity { display: inline-flex; align-items: center; gap: 10px; min-width: 0; text-decoration: none; color: inherit; transition: color 150ms; } .ds-identity:hover { color: #f5b950; } .ds-wire { display: block; width: 3px; align-self: stretch; min-height: 26px; flex: none; background: #3f7d6e; } .ds-chop { display: grid; place-items: center; width: 22px; height: 22px; flex: none; font-family: \"Barlow Condensed\", \"Barlow\", sans-serif; font-weight: 700; font-size: 11px; line-height: 1; letter-spacing: 0.04em; color: #3f7d6e; border: 1px solid currentColor; text-transform: uppercase; } .ds-identity-name { font-family: \"Barlow Condensed\", \"Barlow\", sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; line-height: 1.2; letter-spacing: 0.1em; }"
+    },
+    {
+      "name": "Rail Navigation Item",
+      "kind": "nav",
+      "refersTo": "nav-item",
+      "description": "An engraved route on the chassis rail with an indicator lamp at its head. No icons: a console labels a control with type and an indicator. The active item takes an inset amber spine and a lit amber lamp.",
+      "html": "<nav class=\"ds-rail\"><a class=\"ds-rail-item is-active\" href=\"#\" aria-current=\"page\"><span class=\"ds-lamp ds-lamp--wait\"></span>Dashboard</a><a class=\"ds-rail-item\" href=\"#\"><span class=\"ds-lamp\"></span>Posts</a><a class=\"ds-rail-item\" href=\"#\"><span class=\"ds-lamp\"></span>Calendar</a></nav>",
+      "css": ".ds-rail { display: block; width: 240px; background: #211f1c; border-right: 1px solid #171512; padding: 8px 0; } .ds-rail-item { display: flex; align-items: center; font-family: \"Barlow Condensed\", \"Barlow\", sans-serif; font-weight: 500; font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: #a49b8c; text-decoration: none; padding: 10px 12px 10px 16px; transition: color 150ms, background-color 150ms; } .ds-rail-item:hover { color: #ede8e0; } .ds-rail-item.is-active { background: rgba(240, 160, 23, 0.08); color: #ede8e0; box-shadow: inset 3px 0 0 #f0a017; } .ds-rail-item:focus-visible { outline: 2px solid #f0a017; outline-offset: -2px; }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "A plain rectangle with a hairline stroke. Focus shifts the border to amber and adds an amber ring; the caret is amber everywhere in the product.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"wss://relay.example.com\">",
+      "css": ".ds-input { width: 100%; font-family: \"Barlow\", ui-sans-serif, system-ui, sans-serif; font-size: 14.5px; color: #383430; background: #faf7f2; border: 1px solid #bbb3a6; border-radius: 0; padding: 8px 12px; caret-color: #f0a017; transition: border-color 150ms, box-shadow 150ms; } .ds-input::placeholder { color: #6e665a; } .ds-input:focus { outline: none; border-color: #f0a017; box-shadow: 0 0 0 2px rgba(240, 160, 23, 0.4); }"
+    },
+    {
+      "name": "Alarm Block",
+      "kind": "card",
+      "refersTo": "alarm-block",
+      "description": "The only filled red region. Present only when the count it carries is non-zero — an alarm that is always on screen is not an alarm. Reserved for deliveries that graded thin or none, and for publishes that never went out.",
+      "html": "<div class=\"ds-alarm\" role=\"alert\"><span class=\"ds-lamp ds-lamp--alarm\"></span><span class=\"ds-alarm-count\">2</span><span class=\"ds-alarm-legend\">posts barely<br>reached the network</span></div>",
+      "css": ".ds-alarm { display: inline-flex; align-items: center; gap: 12px; border: 1px solid #d93b1e; background: rgba(217, 59, 30, 0.08); border-radius: 0; padding: 9px 14px; text-decoration: none; } .ds-alarm-count { font-family: \"Barlow Condensed\", \"Barlow\", sans-serif; font-size: 22px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; color: #d93b1e; } .ds-alarm-legend { font-family: \"Barlow Condensed\", \"Barlow\", sans-serif; font-size: 11px; text-transform: uppercase; line-height: 1.15; letter-spacing: 0.16em; color: #a02610; }"
+    },
+    {
+      "name": "Forme Row",
+      "kind": "custom",
+      "refersTo": "body-dense",
+      "description": "The press-run row: release hour with its engraved day label, the identity mark, two clamped lines of the note, and the state with the action that belongs to it. Rules separate rows; nothing is a card. A waiting row takes a 6% amber tint bled to the field edge — never a coloured border-left.",
+      "html": "<article class=\"ds-forme\"><div><a class=\"ds-hour\" href=\"#\">18:40</a><span class=\"ds-eng\">Tomorrow</span></div><a class=\"ds-identity\" href=\"#\"><span class=\"ds-wire\"></span><span class=\"ds-chop\">P</span><span class=\"ds-identity-name\">Pluto Broadcast</span></a><p class=\"ds-copy\">The scheduler picks it up within a minute of its release hour and asks each relay in turn.</p><span class=\"ds-slug\">Held</span></article>",
+      "css": ".ds-forme { display: grid; grid-template-columns: 84px minmax(0,148px) minmax(0,1fr) auto; align-items: center; column-gap: 16px; row-gap: 8px; border-bottom: 1px solid #403b34; padding: 14px 0; } .ds-hour { display: block; font-family: \"JetBrains Mono\", ui-monospace, Menlo, monospace; font-weight: 700; font-size: 23px; line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; color: inherit; text-decoration: none; transition: color 150ms; } .ds-hour:hover { color: #f5b950; } .ds-eng { display: block; margin-top: 6px; font-family: \"Barlow Condensed\", \"Barlow\", sans-serif; font-weight: 600; font-size: 11px; line-height: 1.1; letter-spacing: 0.18em; text-transform: uppercase; color: #c4bbac; text-shadow: 0 -1px 0 rgba(0,0,0,0.55), 0 1px 0 rgba(255,255,255,0.05); } .ds-copy { margin: 0; max-width: 62ch; font-family: \"Barlow\", sans-serif; font-size: 14.5px; line-height: 1.6; color: #bbb3a6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Annunciator Panel",
+    "overview": "Emanator is a control console for events its operator already signed. The surface is built like the front of a rack-mounted station panel: a warm graphite chassis with the working field as a lighter panel face set into it, structure carried by hairline rule and engraved legend, and a small population of indicator lamps that are dark until something needs a person. There are no cards, no rounded containers, no drop shadows on structure, no stat tiles, and no icons in the rail — a console labels a control with engraved type and an indicator, not a glyph.\n\nThe governing doctrine is chromatic scarcity. Nominal does not illuminate. The product has exactly two chromatic values: amber (#f0a017) means a human must tap something, red (#d93b1e) means something did not land. Everything else — every 'published', every 'scheduled', every 'success' — is bone or steel. This is enforced at token level, not by convention: the green, emerald, teal, indigo, blue, sky, cyan, pink and purple ramps are remapped onto the warm neutral scale, so a text-green-500 left anywhere in the markup resolves to #a79e91 and simply stops shouting. The same trick squares the world: every --radius-* token except --radius-full is 0px. The system works by redefining Tailwind's own tokens rather than overriding its classes — there is no !important layer and no per-view patching.\n\nAn earlier rendition of this world used a mint/coral/gold semantic trio on a grey-green ground, and was rejected in the user's own words as reading 'AI generated'. That palette is the category default; reaching for it again reproduces exactly the complaint this world answers. It stays rejected, and so does a light 'painted panel grey' chassis. Both shipped themes are approved: the dark chassis is the primary identity and the light theme is its printed twin — the same engraved legend, lamps and rules rendered as ink on warm stock (#efebe4), not a second world. Per-user system/light/dark preference is a product constraint and must survive any change here.",
+    "keyCharacteristics": [
+      "Nominal states are dark; only an exception carries colour.",
+      "Exactly two chromatic values, reserved absolutely: amber = act, red = short.",
+      "Zero corner radius everywhere except avatars (--radius-full is kept because faces are round).",
+      "Structure is hairline rule and engraved legend — never a card, never a shadow.",
+      "Delivery is a poll of N stations, rendered as a strip of lamps and a tally, never as a boolean tick.",
+      "Warm neutrals throughout; no cool grey, no pure white, no pure black.",
+      "Three self-hosted families (font-src :self): condensed caps for legend, Barlow for prose, mono tabular for every measurement."
+    ],
+    "rules": [
+      {
+        "name": "The Nominal Does Not Illuminate Rule",
+        "body": "A lamp is dark until something is wrong. Green for 'fine' is forbidden — which is why the green/emerald/indigo/blue/purple ramps are remapped onto the neutral scale at token level rather than left available.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Chromatics Rule",
+        "body": "Amber means a human must tap something; red means something did not land. Nothing else in the product may wear either — not identity inks, not avatars, not filter states, not step markers, not unread counts. Each of those was a real violation found and removed during finish review.",
+        "section": "colors"
+      },
+      {
+        "name": "The Poll Is Not A Boolean Rule",
+        "body": "Publishing to N relays is a poll of N stations, so a partial answer is the normal answer. :partial delivery is information, never an alarm; only :thin (1 of >=4) and :none light red. An alarm that fires on the ordinary case is an alarm the operator learns to ignore.",
+        "section": "colors"
+      },
+      {
+        "name": "The Measurement Is Mono Rule",
+        "body": "Times, tallies, counters, npubs, event ids and relay results are set in JetBrains Mono with tabular numerals. Prose is never mono; a number that must be compared between rows is never proportional.",
+        "section": "typography"
+      },
+      {
+        "name": "The No Kicker Rule",
+        "body": "No eyebrow, no kicker plate, no label strip above a heading. The direction contract's FIRST VIEWPORT specified an engraved 'PRESS RUN · NEXT 24 HOURS' plate above the display heading; it was deliberately not built, and the contract was amended rather than the ban overridden. A heading carries itself and its scope line sits below it.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Chassis Rule",
+        "body": "Surfaces never lift. If a region needs to read as distinct, change its tone or draw a rule — never add a shadow. Shadows belong to lamps, cells and engraving, plus the one detached popover.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Recess-Before-Colour Rule",
+        "body": "An off state is a well, not a grey dot. An unlit poll cell already says 'this relay did not take it'; red is spent only when the delivery as a whole is alarming.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do leave nominal dark. A published, scheduled or completed thing gets bone or neutral ink and no lamp glow.",
+      "Do change the world by redefining a token in @theme, not by adding an override class. That is how the neutral ramp, the squared radii and the defanged semantic ramps all work.",
+      "Do spend amber on exactly one thing per screen: the action a human must take.",
+      "Do render delivery as a poll — a strip and a tally — and grade it from publish_results via RelayDelivery, never from status.",
+      "Do put the action that belongs to a state inside the row that shows it.",
+      "Do set every measurement (time, tally, npub, relay, event id) in JetBrains Mono with tabular numerals.",
+      "Do carry both themes on every new surface, including vendored widgets, and keep the per-user system/light/dark preference working.",
+      "Do self-host any new font file under public/fonts/; the CSP is font-src :self.",
+      "Do use hairline rule and tone to divide regions."
+    ],
+    "donts": [
+      "Don't use green, emerald, teal, blue, indigo, sky, cyan, pink or purple. They are remapped to neutral at token level; reaching for one produces a dead grey, which is the intended answer.",
+      "Don't put amber or red on anything that is not an action or an alarm — not identity inks, not avatars, not filter chips, not step markers, not unread counts.",
+      "Don't treat a :partial delivery as a failure. 5 of 6 is a successful publish and must read as one.",
+      "Don't render an unqualified success tick for a publish. The tally always accompanies the verdict.",
+      "Don't introduce a card, a rounded container, or a drop shadow on structure. Radius stays 0 except --radius-full for avatars.",
+      "Don't add a kicker, eyebrow or label plate above a heading.",
+      "Don't mark a row with a 3px coloured border-left; use a tint, a lamp and a slug.",
+      "Don't add icons to the rail, or use a glyph where an engraved legend and a lamp will label the control.",
+      "Don't reintroduce the rejected mint #7BE0A0 / coral #E04B3C / gold #E8B84B trio, or any variant of the category's default semantic status set.",
+      "Don't theme a control under .dark only.",
+      "Don't truncate an npub as an identity label; the name is the identifier."
+    ]
+  }
+}

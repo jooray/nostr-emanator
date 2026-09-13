@@ -9,12 +9,23 @@ class NostrAuthSession < ApplicationRecord
   # config/initializers/active_record_encryption.rb.
   encrypts :temp_privkey, :secret
 
+  FLOWS = %w[nostrconnect bunker].freeze
+
   validates :session_id, presence: true, uniqueness: true
   validates :temp_pubkey, presence: true
   validates :temp_privkey, presence: true
-  validates :secret, presence: true
   validates :relay_url, presence: true
   validates :expires_at, presence: true
+  validates :flow, inclusion: { in: FLOWS }
+  # Only the nostrconnect flow depends on the secret: it is the sole thing
+  # binding that handshake to this browser, so it must exist. A bunker:// URI
+  # may legitimately carry none — there the signer is pinned from the URI
+  # instead, and the secret is at most an extra token the signer asked for.
+  validates :secret, presence: true, if: :nostrconnect?
+  validates :signer_pubkey, presence: true, if: :bunker?
+
+  def nostrconnect? = flow != "bunker"
+  def bunker? = flow == "bunker"
 
   scope :active, -> { where("expires_at > ?", Time.current).where(consumed_at: nil) }
   scope :expired, -> { where("expires_at <= ?", Time.current) }

@@ -15,6 +15,7 @@ class Account < ApplicationRecord
 
   belongs_to :user
   has_many :posts, dependent: :destroy
+  has_many :profile_updates, dependent: :destroy
   has_many :reposts, dependent: :destroy
   has_many :nostr_actions, dependent: :destroy
   has_many :conversations, dependent: :destroy
@@ -50,6 +51,28 @@ class Account < ApplicationRecord
     display_name.presence || username.presence || npub&.truncate(20) || pubkey_hex.truncate(16)
   end
 
+  # An identity's ink, taken from the industrial wire-marker code: blue, slate,
+  # brown, teal, steel, violet, olive, mauve.
+  #
+  # Derived from the pubkey, never from list position. The calendar used to
+  # assign colours as ACCOUNT_COLOR_NAMES[i % 7], so accounts 1, 8 and 15 shared
+  # a colour AND the whole mapping shifted every time an account was paired —
+  # which makes a legend useless and a colour meaningless. A hash of the pubkey
+  # is stable for the life of the identity and identical on every surface.
+  # Deliberately clear of red and amber: those two are the product's entire
+  # chromatic vocabulary (did-not-land / needs-a-human), and an identity wearing
+  # either one makes an ordinary account look like an alarm.
+  WIRE_INKS = %w[#2e6e8c #7a8085 #6e4b2a #3f7d6e #4f5d75 #6b5b95 #5f7a3e #8a6f8c].freeze
+
+  def ink
+    WIRE_INKS[Digest::SHA256.hexdigest(pubkey_hex.to_s)[0, 8].to_i(16) % WIRE_INKS.size]
+  end
+
+  # The letter struck on the identity's chop.
+  def chop
+    (display_name.presence || username.presence || "?").strip[0].to_s.upcase
+  end
+
   def has_signer?
     signer_pubkey.present? && app_privkey.present?
   end
@@ -83,7 +106,14 @@ class Account < ApplicationRecord
   # asked what it granted, so we compare the permission set the account was
   # paired with — nil means "paired before DM permissions existed".
   def messaging_capable?
-    has_signer? && dm_perms_version.to_i >= Nostr::AuthService::PERMISSIONS_VERSION
+    has_signer? && dm_perms_version.to_i >= Nostr::AuthService::MESSAGING_PERMISSIONS_VERSION
+  end
+
+  # Publishing kind 0 needs `sign_event:0`, which only pairings from permission
+  # version 4 onward requested. An account paired before that can still do
+  # everything else; it just needs re-pairing before its profile can be edited.
+  def profile_editing_capable?
+    has_signer? && dm_perms_version.to_i >= Nostr::AuthService::PROFILE_PERMISSIONS_VERSION
   end
 
   # The signer actively refused a DM operation, so re-pairing will not help until

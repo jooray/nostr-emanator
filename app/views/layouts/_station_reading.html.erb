@@ -1,0 +1,24 @@
+<%# One reading in the station status bank.
+
+    Always a link. A lamp reporting two failed publishes that cannot be clicked
+    makes the operator go and find them, which is the work the lamp was supposed
+    to save. Zero readings still link — going to an empty filtered list is a
+    legitimate answer to "show me the failures". %>
+<% lit = count.positive? %>
+<% tone = if !lit
+            "text-gray-600 dark:text-gray-400"
+          elsif state == :wait
+            "text-amber-600 dark:text-amber-400"
+          elsif state == :alarm
+            "text-red-600 dark:text-red-400"
+          else
+            "text-gray-700 dark:text-gray-300"
+          end %>
+<li>
+  <%= link_to path,
+        class: "group -mx-2 flex items-center gap-2.5 px-2 py-1 condensed text-[11.5px] uppercase tracking-[0.16em] no-underline transition-colors hover:bg-white/5 #{tone} hover:text-amber-600 dark:hover:text-amber-400",
+        data: local_assigns[:mobile] ? { action: "click->mobile-nav#close" } : {} do %>
+    <%= lamp(lit ? (state == :wait ? :wait : (state == :alarm ? :alarm : :on)) : :off) %>
+    <%= label %>
+  <% end %>
+</li>

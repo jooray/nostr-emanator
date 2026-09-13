@@ -56,10 +56,33 @@ module Nostr
 
     HEX_32 = /\A[0-9a-f]{64}\z/
 
+    # Build a kind-1 note from user-written text.
+    #
+    # Unlike build_unsigned_event (which is also used for DMs, Blossom auth and
+    # read-state events, where content is not prose) this reads the text and
+    # derives NIP-27 mention / NIP-18 quote / hashtag tags from it — see
+    # ContentTagger. A `q` tag on a kind 1 is what makes the note a quote
+    # repost of the event it links to.
+    def build_unsigned_note(content:, pubkey:, created_at:, kind: 1, extra_tags: [], allow_fetch: false)
+      tags = extra_tags + ContentTagger.tags_for(
+        content,
+        author_pubkey: pubkey,
+        allow_fetch: allow_fetch
+      )
+
+      build_unsigned_event(
+        content: content,
+        kind: kind,
+        pubkey: pubkey,
+        created_at: created_at,
+        tags: tags
+      )
+    end
+
     # Build unsigned reply event with NIP-10 tags
     def build_unsigned_reply(content:, pubkey:, created_at:,
                              parent_event_id:, parent_author_pubkey:,
-                             root_event_id: nil, relay_hint: "")
+                             root_event_id: nil, relay_hint: "", allow_fetch: false)
       # L2: reject anything that is not a 64-char lowercase hex id/pubkey.
       validate_hex32!(parent_event_id, "parent event id")
       validate_hex32!(parent_author_pubkey, "parent author pubkey")
@@ -78,6 +101,17 @@ module Nostr
       end
 
       tags << ["p", parent_author_pubkey]
+
+      # Mentions and quotes written into the reply body still need tags, but the
+      # thread's own events must not be restated: the parent is an `e` tag, and
+      # repeating it as a `q` would claim the reply quotes what it answers.
+      tags += ContentTagger.tags_for(
+        content,
+        author_pubkey: pubkey,
+        exclude_event_ids: [parent_event_id, root_event_id].compact,
+        exclude_pubkeys: [parent_author_pubkey],
+        allow_fetch: allow_fetch
+      )
 
       build_unsigned_event(
         content: content,

@@ -2,6 +2,7 @@
 
 class Repost < ApplicationRecord
   include StatusTransitions
+  include RelayDelivery
 
   attribute :publish_results, :json
   attribute :signed_event, :json

@@ -16,7 +16,7 @@
         </svg>
         New Post
       <% end %>
-      <%= link_to settings_account_path(@account), class: "inline-flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors" do %>
+      <%= link_to settings_account_path(@account), class: "inline-flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-[color:var(--color-rule-dark)] text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors" do %>
         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -27,16 +27,12 @@
   </div>
 
   <!-- Compact Profile Header -->
-  <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+  <div class="border rule overflow-hidden">
     <div class="p-4 flex items-center gap-4">
       <% if @account.picture_url.present? %>
         <img src="<%= @account.picture_url %>" alt="<%= @account.display_name_or_npub %>" class="h-14 w-14 rounded-full object-cover flex-shrink-0">
       <% else %>
-        <div class="h-14 w-14 rounded-full bg-amber-100 dark:bg-amber-900 flex items-center justify-center flex-shrink-0">
-          <span class="text-xl font-medium text-amber-600 dark:text-amber-400">
-            <%= @account.display_name_or_npub[0].upcase %>
-          </span>
-        </div>
+        <div class="h-14 w-14 flex items-center justify-center flex-shrink-0 flex items-center justify-center border border-gray-400 dark:border-gray-500"><span class="text-xl font-medium condensed font-bold uppercase tracking-wide text-gray-600 dark:text-gray-300"><%= @account.display_name_or_npub[0].upcase %></span></div>
       <% end %>
       <div class="flex-1 min-w-0">
         <h2 class="text-lg font-bold text-gray-900 dark:text-white truncate">
@@ -66,8 +62,8 @@
   </div>
 
   <!-- Scheduled Posts -->
-  <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
-    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+  <div class="border rule overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-[color:var(--color-rule-dark)]">
       <h3 class="text-lg font-medium text-gray-900 dark:text-white">Scheduled Posts</h3>
       <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Upcoming posts queued for this account</p>
     </div>
@@ -108,8 +104,8 @@
   </div>
 
   <!-- Recent Events (lazy loaded) -->
-  <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
-    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+  <div class="border rule overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-[color:var(--color-rule-dark)]">
       <h3 class="text-lg font-medium text-gray-900 dark:text-white">Recent Events</h3>
       <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Latest notes fetched from relays</p>
     </div>
@@ -119,8 +115,8 @@
   </div>
 
   <!-- Recent Interactions (lazy loaded) -->
-  <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
-    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+  <div class="border rule overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-[color:var(--color-rule-dark)] flex items-center justify-between">
       <div>
         <h3 class="text-lg font-medium text-gray-900 dark:text-white">Recent Interactions</h3>
         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Replies, quotes, and mentions from others</p>

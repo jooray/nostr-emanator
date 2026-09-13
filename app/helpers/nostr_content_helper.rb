@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
 module NostrContentHelper
-  NOSTR_URI_PATTERN = /nostr:(nprofile1[a-z0-9]+|npub1[a-z0-9]+|nevent1[a-z0-9]+|note1[a-z0-9]+|naddr1[a-z0-9]+)/i
+  # Bare identifiers are resolved too, not just `nostr:`-prefixed ones: posts
+  # are normalised on save (Post#normalize_nostr_references), but drafts written
+  # before that, and text rendered straight from a relay, still arrive bare.
+  NOSTR_URI_PATTERN = Nostr::ContentRefs::ENTITY_PATTERN
 
   def render_nostr_content(content)
     return "" if content.blank?
@@ -10,7 +13,10 @@ module NostrContentHelper
 
     resolved = escaped.gsub(NOSTR_URI_PATTERN) do |match|
       identifier = match.sub(/\Anostr:/i, "")
-      resolve_nostr_reference(identifier)
+      # `match` is the fallback, not a rebuilt "nostr:…" string: the pattern
+      # also matches bare identifiers, and text we could not resolve has to come
+      # back out exactly as the user wrote it.
+      resolve_nostr_reference(identifier, match)
     end
 
     resolved.html_safe
@@ -18,25 +24,25 @@ module NostrContentHelper
 
   private
 
-  def resolve_nostr_reference(identifier)
+  def resolve_nostr_reference(identifier, fallback)
     parsed = Nostr::KeyConverter.parse_nostr_identifier(identifier)
-    return "nostr:#{identifier}" unless parsed
+    return fallback unless parsed
 
     case parsed[:type]
     when :nprofile, :npub
-      resolve_profile_reference(identifier, parsed)
+      resolve_profile_reference(identifier, parsed, fallback)
     when :nevent, :note
       resolve_event_reference(identifier, parsed)
     when :naddr
       resolve_naddr_reference(identifier, parsed)
     else
-      "nostr:#{identifier}"
+      fallback
     end
   end
 
-  def resolve_profile_reference(identifier, parsed)
+  def resolve_profile_reference(identifier, parsed, fallback)
     pubkey_hex = parsed[:pubkey]
-    return "nostr:#{identifier}" unless pubkey_hex
+    return fallback unless pubkey_hex
 
     npub = Nostr::KeyConverter.hex_to_npub(pubkey_hex)
 

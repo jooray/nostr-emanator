@@ -227,6 +227,50 @@ module Nostr
         hex.match?(/\A[0-9a-f]{64}\z/i)
       end
 
+      # --- bunker:// (NIP-46, signer-initiated) --------------------------------
+      #
+      # Shape: bunker://<remote-signer-pubkey-hex>?relay=wss://…&relay=…&secret=…
+      #
+      # Deliberately three methods, because the routing question and the validity
+      # question must not be the same test. `bunker_uri?` decides which input
+      # branch the user meant; if it were as strict as `parse_bunker_uri`, a
+      # slightly malformed bunker string would silently fall through to the
+      # "paste an npub" branch and fail there with an unrelated bech32 error
+      # instead of "that bunker link looks wrong".
+
+      # Loose and case-insensitive on purpose: iOS capitalises the first typed
+      # character, so "Bunker://…" is a bunker URI the user typed by hand.
+      def bunker_uri?(input)
+        input.to_s.strip.match?(%r{\Abunker://}i)
+      end
+
+      # Some QR encoders uppercase the hex payload, and the scheme may arrive
+      # capitalised. Normalise both so parsing sees one canonical shape.
+      def normalize_bunker_uri(input)
+        input.to_s.strip.sub(%r{\Abunker://([0-9a-f]{64})}i) { "bunker://#{::Regexp.last_match(1).downcase}" }
+      end
+
+      # Returns { pubkey:, relays:, secret: } or nil. The pubkey sits in the
+      # authority position, so URI's own parser is no help — match it directly.
+      def parse_bunker_uri(input)
+        normalized = normalize_bunker_uri(input)
+        match = normalized.match(%r{\Abunker://([0-9a-f]{64})(?:\?(.*))?\z}i)
+        return nil unless match
+
+        # URI.decode_www_form, not CGI.parse: Ruby 4.0 slimmed the cgi gem and
+        # CGI.parse no longer exists (CGI.escape, used elsewhere here, does).
+        params = URI.decode_www_form(match[2].to_s).group_by(&:first)
+                    .transform_values { |pairs| pairs.map(&:last) }
+        relays = Array(params["relay"]).map { |r| r.to_s.strip }.reject(&:blank?)
+        # At least one relay is required: with none there is nowhere to send the
+        # connect request, and a signer pubkey alone is not reachable.
+        return nil if relays.empty?
+
+        { pubkey: match[1].downcase, relays: relays, secret: Array(params["secret"]).first.presence }
+      rescue StandardError
+        nil
+      end
+
       private
 
       def convert_bits(data, from_bits, to_bits, pad = true)

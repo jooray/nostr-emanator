@@ -9,8 +9,8 @@
   </div>
 
   <!-- Read-only Profile Info -->
-  <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
-    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+  <div class="border rule overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-[color:var(--color-rule-dark)]">
       <h3 class="text-lg font-medium text-gray-900 dark:text-white">Profile Info</h3>
       <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
         Profile data is fetched from Nostr relays and cannot be edited here. Use "Refresh Profile" on the account page to update.
@@ -21,11 +21,7 @@
         <% if @account.picture_url.present? %>
           <img src="<%= @account.picture_url %>" alt="<%= @account.display_name_or_npub %>" class="h-16 w-16 rounded-full object-cover flex-shrink-0">
         <% else %>
-          <div class="h-16 w-16 rounded-full bg-amber-100 dark:bg-amber-900 flex items-center justify-center flex-shrink-0">
-            <span class="text-xl font-medium text-amber-600 dark:text-amber-400">
-              <%= @account.display_name_or_npub[0].upcase %>
-            </span>
-          </div>
+          <div class="h-16 w-16 flex items-center justify-center flex-shrink-0 flex items-center justify-center border border-gray-400 dark:border-gray-500"><span class="text-xl font-medium condensed font-bold uppercase tracking-wide text-gray-600 dark:text-gray-300"><%= @account.display_name_or_npub[0].upcase %></span></div>
         <% end %>
         <div class="flex-1 min-w-0">
           <dl class="space-y-3">
@@ -54,8 +50,8 @@
   </div>
 
   <!-- Editable Personality Form -->
-  <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
-    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+  <div class="border rule overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-[color:var(--color-rule-dark)]">
       <h3 class="text-lg font-medium text-gray-900 dark:text-white">Writing Personality</h3>
       <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
         Define how AI-generated posts should sound for this account.

@@ -15,8 +15,11 @@
        class="<%= dimensions %> flex-shrink-0 rounded-full object-cover"
        loading="lazy" referrerpolicy="no-referrer">
 <% else %>
-  <div class="<%= dimensions %> flex flex-shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900">
-    <span class="<%= text_size %> font-medium text-amber-600 dark:text-amber-400">
+  <%# No picture: the console's own square chop, not an amber disc. The circular
+      coloured initial is the category's most recognisable scaffold token, and in
+      amber it was colour carrying no action — on every screen, in the rail. %>
+  <div class="<%= dimensions %> flex flex-shrink-0 items-center justify-center border border-gray-400 dark:border-gray-500">
+    <span class="<%= text_size %> condensed font-bold uppercase tracking-wide text-gray-600 dark:text-gray-300">
       <%= label.to_s.first&.upcase || "?" %>
     </span>
   </div>

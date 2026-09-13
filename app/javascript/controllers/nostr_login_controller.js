@@ -1,22 +1,112 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["nip07Section", "divider", "extensionButton", "pollingIndicator", "errorMessage", "errorText", "config"]
+  static targets = [
+    "nip07Section", "extensionButton", "extensionButtonLabel",
+    "pollingIndicator", "pollingLabel",
+    "errorMessage", "errorText", "config", "qrSection",
+    "expiredNotice", "staleNotice",
+    "bunkerSection", "bunkerInput", "bunkerButton",
+    "authChallenge", "authChallengeLink"
+  ]
 
   connect() {
     this.pollInterval = null
     this.checkNip07Extension()
+    this.watchForegroundReturn()
     this.startPolling()
   }
 
   disconnect() {
     this.stopPolling()
+    if (this.nip07Timer) clearInterval(this.nip07Timer)
+    if (this.staleTimer) clearTimeout(this.staleTimer)
+    if (this.visibilityHandler) {
+      document.removeEventListener("visibilitychange", this.visibilityHandler)
+    }
   }
 
+  // Extensions inject window.nostr asynchronously, so a single check on connect
+  // misses the ones that are a little slow and the button never appears at all.
   checkNip07Extension() {
-    if (typeof window.nostr !== "undefined") {
-      this.nip07SectionTarget.classList.remove("hidden")
-      this.dividerTarget.classList.remove("hidden")
+    if (this.revealExtension()) return
+
+    let waited = 0
+    this.nip07Timer = setInterval(() => {
+      waited += 150
+      if (this.revealExtension() || waited >= 3000) clearInterval(this.nip07Timer)
+    }, 150)
+  }
+
+  revealExtension() {
+    if (typeof window.nostr === "undefined") return false
+    this.nip07SectionTarget.classList.remove("hidden")
+    return true
+  }
+
+  // A mobile browser may suspend this page while the signer app is in the
+  // foreground. The nostrconnect reply is an ephemeral event that cannot be
+  // replayed, so a missed one is unrecoverable: after coming back, give it a
+  // moment and then offer a fresh code instead of spinning indefinitely.
+  watchForegroundReturn() {
+    this.visibilityHandler = () => {
+      if (document.visibilityState !== "visible") return
+      if (!this.pollInterval) return
+      if (this.staleTimer) clearTimeout(this.staleTimer)
+      this.staleTimer = setTimeout(() => {
+        if (this.pollInterval && this.hasStaleNoticeTarget) {
+          this.staleNoticeTarget.classList.remove("hidden")
+        }
+      }, 3000)
+    }
+    document.addEventListener("visibilitychange", this.visibilityHandler)
+  }
+
+  // bunker://: the user pastes a link naming their signer and we speak first.
+  async connectBunker(event) {
+    if (event) event.preventDefault()
+
+    const uri = this.bunkerInputTarget.value.trim()
+    if (!uri) {
+      this.showError("Paste the bunker link from your signer first.")
+      return
+    }
+
+    this.hideError()
+    this.bunkerButtonTarget.disabled = true
+    const originalLabel = this.bunkerButtonTarget.textContent
+    this.bunkerButtonTarget.textContent = "Connecting…"
+
+    try {
+      const response = await fetch(this.configTarget.dataset.nostrLoginBunkerUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector("meta[name='csrf-token']")?.content
+        },
+        body: JSON.stringify({ bunker_uri: uri })
+      })
+      const data = await response.json()
+
+      if (!data.ok) {
+        this.showError(data.error || "Could not use that bunker link.")
+        return
+      }
+
+      // The server replaced this browser's pending session, so any notice from
+      // the previous one is stale. Resume polling against the new one.
+      if (this.hasStaleNoticeTarget) this.staleNoticeTarget.classList.add("hidden")
+      if (this.hasExpiredNoticeTarget) this.expiredNoticeTarget.classList.add("hidden")
+      if (this.hasPollingIndicatorTarget) this.pollingIndicatorTarget.classList.remove("hidden")
+      if (this.hasPollingLabelTarget) this.pollingLabelTarget.textContent = "Waiting for your signer to approve…"
+      this.stopPolling()
+      this.startPolling()
+    } catch (error) {
+      console.error("Bunker connect error:", error)
+      this.showError("Could not reach the server. Check your connection and try again.")
+    } finally {
+      this.bunkerButtonTarget.disabled = false
+      this.bunkerButtonTarget.textContent = originalLabel
     }
   }
 
@@ -90,7 +180,18 @@ export default class extends Controller {
 
     this.pollRequestInFlight = false
 
+    // The approval window is 5 minutes; polling past it can never succeed, so
+    // cap the attempts as a backstop even if the server never says "expired".
+    const maxAttempts = Math.ceil((10 * 60 * 1000) / 3000)
+    let attempts = 0
+    let consecutiveErrors = 0
+
     this.pollInterval = setInterval(async () => {
+      if (++attempts > maxAttempts) {
+        this.showExpired()
+        return
+      }
+
       // M17: a first-login poll can take ~20s server-side (profile fetch);
       // without this guard the 3s ticker fires again while it's still in
       // flight, and overlapping polls can race find_or_create_user.
@@ -105,6 +206,7 @@ export default class extends Controller {
           signal: this.pollAbortController.signal
         })
         const data = await response.json()
+        consecutiveErrors = 0
 
         if (data.authenticated) {
           this.stopPolling()
@@ -117,7 +219,13 @@ export default class extends Controller {
           this.showAuthUrl(data.auth_url)
         }
       } catch (error) {
-        if (error.name !== "AbortError") console.error("Polling error:", error)
+        if (error.name !== "AbortError") {
+          console.error("Polling error:", error)
+          if (++consecutiveErrors >= 5) {
+            this.stopPolling()
+            this.showError("Lost connection to the server. Please reload the page to try again.")
+          }
+        }
       } finally {
         this.pollAbortController = null
         this.pollRequestInFlight = false
@@ -149,28 +257,25 @@ export default class extends Controller {
     `
   }
 
+  // A signer demanding browser authorization is not an error, so it gets its
+  // own panel rather than the red error box.
   showAuthUrl(url) {
-    this.errorMessageTarget.classList.remove("hidden")
-    this.errorTextTarget.textContent = "Your signer requires additional authorization. "
-    const link = document.createElement("a")
-    link.href = url
-    link.target = "_blank"
-    link.rel = "noopener noreferrer"
-    link.className = "font-medium underline"
-    link.textContent = "Continue in signer"
-    this.errorTextTarget.appendChild(link)
+    if (!this.hasAuthChallengeTarget) return
+    this.authChallengeLinkTarget.href = url
+    this.authChallengeTarget.classList.remove("hidden")
   }
 
   showExpired() {
-    if (this.hasPollingIndicatorTarget) this.pollingIndicatorTarget.classList.add("hidden")
+    this.stopPolling()
 
-    this.errorMessageTarget.classList.remove("hidden")
-    this.errorTextTarget.textContent = "QR expired — "
-    const button = document.createElement("button")
-    button.type = "button"
-    button.className = "font-medium underline"
-    button.textContent = "click to generate a new one"
-    button.addEventListener("click", () => window.location.reload())
-    this.errorTextTarget.appendChild(button)
+    if (this.hasPollingIndicatorTarget) this.pollingIndicatorTarget.classList.add("hidden")
+    if (this.hasQrSectionTarget) this.qrSectionTarget.classList.add("hidden")
+    // The stale hint and the expired notice both offer a fresh code; showing
+    // both at once just says the same thing twice.
+    if (this.hasStaleNoticeTarget) this.staleNoticeTarget.classList.add("hidden")
+    if (this.hasAuthChallengeTarget) this.authChallengeTarget.classList.add("hidden")
+    if (this.hasExpiredNoticeTarget) this.expiredNoticeTarget.classList.remove("hidden")
+    // The bunker section deliberately stays: pasting a link mints a brand new
+    // session, so it is a working way out of an expired code.
   }
 }

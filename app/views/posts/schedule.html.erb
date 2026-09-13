@@ -16,19 +16,15 @@
   </div>
 
   <!-- Post Content Preview -->
-  <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+  <div class="border rule p-6">
     <h2 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">Post Preview</h2>
     <div class="flex items-start gap-3">
-      <div class="h-8 w-8 rounded-full bg-amber-100 dark:bg-amber-900 flex items-center justify-center flex-shrink-0">
-        <span class="text-amber-600 dark:text-amber-400 font-medium text-xs">
-          <%= @post.account.display_name_or_npub[0].upcase %>
-        </span>
-      </div>
+      <div class="h-8 w-8 flex items-center justify-center flex-shrink-0 flex items-center justify-center border border-gray-400 dark:border-gray-500"><span class="font-medium text-xs condensed font-bold uppercase tracking-wide text-gray-600 dark:text-gray-300"><%= @post.account.display_name_or_npub[0].upcase %></span></div>
       <div class="flex-1 min-w-0">
         <p class="text-sm font-medium text-gray-900 dark:text-white mb-1">
           <%= @post.account.display_name_or_npub %>
         </p>
-        <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap"><%= render_nostr_content(@post.content) %></p>
+        <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap break-words"><%= render_nostr_content(@post.content) %></p>
       </div>
     </div>
   </div>
@@ -38,7 +34,7 @@
     <input type="hidden" name="timezone" data-post-scheduler-target="timezoneInput">
 
     <!-- Date/Time Picker -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+    <div class="border rule p-6">
       <h2 class="text-sm font-medium text-gray-900 dark:text-white mb-4">
         <svg class="h-4 w-4 inline-block mr-1 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -57,7 +53,7 @@
                  required
                  value="<%= params[:scheduled_at] %>"
                  placeholder="Select date and time"
-                 class="w-full sm:w-auto rounded-lg border <%= @schedule_error.present? ? 'border-red-400 dark:border-red-500' : 'border-gray-200 dark:border-gray-700' %> bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-4 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                 class="w-full sm:w-auto rounded-lg border <%= @schedule_error.present? ? 'border-red-400 dark:border-red-500' : 'border-gray-200 dark:border-[color:var(--color-rule-dark)]' %> bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-4 py-2 text-sm "
                  data-post-scheduler-target="datetimeInput">
           <% if @schedule_error.present? %>
             <p class="mt-2 text-sm text-red-600 dark:text-red-400"><%= @schedule_error %></p>
@@ -80,63 +76,64 @@
 
     <!-- Repost Accounts -->
     <% if @other_accounts.any? %>
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-sm font-medium text-gray-900 dark:text-white">
-            <svg class="h-4 w-4 inline-block mr-1 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
-            </svg>
-            Repost To Other Accounts
-          </h2>
-          <label class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 cursor-pointer">
-            <input type="checkbox"
-                   class="rounded border-gray-300 dark:border-gray-600 text-amber-600 focus:ring-amber-500"
-                   data-action="change->post-scheduler#toggleReposts">
-            Select All
+      <%# Every ticked box here costs one more Amber approval on the user's
+          phone, in sequence. The old screen said none of that: eighteen
+          unfiltered rows and a bare "Select All". %>
+      <div class="border rule p-5" data-controller="repost-picker">
+        <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+          <h2 class="eng">Also post as</h2>
+          <label class="flex cursor-pointer items-center gap-2">
+            <input type="checkbox" data-repost-picker-target="selectAll"
+                   data-action="change->repost-picker#toggleAll change->post-scheduler#toggleReposts"
+                   class="border-gray-300 text-amber-600 dark:border-[color:var(--color-rule-dark)]">
+            <span class="eng">Select all shown</span>
           </label>
         </div>
 
-        <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">
-          Select accounts that should repost this content after the original is published.
-        </p>
+        <p class="mb-3 text-sm font-medium" data-repost-picker-target="readout"
+           data-level="quiet" role="status" aria-live="polite"></p>
 
-        <div class="space-y-3">
+        <% if @other_accounts.size > 6 %>
+          <label class="sr-only" for="repost-filter">Filter identities</label>
+          <input type="search" id="repost-filter" data-repost-picker-target="filter"
+                 data-action="input->repost-picker#filter"
+                 placeholder="Filter by name, npub or pubkey"
+                 class="mb-3 w-full border border-gray-300 bg-white px-3 py-2 text-sm dark:border-[color:var(--color-rule-dark)] dark:bg-[color:var(--color-chassis)]">
+        <% end %>
+
+        <ul class="border-t rule">
           <% @other_accounts.each do |account| %>
             <%
               already_reposting = @existing_reposts&.any? { |r| r.account_id == account.id } ||
                                   @preselected_repost_ids&.include?(account.id)
+              search = [account.display_name, account.username, account.npub, account.pubkey_hex].compact.join(" ").downcase
             %>
-            <label class="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer <%= 'bg-amber-50 dark:bg-amber-900/10 border-amber-200 dark:border-amber-800' if already_reposting %>">
-              <input type="checkbox"
-                     name="repost_account_ids[]"
-                     value="<%= account.id %>"
-                     class="rounded border-gray-300 dark:border-gray-600 text-amber-600 focus:ring-amber-500"
-                     data-repost-checkbox
-                     <%= "checked" if already_reposting %>>
-              <div class="h-8 w-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
-                <span class="text-gray-600 dark:text-gray-300 font-medium text-xs">
-                  <%= account.display_name_or_npub[0].upcase %>
-                </span>
-              </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-gray-900 dark:text-white truncate">
-                  <%= account.display_name_or_npub %>
-                </p>
-                <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
-                  <%= account.npub&.truncate(25) %>
-                </p>
-              </div>
-              <% if already_reposting %>
-                <span class="text-xs text-amber-600 dark:text-amber-400">Already scheduled</span>
-              <% end %>
-            </label>
+            <li data-repost-picker-target="row" data-search="<%= search %>">
+              <label class="flex cursor-pointer items-center gap-3 border-b rule py-2.5">
+                <input type="checkbox" name="repost_account_ids[]" value="<%= account.id %>"
+                       data-repost-checkbox data-repost-picker-target="checkbox"
+                       data-action="change->repost-picker#report"
+                       class="border-gray-300 text-amber-600 dark:border-[color:var(--color-rule-dark)]"
+                       <%= "checked" if already_reposting %>>
+                <%= identity(account, link: false) %>
+                <% if already_reposting %>
+                  <span class="slug ml-auto">Already scheduled</span>
+                <% end %>
+              </label>
+            </li>
           <% end %>
-        </div>
+        </ul>
+        <p class="py-3 text-sm text-gray-500 dark:text-gray-400" data-repost-picker-target="empty" hidden>
+          No identity matches that.
+        </p>
       </div>
     <% end %>
 
     <!-- Max Delay -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+    <%# Only meaningful when something is actually being reposted; it used to
+        render even with no other accounts paired. %>
+    <% if @other_accounts.any? %>
+    <div class="border rule p-5">
       <h2 class="text-sm font-medium text-gray-900 dark:text-white mb-4">
         <svg class="h-4 w-4 inline-block mr-1 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -153,18 +150,19 @@
                value="24"
                min="1"
                max="168"
-               class="w-32 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-4 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+               class="w-32 rounded-lg border border-gray-200 dark:border-[color:var(--color-rule-dark)] bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-4 py-2 text-sm "
                data-post-scheduler-target="delayInput">
         <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
           Reposts will be randomly spread out within this time window after the original post is published.
         </p>
       </div>
     </div>
+    <% end %>
 
     <!-- Existing Reposts -->
     <% if @existing_reposts.present? && @existing_reposts.any? %>
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+      <div class="border rule overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-[color:var(--color-rule-dark)]">
           <h2 class="text-sm font-medium text-gray-900 dark:text-white">
             Existing Reposts
             <span class="ml-1 text-gray-400">(<%= @existing_reposts.count %>)</span>
@@ -202,7 +200,7 @@
     <!-- Submit -->
     <div class="flex items-center justify-end gap-3">
       <%= link_to "Cancel", post_path(@post),
-        class: "px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" %>
+        class: "px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-[color:var(--color-rule-dark)] rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" %>
       <button type="submit"
               class="inline-flex items-center gap-2 px-6 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors">
         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

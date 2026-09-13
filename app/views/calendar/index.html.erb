@@ -1,56 +1,86 @@
-<div class="space-y-6">
-  <div class="flex items-center justify-between">
-    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Calendar</h1>
-    <div class="flex items-center gap-4">
-      <%= link_to calendar_path(month: @month.prev_month.strftime("%Y-%m-%d")), class: "p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400", "aria-label": "Previous month" do %>
-        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+<% content_for :title, "Calendar" %>
+
+<div class="mx-auto max-w-6xl">
+  <header class="mb-5 flex flex-wrap items-end justify-between gap-4 border-b rule pb-4">
+    <div>
+      <h1 class="condensed text-[30px] font-bold uppercase leading-none tracking-[0.06em]">
+        <%= @month.strftime("%B %Y") %>
+      </h1>
+      <p class="eng mt-2.5"><%= pluralize(@posts.size, "post") %> &middot; <%= pluralize(@reposts.size, "repost") %></p>
+    </div>
+
+    <div class="flex items-center gap-1">
+      <%= link_to calendar_path(month: @month.prev_month.strftime("%Y-%m-%d")), "aria-label": "Previous month",
+            class: "border border-gray-300 p-2 text-gray-600 transition-colors hover:border-amber-500 hover:text-amber-600 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400 dark:hover:text-amber-400" do %>
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
         </svg>
       <% end %>
-      <h2 class="text-lg font-medium text-gray-900 dark:text-white"><%= @month.strftime("%B %Y") %></h2>
-      <%= link_to calendar_path(month: @month.next_month.strftime("%Y-%m-%d")), class: "p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400", "aria-label": "Next month" do %>
-        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+      <%= link_to "Today", calendar_path,
+            class: "condensed border border-gray-300 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-600 transition-colors hover:border-amber-500 hover:text-amber-600 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400 dark:hover:text-amber-400" %>
+      <%= link_to calendar_path(month: @month.next_month.strftime("%Y-%m-%d")), "aria-label": "Next month",
+            class: "border border-gray-300 p-2 text-gray-600 transition-colors hover:border-amber-500 hover:text-amber-600 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400 dark:hover:text-amber-400" do %>
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
         </svg>
       <% end %>
     </div>
-  </div>
+  </header>
 
-  <!-- Calendar grid -->
-  <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
-    <!-- Day headers -->
-    <div class="grid grid-cols-7 border-b border-gray-200 dark:border-gray-700">
+  <%# The key. The calendar is the one surface whose whole job is identity over
+      time, and it shipped its colour coding with no legend at all — so a colour
+      meant nothing unless you already knew what it meant. %>
+  <% if @legend.any? %>
+    <div class="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+      <span class="eng">Who</span>
+      <% @legend.each do |account| %>
+        <%= link_to posts_path(account: account.id),
+              class: "flex items-center gap-2 no-underline transition-colors hover:text-amber-600 dark:hover:text-amber-400" do %>
+          <span class="inline-block h-3 w-3 flex-none" style="background: <%= account.ink %>"></span>
+          <span class="condensed text-[11.5px] font-semibold uppercase tracking-[0.13em]"><%= account.display_name_or_npub %></span>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="border rule">
+    <div class="grid grid-cols-7 border-b rule">
       <% %w[Mon Tue Wed Thu Fri Sat Sun].each do |day| %>
-        <div class="px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
-          <%= day %>
-        </div>
+        <div class="eng px-2 py-2.5 text-center"><%= day %></div>
       <% end %>
     </div>
 
-    <!-- Calendar days -->
     <div class="grid grid-cols-7">
       <% (@start_date..@end_date).each do |date| %>
         <% events = @events_by_date[date] || [] %>
-        <div class="min-h-[120px] border-b border-r border-gray-200 dark:border-gray-700 p-1 <%= date.month != @month.month ? 'bg-gray-50 dark:bg-gray-900/50' : '' %> <%= date == Date.current ? 'bg-amber-50 dark:bg-amber-900/10' : '' %>">
-          <div class="text-xs font-medium <%= date == Date.current ? 'text-amber-600 dark:text-amber-400' : 'text-gray-500 dark:text-gray-400' %> mb-1">
-            <%= date.day %>
+        <% outside = date.month != @month.month %>
+        <% today = date == Date.current %>
+        <div class="min-h-[118px] border-b border-r rule p-1.5 <%= "opacity-45" if outside %> <%= "bg-amber-500/6" if today %>">
+          <div class="mb-1.5 flex items-baseline justify-between">
+            <span class="font-mono text-[12px] font-bold tabular <%= today ? "text-amber-600 dark:text-amber-400" : "text-gray-500 dark:text-gray-400" %>">
+              <%= date.day %>
+            </span>
+            <% if today %><span class="eng text-amber-600 dark:text-amber-400">Today</span><% end %>
           </div>
+
           <% events.first(5).each do |event| %>
-            <% chip = @account_chip_classes[event[:item].account.id] || @default_chip_classes %>
-            <% if event[:type] == :post %>
-              <%= link_to post_path(event[:item]), class: "block mb-0.5 px-1 py-0.5 text-xs rounded #{chip[:post]} truncate hover:opacity-80" do %>
-                <%= local_time(event[:item].scheduled_at, format: "time") %> <%= event[:item].content.truncate(50) %>
-              <% end %>
-            <% else %>
-              <%= link_to post_path(event[:item].post), class: "block mb-0.5 px-1 py-0.5 text-xs rounded #{chip[:repost]} truncate hover:opacity-80 italic" do %>
-                <%= local_time(event[:item].scheduled_at, format: "time") %> repost
-              <% end %>
+            <% item = event[:item] %>
+            <% repost = event[:type] == :repost %>
+            <%= link_to post_path(repost ? item.post : item),
+                  title: "#{item.account.display_name_or_npub} — #{repost ? 'repost' : item.content.to_s.truncate(80)}",
+                  class: "mb-1 flex items-start gap-1.5 no-underline transition-opacity hover:opacity-70" do %>
+              <span class="mt-[3px] inline-block h-2.5 w-[3px] flex-none" style="background: <%= item.account.ink %>"></span>
+              <span class="min-w-0 flex-1 truncate text-[11.5px] leading-tight text-gray-700 dark:text-gray-300">
+                <span class="font-mono font-bold tabular"><%= l(item.scheduled_at, format: "%H:%M") %></span>
+                <%= repost ? tag.span("repost", class: "eng") : item.content.to_s.truncate(42) %>
+              </span>
             <% end %>
           <% end %>
+
           <% if events.length > 5 %>
-            <%# posts#index has no date filter (and PostsController is off-limits here — see
-                KIMI-AUDIT M18); a functional link would be misleading, so show plain text. %>
-            <span class="block text-xs text-gray-400 dark:text-gray-500 px-1"><%= "+#{events.length - 5} more" %></span>
+            <%# posts#index has no date filter, so this cannot link to the day —
+                but it can link to the identity whose day is crowded. %>
+            <span class="eng block px-0.5 text-gray-500 dark:text-gray-400">+<%= events.length - 5 %> more</span>
           <% end %>
         </div>
       <% end %>

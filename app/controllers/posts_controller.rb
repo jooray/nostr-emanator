@@ -1,15 +1,62 @@
 # frozen_string_literal: true
 
 class PostsController < ApplicationController
+  include ActionView::Helpers::TextHelper
   before_action :set_post, only: [:show, :edit, :update, :destroy, :schedule, :sign, :retry_sign, :retry_publish, :rebroadcast, :cancel, :reschedule]
   before_action :set_account, only: [:new, :create]
 
+  # 300 posts across 19 identities used to arrive as one unfiltered, unsorted
+  # stream — there was no way to answer "what failed?" or "what is queued for
+  # Ember?" without reading the whole list.
   def index
-    @posts = Post.joins(:account)
-      .where(accounts: { user_id: current_user.id })
-      .includes(:account, :reposts)
-      .order(created_at: :desc)
-      .page(params[:page])
+    @accounts = current_user.accounts.order(Arel.sql("LOWER(COALESCE(display_name, username, npub))"))
+    @account_filter = params[:account].presence
+    @status_filter = params[:status].presence
+
+    scope = Post.joins(:account)
+                .where(accounts: { user_id: current_user.id })
+                .includes(:account, :reposts)
+
+    scope = scope.where(account_id: @account_filter) if @account_filter
+    # "short" is not a status — it is a delivery grade, and publish_results is
+    # JSON, so it narrows to published here and is filtered in Ruby below.
+    scope =
+      case @status_filter
+      when "short" then scope.where(status: :published)
+      when nil, "all" then scope
+      else scope.where(status: @status_filter)
+      end
+
+    scope = scope.order(created_at: :desc)
+    @short_only = @status_filter == "short"
+    # Offered right where the failures are listed, scoped to the account filter
+    # in view so it can never clear more than what is on screen.
+    @failed_here = if @status_filter == "failed"
+                     Post.joins(:account)
+                         .where(accounts: { user_id: current_user.id }, posts: { status: :failed })
+                         .then { |s| @account_filter ? s.where(account_id: @account_filter) : s }
+                         .count
+                   else
+                     0
+                   end
+    @posts = @short_only ? Kaminari.paginate_array(scope.select(&:delivery_alarming?)).page(params[:page]) : scope.page(params[:page])
+  end
+
+  # Clear out everything that never went out.
+  #
+  # A failed post is usually one whose moment has passed — a note scheduled for
+  # March is not going to be retried in September. There was no way to act on
+  # them in bulk, so a backlog of dead posts sat in the dashboard's alarm
+  # section permanently, which is how an alarm stops meaning anything.
+  def discard_failed
+    scope = Post.joins(:account).where(accounts: { user_id: current_user.id }, posts: { status: :failed })
+    scope = scope.where(account_id: params[:account]) if params[:account].present?
+
+    count = scope.count
+    scope.destroy_all
+
+    redirect_back fallback_location: dashboard_path,
+                  notice: "Discarded #{pluralize(count, 'post')} that never went out."
   end
 
   def select_account
@@ -35,7 +82,7 @@ class PostsController < ApplicationController
     # Nothing links to this action with reply_to_event_id/etc. params — the
     # inline-reply flow (inline_reply_controller.js) posts straight to
     # #create with a JSON body instead, so there's no reply-prefill branch
-    # to run here (removed dead code — see KIMI-AUDIT L27).
+    # to run here (the reply-prefill branch that used to live here was dead).
     @post = @account.posts.build(event_kind: 1)
   end
 
@@ -187,11 +234,16 @@ class PostsController < ApplicationController
 
     # Build unsigned event for the original post
     signer = Nostr::EventSignerService.new
-    unsigned = signer.build_unsigned_event(
+    # build_unsigned_note (not build_unsigned_event) so mentions and quoted
+    # notes in the text become p/q tags — see Nostr::ContentTagger.
+    unsigned = signer.build_unsigned_note(
       content: @post.content,
       kind: @post.event_kind,
       pubkey: @post.account.pubkey_hex,
-      created_at: @post.scheduled_at || Time.current
+      created_at: @post.scheduled_at || Time.current,
+      # Scheduling is user-initiated and happens once; if a quoted note's author
+      # is not already cached this is the last chance to look it up.
+      allow_fetch: true
     )
     @post.update!(unsigned_event: unsigned, status: :awaiting_signature)
 

@@ -37,6 +37,24 @@ export default class extends Controller {
 
     document.documentElement.classList.toggle("dark", isDark)
     this.updateIcons(isDark)
+    this.updateLabel()
+  }
+
+  // The control cycles three states through two icons, so on a dark OS "system"
+  // and "dark" rendered identically and the current setting was unknowable.
+  // The label states it outright, for the accessible name and the tooltip alike.
+  updateLabel() {
+    const button = this.element.querySelector("button")
+    if (!button) return
+
+    const names = { system: "Follow system", light: "Light", dark: "Dark" }
+    const next = { system: "light", light: "dark", dark: "system" }
+    const label = `Theme: ${names[this.currentValue]}. Switch to ${names[next[this.currentValue]].toLowerCase()}.`
+    button.setAttribute("aria-label", label)
+    button.setAttribute("title", label)
+
+    const readout = this.element.querySelector("[data-theme-target='readout']")
+    if (readout) readout.textContent = names[this.currentValue]
   }
 
   updateIcons(isDark) {

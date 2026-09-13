@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="h-full">
+<html lang="en" class="h-full">
   <head>
     <title><%= content_for(:title) || "Emanator" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -7,10 +7,27 @@
     <meta name="application-name" content="Emanator">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="color-scheme" content="light dark">
-    <meta name="theme-color" content="#d97706" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#111827" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#efebe4" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#211f1c" media="(prefers-color-scheme: dark)">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+
+    <%# Apply the theme before first paint. theme_controller.js only runs inside
+        _navigation, which renders only when signed in — so without this the
+        logged-out pages (the login screen above all) were locked to light
+        regardless of the visitor's system preference. Doing it here also kills
+        the flash of the wrong theme on every other page. %>
+    <%= javascript_tag nonce: true do %>
+      (function() {
+        try {
+          var t = localStorage.getItem("theme");
+          if (t !== "light" && t !== "dark" && t !== "system") { t = "system"; }
+          var dark = t === "dark" ||
+            (t === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+          document.documentElement.classList.toggle("dark", dark);
+        } catch (e) { /* private mode / no storage */ }
+      })();
+    <% end %>
 
     <%= yield :head %>
 
@@ -41,24 +58,36 @@
     <% end %>
   </head>
 
-  <body class="h-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100" data-controller="local-time">
+  <body class="h-full" data-controller="local-time">
+    <%# A keyboard user should not tab seven rail links and a sign-out before
+        reaching the work. The landing page has always had one of these. %>
     <% if user_signed_in? %>
+      <a href="#main" class="skip-link">Skip to content</a>
       <%= render "layouts/navigation" %>
     <% end %>
 
-    <main class="<%= user_signed_in? ? 'lg:pl-64' : '' %>">
-      <div class="<%= user_signed_in? ? 'px-4 py-8 sm:px-6 lg:px-8' : '' %>">
+    <main id="main" class="<%= user_signed_in? ? 'lg:pl-60 pt-14 lg:pt-0' : '' %>">
+      <div class="<%= user_signed_in? ? 'px-4 py-7 sm:px-6 lg:px-8' : '' %>">
+        <%# Flashes announce themselves. They used to be plain divs that a screen
+            reader never saw, and the alert variant deleted itself after 9s —
+            destroying the only record of a failure the user may not have read. %>
         <% if flash[:notice] %>
-          <div class="mb-4 rounded-md bg-green-50 dark:bg-green-900 p-4" data-controller="flash">
-            <p class="text-sm text-green-700 dark:text-green-200"><%= flash[:notice] %></p>
+          <div class="mb-5 flex items-center gap-2.5 border rule px-3.5 py-2.5" role="status" data-controller="flash">
+            <%= lamp(:on) %>
+            <p class="text-sm text-gray-700 dark:text-gray-200"><%= flash[:notice] %></p>
           </div>
         <% end %>
 
         <% if flash[:alert] %>
-          <div class="mb-4 rounded-md bg-red-50 dark:bg-red-900 p-4" data-controller="flash" data-flash-delay-value="9000">
-            <p class="text-sm text-red-700 dark:text-red-200"><%= flash[:alert] %></p>
+          <div class="alarm mb-5" role="alert">
+            <%= lamp(:alarm) %>
+            <p class="text-sm text-red-800 dark:text-red-200"><%= flash[:alert] %></p>
           </div>
         <% end %>
+
+        <%# Async state — signing, publishing, uploading — is written into here by
+            the controllers that used to mutate textContent in a silent span. %>
+        <div id="console-announcer" class="sr-only" role="status" aria-live="polite"></div>
 
         <%= yield %>
       </div>

@@ -17,7 +17,7 @@
         autocomplete="off"
         data-account-picker-target="input"
         data-action="input->account-picker#filter keydown.enter->account-picker#submit"
-        class="block w-full pl-10 pr-3 py-2.5 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+        class="border rule block w-full pl-10 pr-3 py-2.5 text-sm -gray-300 dark:-gray-600 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:-transparent"
       >
     </div>
 
@@ -25,15 +25,11 @@
       <% @accounts.each do |account| %>
         <% search_text = [account.display_name, account.username, account.npub, account.pubkey_hex].compact.join(" ").downcase %>
         <li data-account-picker-target="row" data-search-text="<%= search_text %>">
-          <%= link_to new_account_post_path(account), class: "flex items-center gap-4 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-amber-500 dark:hover:border-amber-400 hover:shadow-md transition-all group" do %>
+          <%= link_to new_account_post_path(account), class: "flex items-center gap-4 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-[color:var(--color-rule-dark)] rounded-lg hover:border-amber-500 dark:hover:border-amber-400 hover:shadow-md transition-all group" do %>
             <% if account.picture_url.present? %>
               <img src="<%= account.picture_url %>" alt="<%= account.display_name_or_npub %>" class="h-12 w-12 rounded-full object-cover flex-shrink-0">
             <% else %>
-              <div class="h-12 w-12 rounded-full bg-amber-100 dark:bg-amber-900 flex items-center justify-center flex-shrink-0">
-                <span class="text-lg font-medium text-amber-600 dark:text-amber-400">
-                  <%= account.display_name_or_npub[0].upcase %>
-                </span>
-              </div>
+              <div class="h-12 w-12 flex items-center justify-center flex-shrink-0 flex items-center justify-center border border-gray-400 dark:border-gray-500"><span class="text-lg font-medium condensed font-bold uppercase tracking-wide text-gray-600 dark:text-gray-300"><%= account.display_name_or_npub[0].upcase %></span></div>
             <% end %>
             <div class="flex-1 min-w-0">
               <div class="flex items-baseline gap-2">
@@ -56,11 +52,11 @@
       <% end %>
     </ul>
 
-    <div data-account-picker-target="empty" class="hidden bg-white dark:bg-gray-800 shadow rounded-lg p-8 text-center border border-gray-200 dark:border-gray-700">
+    <div data-account-picker-target="empty" class="border rule hidden p-8 text-center">
       <p class="text-sm text-gray-500 dark:text-gray-400">No accounts match your filter.</p>
     </div>
   <% else %>
-    <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-12 text-center border border-gray-200 dark:border-gray-700">
+    <div class="border rule p-12 text-center">
       <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
       </svg>

@@ -34,6 +34,34 @@ module Nostr
       nil
     end
 
+    # The whole kind-0 event, not the four fields `fetch` parses out.
+    #
+    # Editing a profile has to merge over everything already there: a kind 0 is
+    # replaceable, so publishing a rebuilt one silently destroys every field
+    # this app does not model (nip05, lud16, a client's own extensions). The
+    # created_at comes back too, so the replacement can be stamped strictly
+    # later than what is live.
+    #
+    # Takes the NEWEST event across relays rather than the first responder —
+    # relays disagree, and an older copy would merge stale values back in.
+    def fetch_raw_event(pubkey_hex)
+      return nil if pubkey_hex.blank?
+
+      newest = nil
+      @relays.each do |relay_url|
+        begin
+          event = fetch_from_relay(relay_url, pubkey_hex)
+          next unless event.is_a?(Hash) && event["content"].is_a?(String)
+
+          newest = event if newest.nil? || event["created_at"].to_i > newest["created_at"].to_i
+        rescue StandardError => e
+          Rails.logger.warn("Failed to fetch raw profile from #{relay_url}: #{e.message}")
+        end
+      end
+
+      newest
+    end
+
     # Fetch profiles for multiple pubkeys in a single batch (parallel relays)
     def fetch_batch(pubkey_hexes)
       pubkey_hexes = Array(pubkey_hexes).compact.uniq

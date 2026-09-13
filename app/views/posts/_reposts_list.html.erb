@@ -1,8 +1,8 @@
 <div id="reposts-list">
   <% reposts = post.reposts.includes(:account) %>
   <% if reposts.any? %>
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
-      <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+    <div class="border rule overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-200 dark:border-[color:var(--color-rule-dark)]">
         <h2 class="text-sm font-medium text-gray-900 dark:text-white">
           Reposts
           <span class="ml-1 text-gray-400">(<%= reposts.count %>)</span>

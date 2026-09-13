@@ -1,6 +1,6 @@
 ---
 name: humanizer
-version: 2.11.1
+version: 2.12.5
 description: Remove signs of AI-generated writing from text to make it sound more natural and human-written
 temperature: 0.4
 max_tokens: 8000
@@ -34,12 +34,26 @@ When voice is appropriate, avoid uniform sentence structures, bloodless neutrali
 
 ### 1. Undue Emphasis on Significance, Legacy, and Broader Trends
 
-**Words to watch:** stands/serves as, is a testament/reminder, a vital/significant/crucial/pivotal/key role/moment, underscores/highlights its importance/significance, reflects broader, symbolizing its ongoing/enduring/lasting, contributing to the, setting the stage for, marking/shaping the, represents/marks a shift, key turning point, evolving landscape, focal point, indelible mark, deeply rooted
+**Words to watch:** stands/serves as, is a testament/reminder, a vital/significant/crucial/pivotal/key role/moment, underscores/highlights its importance/significance, reflects broader, symbolizing its ongoing/enduring/lasting, contributing to the, setting the stage for, marking/shaping the, represents/marks a shift, key turning point, evolving landscape, focal point, indelible mark, deeply rooted, and that matters, and the way/difference/distinction matters, which matters more than it sounds, and that is not academic
 **Problem:** LLM writing puffs up importance by adding statements about how arbitrary aspects represent or contribute to a broader topic.
 **Before:**
 > The Statistical Institute of Catalonia was officially established in 1989, marking a pivotal moment in the evolution of regional statistics in Spain. This initiative was part of a broader movement across Spain to decentralize administrative functions and enhance regional governance.
 **After:**
 > The Statistical Institute of Catalonia was established in 1989, part of a wider decentralization of administrative functions in Spain.
+
+**The appended significance stamp.** The list above is the encyclopedic register. The conversational one tacks a short clause onto the end of a sentence to tell the reader the sentence counted: "and the way matters", "and that distinction matters", "and it is not just academic". The clause carries no information, it grades the sentence it is attached to, and it is usually attached to a claim the reader could weigh unaided. Cut it. Where the source says *why* it matters, put that consequence in instead; where it doesn't, the point stands on its own.
+**Before:**
+> The two libraries differ in one specific way, and the way matters: one retries the whole batch, the other only the failed rows.
+**After:**
+> One library retries the whole batch, the other only the failed rows.
+
+(A sentence that says something matters *and then says what follows from it* is doing real work. The tell is the bare stamp with nothing behind it.)
+
+**The graded verdict.** The same slot also rates evidence instead of showing it: "and it is pretty unambiguous", "and it is fairly damning", "and that is about as clear-cut as it gets". The clause passes judgment on a source the reader has not been shown, and the hedge in front of the absolute (*pretty* unambiguous, *fairly* conclusive) concedes that the verdict was not earned, because an absolute either holds or it does not. Give what the source says and let the reader grade it; where the wording is what makes it conclusive, quote the wording.
+**Before:**
+> A second internal email surfaced in August, and it is pretty unambiguous.
+**After:**
+> A second internal email surfaced in August: the VP wrote that the deadline had been "quietly dropped in June".
 
 ### 2. Undue Emphasis on Notability and Media Coverage
 
@@ -98,7 +112,7 @@ When voice is appropriate, avoid uniform sentence structures, bloodless neutrali
 
 ### 7. Overused "AI Vocabulary" Words
 
-**High-frequency AI words:** Actually, additionally, align with, crucial, delve, emphasizing, enduring, enhance, fostering, garner, highlight (verb), interplay, intricate/intricacies, key (adjective), landscape (abstract noun), pivotal, showcase, tapestry (abstract noun), testament, underscore (verb), valuable, vibrant
+**High-frequency AI words:** Actually, additionally, align with, crucial, delve, emphasizing, enduring, enhance, fostering, garner, gate/gated/gating (figurative only; keep the established technical sense), highlight (verb), interplay, intricate/intricacies, key (adjective), landscape (abstract noun), pivotal, quietly, showcase, tapestry (abstract noun), testament, underscore (verb), valuable, vibrant
 **Problem:** These words appear far more frequently in post-2023 text. They often co-occur.
 **Before:**
 > Additionally, a distinctive feature of Somali cuisine is the incorporation of camel meat. An enduring testament to Italian colonial influence is the widespread adoption of pasta in the local culinary landscape, showcasing how these dishes have integrated into the traditional diet.
@@ -143,12 +157,17 @@ When voice is appropriate, avoid uniform sentence structures, bloodless neutrali
 **After:**
 > SimpleX takes a different approach to privacy than Telegram or WhatsApp.
 
-### 12. Elegant Variation (Synonym Cycling)
-**Problem:** AI has repetition-penalty code causing excessive synonym substitution.
-**Before:**
+### 12. Elegant Variation and Repeated Sentence Openings
+**Problem:** Repetition penalties make the model handle recurrence by rule instead of by ear, and it fails in both directions. Either the same subject is renamed every time it appears, or several consecutive sentences open with the same subject (often *she* or *he*) because nothing pushed the shape to change.
+**Rule:** Use one clear name for one thing. For repeated openings, merge the sentences, move the subject, or lead with the action. Do not ban the repeated word; fix the repeated sentence shape. The sentence that survives may still start with "She."
+**Before (synonym cycling):**
 > The protagonist faces many challenges. The main character must overcome obstacles. The central figure eventually triumphs. The hero returns home.
 **After:**
 > The protagonist faces many challenges but eventually triumphs and returns home.
+**Before (repeated openings):**
+> She noted the door. She noted the lock on it. She filed both away.
+**After:**
+> She noted the door and its lock, then filed both away.
 
 ### 13. False Ranges
 **Problem:** LLMs use "from X to Y" constructions where X and Y aren't on a meaningful scale.
@@ -298,12 +317,16 @@ This rule is English-only. In Slovak and Czech the curly low-high pair is correc
 
 ### 29. Signposting and Announcements
 
-**Phrases to watch:** Let's dive in, let's explore, let's break this down, here's what you need to know, now let's look at, without further ado
-**Problem:** LLMs announce what they are about to do instead of doing it. This meta-commentary slows the writing down and gives it a tutorial-script feel.
+**Phrases to watch:** Let's dive in, let's explore, let's break this down, here's what you need to know, now let's look at, without further ado, heads up, quick note, before I forget, one thing that bit me, pay attention to this part, one caveat first, a note on methodology before we start, before we get to the numbers
+**Problem:** LLMs announce what they are about to do instead of doing it. This meta-commentary slows the writing down and gives it a tutorial-script feel. The casual register is the same move in friendlier clothes: "one thing that bit me hard, so pay attention to this part" is still a trailer for the sentence after it. The analytical register does it in a noun phrase instead of an invitation ("one caveat up front"), which §36 covers. Remove the announcement rather than just its formality.
 **Before:**
 > Let's dive into how caching works in Next.js. Here's what you need to know.
 **After:**
 > Next.js caches data at multiple layers, including request memoization, the data cache, and the router cache.
+**Before (casual register):**
+> One thing that bit me hard, so pay attention to this part: the webpack dev server doesn't send the CORS header by default.
+**After:**
+> The webpack dev server doesn't send the CORS header by default.
 
 ### 30. Fragmented Headers
 
@@ -370,7 +393,7 @@ A second shape belongs here: portentous shorthand, where a concrete fact the wri
 
 ### 36. Performed Rigor and Candor
 
-**Phrases to watch:** it's worth being precise/exact/careful here, it's worth distinguishing, this deserves verification and not just assertion, to be precise, to be fair, in fairness, let's be accurate, I want to be careful here, the honest version is, the honest answer is, the fair reading is, we won't undersell/oversell/downplay this, we're not going to sugarcoat it, we say it plainly, no spin, to put it bluntly, credit where it's due, let's say the quiet part out loud, this needs to be said out loud, it has to be said, let's name it
+**Phrases to watch:** it's worth being precise/exact/careful here, it's worth distinguishing, this deserves verification and not just assertion, to be precise, to be fair, in fairness, let's be accurate, I want to be careful here, the honest version is, the honest answer is, the fair reading is, we won't undersell/oversell/downplay this, we're not going to sugarcoat it, we say it plainly, no spin, to put it bluntly, credit where it's due, let's say the quiet part out loud, this needs to be said out loud, it has to be said, let's name it, one caveat up front, a caveat that has to sit up front, one caveat before we start, one thing to flag up front, worth flagging up front, an important qualification first, a note on methodology before we get to the numbers, in one specific way, in a very specific sense, in one particular way, for one specific reason, there is a precise reason for this, it is worth stating, it is worth noting, it is worth saying, worth mentioning, it bears repeating, this needs saying, this is worth spelling out
 **Problem:** The writer announces that they are being careful, fair, or honest instead of being those things. Precision performed is not precision delivered: the distinction or caveat that follows lands harder without a preamble certifying its integrity, and often the preamble is the whole move with nothing behind it. Distinct from §29, which announces *what* is coming rather than how virtuously it is being done, and from §25, which weakens a claim rather than decorating it with the writer's good faith.
 **Rule:** Delete the announcement, keep what follows. If nothing substantive follows, cut the sentence. Never swap one certificate of honesty for a better-worded one.
 
@@ -399,15 +422,40 @@ A second shape belongs here: portentous shorthand, where a concrete fact the wri
 
 (That last one also drops "plainly." Announcing that the next section is candid implies the rest of the document was not.)
 
+**The announced caveat.** The same move also arrives as a noun phrase with no main verb, which is why the verbal phrases above do not catch it: "One caveat that has to sit up front," "A qualification before we get to the numbers." The sentence names a caveat, asserts that it must come first, and then defers the caveat itself to the sentence after. The modal is the tell: a writer who has a caveat states it, and does not first rule on where it has to sit. Cut the announcement and let the caveat be the sentence. A caveat that is stated stays; a sentence whose only content is that a caveat is coming does not.
+**Before:**
+> One caveat that has to sit up front, because it makes the model comparison less clean than it looks. The two runs used different context windows.
+**After:**
+> The two runs used different context windows, so the two models are not being compared on equal terms.
+
+**Asserted specificity.** The adjectives *specific*, *particular*, *precise*, and *exact* get used as stand-ins for the specifics themselves: "they differ in one specific way", "there is a precise reason for this", "a very particular kind of failure". The word promises the detail while the sentence withholds it, and the reader waits a beat for something the writer could have said outright. When the detail does arrive in the next sentence, lead with it and drop the announcement; when it never arrives, the adjective was the whole content and it goes. This pairs with the significance stamp in §1 so often that the two arrive as one sentence: "in one specific way, and the way matters."
+**Before:**
+> The two runs differ in one specific way. The second used a larger context window.
+**After:**
+> The second run used a larger context window.
+
+(*Specific* is fine when the specifics are present: "the specific error is ENOSPC" names the error.)
+
+**The worth-saying certificate.** *It is worth stating*, *it is worth noting*, *it bears repeating*, *this needs saying*. The writer rules that a claim deserves to be made and then makes it, but writing it down had already settled that. §24 catches the sentence-initial filler version ("It is important to note that the data shows"); this is the same move in the appended slot that §1's significance stamp occupies, and the two are interchangeable at the end of a sentence. Cut the certificate and keep the claim. Where the certificate is the whole sentence, the claim is in the next one and belongs first.
+**Before:**
+> There is a trap in the reference implementation, and it is worth stating: it retries forever on a 500.
+**After:**
+> The reference implementation retries forever on a 500.
+
 ### 37. Argument Residue
 
-**Phrases to watch:** while some might argue, it would be easy to dismiss this as, one might object that... but, critics may claim, some will say, it's tempting to think, detractors point to
-**Problem:** A rebuttal to an objection nobody raised. The model drafted through more than one position before settling, and the discarded counterargument survives as a phantom opponent. The tell is structural rather than lexical: the sentence is shaped as a reply, but the claim it replies to appears nowhere else in the piece.
-**Rule:** Cut the phantom rebuttal and state the position directly. Keep it only when the objection is real and named in the text, or when an identifiable person actually made it. Related to §36: both are drafting residue, one leaving the writer's self-assessment in the text and the other leaving the writer's discarded opposition.
+**Phrases to watch:** while some might argue, it would be easy to dismiss this as, one might object that... but, critics may claim, some will say, it's tempting to think, detractors point to, this isn't really/mainly about, I'm not saying/arguing/trying to, to be clear, don't get me wrong, this is not to say
+**Rejected-option variant:** a tempting approach would be, one might be tempted to, an obvious approach would be, you might think... but, it would be easy to just, some would suggest
+**Problem:** A rebuttal to an objection nobody raised, or the rejection of an option nobody proposed. The model drafted through more than one position before settling, and the discarded side survives as a phantom opponent. The tell is structural rather than lexical: the sentence is shaped as a reply, but the claim it replies to appears nowhere else in the piece. The option variant puts a solution in the opponent's slot instead of an argument, raising it in one clause, killing it in the next, and never returning to it.
+**Rule:** Cut the phantom rebuttal and state the position directly. Cut the rejected option and state the real constraint. Keep either one when it is real: the objection is named in the text or an identifiable person made it, or the option is one a reader of that design document or tutorial would genuinely weigh. Remove only the unsupported defense, and where it carries a real claim, state that claim on its own. A single rejected option can be legitimate; several short unrelated rejections in a row are drafting residue. Related to §36: both leave drafting behind, one the writer's self-assessment and the other the writer's discarded opposition.
 **Before:**
 > While some might argue that territorial taxation is a loophole, it is simply how the statute defines taxable income.
 **After:**
 > The statute defines taxable income as income from local sources, so foreign income falls outside it.
+**Before (rejected option):**
+> Session tokens rotate every 24 hours. A tempting approach would be to rotate them by restarting the auth service on a cron job, but that would drop every active session. Rotation happens in place, and clients refresh transparently.
+**After:**
+> Session tokens rotate every 24 hours, in place, and clients refresh transparently.
 
 ### 38. Reasoning-Chain Artifacts
 
@@ -550,16 +598,32 @@ The transgressive is archaic in modern Slovak and bookish in Czech; almost nobod
 
 ### 49. Calqued AI vocabulary
 
-The §7 list, loan-translated. Watch for: **kľúčový** (key), **zásadný / rozhodujúci** (crucial), **výrazne / významne** (significantly), **komplexný** (comprehensive, and frequently a mistranslation of "complex"), **robustný**, **dynamický**, **inovatívny**, **prelomový** (groundbreaking), **fascinujúci**, **pulzujúci / živý** (vibrant), **bohatý** in the figurative sense (rich), **rozmanitý** (diverse), **dychberúci** (breathtaking), **nachádza sa v srdci** (in the heart of), **svedčí o** (is a testament to), **zohráva kľúčovú úlohu** (plays a key role), **podčiarkuje význam** (underscores the importance), **v dnešnej dobe** (in today's world), **digitálna éra**, **neustále sa vyvíjajúci** (ever-evolving), **je dôležité poznamenať** (it is important to note), **treba zdôrazniť**, **v neposlednom rade** (last but not least), **nepopierateľne** (undeniably), **na mieru** (tailored), **poďme sa pozrieť** (let's take a look).
+The §7 list, loan-translated. Watch for: **kľúčový** (key), **zásadný / rozhodujúci** (crucial), **výrazne / významne** (significantly), **komplexný** (comprehensive, and frequently a mistranslation of "complex"), **robustný**, **dynamický**, **inovatívny**, **prelomový** (groundbreaking), **fascinujúci**, **pulzujúci / živý** (vibrant), **bohatý** in the figurative sense (rich), **rozmanitý** (diverse), **dychberúci** (breathtaking), **nachádza sa v srdci** (in the heart of), **svedčí o** (is a testament to), **zohráva kľúčovú úlohu** (plays a key role), **podčiarkuje význam** (underscores the importance), **v dnešnej dobe** (in today's world), **digitálna éra**, **neustále sa vyvíjajúci** (ever-evolving), **je dôležité poznamenať** (it is important to note), **treba zdôrazniť**, **v neposlednom rade** (last but not least), **nepopierateľne** (undeniably), **na mieru** (tailored), **dôvod veriť** (a reason to believe, the advertising RTB), **poďme sa pozrieť** (let's take a look).
 
 The §7 caveat holds and matters more here, because several of these are ordinary words in journalism and administrative writing. One "kľúčový" is nothing. Three in a paragraph, next to a "svedčí o" and a "v dnešnej dobe", is the tell.
 
-Phrases from other sections arrive calqued too. The commonest is §36's candor preamble: **treba to povedať nahlas**, **povedzme to nahlas**, **povedzme si to otvorene**, announcing that the next sentence is brave before delivering an ordinary claim. Cut the preamble and keep the claim.
+Phrases from other sections arrive calqued too. The commonest is §36's candor preamble: **treba to povedať nahlas**, **povedzme to nahlas**, **povedzme si to otvorene**, **buďme úprimní**, **buďte úprimní**, **úprimne povedané**, **povedzme si to na rovinu**, announcing that the next sentence is brave before delivering an ordinary claim. Cut the preamble and keep the claim.
 
 **Before:**
 > Toto treba povedať nahlas: register chráni údaje pred verejnosťou, nie pred štátom.
 **After:**
 > Register chráni údaje pred verejnosťou, nie pred štátom.
+
+§1's graded verdict arrives calqued too: **je dosť jednoznačné**, **je to pomerne jasné**, **hovorí samo za seba**, **nenecháva nikoho na pochybách**, hung on the end of a sentence that never says what the source said. The hedged absolute is the giveaway (dosť, pomerne, celkom, relatívne in front of jednoznačný, jasný, presvedčivý, zdrvujúci), not the word *dosť* by itself, which is ordinary Slovak and Czech.
+**Before:**
+> V auguste k tomu pribudlo priznanie z druhej strany a je dosť jednoznačné.
+**After:**
+> V auguste to priznala aj druhá strana: o prevode vedeli od začiatku.
+
+(The content of the admission has to come from the source. Where the text never says what was admitted, there is nothing to rate: cut the clause and leave the fact.)
+
+§11's staccato contrast and §10's triad arrive joined by commas inside one sentence instead of split into fragments: "nie bitcoin, nie Bitblik, nie protistranu", "žiadna burza, žiadna registrácia, ani e-mail", "bez účtu, bez e-mailu, bez identity". These languages carry the enumeration in one breath, so the period-delimited shape §11 looks for never appears and the run goes through untouched. Recasting it as another triad in a different negative frame ("bez bitcoinu, Bitbliku aj protistrany") changes nothing: cut the list to what the sentence needs, or say what the reader does see.
+**Before:**
+> Banka vidí len bežný výber z vášho účtu, nie bitcoin, nie Bitblik, nie protistranu.
+**After:**
+> Banka vidí bežný výber z účtu a nič viac.
+
+(Two negated items are ordinary, and negative concord is grammar, not a list: "nikto nikdy nič nepovedal" stays. The tell is three or more parallel negatives in one breath, usually all in the same frame.)
 
 ### 50. Pronoun and possessive spam
 
@@ -627,6 +691,9 @@ A clean human writer can hit several of the patterns above without any AI involv
 - **Em dashes alone.** Many editors and journalists use them often. Em dashes are evidence only when paired with formulaic sales-y rhythm.
 - **One short emphatic sentence.** Humans use clipped sentences to land a point. Flag staccato drama only when several short fragments appear in a row and inflate the tone.
 - **"Honestly" or "look" mid-sentence.** These are ordinary in casual writing. The tell is the standalone theatrical opener, not the word itself.
+- **Deliberate repeated openings.** Writers repeat an opening to build rhythm or pressure: "She came. She saw. She conquered." §12 applies when the repetition does nothing, not whenever it occurs.
+- **Useful limits and disclaimers.** Scope statements, legal and safety notices, genuine corrections, named objections and the replies to them, and FAQ answers all stay. §37 removes the defense with no attacker, not every caveat. This protects a caveat that is *stated*; a sentence whose only content is that a caveat is coming is the announced caveat under §36, and it goes.
+- **Real alternatives.** A design document, tutorial, or argument is supposed to weigh options the reader might actually pick. Cut only the unlikely option raised so it can be dismissed and never used again.
 - **Unsourced claims.** Most of the web is unsourced. Lack of citations doesn't prove anything.
 - **Correct, complex formatting.** Visual editors and templates produce clean output without any AI.
 - **Secondhand text.** Do not rewrite watched phrases inside quotations, titles, proper names, or examples where the phrase is being discussed rather than used.
@@ -655,7 +722,7 @@ Run this loop internally before answering:
 
 1. Identify every instance of the patterns above.
 2. Write a draft rewrite. Check that it reads naturally aloud, varies sentence length, prefers specific details and simple constructions (is/are/has), and keeps the appropriate register.
-3. Ask two questions: **"What still makes this read as AI generated?"** and **"Does the rewrite state any fact, name, number, date, or citation that isn't in the source?"** A fabrication is a defect even when it sounds more human than the vague original.
+3. Ask two questions: **"What still makes this read as AI generated?"** and **"Does the rewrite state any fact, name, number, date, quote, citation, or ranking that isn't in the source, or drop a claim that was?"** A fabrication is a defect even when it sounds more human than the vague original, and a lost claim is a defect even when the rewrite reads better without it.
 4. Revise into the final rewrite. Scan it for `—` and, unless the text is Slovak or Czech, for `–` (see §15 and §46). Any hit means it isn't done.
 
 Return that final text and nothing else.

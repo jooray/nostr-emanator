@@ -1,28 +1,26 @@
 <div class="space-y-6" data-controller="interactions-filter"
      data-interactions-filter-account-ids-value="<%= @accounts.map(&:id).to_json %>">
-  <!-- Header -->
-  <div>
-    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Interactions</h1>
-    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-      Replies, quotes, and mentions across your accounts
-    </p>
-  </div>
+  <header class="mb-5 border-b rule pb-4">
+    <h1 class="condensed text-[30px] font-bold uppercase leading-none tracking-[0.06em]">Interactions</h1>
+    <p class="eng mt-2.5">Replies, quotes and mentions across <%= pluralize(@accounts.size, "identity") %></p>
+  </header>
 
   <!-- Account Filter Tabs -->
   <% if @accounts.size > 1 %>
-    <div class="flex items-center gap-2 flex-wrap">
+    <div class="mb-5 flex flex-wrap items-center gap-1.5">
       <button data-interactions-filter-target="toggleAllButton"
               data-action="interactions-filter#toggleAll"
-              class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium transition-colors bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200 hover:bg-amber-200 dark:hover:bg-amber-800 cursor-pointer">
-        Unselect All
+              class="condensed cursor-pointer border border-gray-300 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-600 transition-colors hover:border-amber-500 hover:text-amber-600 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400 dark:hover:text-amber-400">
+        Unselect all
       </button>
       <% @accounts.each do |account| %>
         <button data-interactions-filter-target="accountButton"
                 data-account-id="<%= account.id %>"
                 data-action="interactions-filter#toggleAccount"
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200 hover:bg-amber-200 dark:hover:bg-amber-800 cursor-pointer">
+                class="condensed inline-flex cursor-pointer items-center gap-2 border border-gray-900 px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-900 transition-colors dark:border-gray-100 dark:text-gray-100">
+          <span class="inline-block h-3 w-[3px] flex-none" style="background: <%= account.ink %>"></span>
           <% if account.picture_url.present? %>
-            <img src="<%= account.picture_url %>" alt="" class="h-4 w-4 rounded-full object-cover">
+            <img src="<%= account.picture_url %>" alt="" class="h-4 w-4 flex-none object-cover">
           <% end %>
           <%= account.display_name.presence || account.username.presence || account.npub&.truncate(12) %>
         </button>
@@ -43,9 +41,9 @@
     <div id="interactions_content" data-interactions-filter-target="content">
       <div class="space-y-3">
         <% 5.times do %>
-          <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+          <div class="border rule overflow-hidden">
             <div class="p-4 animate-pulse">
-              <div class="mb-3 pl-3 border-l-2 border-gray-200 dark:border-gray-600">
+              <div class="mb-3 pl-3 border-l border-gray-200 dark:border-[color:var(--color-rule-dark)]">
                 <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-2/3 mb-1"></div>
                 <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
               </div>

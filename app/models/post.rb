@@ -2,6 +2,7 @@
 
 class Post < ApplicationRecord
   include StatusTransitions
+  include RelayDelivery
 
   attribute :publish_results, :json
   attribute :signed_event, :json
@@ -25,6 +26,12 @@ class Post < ApplicationRecord
   STALE_PUBLISHING_AFTER = 15.minutes
   # Signing waits on the user's phone; anything older than this is a dead end.
   STALE_SIGNING_AFTER = 20.minutes
+
+  # A pasted or AI-written draft carries bare `nprofile1…` / `nevent1…`
+  # identifiers. NIP-21 wants `nostr:`-prefixed URIs, and both our own preview
+  # and every client key off that prefix, so canonicalise once on the way in
+  # rather than at each of the places that read `content`. Idempotent.
+  before_validation :normalize_nostr_references
 
   validates :content, presence: true
   validates :event_kind, inclusion: { in: [1] }
@@ -93,5 +100,13 @@ class Post < ApplicationRecord
       )
     end
     repost_account_ids
+  end
+
+  private
+
+  def normalize_nostr_references
+    return unless will_save_change_to_content?
+
+    self.content = Nostr::ContentRefs.normalize(content)
   end
 end

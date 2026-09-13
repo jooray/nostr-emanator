@@ -53,11 +53,12 @@ module Mcp
         post.update!(scheduled_at: scheduled_at)
 
         signer = Nostr::EventSignerService.new
-        unsigned = signer.build_unsigned_event(
+        unsigned = signer.build_unsigned_note(
           content: post.content,
           kind: post.event_kind,
           pubkey: account.pubkey_hex,
-          created_at: post.scheduled_at
+          created_at: post.scheduled_at,
+          allow_fetch: true
         )
         post.update!(unsigned_event: unsigned, status: :awaiting_signature)
 

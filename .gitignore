@@ -43,3 +43,14 @@ AGENTS.md
 .claude/
 .night-agent/
 .worktrees/
+
+# Impeccable working artifacts. What stays in git is the durable record:
+# .impeccable/surfaces (the direction contract) and .impeccable/critique (which
+# /impeccable polish reads). Everything below is local and regenerable.
+#
+#   mocks/     the spent hand of comps and mockups from a direction round
+#   review/    ~2MB of screenshots captured for the finish review
+#   questions/ scratch state from the decision-page daemon
+/.impeccable/mocks/
+/.impeccable/review/
+/.impeccable/questions/

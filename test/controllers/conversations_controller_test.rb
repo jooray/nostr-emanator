@@ -185,8 +185,9 @@ class ConversationsControllerTest < ActionDispatch::IntegrationTest
 
     get messages_path
 
-    assert_match(/4 accounts need re-pairing/, response.body)
-    assert_equal 1, response.body.scan(/need re-pairing before they can/).size
+    assert_match(/4 accounts cannot message yet/, response.body)
+    # The explanation is stated once, not once per account.
+    assert_equal 1, response.body.scan(/Their signers never granted permission/).size
     # Each still reachable from the collapsed list.
     assert_equal 4, response.body.scan(/reason=messaging/).size
   end

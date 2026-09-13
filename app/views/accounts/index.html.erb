@@ -1,7 +1,7 @@
 <div class="space-y-6">
   <div class="flex items-center justify-between">
     <div>
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Accounts</h1>
+      <h1 class="condensed text-[30px] font-bold uppercase leading-none tracking-[0.06em]">Accounts</h1>
       <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
         Manage your paired Nostr accounts
       </p>
@@ -17,7 +17,7 @@
   <% if @accounts.any? %>
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
       <% @accounts.each do |account| %>
-        <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow">
+        <div class="border rule overflow-hidden hover: transition-">
           <div class="p-5 relative">
             <%= link_to new_account_post_path(account), class: "absolute top-3 right-3 p-1.5 text-gray-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg transition-colors", title: "New Post" do %>
               <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -28,11 +28,7 @@
               <% if account.picture_url.present? %>
                 <img src="<%= account.picture_url %>" alt="<%= account.display_name_or_npub %>" class="h-14 w-14 rounded-full object-cover flex-shrink-0">
               <% else %>
-                <div class="h-14 w-14 rounded-full bg-amber-100 dark:bg-amber-900 flex items-center justify-center flex-shrink-0">
-                  <span class="text-xl font-medium text-amber-600 dark:text-amber-400">
-                    <%= account.display_name_or_npub[0].upcase %>
-                  </span>
-                </div>
+                <div class="h-14 w-14 flex items-center justify-center flex-shrink-0 flex items-center justify-center border border-gray-400 dark:border-gray-500"><span class="text-xl font-medium condensed font-bold uppercase tracking-wide text-gray-600 dark:text-gray-300"><%= account.display_name_or_npub[0].upcase %></span></div>
               <% end %>
               <div class="flex-1 min-w-0">
                 <h3 class="text-base font-semibold text-gray-900 dark:text-white truncate">
@@ -42,7 +38,7 @@
                   <p class="text-sm text-gray-500 dark:text-gray-400 truncate">@<%= account.username %></p>
                 <% end %>
                 <div class="flex items-center gap-1 mt-0.5">
-                  <span class="text-xs text-gray-400 dark:text-gray-500 truncate font-mono cursor-pointer hover:text-amber-500 dark:hover:text-amber-400 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500 rounded"
+                  <span class="text-xs text-gray-400 dark:text-gray-500 truncate font-mono cursor-pointer hover:text-amber-500 dark:hover:text-amber-400 transition-colors focus:outline-none rounded"
                         data-controller="clipboard"
                         data-clipboard-text-value="<%= account.npub %>"
                         data-action="click->clipboard#copy keydown.enter->clipboard#copy"
@@ -68,7 +64,7 @@
                 <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                 </svg>
-                <span class="text-sm text-gray-600 dark:text-gray-300"><%= @post_counts.fetch(account.id, 0) %> posts</span>
+                <span class="text-sm text-gray-600 dark:text-gray-300"><%= pluralize(@post_counts.fetch(account.id, 0), "post") %></span>
               </div>
               <div class="flex items-center gap-1.5">
                 <% if account.has_signer? %>
@@ -90,7 +86,7 @@
       <% end %>
     </div>
   <% else %>
-    <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-12 text-center border border-gray-200 dark:border-gray-700">
+    <div class="border rule p-12 text-center">
       <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
       </svg>

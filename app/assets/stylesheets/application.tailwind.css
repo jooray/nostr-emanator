@@ -2,306 +2,499 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Solarized-inspired dark theme colors */
+/* ---------------------------------------------------------------------------
+   THE CONSOLE
+   ---------------------------------------------------------------------------
+   Emanator is a control console for events its operator already signed.
+   Publishing to N relays is a poll of N stations, so a partial answer is the
+   normal answer. The rule that governs every colour decision below:
+
+       NOMINAL DOES NOT ILLUMINATE. Only an exception carries colour.
+
+   There are exactly two chromatic values in the product. Amber means a human
+   must tap something. Red means something did not fully land. Everything else
+   — every "success", every "scheduled", every "published" — is bone or steel.
+   That is why the green/emerald/indigo/blue/purple ramps below are deliberately
+   remapped onto the neutral scale rather than deleted: the utilities stay valid
+   everywhere they are already used, and they simply stop shouting.
+
+   This replaces the previous `!important` override layer, which repainted stock
+   Tailwind classes at paint time. Redefining the tokens themselves means the
+   utilities resolve to console values directly, with no specificity war and no
+   class-by-class patching.
+--------------------------------------------------------------------------- */
+
+@font-face { font-family: "Barlow"; font-style: normal; font-weight: 400; font-display: swap; src: url("/fonts/barlow-400.woff2") format("woff2"); }
+@font-face { font-family: "Barlow"; font-style: normal; font-weight: 500; font-display: swap; src: url("/fonts/barlow-500.woff2") format("woff2"); }
+@font-face { font-family: "Barlow"; font-style: normal; font-weight: 600; font-display: swap; src: url("/fonts/barlow-600.woff2") format("woff2"); }
+@font-face { font-family: "Barlow Condensed"; font-style: normal; font-weight: 500; font-display: swap; src: url("/fonts/barlow-condensed-500.woff2") format("woff2"); }
+@font-face { font-family: "Barlow Condensed"; font-style: normal; font-weight: 600; font-display: swap; src: url("/fonts/barlow-condensed-600.woff2") format("woff2"); }
+@font-face { font-family: "Barlow Condensed"; font-style: normal; font-weight: 700; font-display: swap; src: url("/fonts/barlow-condensed-700.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 400; font-display: swap; src: url("/fonts/jetbrains-mono-400.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 700; font-display: swap; src: url("/fonts/jetbrains-mono-700.woff2") format("woff2"); }
+
 @theme {
-  --color-dark-base: #0a0a0a;
-  --color-dark-surface: #141414;
-  --color-dark-elevated: #1c1c1c;
-  --color-dark-hover: #262626;
-  --color-dark-border: #2a2a2a;
-  --color-dark-muted: #525252;
-  --color-dark-text: #e5e5e5;
-  --color-dark-text-secondary: #a3a3a3;
+  --font-sans: "Barlow", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-condensed: "Barlow Condensed", "Barlow", ui-sans-serif, system-ui, sans-serif;
 
-  /* Accent - warm amber/orange */
-  --color-accent: #d97706;
-  --color-accent-light: #fbbf24;
-  --color-accent-muted: #92400e;
+  /* Chassis and panel. The dark end is the night-time use scene: an operator
+     scanning a queue of things that go out while they sleep. */
+  --color-chassis: #211f1c;
+  --color-panel: #2e2b27;
+  --color-panel-hi: #353128;
+  --color-seam: #171512;
+  --color-well: #413c35;
+  --color-rule-dark: #403b34;
+
+  /* The lit vocabulary. Bone is nominal; it is warm, not white, because an
+     incandescent lamp behind a clear cap is never blue. */
+  --color-bone: #cfc7bb;
+  --color-legend: #c4bbac;
+
+  /* Neutral ramp, warm. Replaces Tailwind's cool grays everywhere. */
+  --color-gray-50: #efebe4;
+  --color-gray-100: #e4dfd6;
+  --color-gray-200: #d3ccc1;
+  --color-gray-300: #bbb3a6;
+  --color-gray-400: #a49b8c;
+  --color-gray-500: #6e665a;
+  --color-gray-600: #554e44;
+  --color-gray-700: #383430;
+  --color-gray-800: #2e2b27;
+  --color-gray-900: #211f1c;
+  --color-gray-950: #171512;
+  --color-white: #faf7f2;
+
+  /* AMBER — a human must tap something. The only invitation in the product. */
+  --color-amber-50: #fdf2dc;
+  --color-amber-100: #fbe7bf;
+  --color-amber-200: #f7dfa8;
+  --color-amber-300: #f5c874;
+  --color-amber-400: #f5b950;
+  --color-amber-500: #f0a017;
+  --color-amber-600: #d98a0c;
+  --color-amber-700: #b8720a;
+  --color-amber-800: #8f5806;
+  --color-amber-900: #5c3a05;
+  --color-yellow-400: #f5b950;
+  --color-yellow-500: #f0a017;
+  --color-orange-400: #f0a017;
+  --color-orange-500: #d98a0c;
+
+  /* RED — this did not fully land. The only alarm in the product. */
+  --color-red-50: #fbeae6;
+  --color-red-100: #f8d8d0;
+  --color-red-200: #f4c4b8;
+  --color-red-300: #ee9683;
+  --color-red-400: #e8614a;
+  --color-red-500: #d93b1e;
+  --color-red-600: #c22f14;
+  --color-red-700: #a02610;
+  --color-red-800: #7a1d0c;
+  --color-red-900: #4e1208;
+  --color-rose-500: #d93b1e;
+  --color-rose-600: #c22f14;
+
+  /* Everything that used to mean "good" now means "nominal", and nominal does
+     not illuminate. These stay defined so existing markup keeps working. */
+  --color-green-50: #e4dfd6;
+  --color-green-100: #d3ccc1;
+  --color-green-200: #d3ccc1;
+  --color-green-300: #bbb3a6;
+  --color-green-400: #cfc7bb;
+  --color-green-500: #a79e91;
+  --color-green-600: #6e665a;
+  --color-green-700: #554e44;
+  --color-green-800: #383430;
+  --color-green-900: #2e2b27;
+  --color-emerald-400: #cfc7bb;
+  --color-emerald-500: #a79e91;
+  --color-emerald-600: #6e665a;
+  --color-teal-500: #6e665a;
+  --color-indigo-50: #e4dfd6;
+  --color-indigo-100: #d3ccc1;
+  --color-indigo-200: #d3ccc1;
+  --color-indigo-300: #bbb3a6;
+  --color-indigo-400: #cfc7bb;
+  --color-indigo-500: #a79e91;
+  --color-indigo-600: #6e665a;
+  --color-indigo-700: #554e44;
+  --color-indigo-800: #383430;
+  --color-indigo-900: #2e2b27;
+  --color-blue-50: #e4dfd6;
+  --color-blue-100: #d3ccc1;
+  --color-blue-200: #d3ccc1;
+  --color-blue-300: #bbb3a6;
+  --color-blue-400: #cfc7bb;
+  --color-blue-500: #a79e91;
+  --color-blue-600: #6e665a;
+  --color-blue-700: #554e44;
+  --color-blue-800: #383430;
+  --color-blue-900: #2e2b27;
+  --color-purple-50: #e4dfd6;
+  --color-purple-100: #d3ccc1;
+  --color-purple-200: #f7dfa8;
+  --color-purple-300: #f5c874;
+  --color-purple-400: #f5b950;
+  --color-purple-500: #f0a017;
+  --color-purple-600: #d98a0c;
+  --color-purple-700: #b8720a;
+  --color-purple-800: #8f5806;
+  --color-purple-900: #5c3a05;
+  --color-pink-500: #a79e91;
+  --color-cyan-500: #a79e91;
+  --color-sky-500: #a79e91;
+
+  /* A console has no rounded corners. Squaring the radius tokens squares every
+     rounded-* utility already in the markup, the same way the colour tokens
+     recoloured it — no per-view edits and no !important. --radius-full is left
+     alone deliberately: avatars are round because faces are round. */
+  --radius-xs: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
 }
 
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+/* --------------------------------------------------------------------------
+   Base. The ground is painted explicitly in both themes: a transparent body
+   borrows whatever the host paints behind it.
+--------------------------------------------------------------------------- */
+
+html { font-family: var(--font-sans); }
+
+/* Barlow runs small for its point size; 14px in it reads like 13. The whole
+   surface is one step up from the Tailwind default, and line-height with it. */
+body { font-size: 15.5px; line-height: 1.55; }
+
+/* Every page title in the app is engraved legend, set once here rather than
+   respelled in fifty views. Scoped to <main>, so the landing page — which has
+   its own stylesheet and its own world — is untouched. */
+main h1 {
+  font-family: var(--font-condensed);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1.05;
 }
 
-.line-clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+/* Section titles. The earlier :not([class*="text-"]) guard excluded every h2
+   that carried a size utility — which is all of them — so settings rendered its
+   sections as sentence-case Barlow and read as a generic admin panel. */
+main h2:not(.eng) {
+  font-family: var(--font-condensed);
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-weight: 600;
 }
 
-.dark {
-  --tw-bg-opacity: 1;
+body {
+  background-color: var(--color-gray-50);
+  color: var(--color-gray-900);
 }
 
 .dark body {
-  background-color: var(--color-dark-base);
+  background-color: var(--color-panel);
+  color: #ede8e0;
 }
 
-.dark .bg-gray-800 {
-  background-color: var(--color-dark-surface) !important;
+/* --------------------------------------------------------------------------
+   Browser surfaces. The parts we did not draw still carry the design: text
+   selection, the caret, scrollbars, focus rings, and the numerals in tabular
+   data all ship with browser defaults that belong to no design system.
+--------------------------------------------------------------------------- */
+
+::selection { background-color: var(--color-amber-500); color: #1a1714; }
+
+input, textarea, select, [contenteditable] { caret-color: var(--color-amber-500); }
+
+.dark * { scrollbar-color: var(--color-well) var(--color-chassis); }
+* { scrollbar-width: thin; }
+.dark ::-webkit-scrollbar { width: 11px; height: 11px; }
+.dark ::-webkit-scrollbar-track { background: var(--color-chassis); }
+.dark ::-webkit-scrollbar-thumb {
+  background: var(--color-well);
+  border: 3px solid var(--color-chassis);
+  border-radius: 6px;
+}
+.dark ::-webkit-scrollbar-thumb:hover { background: #565049; }
+
+:focus-visible {
+  outline: 2px solid var(--color-amber-500);
+  outline-offset: 2px;
+  border-radius: 1px;
 }
 
-.dark .bg-gray-700,
-.dark .dark\:bg-gray-700 {
-  background-color: var(--color-dark-elevated) !important;
+/* Times, tallies, counters and event ids are measurements: they line up. */
+.tabular, .display, time, [data-tabular] { font-variant-numeric: tabular-nums; }
+
+/* A keyboard user should not walk seven nav links before reaching the work. */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: 12px 18px;
+  background: var(--color-amber-500);
+  color: #1a1714;
+  font-family: var(--font-condensed);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.skip-link:focus { left: 0; }
+
+/* --------------------------------------------------------------------------
+   The console vocabulary.
+--------------------------------------------------------------------------- */
+
+/* Engraved legend plate. Cut into the panel: dark above, a light lip below. */
+.eng {
+  font-family: var(--font-condensed);
+  font-weight: 600;
+  font-size: 11px;
+  line-height: 1.1;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-gray-500);
+}
+.dark .eng {
+  color: var(--color-legend);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.55), 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
-.dark .bg-gray-900,
-.dark .dark\:bg-gray-900 {
-  background-color: var(--color-dark-base) !important;
+.condensed { font-family: var(--font-condensed); }
+
+/* Indicator lamp. Unlit is a recessed well, not a coloured dot. */
+.lamp {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  background: var(--color-gray-300);
+  box-shadow: inset 0 1.5px 2px rgba(0, 0, 0, 0.3);
+  flex: none;
+}
+.dark .lamp {
+  background: var(--color-well);
+  box-shadow: inset 0 1.5px 2px rgba(0, 0, 0, 0.75), 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+.lamp--lit { background: var(--color-gray-500); box-shadow: none; }
+.dark .lamp--lit {
+  background: var(--color-bone);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 5px rgba(207, 199, 187, 0.22);
+}
+.lamp--alarm, .dark .lamp--alarm {
+  background: var(--color-red-500);
+  box-shadow: inset 0 1px 0 rgba(255, 180, 160, 0.45), 0 0 9px rgba(217, 59, 30, 0.5);
+}
+.lamp--wait, .dark .lamp--wait {
+  background: var(--color-amber-500);
+  box-shadow: inset 0 1px 0 rgba(255, 225, 170, 0.4), 0 0 9px rgba(240, 160, 23, 0.5);
 }
 
-.dark .hover\:bg-gray-50:hover,
-.dark .dark\:hover\:bg-gray-700:hover,
-.dark .dark\:hover\:bg-gray-750:hover {
-  background-color: var(--color-dark-hover) !important;
+/* Poll strip: one cell per relay the event was sent to. */
+.strip { display: inline-flex; gap: 3px; vertical-align: middle; }
+.strip > i {
+  display: block;
+  width: 13px;
+  height: 17px;
+  background: var(--color-gray-300);
+  box-shadow: inset 0 1.5px 3px rgba(0, 0, 0, 0.25);
+}
+.dark .strip > i {
+  background: var(--color-well);
+  box-shadow: inset 0 1.5px 3px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+.strip > i.is-ok { background: var(--color-gray-500); box-shadow: none; }
+.dark .strip > i.is-ok {
+  background: var(--color-bone);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 0 rgba(0, 0, 0, 0.5);
+}
+.strip > i.is-short, .dark .strip > i.is-short {
+  background: var(--color-red-500);
+  box-shadow: inset 0 1px 0 rgba(255, 180, 160, 0.45), 0 0 10px rgba(217, 59, 30, 0.55);
 }
 
-.dark .border-gray-200,
-.dark .dark\:border-gray-700,
-.dark .border-gray-700,
-.dark .divide-gray-700 > * + * {
-  border-color: var(--color-dark-border) !important;
+/* Identity. The hue is derived from the pubkey, so it can never reshuffle when
+   a new account is paired. Rendered as a rule in the row's own flow — not as a
+   border on a container, which is the lazy accent this world refuses. */
+.wire {
+  display: block;
+  width: 3px;
+  align-self: stretch;
+  min-height: 26px;
+  flex: none;
+  background: var(--wire-ink, var(--color-gray-400));
 }
 
-.dark .text-gray-900,
-.dark .dark\:text-white,
-.dark .dark\:text-gray-100 {
-  color: var(--color-dark-text) !important;
+.chop {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  flex: none;
+  font-family: var(--font-condensed);
+  font-weight: 700;
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: var(--wire-ink, var(--color-gray-500));
+  border: 1px solid currentColor;
+  text-transform: uppercase;
 }
 
-.dark .text-gray-500,
-.dark .dark\:text-gray-400,
-.dark .text-gray-400 {
-  color: var(--color-dark-text-secondary) !important;
+/* Status slug: engraved, bordered, never a rounded pill. */
+.slug {
+  display: inline-block;
+  font-family: var(--font-condensed);
+  font-weight: 600;
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 5px 8px;
+  border: 1px solid currentColor;
+  white-space: nowrap;
+  color: var(--color-gray-500);
+}
+.dark .slug { color: var(--color-gray-400); }
+.slug--wait, .dark .slug--wait { color: var(--color-amber-600); background: rgba(240, 160, 23, 0.09); }
+.dark .slug--wait { color: var(--color-amber-500); }
+.slug--short, .dark .slug--short { color: var(--color-red-600); background: rgba(217, 59, 30, 0.08); }
+.dark .slug--short { color: var(--color-red-400); }
+
+/* The release hour, at display scale. */
+.hour {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 23px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
 }
 
-.dark .text-purple-600,
-.dark .dark\:text-purple-400 {
-  color: var(--color-accent-light) !important;
+/* A row awaiting a human. The rule is inset padding, not a box-shadow laid
+   over the content, so it cannot clip the first glyph of the label beneath. */
+/* A waiting row is marked by its tint, its lamp and its amber slug — not by a
+   3px coloured border-left, which is the accent the craft floor refuses and
+   which this stylesheet already rejects for identity two rules above. */
+.row-wait {
+  background: rgba(240, 160, 23, 0.06);
+  margin-left: -16px;
+  margin-right: -16px;
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
-.dark .bg-purple-600 {
-  background-color: var(--color-accent) !important;
+/* Alarm block. Present only when the count it carries is non-zero. */
+/* The repost picker's consequence readout: quiet until the number of signer
+   approvals it implies stops being trivial. */
+[data-level="quiet"] { color: var(--color-gray-600); }
+.dark [data-level="quiet"] { color: var(--color-gray-300); }
+[data-level="loud"], .dark [data-level="loud"] { color: var(--color-amber-600); }
+.dark [data-level="loud"] { color: var(--color-amber-400); }
+
+.alarm {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--color-red-500);
+  background: rgba(217, 59, 30, 0.08);
+  padding: 9px 14px;
 }
 
-.dark .bg-purple-600:hover,
-.dark .hover\:bg-purple-700:hover {
-  background-color: var(--color-accent-muted) !important;
+/* Multi-line alarms stack. A utility cannot do this from markup: plain CSS
+   outside Tailwind's layers wins over `items-stretch`, so the modifier lives
+   here with the rule it is modifying. */
+.alarm.is-stacked {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  padding: 12px 14px 14px;
 }
 
-.dark .bg-purple-50,
-.dark .dark\:bg-purple-900\/20 {
-  background-color: rgba(217, 119, 6, 0.1) !important;
-}
+.rule { border-color: var(--color-gray-200); }
+.dark .rule { border-color: var(--color-rule-dark); }
 
-.dark .text-purple-800,
-.dark .dark\:text-purple-200 {
-  color: var(--color-accent-light) !important;
-}
+.line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
-.dark .text-purple-700,
-.dark .dark\:text-purple-300 {
-  color: #fcd34d !important;
-}
+/* --------------------------------------------------------------------------
+   Vendored widgets, themed from the tokens above in BOTH modes. The previous
+   stylesheet only themed flatpickr under `.dark`, so a selected day was blue in
+   light and amber in dark — the same control, two different products.
+--------------------------------------------------------------------------- */
 
-.dark .text-green-600,
-.dark .dark\:text-green-400 {
-  color: #4ade80 !important;
+.flatpickr-calendar {
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-200);
+  border-radius: 0;
+  box-shadow: 0 12px 28px rgba(33, 31, 28, 0.18);
+  font-family: var(--font-sans);
 }
-
-.dark nav {
-  background-color: var(--color-dark-surface) !important;
-  border-color: var(--color-dark-border) !important;
+.flatpickr-months .flatpickr-month,
+.flatpickr-weekdays,
+.flatpickr-current-month .flatpickr-monthDropdown-months { background: var(--color-white); color: var(--color-gray-900); }
+span.flatpickr-weekday { color: var(--color-gray-500); font-family: var(--font-condensed); letter-spacing: 0.14em; text-transform: uppercase; }
+.flatpickr-day { color: var(--color-gray-900); border-radius: 0; font-variant-numeric: tabular-nums; }
+.flatpickr-day:hover { background: var(--color-gray-100); }
+.flatpickr-day.today { border-color: var(--color-amber-500); }
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover {
+  background: var(--color-amber-500);
+  border-color: var(--color-amber-500);
+  color: #1a1714;
 }
+.flatpickr-day.flatpickr-disabled,
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay { color: var(--color-gray-300); }
+.flatpickr-time input, .flatpickr-time .flatpickr-am-pm { color: var(--color-gray-900); font-variant-numeric: tabular-nums; }
 
-.dark .shadow,
-.dark .shadow-sm {
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5), 0 1px 2px -1px rgba(0, 0, 0, 0.5) !important;
-}
-
-.dark input,
-.dark textarea,
-.dark select {
-  background-color: var(--color-dark-elevated) !important;
-  border-color: var(--color-dark-border) !important;
-  color: var(--color-dark-text) !important;
-}
-
-.dark input:focus,
-.dark textarea:focus,
-.dark select:focus {
-  border-color: var(--color-accent) !important;
-  --tw-ring-color: var(--color-accent) !important;
-}
-
-/* EasyMDE dark mode */
-.dark .EasyMDEContainer .CodeMirror {
-  background-color: var(--color-dark-elevated);
-  color: var(--color-dark-text);
-  border-color: var(--color-dark-border);
-}
-
-.dark .EasyMDEContainer .CodeMirror-cursor {
-  border-left-color: var(--color-dark-text);
-}
-
-.dark .EasyMDEContainer .editor-toolbar {
-  background-color: var(--color-dark-surface);
-  border-color: var(--color-dark-border);
-}
-
-.dark .EasyMDEContainer .editor-toolbar button {
-  color: var(--color-dark-text-secondary);
-}
-
-.dark .EasyMDEContainer .editor-toolbar button:hover {
-  background-color: var(--color-dark-hover);
-}
-
-.dark .EasyMDEContainer .editor-toolbar button.active {
-  background-color: var(--color-dark-elevated);
-}
-
-.dark .EasyMDEContainer .editor-preview {
-  background-color: var(--color-dark-elevated);
-  color: var(--color-dark-text);
-}
-
-.dark .EasyMDEContainer .editor-preview-side {
-  background-color: var(--color-dark-elevated);
-  border-color: var(--color-dark-border);
-}
-
-.dark .EasyMDEContainer .CodeMirror .CodeMirror-selected {
-  background-color: var(--color-dark-hover);
-}
-
-.dark .EasyMDEContainer .cm-header {
-  color: var(--color-accent-light);
-}
-
-.dark .EasyMDEContainer .cm-link {
-  color: #38bdf8;
-}
-
-.dark .EasyMDEContainer .cm-url {
-  color: #4ade80;
-}
-
-.dark .lg\:hidden.fixed {
-  background-color: var(--color-dark-surface) !important;
-  border-color: var(--color-dark-border) !important;
-}
-
-/* Flatpickr dark mode */
-.dark .flatpickr-calendar {
-  background: var(--color-dark-surface) !important;
-  border-color: var(--color-dark-border) !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5) !important;
-}
-
+.dark .flatpickr-calendar { background: var(--color-panel); border-color: var(--color-rule-dark); box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55); }
 .dark .flatpickr-calendar.arrowTop::before,
-.dark .flatpickr-calendar.arrowTop::after {
-  border-bottom-color: var(--color-dark-surface) !important;
-}
-
+.dark .flatpickr-calendar.arrowTop::after { border-bottom-color: var(--color-panel); }
 .dark .flatpickr-months .flatpickr-month,
-.dark .flatpickr-current-month .flatpickr-monthDropdown-months {
-  background: var(--color-dark-surface) !important;
-  color: var(--color-dark-text) !important;
-}
-
-.dark .flatpickr-current-month input.cur-year {
-  color: var(--color-dark-text) !important;
-}
-
-.dark .flatpickr-months .flatpickr-prev-month,
-.dark .flatpickr-months .flatpickr-next-month {
-  color: var(--color-dark-text-secondary) !important;
-  fill: var(--color-dark-text-secondary) !important;
-}
-
-.dark .flatpickr-months .flatpickr-prev-month:hover,
-.dark .flatpickr-months .flatpickr-next-month:hover {
-  color: var(--color-dark-text) !important;
-}
-
-.dark .flatpickr-months .flatpickr-prev-month svg,
-.dark .flatpickr-months .flatpickr-next-month svg {
-  fill: var(--color-dark-text-secondary) !important;
-}
-
-.dark .flatpickr-weekdays {
-  background: var(--color-dark-surface) !important;
-}
-
-.dark span.flatpickr-weekday {
-  color: var(--color-dark-text-secondary) !important;
-  background: var(--color-dark-surface) !important;
-}
-
-.dark .flatpickr-day {
-  color: var(--color-dark-text) !important;
-  border-color: transparent !important;
-}
-
-.dark .flatpickr-day:hover {
-  background: var(--color-dark-hover) !important;
-  border-color: var(--color-dark-hover) !important;
-}
-
-.dark .flatpickr-day.today {
-  border-color: var(--color-accent) !important;
-}
-
-.dark .flatpickr-day.selected,
-.dark .flatpickr-day.selected:hover {
-  background: var(--color-accent) !important;
-  border-color: var(--color-accent) !important;
-  color: white !important;
-}
-
+.dark .flatpickr-weekdays,
+.dark .flatpickr-current-month .flatpickr-monthDropdown-months { background: var(--color-panel); color: #ede8e0; }
+.dark .flatpickr-current-month input.cur-year { color: #ede8e0; }
+.dark span.flatpickr-weekday { color: var(--color-legend); }
+.dark .flatpickr-day { color: #ede8e0; }
+.dark .flatpickr-day:hover { background: var(--color-well); }
 .dark .flatpickr-day.flatpickr-disabled,
 .dark .flatpickr-day.prevMonthDay,
-.dark .flatpickr-day.nextMonthDay {
-  color: var(--color-dark-muted) !important;
-}
-
-.dark .flatpickr-time {
-  border-top-color: var(--color-dark-border) !important;
-}
-
+.dark .flatpickr-day.nextMonthDay { color: var(--color-gray-500); }
+.dark .flatpickr-months .flatpickr-prev-month,
+.dark .flatpickr-months .flatpickr-next-month { color: var(--color-legend); fill: var(--color-legend); }
+.dark .flatpickr-months .flatpickr-prev-month svg,
+.dark .flatpickr-months .flatpickr-next-month svg { fill: var(--color-legend); }
+.dark .flatpickr-time,
 .dark .flatpickr-time input,
-.dark .flatpickr-time .flatpickr-am-pm {
-  color: var(--color-dark-text) !important;
-  background: var(--color-dark-surface) !important;
-}
-
+.dark .flatpickr-time .flatpickr-am-pm { background: var(--color-panel); color: #ede8e0; }
 .dark .flatpickr-time input:hover,
 .dark .flatpickr-time input:focus,
 .dark .flatpickr-time .flatpickr-am-pm:hover,
-.dark .flatpickr-time .flatpickr-am-pm:focus {
-  background: var(--color-dark-hover) !important;
-}
+.dark .flatpickr-time .flatpickr-am-pm:focus { background: var(--color-well); }
+.dark .numInputWrapper:hover { background: var(--color-well); }
+.dark .numInputWrapper span { border-color: var(--color-rule-dark); }
+.dark .flatpickr-time .flatpickr-time-separator { color: var(--color-legend); }
 
-.dark .numInputWrapper:hover {
-  background: var(--color-dark-hover) !important;
+.EasyMDEContainer .CodeMirror { font-family: var(--font-sans); border-radius: 0; }
+.dark .EasyMDEContainer .CodeMirror {
+  background-color: var(--color-panel-hi);
+  color: #ede8e0;
+  border-color: var(--color-rule-dark);
 }
-
-.dark .numInputWrapper span {
-  border-color: var(--color-dark-border) !important;
-}
-
-.dark .numInputWrapper span::after {
-  border-top-color: var(--color-dark-text-secondary) !important;
-  border-bottom-color: var(--color-dark-text-secondary) !important;
-}
-
-.dark .flatpickr-time .flatpickr-time-separator {
-  color: var(--color-dark-text-secondary) !important;
-}
+.dark .EasyMDEContainer .CodeMirror-cursor { border-left-color: var(--color-amber-500); }
+.dark .EasyMDEContainer .editor-toolbar { background-color: var(--color-chassis); border-color: var(--color-rule-dark); }
+.dark .EasyMDEContainer .editor-toolbar button { color: var(--color-legend); }
+.dark .EasyMDEContainer .editor-toolbar button:hover { background-color: var(--color-well); }
+.dark .EasyMDEContainer .editor-toolbar button.active { background-color: var(--color-panel-hi); }
+.dark .EasyMDEContainer .editor-preview,
+.dark .EasyMDEContainer .editor-preview-side { background-color: var(--color-panel-hi); color: #ede8e0; border-color: var(--color-rule-dark); }
+.dark .EasyMDEContainer .CodeMirror .CodeMirror-selected { background-color: var(--color-well); }
+.dark .EasyMDEContainer .cm-header { color: var(--color-amber-400); }
+.dark .EasyMDEContainer .cm-link,
+.dark .EasyMDEContainer .cm-url { color: var(--color-legend); }

@@ -79,10 +79,10 @@ export default class extends Controller {
 
     const message = document.createElement("div")
     message.dataset.interactionsFilterEmpty = "true"
-    message.className = "bg-white dark:bg-gray-800 shadow rounded-lg p-12 text-center border border-gray-200 dark:border-gray-700"
+    message.className = "border rule p-12 text-center"
 
     const heading = document.createElement("h3")
-    heading.className = "text-lg font-medium text-gray-900 dark:text-white"
+    heading.className = "condensed text-[20px] font-bold uppercase tracking-[0.06em] text-gray-900 dark:text-gray-100"
     heading.textContent = "No accounts selected"
 
     const body = document.createElement("p")
@@ -103,14 +103,18 @@ export default class extends Controller {
     this.accountButtonTargets.forEach(btn => {
       const id = String(btn.dataset.accountId)
       const active = this.selectedIds.has(id)
-      btn.classList.toggle("bg-amber-100", active)
-      btn.classList.toggle("text-amber-800", active)
-      btn.classList.toggle("dark:bg-amber-900", active)
-      btn.classList.toggle("dark:text-amber-200", active)
-      btn.classList.toggle("bg-gray-100", !active)
-      btn.classList.toggle("text-gray-700", !active)
-      btn.classList.toggle("dark:bg-gray-700", !active)
-      btn.classList.toggle("dark:text-gray-300", !active)
+      // Selected reads as an engraved plate that is lit; unselected is the same
+      // plate, dark. Amber is not used here: a filter being on is not an action
+      // waiting to be taken.
+      btn.classList.toggle("border-gray-900", active)
+      btn.classList.toggle("dark:border-gray-100", active)
+      btn.classList.toggle("text-gray-900", active)
+      btn.classList.toggle("dark:text-gray-100", active)
+      btn.classList.toggle("border-gray-300", !active)
+      btn.classList.toggle("dark:border-[color:var(--color-rule-dark)]", !active)
+      btn.classList.toggle("text-gray-500", !active)
+      btn.classList.toggle("dark:text-gray-400", !active)
+      btn.classList.toggle("opacity-60", !active)
     })
   }
 }

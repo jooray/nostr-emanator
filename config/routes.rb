@@ -3,6 +3,9 @@ Rails.application.routes.draw do
   get "auth/nostr", to: "sessions#new", as: :nostr_login
   post "auth/nostr/poll", to: "sessions#poll", as: :auth_nostr_poll
   post "auth/nostr/callback", to: "sessions#callback", as: :auth_nostr_callback
+  # bunker:// — the signer-initiated flow, where the user pastes a URI
+  # naming their signer instead of the signer scanning ours.
+  post "auth/nostr/bunker", to: "sessions#bunker", as: :auth_nostr_bunker
   post "auth/nostr/refresh_profile", to: "sessions#refresh_profile", as: :refresh_profile
   delete "logout", to: "sessions#destroy", as: :logout
 
@@ -26,6 +29,11 @@ Rails.application.routes.draw do
       get :settings
       get :recent_events
       get :recent_interactions
+      # Nostr profile (kind 0) editing. Publishing blocks on signer approval, so
+      # `update_profile` enqueues and `profile_status` is what the page polls.
+      get :profile
+      post :profile, action: :update_profile
+      get :profile_status
     end
     resources :posts, shallow: true
     resources :nostr_actions, only: [:create], shallow: true
@@ -64,6 +72,14 @@ Rails.application.routes.draw do
   post "messages/:id/downgrade", to: "messages#downgrade", as: :downgrade_message
 
   # Posts (all posts view)
+  # Bulk discard for posts that never went out. Without it the only way to clear
+  # a backlog of dead scheduled posts was to open each one and retry it.
+  #
+  # NOT under /posts/… : the shallow `resources :posts` above already owns
+  # DELETE /posts/:id, so /posts/failed was recognised as posts#destroy with
+  # id="failed", raised RecordNotFound, and Turbo swallowed the 404 — the button
+  # appeared to do nothing at all.
+  delete "failed_posts", to: "posts#discard_failed", as: :discard_failed_posts
   resources :posts, only: [:index] do
     member do
       get :schedule

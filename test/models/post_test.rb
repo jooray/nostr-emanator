@@ -3,6 +3,21 @@
 require_relative "../test_helper"
 
 class PostTest < ActiveSupport::TestCase
+  def test_bare_nostr_identifiers_are_normalised_on_save
+    npub = Nostr::KeyConverter.hex_to_npub("11" * 32)
+    account = Account.create!(
+      user: User.create!(npub: "npub_normalise_test", pubkey_hex: SecureRandom.hex(32)),
+      pubkey_hex: SecureRandom.hex(32)
+    )
+
+    post = account.posts.create!(content: "ahoj #{npub}", event_kind: 1, status: :draft)
+    assert_equal "ahoj nostr:#{npub}", post.content
+
+    # Saving again must not stack prefixes.
+    post.update!(content: post.content)
+    assert_equal "ahoj nostr:#{npub}", post.reload.content
+  end
+
   def test_only_kind_one_is_schedulable_as_a_post
     post = Post.new(content: "hello", event_kind: 1)
     post.validate

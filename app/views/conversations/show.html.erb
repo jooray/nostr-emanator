@@ -21,7 +21,7 @@
     <h1 class="text-lg font-semibold text-gray-900 dark:text-white">Conversation</h1>
   </div>
 
-  <div class="overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+  <div class="border rule overflow-hidden">
     <%# Both sides, explicitly. With one inbox spanning several identities, "which
         of my accounts is this?" must never require inference. Each name is a
         click-to-copy npub button.
@@ -29,7 +29,7 @@
         The avatars stay OUTSIDE the clipboard buttons on purpose: the controller's
         flash() replaces the element's textContent to show "Copied!", which would
         wipe an <img> nested inside it. %>
-    <div class="flex flex-wrap items-center justify-center gap-3 border-b border-gray-200 px-4 py-4 dark:border-gray-700">
+    <div class="flex flex-wrap items-center justify-center gap-3 border-b border-gray-200 px-4 py-4 dark:border-[color:var(--color-rule-dark)]">
       <%= render "shared/avatar", pubkey: @conversation.account.pubkey_hex, size: :md %>
       <%= render "conversations/copyable_name",
             pubkey: @conversation.account.pubkey_hex,
@@ -50,7 +50,7 @@
     </div>
 
     <% if peers.size > 1 %>
-      <div class="border-b border-gray-200 bg-gray-50 px-4 py-2 dark:border-gray-700 dark:bg-gray-700/40">
+      <div class="border-b border-gray-200 bg-gray-50 px-4 py-2 dark:border-[color:var(--color-rule-dark)] dark:bg-gray-700/40">
         <p class="mb-1 text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">All participants</p>
         <div class="flex flex-wrap gap-2">
           <% peers.each do |peer| %>
@@ -61,7 +61,7 @@
     <% end %>
 
     <% if @conversation.subject.present? %>
-      <div class="border-b border-gray-200 px-4 py-2 dark:border-gray-700">
+      <div class="border-b border-gray-200 px-4 py-2 dark:border-[color:var(--color-rule-dark)]">
         <p class="text-sm font-medium text-gray-700 dark:text-gray-200"><%= @conversation.subject %></p>
       </div>
     <% end %>
@@ -77,7 +77,7 @@
     <% end %>
 
     <% if @conversation.request? %>
-      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-700/40">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 bg-gray-50 px-4 py-3 dark:border-[color:var(--color-rule-dark)] dark:bg-gray-700/40">
         <p class="text-sm text-gray-700 dark:text-gray-200">
           You do not follow this person, and neither does any of your other accounts.
         </p>
@@ -85,7 +85,7 @@
           <%= button_to "Accept", accept_conversation_path(@conversation), method: :post,
                 class: "rounded-md bg-amber-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-500" %>
           <%= button_to "Block", block_conversation_path(@conversation), method: :post,
-                class: "rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700" %>
+                class: "rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:border-[color:var(--color-rule-dark)] dark:text-gray-200 dark:hover:bg-gray-700" %>
         </div>
       </div>
     <% end %>

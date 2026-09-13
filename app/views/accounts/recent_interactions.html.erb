@@ -4,7 +4,7 @@
       <% @interactions.first(10).each do |interaction| %>
         <li class="px-6 py-4">
           <% if interaction[:original_post_content].present? %>
-            <div class="mb-2 pl-3 border-l-2 border-gray-200 dark:border-gray-600">
+            <div class="mb-2 pl-3 border-l border-gray-200 dark:border-[color:var(--color-rule-dark)]">
               <p class="text-xs text-gray-400 dark:text-gray-500 mb-0.5">
                 <% if interaction[:original_post_db_id] %>
                   <%= link_to post_path(interaction[:original_post_db_id]), class: "hover:text-amber-500 dark:hover:text-amber-400 underline" do %>
@@ -66,7 +66,7 @@
                 <textarea data-inline-reply-target="textarea"
                           rows="2"
                           placeholder="Write your reply..."
-                          class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm p-2 focus:ring-amber-500 focus:border-amber-500 resize-none"></textarea>
+                          class="w-full rounded-lg border border-gray-300 dark:border-[color:var(--color-rule-dark)] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm p-2 focus:border-amber-500 resize-none"></textarea>
                 <div class="mt-1 flex items-center justify-between">
                   <div data-inline-reply-target="status" class="text-xs text-gray-500 dark:text-gray-400"></div>
                   <div class="flex gap-2">

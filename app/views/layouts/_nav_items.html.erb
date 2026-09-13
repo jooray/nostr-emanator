@@ -1,0 +1,37 @@
+<%# The seven routes, in one place.
+
+    The rail used to carry this list twice — once for the desktop sidebar and
+    once for the mobile panel — 130 lines of duplicated markup and inline SVG,
+    with only the Messages entry extracted because its badge kept drifting. Now
+    everything lives here and both surfaces render it.
+
+    No icons. In this world the rail is engraved legend and an indicator lamp per
+    route, which is how a console labels a control — and it removes a set of
+    Heroicons where two different operations happened to share a glyph.
+
+    `mobile: true` adds the panel-closing action. %>
+<% mobile = local_assigns[:mobile] %>
+<% items = [
+     ["Dashboard", dashboard_path, request.path == dashboard_path],
+     ["New post",  new_post_path,  request.path == new_post_path],
+     ["Accounts",  accounts_path,  request.path.start_with?("/accounts")],
+     ["Posts",     posts_path,     request.path == posts_path || request.path.start_with?("/posts/")],
+     ["Interactions", interactions_path, request.path.start_with?("/interactions")],
+     ["Calendar",  calendar_path,  request.path.start_with?("/calendar")]
+   ] %>
+
+<ul>
+  <% items.each do |label, path, active| %>
+    <li>
+      <%= link_to path,
+            class: "group flex items-center gap-2.5 py-2.5 pl-4 pr-3 condensed text-[12px] font-medium uppercase tracking-[0.16em] transition-colors #{active ? 'bg-amber-500/8 text-gray-900 dark:text-gray-100' : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'}",
+            style: active ? "box-shadow: inset 3px 0 0 var(--color-amber-500)" : nil,
+            aria: { current: (active ? "page" : nil) },
+            data: mobile ? { action: "click->mobile-nav#close" } : {} do %>
+        <span class="lamp<%= " lamp--wait" if active %>" aria-hidden="true"></span>
+        <%= label %>
+      <% end %>
+    </li>
+  <% end %>
+  <%= render "layouts/messages_nav_item", mobile: mobile %>
+</ul>

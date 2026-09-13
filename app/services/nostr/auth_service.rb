@@ -17,7 +17,18 @@ module Nostr
     #   1 = pre-messaging (posts, reactions, follows, mutes, Blossom uploads)
     #   2 = adds NIP-17 private messaging
     #   3 = adds the legacy NIP-04 send fallback (sign_event:4, nip04_encrypt)
-    PERMISSIONS_VERSION = 3
+    #   4 = adds kind 0, so a paired account's Nostr profile can be edited here
+    #
+    # What NEW pairings are stamped with.
+    PERMISSIONS_VERSION = 4
+
+    # Capability gates are per-feature, NOT "must equal the latest version".
+    # A single gate means bumping the set for one feature instantly reports
+    # every already-paired account as incapable of an unrelated one — bumping
+    # for profile editing would have presented as messaging silently breaking
+    # for every existing account until each was re-paired.
+    MESSAGING_PERMISSIONS_VERSION = 3
+    PROFILE_PERMISSIONS_VERSION = 4
 
     # Notes on what is and is not here, because every omission is deliberate:
     #
@@ -59,7 +70,12 @@ module Nostr
       # half regardless.
       "sign_event:4",
       "nip04_encrypt",
-      "nip04_decrypt"
+      "nip04_decrypt",
+      # Profile editing (version 4). Amber has no Nostr profile editor of its
+      # own — its EditProfileScreen only sets a local nickname — so kind 0 is a
+      # real gap a client fills, and it is an ordinary grantable permission as
+      # far as NostrConnectUtils is concerned.
+      "sign_event:0"
     ].join(",").freeze
 
     def initialize
@@ -112,6 +128,42 @@ module Nostr
       }
     end
 
+    # Start a signer-initiated (bunker://) login. The user pastes a URI naming
+    # the signer and its relays, so unlike nostrconnect we already know who we
+    # are talking to and we send the first message.
+    #
+    # Returns { session_id:, relay_urls: } or nil when the URI is unusable.
+    def start_bunker_session(bunker_uri)
+      pointer = KeyConverter.parse_bunker_uri(bunker_uri)
+      return nil if pointer.nil?
+
+      # Talk to the signer's relays *and* ours. The pointer is stored as the
+      # signer advertised it, but transport unions both: a signer that advertises
+      # one relay which is down is otherwise unreachable, and our auth relays are
+      # already known-good for ephemeral kind-24133 traffic.
+      relays = (pointer[:relays] | @auth_relays).select { |r| Security::UrlGuard.safe_relay?(r) }.first(6)
+      return nil if relays.empty?
+
+      keypair = ::Nostr::Keygen.new.generate_key_pair
+      session_id = SecureRandom.uuid
+
+      NostrAuthSession.create!(
+        session_id: session_id,
+        flow: "bunker",
+        signer_pubkey: pointer[:pubkey],
+        temp_pubkey: keypair.public_key.to_s,
+        temp_privkey: keypair.private_key.to_s,
+        # A bunker URI may carry no secret. `secret` is NOT NULL and the
+        # nostrconnect flow compares against it, so store a value that can never
+        # equal a signer's reply and let the bunker branch decide what to send.
+        secret: pointer[:secret].presence || "",
+        relay_url: relays.to_json,
+        expires_at: SESSION_EXPIRY.from_now
+      )
+
+      { session_id: session_id, relay_urls: relays }
+    end
+
     def check_session(session_id)
       auth_session = NostrAuthSession.active.find_by(session_id: session_id)
       return nil unless auth_session
@@ -126,9 +178,17 @@ module Nostr
     def find_or_create_user(pubkey_hex)
       npub = KeyConverter.hex_to_npub(pubkey_hex)
 
-      user = ::User.find_or_initialize_by(pubkey_hex: pubkey_hex)
+      # Two browser tabs (or a retried poll) can hit this at the same moment for
+      # one pubkey; find_or_initialize_by then races into RecordNotUnique and
+      # 500s the login. Let the unique index arbitrate and adopt the winner.
+      user = ::User.find_by(pubkey_hex: pubkey_hex)
+      user ||= begin
+        ::User.create!(pubkey_hex: pubkey_hex, npub: npub)
+      rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid => e
+        ::User.find_by(pubkey_hex: pubkey_hex) || raise(e)
+      end
 
-      if user.new_record? || user.display_name.blank?
+      if user.previously_new_record? || user.display_name.blank?
         user.npub = npub
         user.save!
 

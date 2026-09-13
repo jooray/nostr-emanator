@@ -1,13 +1,30 @@
 <!-- API Tokens (MCP access) -->
-<div id="api-tokens" class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+<div id="api-tokens" class="border rule p-6">
   <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">API Tokens (MCP)</h2>
   <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
     Connect an AI agent to Emanator over the
     <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener" class="text-amber-600 dark:text-amber-400 hover:underline">Model Context Protocol</a>.
     Point your MCP client at <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-xs"><%= request.base_url %>/mcp</code>
     and send the token as <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-xs">Authorization: Bearer &lt;token&gt;</code>.
-    A token can read your accounts and posts (including scheduled ones) and create drafts.
   </p>
+
+  <%# This used to say a token "can read your accounts and posts and create
+      drafts". It can do considerably more than that: schedule_post builds the
+      event and enqueues signing, and Amber signs kind-1 notes without a manual
+      confirmation — so a bearer token can publish under any paired identity with
+      no human in the loop. Describing that as drafting understates the one
+      capability in this app where wrong copy has a security consequence. %>
+  <div class="alarm is-stacked mb-4" role="note">
+    <%= lamp(:alarm) %>
+    <p class="text-sm text-red-800 dark:text-red-200">
+      <strong>A token can post as you.</strong> It reads your accounts and posts,
+      creates drafts, and <strong>schedules posts that are then signed and published
+      automatically under any of your paired identities, without a further approval
+      step</strong> — because your signer approves kind-1 notes without prompting.
+      Treat a token like a posting key: hand it only to an agent you would let
+      speak as these accounts, and revoke it here the moment you stop trusting it.
+    </p>
+  </div>
 
   <% if flash[:plain_token].present? %>
     <div class="mb-4 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-300 dark:border-amber-800 rounded-lg">
@@ -36,14 +53,14 @@
       <div class="flex-1">
         <label for="api_token_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Token name</label>
         <%= text_field_tag :name, "", id: "api_token_name", placeholder: "e.g. content-agent",
-            class: "block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm" %>
+            class: "block w-full rounded-lg border-gray-300 dark:border-[color:var(--color-rule-dark)] dark:bg-[color:var(--color-chassis)] dark:text-gray-100 shadow-sm focus:border-amber-500 text-sm" %>
       </div>
       <div>
         <label for="api_token_expires_in_days" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Expires</label>
         <%= select_tag :expires_in_days,
             options_for_select([["30 days", 30], ["90 days", 90], ["180 days", 180], ["1 year", 365], ["Never", 0]], 90),
             id: "api_token_expires_in_days",
-            class: "block rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm" %>
+            class: "block rounded-lg border-gray-300 dark:border-[color:var(--color-rule-dark)] dark:bg-[color:var(--color-chassis)] dark:text-gray-100 shadow-sm focus:border-amber-500 text-sm" %>
       </div>
       <button type="submit" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors">
         Generate token
@@ -53,7 +70,7 @@
 
   <% tokens = current_user.api_tokens.order(created_at: :desc) %>
   <% if tokens.any? %>
-    <div class="overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-lg">
+    <div class="overflow-x-auto border border-gray-200 dark:border-[color:var(--color-rule-dark)] rounded-lg">
       <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
         <thead class="bg-gray-50 dark:bg-gray-800">
           <tr>

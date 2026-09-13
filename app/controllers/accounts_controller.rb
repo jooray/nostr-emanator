@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class AccountsController < ApplicationController
-  before_action :set_account, only: [:show, :edit, :update, :destroy, :refresh_profile, :refresh_relays, :re_pair, :re_pair_poll, :settings, :recent_events, :recent_interactions]
+  before_action :set_account, only: [:show, :edit, :update, :destroy, :refresh_profile, :refresh_relays, :re_pair, :re_pair_poll, :settings, :recent_events, :recent_interactions, :profile, :update_profile, :profile_status]
 
   # L1: generate_connect_uri creates a NostrAuthSession and a subscription on
   # the supervisor's shared relay sockets; cap how often a user can mint new
@@ -95,6 +95,44 @@ class AccountsController < ApplicationController
     redirect_to accounts_path, notice: "Account removed."
   end
 
+  # Nostr profile (kind 0) editor. Amber has no profile editor of its own, so
+  # this is the only place a paired account's published profile can be changed.
+  def profile
+    @profile = current_profile_fields
+    @pending_update = @account.profile_updates.order(:created_at).last
+  end
+
+  def update_profile
+    unless @account.profile_editing_capable?
+      redirect_to profile_account_path(@account),
+                  alert: "Re-pair this account to grant permission to edit its profile."
+      return
+    end
+
+    ProfileUpdate.sweep_stale!
+
+    update = @account.profile_updates.create!(
+      user: current_user,
+      edits: profile_edit_params,
+      status: "pending"
+    )
+    PublishProfileJob.perform_later(update.id)
+
+    render json: { ok: true, id: update.id, poll_url: profile_status_account_path(@account, update_id: update.id) }
+  end
+
+  # Polled by the editor while the user approves in their signer.
+  def profile_status
+    update = @account.profile_updates.find_by(id: params[:update_id])
+    return render json: { status: "failed", error: "That update is gone. Please try again." } unless update
+
+    render json: {
+      status: update.display_status,
+      step: update.step,
+      error: update.display_error
+    }
+  end
+
   def refresh_profile
     # H11/M22: this used to fetch inline (blocking the request for seconds)
     # and always claimed success regardless of outcome. Now it's honest —
@@ -171,6 +209,29 @@ class AccountsController < ApplicationController
   end
 
   private
+
+  # Only the fields the editor offers. Everything else already in the published
+  # profile is preserved by ProfilePublisherService#merge_content — this list
+  # governs what we are willing to *change*, not what the profile may contain.
+  def profile_edit_params
+    params.require(:profile)
+          .permit(*Nostr::ProfilePublisherService::EDITABLE_FIELDS)
+          .to_h
+  end
+
+  # Read the live profile so the form starts from what is actually published,
+  # not from our four cached columns — editing from the cache and publishing
+  # would drop every field we do not model.
+  def current_profile_fields
+    event = Nostr::ProfileFetcher.new.fetch_raw_event(@account.pubkey_hex)
+    return {} unless event
+
+    parsed = JSON.parse(event["content"].to_s)
+    parsed.is_a?(Hash) ? parsed : {}
+  rescue JSON::ParserError, StandardError => e
+    Rails.logger.warn("Could not read profile for account #{@account.id}: #{e.class} - #{e.message}")
+    {}
+  end
 
   def set_account
     @account = current_user.accounts.find(params[:id])

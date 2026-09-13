@@ -63,3 +63,11 @@ application.register("dm-composer", DmComposerController)
 import DmDeliveryController from "./dm_delivery_controller"
 application.register("dm-delivery", DmDeliveryController)
 
+import ProfileEditorController from "./profile_editor_controller"
+application.register("profile-editor", ProfileEditorController)
+
+import RepostPickerController from "./repost_picker_controller"
+application.register("repost-picker", RepostPickerController)
+
+import ElapsedController from "./elapsed_controller"
+application.register("elapsed", ElapsedController)

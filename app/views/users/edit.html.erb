@@ -2,15 +2,13 @@
   <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Settings</h1>
 
   <!-- Profile Info (read-only, from Nostr) -->
-  <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+  <div class="border rule p-6">
     <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Profile</h2>
     <div class="flex items-center gap-4 mb-4">
       <% if @user.picture_url.present? %>
         <img src="<%= @user.picture_url %>" alt="Profile" class="h-16 w-16 rounded-full object-cover">
       <% else %>
-        <div class="h-16 w-16 rounded-full bg-amber-100 dark:bg-amber-900 flex items-center justify-center">
-          <span class="text-amber-600 dark:text-amber-400 font-bold text-xl"><%= @user.display_name_or_npub[0].upcase %></span>
-        </div>
+        <div class="h-16 w-16 flex items-center justify-center flex items-center justify-center border border-gray-400 dark:border-gray-500"><span class="font-bold text-xl condensed font-bold uppercase tracking-wide text-gray-600 dark:text-gray-300"><%= @user.display_name_or_npub[0].upcase %></span></div>
       <% end %>
       <div>
         <p class="text-lg font-medium text-gray-900 dark:text-white"><%= @user.display_name || @user.username || "Nostr User" %></p>
@@ -31,7 +29,7 @@
   </div>
 
   <!-- Event Viewer -->
-  <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+  <div class="border rule p-6">
     <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Event Viewer</h2>
     <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
       Choose which Nostr client opens when you click profile or event links.
@@ -42,7 +40,7 @@
           <label class="inline-flex items-center gap-2 cursor-pointer">
             <input type="radio" name="user[event_viewer]" value="<%= value %>"
                    <%= "checked" if @user.event_viewer == value %>
-                   class="text-amber-600 focus:ring-amber-500 dark:bg-gray-700 dark:border-gray-600">
+                   class="text-amber-600 dark:bg-gray-700 dark:border-[color:var(--color-rule-dark)]">
             <span class="text-sm text-gray-700 dark:text-gray-300"><%= label %></span>
           </label>
         <% end %>
@@ -56,7 +54,7 @@
   </div>
 
   <!-- Custom Relays -->
-  <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+  <div class="border rule p-6">
     <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Custom Relays</h2>
     <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
       These relays will receive every post you publish, in addition to each account's NIP-65 write relays.
@@ -69,7 +67,7 @@
           id="user_custom_relays"
           rows="4"
           placeholder="wss://relay.damus.io&#10;wss://nos.lol"
-          class="block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+          class="block w-full rounded-lg border-gray-300 dark:border-[color:var(--color-rule-dark)] dark:bg-[color:var(--color-chassis)] dark:text-gray-100 shadow-sm focus:border-amber-500 text-sm"
         ><%= @user.custom_relays.join("\n") %></textarea>
       </div>
       <div>

@@ -20,12 +20,12 @@
   </div>
 
   <!-- Post Form -->
-  <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+  <div class="border rule p-6">
     <%= render "form", post: @post %>
   </div>
 
   <!-- AI Generation Section -->
-  <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+  <div class="border rule p-6">
     <div class="flex items-center gap-2 mb-4">
       <svg class="h-5 w-5 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
@@ -42,7 +42,7 @@
         </label>
         <div class="flex gap-3">
           <input type="text" id="ai_prompt" name="prompt"
-                 class="flex-1 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-4 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-transparent placeholder-gray-400 dark:placeholder-gray-500"
+                 class="flex-1 rounded-lg border border-gray-200 dark:border-[color:var(--color-rule-dark)] bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-4 py-2 text-sm placeholder-gray-400 dark:placeholder-gray-500"
                  placeholder="e.g., Write a short note about the importance of privacy...">
           <button type="button"
                   class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors"
@@ -61,7 +61,7 @@
     <div class="mt-4 hidden" data-content-builder-target="refineSection">
       <div class="flex gap-3">
         <input type="text" name="user_prompt"
-               class="flex-1 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-4 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-transparent placeholder-gray-400 dark:placeholder-gray-500"
+               class="flex-1 rounded-lg border border-gray-200 dark:border-[color:var(--color-rule-dark)] bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-4 py-2 text-sm placeholder-gray-400 dark:placeholder-gray-500"
                placeholder="e.g., Make it shorter and more punchy..."
                data-content-builder-target="refineInput">
         <button type="button"

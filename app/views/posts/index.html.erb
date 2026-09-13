@@ -1,94 +1,86 @@
-<div class="space-y-6">
-  <div class="flex items-center justify-between">
+<% content_for :title, "Posts" %>
+
+<div class="mx-auto max-w-6xl">
+  <header class="mb-5 flex flex-wrap items-end justify-between gap-4 border-b rule pb-4">
     <div>
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">All Posts</h1>
-      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Posts across all your accounts</p>
+      <h1 class="condensed text-[30px] font-bold uppercase leading-none tracking-[0.06em]">All posts</h1>
+      <p class="eng mt-2.5">Across <%= pluralize(@accounts.size, "identity") %></p>
     </div>
+    <div class="flex flex-wrap items-center gap-3">
+      <% if @failed_here.positive? %>
+        <%= button_to "Discard all #{@failed_here}", discard_failed_posts_path(account: @account_filter), method: :delete,
+              class: "condensed border border-red-500 px-3.5 py-2.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-red-600 transition-colors hover:bg-red-500/10 dark:text-red-400",
+              form: { data: { turbo_confirm: "Discard #{pluralize(@failed_here, 'post')} that never went out? They are deleted, not unscheduled. This cannot be undone." } } %>
+      <% end %>
+      <%= link_to "New post", new_post_path,
+            class: "condensed inline-block border border-amber-500 bg-amber-500 px-4 py-2.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#1a1714] transition-colors hover:bg-amber-400" %>
+    </div>
+  </header>
+
+  <%# Facets. The status row leads with "Short" because that is the one people
+      come here to find; it is the only filter that has to be graded in Ruby. %>
+  <div class="mb-5 space-y-2.5">
+    <div class="flex flex-wrap items-center gap-x-1 gap-y-2">
+      <span class="eng mr-2 w-12">State</span>
+      <% [["All", nil], ["Barely out", "short"], ["Never went out", "failed"], ["Awaiting", "awaiting_signature"],
+          ["Scheduled", "scheduled"], ["Published", "published"], ["Drafts", "draft"]].each do |label, value| %>
+        <% on = @status_filter == value %>
+        <%= link_to label, posts_path(status: value, account: @account_filter),
+              class: "condensed border px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] transition-colors #{on ? 'border-amber-500 bg-amber-500/12 text-amber-600 dark:text-amber-400' : 'border-gray-300 text-gray-600 hover:border-gray-400 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400 dark:hover:text-gray-200'}",
+              aria: { current: (on ? "true" : nil) } %>
+      <% end %>
+    </div>
+
+    <% if @accounts.size > 1 %>
+      <div class="flex flex-wrap items-center gap-x-1 gap-y-2">
+        <span class="eng mr-2 w-12">Who</span>
+        <% on = @account_filter.nil? %>
+        <%= link_to "All", posts_path(status: @status_filter),
+              class: "condensed border px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] #{on ? 'border-amber-500 bg-amber-500/12 text-amber-600 dark:text-amber-400' : 'border-gray-300 text-gray-600 hover:border-gray-400 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400'}" %>
+        <% @accounts.each do |account| %>
+          <% on = @account_filter == account.id.to_s %>
+          <%= link_to posts_path(status: @status_filter, account: account.id),
+                class: "condensed inline-flex items-center gap-2 border px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] #{on ? 'border-amber-500 bg-amber-500/12 text-amber-600 dark:text-amber-400' : 'border-gray-300 text-gray-600 hover:border-gray-400 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400'}" do %>
+            <span class="wire" style="--wire-ink: <%= account.ink %>; min-height: 12px"></span>
+            <%= account.display_name_or_npub %>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
   </div>
 
   <% if @posts.any? %>
-    <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
-      <ul class="divide-y divide-gray-200 dark:divide-gray-700">
-        <% @posts.each do |post| %>
-          <li>
-            <%= link_to post_path(post), class: "block px-4 py-4 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors" do %>
-              <div class="flex items-start justify-between gap-4">
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-center gap-2 mb-1">
-                    <span class="text-sm font-medium text-amber-600 dark:text-amber-400"><%= post.account.display_name_or_npub %></span>
-                    <% status_colors = { "draft" => "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
-                                         "awaiting_signature" => "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300",
-                                         "scheduled" => "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-                                         "publishing" => "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-300",
-                                         "published" => "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-                                         "failed" => "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300" } %>
-                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium <%= status_colors[post.status] || 'bg-gray-100 text-gray-800' %>">
-                      <%= status_label(post.status) %>
-                    </span>
-                    <% if post.reposts.any? %>
-                      <%
-                        published_count = post.reposts.count { |r| r.published? }
-                        failed_count = post.reposts.count { |r| r.failed? }
-                        pending_count = post.reposts.count { |r| !r.published? && !r.failed? }
-                        parts = []
-                        parts << pluralize(published_count, "repost") if published_count > 0
-                        parts << "#{pending_count} scheduled" if pending_count > 0
-                        parts << "#{failed_count} failed" if failed_count > 0
-                      %>
-                      <span class="text-xs text-gray-400 dark:text-gray-500">
-                        <% if failed_count > 0 && published_count > 0 %>
-                          <%= parts.join(", ") %>
-                        <% elsif failed_count > 0 && published_count == 0 %>
-                          <%= pluralize(failed_count, "failed repost") %>
-                        <% elsif pending_count > 0 && published_count > 0 %>
-                          <%= parts.join(", ") %>
-                        <% elsif pending_count > 0 %>
-                          <%= pluralize(pending_count, "scheduled repost") %>
-                        <% else %>
-                          <%= pluralize(published_count, "repost") %>
-                        <% end %>
-                      </span>
-                      <% if failed_count > 0 %>
-                        <span class="inline-flex items-center w-1.5 h-1.5 rounded-full bg-red-500" title="<%= pluralize(failed_count, 'repost') %> failed"></span>
-                      <% end %>
-                    <% end %>
-                  </div>
-                  <p class="text-sm text-gray-900 dark:text-gray-100 line-clamp-2"><%= render_nostr_content(truncate(post.content, length: 200)) %></p>
-                </div>
-                <div class="flex-shrink-0 text-right text-xs text-gray-500 dark:text-gray-400">
-                  <% if post.scheduled_at %>
-                    <p><%= local_time(post.scheduled_at, format: "date") %></p>
-                    <p><%= local_time(post.scheduled_at, format: "time") %></p>
-                  <% else %>
-                    <p><%= local_time(post.created_at, format: "date") %></p>
-                  <% end %>
-                </div>
-              </div>
-            <% end %>
-          </li>
-        <% end %>
-      </ul>
+    <div class="border-t rule">
+      <% @posts.each do |post| %>
+        <%= render "shared/forme_row", post: post,
+              waiting: post.awaiting_signature?,
+              short: post.delivery_alarming?,
+              failed: post.failed?,
+              sent: post.published? && !post.delivery_alarming? %>
+      <% end %>
     </div>
 
-    <% if @posts.respond_to?(:total_pages) && @posts.total_pages > 1 %>
-      <%# app/views/kaminari/_paginator.html.erb already renders its own styled <nav> %>
+    <div class="mt-6">
       <%= paginate @posts %>
-    <% end %>
+    </div>
   <% else %>
-    <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-12 text-center border border-gray-200 dark:border-gray-700">
-      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-      </svg>
-      <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">No posts yet</h3>
-      <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-        Create your first post from one of your paired accounts.
+    <div class="border rule px-6 py-10 text-center">
+      <p class="eng mb-3">Nothing here</p>
+      <p class="mx-auto mb-5 max-w-md text-gray-600 dark:text-gray-300">
+        <% if @status_filter == "short" %>
+          Everything published has reached the network. A relay declining here and
+          there is normal and is not counted.
+        <% elsif @status_filter || @account_filter %>
+          No posts match this filter.
+        <% else %>
+          Nothing written yet.
+        <% end %>
       </p>
-      <%= link_to new_post_path,
-        class: "mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors" do %>
-        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-        </svg>
-        New Post
+      <% if @status_filter || @account_filter %>
+        <%= link_to "Clear filters", posts_path, class: "eng text-amber-600 underline underline-offset-4 hover:text-amber-500 dark:text-amber-400" %>
+      <% else %>
+        <%= link_to "Write one", new_post_path,
+              class: "condensed inline-block border border-amber-500 bg-amber-500 px-4 py-2.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#1a1714]" %>
       <% end %>
     </div>
   <% end %>
