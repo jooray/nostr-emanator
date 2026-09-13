@@ -37,6 +37,23 @@ module ConsoleHelper
     end
   end
 
+  # `publish_results` usually maps relay => reason, but a record that failed
+  # before it ever reached a relay carries a single {"error" => why} instead.
+  # Run through the relay formatter that becomes "error Signing was never
+  # completed…", so the non-relay key is dropped rather than printed as a host.
+  def delivery_failure_line(record)
+    line = record.delivery_failures.first(2).map do |relay, why|
+      relay.to_s == "error" ? why.to_s : "#{relay.to_s.sub(%r{\Awss?://}, '')} #{why}"
+    end.join(" · ")
+    line.presence
+  end
+
+  # A repost's row links to the note it reposts — a repost has no page of its
+  # own, and the note's page is where its retry and rebroadcast controls live.
+  def forme_target(record)
+    record.is_a?(Repost) ? record.post : record
+  end
+
   # An indicator lamp. Unlit is the default, because nominal does not illuminate.
   def lamp(state = :off, title: nil)
     modifier = { on: " lamp--lit", alarm: " lamp--alarm", wait: " lamp--wait" }[state].to_s
@@ -61,7 +78,7 @@ module ConsoleHelper
     tag.span(class: "inline-flex items-center gap-2.5") do
       tag.span(safe_join(cells), class: "strip", aria: { hidden: true }) +
         tag.span(record.delivery_tally,
-                 class: "font-mono text-[13px] font-bold tabular #{record.delivery_alarming? ? 'text-red-600 dark:text-red-400' : 'text-gray-500 dark:text-gray-400'}") +
+                 class: "font-mono text-[15px] font-bold tabular #{record.delivery_alarming? ? 'text-red-600 dark:text-red-400' : 'text-gray-500 dark:text-gray-400'}") +
         tag.span(delivery_sentence(record), class: "sr-only")
     end
   end
@@ -85,7 +102,7 @@ module ConsoleHelper
 
   # The account's face. A real picture identifies an identity far faster than a
   # letter does, which is the whole job of this mark in a list of nineteen.
-  def chop(account, size: 24)
+  def chop(account, size: 26)
     if account.picture_url.present?
       tag.img(src: account.picture_url, alt: "", loading: "lazy", referrerpolicy: "no-referrer",
               class: "flex-none object-cover", width: size, height: size,
@@ -103,11 +120,11 @@ module ConsoleHelper
   # cost the name its room, forcing a truncation that hid the thing that does
   # identify. The name now wraps to two lines, and the whole block links to the
   # account for the rare case where the key itself is wanted.
-  def identity(account, link: true, size: 24)
+  def identity(account, link: true, size: 26)
     inner = tag.span(class: "flex items-center gap-2.5 min-w-0") do
       wire(account) + chop(account, size: size) +
         tag.span(account.display_name_or_npub,
-                 class: "condensed text-[13px] font-semibold uppercase leading-[1.2] tracking-[0.1em] line-clamp-2")
+                 class: "condensed text-[15px] font-semibold uppercase leading-[1.2] tracking-[0.1em] line-clamp-2")
     end
 
     return inner unless link

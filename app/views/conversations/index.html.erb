@@ -1,6 +1,6 @@
 <div class="space-y-6" data-controller="dm-filter">
   <header class="border-b rule pb-4">
-    <h1 class="condensed text-[30px] font-bold uppercase leading-none tracking-[0.06em]">Messages</h1>
+    <h1 class="condensed text-[33px] font-bold uppercase leading-none tracking-[0.06em]">Messages</h1>
     <p class="eng mt-2.5">Private, across every paired identity</p>
   </header>
 
@@ -70,7 +70,7 @@
     <div class="border rule p-8 text-center">
       <p class="text-gray-600 dark:text-gray-400">Pair an account to start receiving private messages.</p>
       <%= link_to "Add an account", new_account_path,
-            class: "condensed mt-4 inline-block border border-amber-500 bg-amber-500 px-4 py-2.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#1a1714] hover:bg-amber-400" %>
+            class: "condensed mt-4 inline-block border border-amber-500 bg-amber-500 px-4 py-2.5 text-[14px] font-semibold uppercase tracking-[0.16em] text-[#1a1714] hover:bg-amber-400" %>
     </div>
   <% else %>
     <%# Known vs Requests. Everything not vouched for by a follow, a sibling
@@ -79,9 +79,9 @@
       <nav class="-mb-px flex gap-6">
         <% [["known", "Inbox"], ["requests", "Requests"]].each do |tab, label| %>
           <%= link_to messages_path(tab: tab, accounts: @account_filter),
-                class: "condensed flex items-center gap-2 border-b-2 px-1 py-3 text-[12px] font-semibold uppercase tracking-[0.14em] transition-colors #{@tab == tab ? 'border-amber-500 text-gray-900 dark:text-gray-100' : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}" do %>
+                class: "condensed flex items-center gap-2 border-b-2 px-1 py-3 text-[14px] font-semibold uppercase tracking-[0.14em] transition-colors #{@tab == tab ? 'border-amber-500 text-gray-900 dark:text-gray-100' : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}" do %>
             <%= label %>
-            <span class="font-mono text-[11px] tabular text-gray-500 dark:text-gray-400">
+            <span class="font-mono text-[13px] tabular text-gray-500 dark:text-gray-400">
               <%= @counts[tab] %>
             </span>
           <% end %>
@@ -104,7 +104,7 @@
             <%= check_box_tag "accounts[]", account.id, active,
                   id: "dm-account-#{account.id}", class: "peer sr-only",
                   data: { action: "change->dm-filter#apply" } %>
-            <span class="condensed inline-flex items-center gap-2 border px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] transition-colors <%= active ? 'border-gray-900 text-gray-900 dark:border-gray-100 dark:text-gray-100' : 'border-gray-300 text-gray-500 opacity-60 hover:opacity-100 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400' %>">
+            <span class="condensed inline-flex items-center gap-2 border px-2.5 py-1.5 text-[13px] font-semibold uppercase tracking-[0.14em] transition-colors <%= active ? 'border-gray-900 text-gray-900 dark:border-gray-100 dark:text-gray-100' : 'border-gray-300 text-gray-500 opacity-60 hover:opacity-100 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400' %>">
               <span class="inline-block h-3 w-[3px] flex-none" style="background: <%= account.ink %>"></span>
               <%= account.display_name_or_npub %>
             </span>
@@ -137,13 +137,13 @@
         <% end %>
       <% else %>
         <%= link_to "Filter by unread", messages_path(tab: @tab, accounts: @account_filter, unread: "1"),
-              class: "condensed border border-gray-300 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-600 transition-colors hover:border-amber-500 hover:text-amber-600 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400 dark:hover:text-amber-400" %>
+              class: "condensed border border-gray-300 px-3 py-1.5 text-[13px] font-semibold uppercase tracking-[0.14em] text-gray-600 transition-colors hover:border-amber-500 hover:text-amber-600 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400 dark:hover:text-amber-400" %>
       <% end %>
 
       <%= button_to "Mark all as read",
             mark_all_read_messages_path(tab: @tab, accounts: @account_filter),
             method: :post, form: { data: { turbo_confirm: "Mark every unread conversation in this view as read?" } },
-            class: "condensed border border-gray-300 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-600 transition-colors hover:border-amber-500 hover:text-amber-600 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400 dark:hover:text-amber-400" %>
+            class: "condensed border border-gray-300 px-3 py-1.5 text-[13px] font-semibold uppercase tracking-[0.14em] text-gray-600 transition-colors hover:border-amber-500 hover:text-amber-600 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400 dark:hover:text-amber-400" %>
     </div>
 
     <% syncing = @sync_states.values.select { |s| s.step.present? } %>

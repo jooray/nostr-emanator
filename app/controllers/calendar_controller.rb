@@ -6,33 +6,34 @@ class CalendarController < ApplicationController
     @start_date = @month.beginning_of_week(:monday)
     @end_date = @month.end_of_month.end_of_week(:monday)
 
-    # Fetch all scheduled posts and reposts for the month range
+    # The span is stated as instants, not dates. A bare `@start_date..@end_date`
+    # against a datetime column casts both ends to midnight, so everything after
+    # 00:00 on the last day of the grid fell outside the range and that cell
+    # rendered empty no matter what was scheduled in it.
+    #
+    # Both ends are now anchored in the user's own zone (ApplicationController
+    # sets Time.zone per request), which is the same clock the cells are labelled
+    # with — so an event near midnight lands in the cell the operator sees it in.
+    span = @start_date.beginning_of_day..@end_date.end_of_day
+
     @posts = Post.joins(:account)
       .where(accounts: { user_id: current_user.id })
-      .where(scheduled_at: @start_date..@end_date)
+      .where(scheduled_at: span)
       .where.not(status: :draft)
       .includes(:account, :reposts)
       .order(:scheduled_at)
 
     @reposts = Repost.joins(:account)
       .where(accounts: { user_id: current_user.id })
-      .where(scheduled_at: @start_date..@end_date)
+      .where(scheduled_at: span)
       .includes(:account, :post)
       .order(:scheduled_at)
 
-    # Group by date for calendar rendering (in user's timezone)
-    user_tz = ActiveSupport::TimeZone[current_user.timezone] || Time.zone
-    @events_by_date = {}
-    @posts.each do |post|
-      date = post.scheduled_at.in_time_zone(user_tz).to_date
-      @events_by_date[date] ||= []
-      @events_by_date[date] << { type: :post, item: post }
-    end
-    @reposts.each do |repost|
-      date = repost.scheduled_at.in_time_zone(user_tz).to_date
-      @events_by_date[date] ||= []
-      @events_by_date[date] << { type: :repost, item: repost }
-    end
+    # `scheduled_at` already reads in Time.zone, so this bucketing needs no
+    # conversion of its own — and cannot drift from what the cell prints.
+    @events_by_date = Hash.new { |h, k| h[k] = [] }
+    @posts.each { |post| @events_by_date[post.scheduled_at.to_date] << { type: :post, item: post } }
+    @reposts.each { |repost| @events_by_date[repost.scheduled_at.to_date] << { type: :repost, item: repost } }
 
     # Identity colour comes from Account#ink — a hash of the pubkey — so it is
     # stable for the life of the account and identical on every other surface.

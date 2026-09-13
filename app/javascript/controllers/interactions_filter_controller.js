@@ -82,7 +82,7 @@ export default class extends Controller {
     message.className = "border rule p-12 text-center"
 
     const heading = document.createElement("h3")
-    heading.className = "condensed text-[20px] font-bold uppercase tracking-[0.06em] text-gray-900 dark:text-gray-100"
+    heading.className = "condensed text-[22px] font-bold uppercase tracking-[0.06em] text-gray-900 dark:text-gray-100"
     heading.textContent = "No accounts selected"
 
     const body = document.createElement("p")

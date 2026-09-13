@@ -3,17 +3,17 @@
 <div class="mx-auto max-w-6xl">
   <header class="mb-5 flex flex-wrap items-end justify-between gap-4 border-b rule pb-4">
     <div>
-      <h1 class="condensed text-[30px] font-bold uppercase leading-none tracking-[0.06em]">All posts</h1>
+      <h1 class="condensed text-[33px] font-bold uppercase leading-none tracking-[0.06em]">All posts</h1>
       <p class="eng mt-2.5">Across <%= pluralize(@accounts.size, "identity") %></p>
     </div>
     <div class="flex flex-wrap items-center gap-3">
       <% if @failed_here.positive? %>
         <%= button_to "Discard all #{@failed_here}", discard_failed_posts_path(account: @account_filter), method: :delete,
-              class: "condensed border border-red-500 px-3.5 py-2.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-red-600 transition-colors hover:bg-red-500/10 dark:text-red-400",
+              class: "condensed border border-red-500 px-3.5 py-2.5 text-[14px] font-semibold uppercase tracking-[0.16em] text-red-600 transition-colors hover:bg-red-500/10 dark:text-red-400",
               form: { data: { turbo_confirm: "Discard #{pluralize(@failed_here, 'post')} that never went out? They are deleted, not unscheduled. This cannot be undone." } } %>
       <% end %>
       <%= link_to "New post", new_post_path,
-            class: "condensed inline-block border border-amber-500 bg-amber-500 px-4 py-2.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#1a1714] transition-colors hover:bg-amber-400" %>
+            class: "condensed inline-block border border-amber-500 bg-amber-500 px-4 py-2.5 text-[14px] font-semibold uppercase tracking-[0.16em] text-[#1a1714] transition-colors hover:bg-amber-400" %>
     </div>
   </header>
 
@@ -26,7 +26,7 @@
           ["Scheduled", "scheduled"], ["Published", "published"], ["Drafts", "draft"]].each do |label, value| %>
         <% on = @status_filter == value %>
         <%= link_to label, posts_path(status: value, account: @account_filter),
-              class: "condensed border px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] transition-colors #{on ? 'border-amber-500 bg-amber-500/12 text-amber-600 dark:text-amber-400' : 'border-gray-300 text-gray-600 hover:border-gray-400 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400 dark:hover:text-gray-200'}",
+              class: "condensed border px-2.5 py-1.5 text-[13px] font-semibold uppercase tracking-[0.14em] transition-colors #{on ? 'border-amber-500 bg-amber-500/12 text-amber-600 dark:text-amber-400' : 'border-gray-300 text-gray-600 hover:border-gray-400 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400 dark:hover:text-gray-200'}",
               aria: { current: (on ? "true" : nil) } %>
       <% end %>
     </div>
@@ -36,11 +36,11 @@
         <span class="eng mr-2 w-12">Who</span>
         <% on = @account_filter.nil? %>
         <%= link_to "All", posts_path(status: @status_filter),
-              class: "condensed border px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] #{on ? 'border-amber-500 bg-amber-500/12 text-amber-600 dark:text-amber-400' : 'border-gray-300 text-gray-600 hover:border-gray-400 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400'}" %>
+              class: "condensed border px-2.5 py-1.5 text-[13px] font-semibold uppercase tracking-[0.14em] #{on ? 'border-amber-500 bg-amber-500/12 text-amber-600 dark:text-amber-400' : 'border-gray-300 text-gray-600 hover:border-gray-400 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400'}" %>
         <% @accounts.each do |account| %>
           <% on = @account_filter == account.id.to_s %>
           <%= link_to posts_path(status: @status_filter, account: account.id),
-                class: "condensed inline-flex items-center gap-2 border px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] #{on ? 'border-amber-500 bg-amber-500/12 text-amber-600 dark:text-amber-400' : 'border-gray-300 text-gray-600 hover:border-gray-400 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400'}" do %>
+                class: "condensed inline-flex items-center gap-2 border px-2.5 py-1.5 text-[13px] font-semibold uppercase tracking-[0.14em] #{on ? 'border-amber-500 bg-amber-500/12 text-amber-600 dark:text-amber-400' : 'border-gray-300 text-gray-600 hover:border-gray-400 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400'}" do %>
             <span class="wire" style="--wire-ink: <%= account.ink %>; min-height: 12px"></span>
             <%= account.display_name_or_npub %>
           <% end %>
@@ -52,8 +52,10 @@
   <% if @posts.any? %>
     <div class="border-t rule">
       <% @posts.each do |post| %>
+        <%# `pending_signature` is a repost-only state and means the same thing to
+            the operator: it is waiting on a tap. %>
         <%= render "shared/forme_row", post: post,
-              waiting: post.awaiting_signature?,
+              waiting: post.awaiting_signature? || (post.respond_to?(:pending_signature?) && post.pending_signature?),
               short: post.delivery_alarming?,
               failed: post.failed?,
               sent: post.published? && !post.delivery_alarming? %>
@@ -80,7 +82,7 @@
         <%= link_to "Clear filters", posts_path, class: "eng text-amber-600 underline underline-offset-4 hover:text-amber-500 dark:text-amber-400" %>
       <% else %>
         <%= link_to "Write one", new_post_path,
-              class: "condensed inline-block border border-amber-500 bg-amber-500 px-4 py-2.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#1a1714]" %>
+              class: "condensed inline-block border border-amber-500 bg-amber-500 px-4 py-2.5 text-[14px] font-semibold uppercase tracking-[0.16em] text-[#1a1714]" %>
       <% end %>
     </div>
   <% end %>

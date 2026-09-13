@@ -1,6 +1,21 @@
 class ApplicationController < ActionController::Base
   allow_browser versions: :modern
 
+  # Every time this app renders belongs to one person in one place, so render
+  # them all in that person's zone rather than the server's.
+  #
+  # Without this, `l(post.scheduled_at, format: "%H:%M")` formatted in `Time.zone`
+  # — which is UTC, since config.time_zone is unset — while `local_time` converted
+  # to the browser's zone in JS. The same post therefore read 08:00 on the
+  # calendar and 10:00 AM on its own detail page. Setting the zone here fixes the
+  # whole class at once: cell times, the forme row's release hour, "Today" and
+  # "Tomorrow", and the calendar's day bucketing all come from the same clock,
+  # with no flash of a server-rendered UTC value first.
+  #
+  # Storage is untouched — ActiveRecord persists UTC regardless — and background
+  # jobs keep the app default, which is correct: they compare absolute instants.
+  around_action :use_user_time_zone
+
   before_action :authenticate_user!
   before_action :trigger_stale_refreshes
 
@@ -16,6 +31,13 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def use_user_time_zone(&block)
+    zone = ActiveSupport::TimeZone[current_user&.timezone.to_s]
+    return yield unless zone
+
+    Time.use_zone(zone, &block)
+  end
 
   def current_user
     return @current_user if defined?(@current_user) && @current_user

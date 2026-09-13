@@ -58,7 +58,8 @@
     <% end %>
   </head>
 
-  <body class="h-full" data-controller="local-time">
+  <body class="h-full" data-controller="local-time"
+          data-local-time-zone-value="<%= current_user&.timezone %>">
     <%# A keyboard user should not tab seven rail links and a sign-out before
         reaching the work. The landing page has always had one of these. %>
     <% if user_signed_in? %>

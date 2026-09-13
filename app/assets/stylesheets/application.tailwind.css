@@ -146,6 +146,43 @@
   --color-cyan-500: #a79e91;
   --color-sky-500: #a79e91;
 
+  /* --------------------------------------------------------------------
+     THE TYPE SCALE.
+
+     Raising `body` alone did nothing, and this is why: the app sets its size
+     from utilities on almost every element — 234 `text-sm` and 149 `text-xs`
+     against a handful of elements that inherit — so the base size governed
+     essentially nothing and the surface stayed at Tailwind's 14/12px.
+
+     So the scale is lifted at the token, the same way the colour ramps and the
+     radii are: every `text-*` already in the markup resolves to a console
+     value, with no per-view edits. The lift is largest at the bottom, because
+     the floor is what was unreadable — 12px becomes 14px, while the display
+     sizes move by half as much proportionally. Barlow runs small for its point
+     size, so each step here reads roughly one step smaller than it measures.
+
+     Line heights are set per step rather than left at Tailwind's fixed rem
+     values, which would have stayed at 14px-era leading under 16px text.
+  --------------------------------------------------------------------- */
+  --text-xs: 14px;
+  --text-xs--line-height: 1.45;
+  --text-sm: 16px;
+  --text-sm--line-height: 1.55;
+  --text-base: 17.5px;
+  --text-base--line-height: 1.6;
+  --text-lg: 20px;
+  --text-lg--line-height: 1.45;
+  --text-xl: 22.5px;
+  --text-xl--line-height: 1.35;
+  --text-2xl: 27px;
+  --text-2xl--line-height: 1.2;
+  --text-3xl: 33px;
+  --text-3xl--line-height: 1.12;
+  --text-4xl: 40px;
+  --text-4xl--line-height: 1.05;
+  --text-5xl: 50px;
+  --text-5xl--line-height: 1;
+
   /* A console has no rounded corners. Squaring the radius tokens squares every
      rounded-* utility already in the markup, the same way the colour tokens
      recoloured it — no per-view edits and no !important. --radius-full is left
@@ -166,9 +203,10 @@
 
 html { font-family: var(--font-sans); }
 
-/* Barlow runs small for its point size; 14px in it reads like 13. The whole
-   surface is one step up from the Tailwind default, and line-height with it. */
-body { font-size: 15.5px; line-height: 1.55; }
+/* Barlow runs small for its point size; 14px in it reads like 13. This is the
+   inherited size — it governs only the elements that carry no `text-*` utility,
+   which is why it moves in step with the scale above rather than instead of it. */
+body { font-size: 17px; line-height: 1.6; }
 
 /* Every page title in the app is engraved legend, set once here rather than
    respelled in fifty views. Scoped to <main>, so the landing page — which has
@@ -254,9 +292,9 @@ input, textarea, select, [contenteditable] { caret-color: var(--color-amber-500)
 .eng {
   font-family: var(--font-condensed);
   font-weight: 600;
-  font-size: 11px;
-  line-height: 1.1;
-  letter-spacing: 0.18em;
+  font-size: 13px;
+  line-height: 1.15;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--color-gray-500);
 }
@@ -338,7 +376,7 @@ input, textarea, select, [contenteditable] { caret-color: var(--color-amber-500)
   flex: none;
   font-family: var(--font-condensed);
   font-weight: 700;
-  font-size: 11px;
+  font-size: 12.5px;
   line-height: 1;
   letter-spacing: 0.04em;
   color: var(--wire-ink, var(--color-gray-500));
@@ -351,11 +389,11 @@ input, textarea, select, [contenteditable] { caret-color: var(--color-amber-500)
   display: inline-block;
   font-family: var(--font-condensed);
   font-weight: 600;
-  font-size: 10px;
+  font-size: 11.5px;
   line-height: 1;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  padding: 5px 8px;
+  padding: 6px 9px;
   border: 1px solid currentColor;
   white-space: nowrap;
   color: var(--color-gray-500);
@@ -370,7 +408,7 @@ input, textarea, select, [contenteditable] { caret-color: var(--color-amber-500)
 .hour {
   font-family: var(--font-mono);
   font-weight: 700;
-  font-size: 23px;
+  font-size: 25px;
   line-height: 1;
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;

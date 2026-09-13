@@ -28,7 +28,7 @@
             <% end %>
           </p>
           <% if post.published_at.present? %>
-            <span class="text-[12px] text-gray-500 dark:text-gray-400"><%= local_time(post.published_at) %></span>
+            <span class="text-[14px] text-gray-500 dark:text-gray-400"><%= local_time(post.published_at) %></span>
           <% end %>
         </div>
         <% if post.can_rebroadcast? %>
@@ -50,14 +50,14 @@
         <ul class="mt-3 border-t rule pt-2.5 space-y-1.5">
           <%# Failures first: the list exists for them. %>
           <% post.delivery_failures.each do |relay, result| %>
-            <li class="flex items-baseline gap-2.5 text-[13px]">
+            <li class="flex items-baseline gap-2.5 text-[15px]">
               <%= lamp(:alarm) %>
               <span class="min-w-0 flex-1 truncate font-mono text-gray-700 dark:text-gray-200"><%= relay %></span>
               <span class="max-w-[38ch] truncate text-red-700 dark:text-red-400" title="<%= result %>"><%= result %></span>
             </li>
           <% end %>
           <% post.delivery_results.select { |_r, v| v.to_s == "ok" }.each_key do |relay| %>
-            <li class="flex items-baseline gap-2.5 text-[13px]">
+            <li class="flex items-baseline gap-2.5 text-[15px]">
               <%= lamp(:on) %>
               <span class="min-w-0 flex-1 truncate font-mono text-gray-600 dark:text-gray-300"><%= relay %></span>
               <span class="eng">Accepted</span>
@@ -76,7 +76,7 @@
         </div>
         <% if post.can_retry_publish? %>
           <%= button_to "Try again", retry_publish_post_path(post), method: :post,
-                class: "condensed border border-amber-500 bg-amber-500 px-3.5 py-2 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#1a1714] hover:bg-amber-400" %>
+                class: "condensed border border-amber-500 bg-amber-500 px-3.5 py-2 text-[14px] font-semibold uppercase tracking-[0.16em] text-[#1a1714] hover:bg-amber-400" %>
         <% end %>
       </div>
       <p class="mt-2 text-sm text-red-800 dark:text-red-200">
@@ -91,7 +91,7 @@
       <% if post.delivery_total.positive? %>
         <ul class="mt-3 border-t rule pt-2.5 space-y-1.5">
           <% post.delivery_results.each do |relay, result| %>
-            <li class="flex items-baseline gap-2.5 text-[13px]">
+            <li class="flex items-baseline gap-2.5 text-[15px]">
               <%= lamp(:alarm) %>
               <span class="min-w-0 flex-1 truncate font-mono text-gray-700 dark:text-gray-200"><%= relay %></span>
               <span class="max-w-[38ch] truncate text-red-700 dark:text-red-400" title="<%= result %>"><%= result %></span>
@@ -121,7 +121,7 @@
             The event may already be live on relays — check before retrying.
           </p>
           <%= button_to "Retry publishing", retry_publish_post_path(post), method: :post,
-                class: "condensed border border-amber-500 bg-amber-500 px-3.5 py-2 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#1a1714] hover:bg-amber-400",
+                class: "condensed border border-amber-500 bg-amber-500 px-3.5 py-2 text-[14px] font-semibold uppercase tracking-[0.16em] text-[#1a1714] hover:bg-amber-400",
                 form: { data: { turbo_confirm: "Retry publishing? If the event already reached relays this is a no-op." } } %>
         </div>
       <% end %>

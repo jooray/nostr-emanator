@@ -11,6 +11,10 @@ class Repost < ApplicationRecord
   belongs_to :post
   belongs_to :account
 
+  # A repost is rendered by the same forme row as a post — it has its own
+  # identity, hour, status and delivery, and borrows the note's text.
+  delegate :content, to: :post
+
   enum :status, {
     pending_signature: 0,
     awaiting_signature: 1,

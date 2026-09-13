@@ -1,7 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
+  static values = { zone: String }
+
   connect() {
+    this.reportZone()
     this.formatAll()
     // Watch for Turbo Stream DOM insertions
     this.observer = new MutationObserver((mutations) => {
@@ -21,6 +24,34 @@ export default class extends Controller {
 
   disconnect() {
     this.observer?.disconnect()
+  }
+
+  // The server renders every time in the zone it has on file for this user, so
+  // it needs to have one. This used to be detected only by the scheduler
+  // controller, on one page — so until you opened "Schedule", the whole app
+  // rendered UTC. This controller is on <body> everywhere, so the zone is
+  // learned on whatever page you happen to land on first.
+  //
+  // Only reported when it actually differs from what the server already knows,
+  // so the common case costs no request. A changed answer is worth sending: it
+  // means a flight, or a DST boundary the stored name already covers.
+  reportZone() {
+    let browserZone
+    try {
+      browserZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    } catch {
+      return
+    }
+    if (!browserZone || browserZone === this.zoneValue) return
+
+    const csrfToken = document.querySelector("meta[name='csrf-token']")?.content
+    fetch("/user", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken },
+      body: JSON.stringify({ timezone: browserZone })
+    }).catch(() => {
+      // Best-effort: a failed report just leaves the stored zone in place.
+    })
   }
 
   formatAll() {

@@ -32,56 +32,56 @@ colors:
 typography:
   display:
     fontFamily: "Barlow Condensed, Barlow, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "34px"
+    fontSize: "38px"
     fontWeight: 700
     lineHeight: 1
     letterSpacing: "0.06em"
   headline:
     fontFamily: "Barlow Condensed, Barlow, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "30px"
+    fontSize: "33px"
     fontWeight: 700
     lineHeight: 1.05
     letterSpacing: "0.06em"
   title:
     fontFamily: "Barlow Condensed, Barlow, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "13px"
+    fontSize: "15px"
     fontWeight: 600
     lineHeight: 1.2
     letterSpacing: "0.1em"
   body:
     fontFamily: "Barlow, ui-sans-serif, system-ui, -apple-system, sans-serif"
-    fontSize: "15.5px"
-    fontWeight: 400
-    lineHeight: 1.55
-    letterSpacing: "normal"
-  body-dense:
-    fontFamily: "Barlow, ui-sans-serif, system-ui, -apple-system, sans-serif"
-    fontSize: "14.5px"
+    fontSize: "17px"
     fontWeight: 400
     lineHeight: 1.6
     letterSpacing: "normal"
+  body-dense:
+    fontFamily: "Barlow, ui-sans-serif, system-ui, -apple-system, sans-serif"
+    fontSize: "16px"
+    fontWeight: 400
+    lineHeight: 1.55
+    letterSpacing: "normal"
   label:
     fontFamily: "Barlow Condensed, Barlow, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "11px"
+    fontSize: "13px"
     fontWeight: 600
-    lineHeight: 1.1
-    letterSpacing: "0.18em"
+    lineHeight: 1.15
+    letterSpacing: "0.16em"
   slug:
     fontFamily: "Barlow Condensed, Barlow, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "10px"
+    fontSize: "11.5px"
     fontWeight: 600
     lineHeight: 1
-    letterSpacing: "0.2em"
+    letterSpacing: "0.18em"
   hour:
     fontFamily: "JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, monospace"
-    fontSize: "23px"
+    fontSize: "25px"
     fontWeight: 700
     lineHeight: 1
     letterSpacing: "-0.02em"
     fontFeature: "tabular-nums"
   readout:
     fontFamily: "JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, monospace"
-    fontSize: "13px"
+    fontSize: "15px"
     fontWeight: 700
     lineHeight: 1.3
     letterSpacing: "normal"
@@ -304,8 +304,17 @@ alarm that fires on the ordinary case is an alarm the operator learns to ignore.
 **Label/Mono Font:** JetBrains Mono (400/700, self-hosted woff2)
 
 All three ship from `public/fonts/` because the app's CSP is `font-src :self`;
-no font may be added from a CDN. Base size is **15.5px / 1.55** — one step above
-the stock default, because Barlow runs small for its point size.
+no font may be added from a CDN. Base size is **17px / 1.6**, and the whole ramp
+sits two steps above stock — Barlow runs small for its point size, and this is a
+console read at arm's length on a desk monitor, not a phone held close.
+
+The ramp is defined by **redefining Tailwind's own `--text-*` tokens** in
+`@theme`, the same mechanism that squares the radii and defangs the semantic
+colour ramps. This is load-bearing: the app sets its size from utilities on
+nearly every element, so `body` alone governs almost nothing and raising it
+changes nothing visible. The shipped steps are xs 14 / sm 16 / base 17.5 /
+lg 20 / xl 22.5 / 2xl 27 / 3xl 33 / 4xl 40, each with its own line-height,
+because Tailwind's fixed rem leading would keep 14px spacing under 16px text.
 
 **Character:** Engraved industrial signage over a humanist working text.
 Condensed caps do all the labelling, as if struck into the panel; Barlow carries
@@ -314,27 +323,28 @@ that is a measurement and must line up between rows.
 
 ### Hierarchy
 
-- **Display** (Barlow Condensed 700, 34px, line-height 1, +0.06em, uppercase):
+- **Display** (Barlow Condensed 700, 38px, line-height 1, +0.06em, uppercase):
   the dashboard heading — "34 HELD". One per screen, carrying itself with no
   kicker plate above it.
-- **Headline** (Barlow Condensed 700, 30px, 1.05, +0.06em, uppercase): section
+- **Headline** (Barlow Condensed 700, 33px, 1.05, +0.06em, uppercase): section
   page titles, e.g. the calendar's month. `main h1` is set globally in the
   stylesheet rather than respelled per view.
-- **Title** (Barlow Condensed 600, 13px, 1.2, +0.1em, uppercase): the identity
+- **Title** (Barlow Condensed 600, 15px, 1.2, +0.1em, uppercase): the identity
   name in the `identity` block, wrapping to two lines rather than truncating.
   `main h2` picks up the same condensed uppercase treatment at +0.09em.
-- **Body** (Barlow 400, 15.5px, 1.55): all prose. Note copy runs at 14.5px with
-  a 62ch measure and a two-line clamp in the forme row; explanatory paragraphs
-  use `max-w-prose`.
-- **Label / Engraved Legend** (`.eng`, Barlow Condensed 600, 11px, +0.18em,
+- **Body** (Barlow 400, 17px, 1.6): all prose. Note copy runs at 16.5px with a
+  62ch measure and a two-line clamp in the forme row; the measure is in `ch`, so
+  it tracks the size rather than fighting it. Explanatory paragraphs use
+  `max-w-prose`.
+- **Label / Engraved Legend** (`.eng`, Barlow Condensed 600, 13px, +0.16em,
   uppercase): every legend in the product — section heads, day labels under an
   hour, relay verdicts, the station-status heading. On the dark chassis it
   carries a cut-in shadow (dark above, a 5% light lip below).
-- **Slug** (Barlow Condensed 600, 10px, +0.2em, uppercase, 1px `currentColor`
-  border, 5×8px): the status chip. Never a rounded pill.
-- **Hour** (JetBrains Mono 700, 23px, 1, −0.02em, tabular): the release hour at
+- **Slug** (Barlow Condensed 600, 11.5px, +0.18em, uppercase, 1px
+  `currentColor` border, 6×9px): the status chip. Never a rounded pill.
+- **Hour** (JetBrains Mono 700, 25px, 1, −0.02em, tabular): the release hour at
   display scale in the forme row.
-- **Readout** (JetBrains Mono 700, 13px, tabular): elapsed counters, delivery
+- **Readout** (JetBrains Mono 700, 15px, tabular): elapsed counters, delivery
   tallies, calendar day numbers, npubs and relay URLs.
 
 ### Named Rules
@@ -343,6 +353,15 @@ that is a measurement and must line up between rows.
 relay results are set in JetBrains Mono with `font-variant-numeric: tabular-nums`
 (applied via `.tabular`, `.display`, `time`, `[data-tabular]`). Prose is never
 mono; a number that must be compared between rows is never proportional.
+
+**The Scale Lives In The Token Rule.** The size ramp is changed by editing
+`--text-*` in `@theme`, never by sweeping `text-sm` to `text-base` across the
+markup and never by raising `body` alone. `body` is the inherited size and
+governs only the elements carrying no size utility, which in this app is almost
+none of them — an earlier attempt to make the surface more readable moved it and
+nothing on screen changed. Tracking comes down as size goes up: the legend lost
+0.02em when it gained 2px, because condensed caps that are already wide enough
+to read do not need to be spaced apart to be read.
 
 **The No Kicker Rule.** No eyebrow, no kicker plate, no label strip above a
 heading. The direction contract's FIRST VIEWPORT specified an engraved
@@ -367,14 +386,14 @@ including the zero ones.
 
 The field is a vertical run of rules-separated rows, not a grid of cards. The
 forme row is a two-column stack on mobile (`auto minmax(0,1fr)`) that becomes
-four columns at `sm` (`84px / minmax(0,148px) / minmax(0,1fr) / auto`): hour,
+four columns at `sm` (`96px / minmax(0,172px) / minmax(0,1fr) / auto`): hour,
 identity, copy, state-and-its-action. The action belonging to a state sits in
 the row with it, so the operator never navigates to act.
 
 Rhythm is tight and consistent: 3px between poll cells, 10px between a lamp and
 its legend, 14px row padding, 16px panel padding (with `row-wait` bleeding
 −16px/+16px so its tint spans the full field), 28px between sections. The
-calendar is a 7-column grid of 118px-minimum cells, five events deep with a
+calendar is a 7-column grid of 132px-minimum cells, five events deep with a
 "+N more" legend beneath.
 
 ## Elevation & Depth
@@ -430,7 +449,7 @@ The recurring silhouettes are: the **hairline rule** (1px, `rule-dark` on dark /
 `neutral-200` on light) as the only divider; the **bordered slug** (1px
 `currentColor`, never filled except by a 8–9% signal wash); the **3px vertical
 wire** in the row's own flow as the identity mark — not a border-left on a
-container, which is the lazy accent this world refuses; the **22px square chop**
+container, which is the lazy accent this world refuses; the **26px square chop**
 with a 1px `currentColor` border; and the **13×17px poll cell**, a portrait
 rectangle so a strip of them reads as a bank of indicators rather than a
 progress bar. Buttons and inputs are plain rectangles; the primary button is a
@@ -461,7 +480,7 @@ the awaiting-signature block (`amber-signal` border over a 6% amber wash).
 ### Inputs / Fields
 
 - **Style:** 1px neutral stroke on `paper-white` (dark: chassis), square, padded
-  8×12px, body text at 14.5px.
+  8×12px, body text at 16px.
 - **Focus:** border shifts to `amber-signal` with a 40%-amber ring; the caret is
   amber everywhere in the product, including contenteditable and the markdown
   editor.
@@ -498,7 +517,7 @@ gets the sentence instead — "Reached 5 of 6 relays, which is a normal publish.
 ### Identity Mark (signature)
 
 Wire + chop + name, stated identically on every surface: a 3px pubkey-derived
-wire rule in the row's flow, the account's 24px avatar (or a bordered letter
+wire rule in the row's flow, the account's 26px avatar (or a bordered letter
 chop in the same ink when there is no picture), then the display name in
 condensed caps clamped to two lines. No npub — a truncated `npub14lu…`
 identifies nothing, since the leading characters are a shared prefix.

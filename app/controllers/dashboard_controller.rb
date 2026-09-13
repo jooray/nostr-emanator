@@ -16,10 +16,16 @@ class DashboardController < ApplicationController
   def index
     account_ids = current_user.accounts.pluck(:id)
 
-    @waiting = Post.where(account_id: account_ids, status: :awaiting_signature)
-                   .includes(:account, :reposts)
-                   .order(:scheduled_at)
-                   .limit(10)
+    # Posts and reposts together, because the rail's "awaiting signature" reading
+    # counts both and this is the section it points at. A repost waiting on a tap
+    # is the same interruption as a post waiting on one — it is just a different
+    # identity asking.
+    @waiting = (
+      Post.where(account_id: account_ids, status: :awaiting_signature)
+          .includes(:account, :reposts).to_a +
+      Repost.where(account_id: account_ids, status: %i[awaiting_signature pending_signature])
+            .includes(:account, :post).to_a
+    ).sort_by { |record| record.scheduled_at || Time.current }.first(10)
 
     # Only deliveries that actually failed to reach the network. A relay
     # declining is ordinary on Nostr — surfacing 5-of-6 here trained the eye to
@@ -41,11 +47,13 @@ class DashboardController < ApplicationController
                     .order(scheduled_at: :asc)
                     .limit(12)
 
-    @failed = Post.where(account_id: account_ids, status: :failed)
-                  .includes(:account)
-                  .order(updated_at: :desc)
-                  .limit(5)
-    @failed_total = Post.where(account_id: account_ids, status: :failed).count
+    # Same set the rail counts. Listing only the posts is how "2 never went out"
+    # could sit in the rail with an empty section under it: both failures were
+    # reposts, and no surface in the app would show them.
+    failed_posts = Post.where(account_id: account_ids, status: :failed).includes(:account)
+    failed_reposts = Repost.where(account_id: account_ids, status: :failed).includes(:account, :post)
+    @failed = (failed_posts.to_a + failed_reposts.to_a).sort_by(&:updated_at).reverse.first(5)
+    @failed_total = failed_posts.count + failed_reposts.count
 
     # Short pulls are already called out above; listing them again here made the
     # same row appear twice on one screen.

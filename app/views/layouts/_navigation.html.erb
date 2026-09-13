@@ -11,7 +11,7 @@
 
 <%= tag.div(class: "hidden lg:flex fixed inset-y-0 left-0 z-50 w-60 flex-col border-r border-gray-200 bg-white dark:border-[color:var(--color-seam)] dark:bg-[color:var(--color-chassis)]") do %>
   <div class="flex items-center justify-between border-b rule px-4 py-4">
-    <%= link_to dashboard_path, class: "condensed text-[19px] font-bold uppercase tracking-[0.16em] text-gray-900 dark:text-gray-100" do %>
+    <%= link_to dashboard_path, class: "condensed text-[21px] font-bold uppercase tracking-[0.16em] text-gray-900 dark:text-gray-100" do %>
       Eman<span class="text-amber-500">a</span>tor
     <% end %>
     <div data-controller="theme" data-theme-current-value="<%= current_user&.theme || 'system' %>">
@@ -52,8 +52,8 @@
   <div class="flex items-center gap-2.5 border-t rule px-4 py-3">
     <%= render "shared/avatar", pubkey: current_user.pubkey_hex, size: :sm %>
     <div class="min-w-0 flex-1">
-      <p class="condensed text-[12px] font-semibold uppercase tracking-[0.13em] truncate"><%= current_user.display_name.presence || "Signed in" %></p>
-      <p class="font-mono text-[10px] text-gray-500 dark:text-gray-400 truncate"><%= current_user.npub.to_s.truncate(18) %></p>
+      <p class="condensed text-[14px] font-semibold uppercase tracking-[0.13em] truncate"><%= current_user.display_name.presence || "Signed in" %></p>
+      <p class="font-mono text-[11.5px] text-gray-500 dark:text-gray-400 truncate"><%= current_user.npub.to_s.truncate(18) %></p>
     </div>
     <%= button_to logout_path, method: :delete,
           class: "eng text-gray-500 hover:text-red-600 dark:hover:text-red-400",
@@ -74,7 +74,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
         </svg>
       </button>
-      <%= link_to dashboard_path, class: "condensed text-[17px] font-bold uppercase tracking-[0.16em] text-gray-900 dark:text-gray-100" do %>
+      <%= link_to dashboard_path, class: "condensed text-[19px] font-bold uppercase tracking-[0.16em] text-gray-900 dark:text-gray-100" do %>
         Eman<span class="text-amber-500">a</span>tor
       <% end %>
       <div data-controller="theme" data-theme-current-value="<%= current_user&.theme || 'system' %>">
@@ -97,7 +97,7 @@
   <nav data-mobile-nav-target="panel" aria-label="Main"
        class="fixed inset-y-0 left-0 z-50 flex w-60 -translate-x-full flex-col border-r rule bg-white transition-transform duration-300 dark:bg-[color:var(--color-chassis)]">
     <div class="flex items-center justify-between border-b rule px-4 py-3.5">
-      <%= link_to dashboard_path, class: "condensed text-[17px] font-bold uppercase tracking-[0.16em] text-gray-900 dark:text-gray-100",
+      <%= link_to dashboard_path, class: "condensed text-[19px] font-bold uppercase tracking-[0.16em] text-gray-900 dark:text-gray-100",
             data: { action: "click->mobile-nav#close" } do %>
         Eman<span class="text-amber-500">a</span>tor
       <% end %>

@@ -34,7 +34,7 @@
             <%= link_to re_pair_account_path(account, reason: "messaging"),
                   class: "flex items-center gap-2.5 py-1.5 hover:text-amber-600 dark:hover:text-amber-400" do %>
               <%= wire(account, height: "16px") %>
-              <span class="condensed text-[12px] font-semibold uppercase tracking-[0.13em]"><%= account.display_name_or_npub %></span>
+              <span class="condensed text-[14px] font-semibold uppercase tracking-[0.13em]"><%= account.display_name_or_npub %></span>
               <span class="eng ml-auto text-amber-600 dark:text-amber-400">Re-pair</span>
             <% end %>
           </li>

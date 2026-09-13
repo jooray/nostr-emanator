@@ -8,7 +8,7 @@
 <div class="mx-auto max-w-6xl">
   <header class="mb-7 flex flex-wrap items-end justify-between gap-4 border-b rule pb-4">
     <div>
-      <h1 class="condensed text-[34px] font-bold uppercase leading-none tracking-[0.06em]">
+      <h1 class="condensed text-[38px] font-bold uppercase leading-none tracking-[0.06em]">
         <%= @held_count %> held
       </h1>
       <p class="eng mt-2.5">On the stone &middot; <%= pluralize(station_status[:identities], "identity") %></p>
@@ -17,14 +17,14 @@
     <div class="flex items-center gap-3">
       <% if @unreached.any? %>
         <%= link_to posts_path(status: "short"), class: "alarm no-underline" do %>
-          <span class="condensed text-[22px] font-bold leading-none text-red-600 dark:text-red-400 tabular"><%= @unreached.size %></span>
-          <span class="condensed text-[11px] uppercase leading-tight tracking-[0.16em] text-red-800 dark:text-red-300">
+          <span class="condensed text-[24px] font-bold leading-none text-red-600 dark:text-red-400 tabular"><%= @unreached.size %></span>
+          <span class="condensed text-[13px] uppercase leading-tight tracking-[0.16em] text-red-800 dark:text-red-300">
             <%= @unreached.size == 1 ? "post barely" : "posts barely" %><br>reached the network
           </span>
         <% end %>
       <% end %>
       <%= link_to "New post", new_post_path,
-            class: "condensed inline-block border border-amber-500 bg-amber-500 px-4 py-2.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#1a1714] transition-colors hover:bg-amber-400" %>
+            class: "condensed inline-block border border-amber-500 bg-amber-500 px-4 py-2.5 text-[14px] font-semibold uppercase tracking-[0.16em] text-[#1a1714] transition-colors hover:bg-amber-400" %>
     </div>
   </header>
 
@@ -36,7 +36,7 @@
         and its scheduled notes appear here.
       </p>
       <%= link_to "Pair an account", new_account_path,
-            class: "condensed inline-block border border-amber-500 bg-amber-500 px-4 py-2.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#1a1714]" %>
+            class: "condensed inline-block border border-amber-500 bg-amber-500 px-4 py-2.5 text-[14px] font-semibold uppercase tracking-[0.16em] text-[#1a1714]" %>
     </div>
   <% end %>
 
@@ -105,7 +105,7 @@
           <%= render "shared/forme_row", post: post %>
         <% end %>
       </div>
-      <%= link_to "All posts", posts_path, class: "condensed mt-3 inline-block text-[12px] font-semibold uppercase tracking-[0.16em] text-amber-600 underline underline-offset-4 hover:text-amber-500 dark:text-amber-400" %>
+      <%= link_to "All posts", posts_path, class: "condensed mt-3 inline-block text-[14px] font-semibold uppercase tracking-[0.16em] text-amber-600 underline underline-offset-4 hover:text-amber-500 dark:text-amber-400" %>
     <% elsif @has_accounts %>
       <div class="border rule px-6 py-8 text-center">
         <p class="text-gray-600 dark:text-gray-300">Nothing scheduled. The stone is clear.</p>

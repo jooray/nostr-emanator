@@ -16,7 +16,7 @@
           end %>
 <li>
   <%= link_to path,
-        class: "group -mx-2 flex items-center gap-2.5 px-2 py-1 condensed text-[11.5px] uppercase tracking-[0.16em] no-underline transition-colors hover:bg-white/5 #{tone} hover:text-amber-600 dark:hover:text-amber-400",
+        class: "group -mx-2 flex items-center gap-2.5 px-2 py-1 condensed text-[13.5px] uppercase tracking-[0.16em] no-underline transition-colors hover:bg-white/5 #{tone} hover:text-amber-600 dark:hover:text-amber-400",
         data: local_assigns[:mobile] ? { action: "click->mobile-nav#close" } : {} do %>
     <%= lamp(lit ? (state == :wait ? :wait : (state == :alarm ? :alarm : :on)) : :off) %>
     <%= label %>

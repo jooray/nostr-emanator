@@ -9,14 +9,19 @@
 <% failed = local_assigns[:failed] %>
 <% sent = local_assigns[:sent] %>
 <% stamp = sent ? post.published_at : post.scheduled_at %>
+<%# A repost rides the same row: its own identity and hour, the note's text, and
+    the action that belongs to its state. It links to the note, which is the only
+    page a repost has. %>
+<% is_repost = post.is_a?(Repost) %>
+<% target = forme_target(post) %>
 
 <article <%= tag.attributes(data: { controller: "elapsed", elapsed_start_value: post.updated_at.iso8601 }) if waiting %>
-         class="grid items-center gap-x-4 gap-y-2 border-b rule py-3.5 grid-cols-[auto_minmax(0,1fr)] sm:grid-cols-[84px_minmax(0,148px)_minmax(0,1fr)_auto]
+         class="grid items-center gap-x-4 gap-y-2 border-b rule py-3.5 grid-cols-[auto_minmax(0,1fr)] sm:grid-cols-[96px_minmax(0,172px)_minmax(0,1fr)_auto]
                 <%= 'row-wait' if waiting %>">
 
   <%# hour %>
   <div class="row-start-1 sm:col-start-1">
-    <%= link_to post_path(post), class: "hour block hover:text-amber-600 dark:hover:text-amber-400" do %>
+    <%= link_to post_path(target), class: "hour block hover:text-amber-600 dark:hover:text-amber-400" do %>
       <%= stamp ? l(stamp, format: "%H:%M") : "--:--" %>
     <% end %>
     <span class="eng mt-1.5 block">
@@ -31,18 +36,20 @@
 
   <%# copy %>
   <div class="col-span-2 min-w-0 sm:col-span-1 sm:col-start-3">
-    <p class="line-clamp-2 max-w-[62ch] break-words text-[14.5px] leading-relaxed text-gray-700 dark:text-gray-300">
+    <p class="line-clamp-2 max-w-[72ch] break-words text-[16.5px] leading-relaxed text-gray-700 dark:text-gray-300">
       <%= post.content.to_s.strip %>
     </p>
-    <% if post.reposts.loaded? && post.reposts.size.positive? %>
+    <% if is_repost %>
+      <%# Without this the row is indistinguishable from the note itself, and the
+          operator cannot tell which of the two never went out. %>
+      <p class="eng mt-1.5">Repost of this note</p>
+    <% elsif post.reposts.loaded? && post.reposts.size.positive? %>
       <p class="eng mt-1.5"><%= pluralize(post.reposts.size, "repost") %></p>
     <% end %>
-    <% if failed && post.delivery_failures.any? %>
-      <p class="mt-1.5 font-mono text-[11px] text-red-600 dark:text-red-400">
-        <%= post.delivery_failures.map { |relay, why| "#{relay.sub(%r{\Awss?://}, '')} #{why}" }.first(2).join(" · ") %>
-      </p>
+    <% if failed && (why = delivery_failure_line(post)) %>
+      <p class="mt-1.5 font-mono text-[13px] text-red-600 dark:text-red-400"><%= why %></p>
     <% elsif failed %>
-      <p class="mt-1.5 text-[12px] text-gray-500 dark:text-gray-400">
+      <p class="mt-1.5 text-[14px] text-gray-500 dark:text-gray-400">
         Never reached a relay. Nothing was published.
       </p>
     <% end %>
@@ -53,18 +60,24 @@
     <% if waiting %>
       <%# The elapsed counter belongs here, not only on the detail page: this row
           is where an operator finds out something is waiting on them at all. %>
-      <span class="font-mono text-[13px] font-bold tabular text-amber-600 dark:text-amber-400"
+      <span class="font-mono text-[15px] font-bold tabular text-amber-600 dark:text-amber-400"
             data-elapsed-target="readout" aria-label="Waiting for approval">00:00</span>
-      <%= link_to "Open", post_path(post), class: "slug slug--wait no-underline" %>
+      <%= link_to "Open", post_path(target), class: "slug slug--wait no-underline" %>
     <% elsif short || sent %>
       <%= poll_strip(post) %>
       <% if short %>
-        <%= button_to "Rebroadcast", rebroadcast_post_path(post), method: :post,
+        <%= button_to "Rebroadcast",
+              is_repost ? rebroadcast_post_repost_path(post.post, post) : rebroadcast_post_path(post),
+              method: :post,
               class: "slug hover:text-amber-600 dark:hover:text-amber-400",
               form_class: "inline" %>
       <% end %>
     <% elsif failed %>
-      <%= button_to "Retry", retry_publish_post_path(post), method: :post,
+      <%# A failed repost retries through its own signing path: it has its own
+          signed event, and retrying the note would not resend it. %>
+      <%= button_to "Retry",
+            is_repost ? retry_sign_post_repost_path(post.post, post) : retry_publish_post_path(post),
+            method: :post,
             class: "slug slug--short", form_class: "inline" %>
     <% else %>
       <%= status_slug(post) %>

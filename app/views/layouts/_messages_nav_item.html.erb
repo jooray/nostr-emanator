@@ -6,7 +6,7 @@
 <% active = request.path.start_with?("/messages") %>
 <li>
   <%= link_to messages_path,
-        class: "group flex items-center gap-2.5 py-2.5 pl-4 pr-3 condensed text-[12px] font-medium uppercase tracking-[0.16em] transition-colors #{active ? 'bg-amber-500/8 text-gray-900 dark:text-gray-100' : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'}",
+        class: "group flex items-center gap-2.5 py-2.5 pl-4 pr-3 condensed text-[14px] font-medium uppercase tracking-[0.16em] transition-colors #{active ? 'bg-amber-500/8 text-gray-900 dark:text-gray-100' : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'}",
         style: active ? "box-shadow: inset 3px 0 0 var(--color-amber-500)" : nil,
         aria: { current: (active ? "page" : nil) },
         data: local_assigns[:mobile] ? { action: "click->mobile-nav#close" } : {} do %>
@@ -17,7 +17,7 @@
       <%# Counts unread in the Inbox only. Anyone can send you a gift wrap, so
           letting Requests drive a numbered badge would hand strangers control of
           your notification count. %>
-      <span class="ml-auto font-mono text-[11px] font-bold tabular text-amber-600 dark:text-amber-400">
+      <span class="ml-auto font-mono text-[13px] font-bold tabular text-amber-600 dark:text-amber-400">
         <%= unread > 99 ? "99+" : unread %>
       </span>
       <span class="sr-only"><%= pluralize(unread, "unread message") %></span>

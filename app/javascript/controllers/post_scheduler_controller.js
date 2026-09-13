@@ -6,12 +6,13 @@ export default class extends Controller {
   static values = { suggestedTime: String }
 
   connect() {
-    // Detect and set browser timezone
-    const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    // The submitted zone, so the picked wall-clock time is parsed against the
+    // clock the user read it on. Persisting the zone is local_time_controller's
+    // job now — it runs on <body>, so it learns the zone on every page instead
+    // of only this one.
     if (this.hasTimezoneInputTarget) {
-      this.timezoneInputTarget.value = browserTimezone
+      this.timezoneInputTarget.value = Intl.DateTimeFormat().resolvedOptions().timeZone
     }
-    this.saveTimezone(browserTimezone)
 
     // Detect 12h vs 24h from locale
     const is24h = this.is24h()
@@ -54,22 +55,6 @@ export default class extends Controller {
       return !formatted.match(/[AP]M/i)
     } catch {
       return true
-    }
-  }
-
-  async saveTimezone(timezone) {
-    try {
-      const csrfToken = document.querySelector("meta[name='csrf-token']")?.content
-      await fetch("/user", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": csrfToken
-        },
-        body: JSON.stringify({ timezone })
-      })
-    } catch {
-      // Timezone save is best-effort
     }
   }
 }

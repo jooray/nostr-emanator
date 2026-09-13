@@ -29,17 +29,30 @@ class PostsController < ApplicationController
 
     scope = scope.order(created_at: :desc)
     @short_only = @status_filter == "short"
-    # Offered right where the failures are listed, scoped to the account filter
-    # in view so it can never clear more than what is on screen.
-    @failed_here = if @status_filter == "failed"
-                     Post.joins(:account)
-                         .where(accounts: { user_id: current_user.id }, posts: { status: :failed })
-                         .then { |s| @account_filter ? s.where(account_id: @account_filter) : s }
-                         .count
-                   else
-                     0
-                   end
-    @posts = @short_only ? Kaminari.paginate_array(scope.select(&:delivery_alarming?)).page(params[:page]) : scope.page(params[:page])
+
+    # Reposts belong in these two lists, because the station-status readings
+    # count them. The rail said "2 never went out" and this list said "No posts
+    # match this filter" — both were right about their own query and the reading
+    # was unreachable, which is the one thing a reading that links to a list may
+    # never be. A failed repost is a real failure: that identity never reposted
+    # the note, and nothing else in the app was going to say so.
+    #
+    # Only these two filters merge. The readings count exactly these states, and
+    # folding reposts into "Published" or "All" would reshape lists nobody
+    # reported a problem with.
+    reposts = reposts_for_filter
+
+    @failed_here = failed_here_count
+
+    @posts =
+      if @short_only
+        Kaminari.paginate_array(scope.select(&:delivery_alarming?)).page(params[:page])
+      elsif reposts.any?
+        merged = (scope.to_a + reposts).sort_by { |record| record.created_at }.reverse
+        Kaminari.paginate_array(merged).page(params[:page])
+      else
+        scope.page(params[:page])
+      end
   end
 
   # Clear out everything that never went out.
@@ -52,8 +65,15 @@ class PostsController < ApplicationController
     scope = Post.joins(:account).where(accounts: { user_id: current_user.id }, posts: { status: :failed })
     scope = scope.where(account_id: params[:account]) if params[:account].present?
 
-    count = scope.count
+    # Reposts are counted by the same reading and listed beside the posts, so
+    # they have to be cleared by the same button. Discarding only the posts left
+    # the alarm lit with nothing under it to act on.
+    repost_scope = Repost.joins(:account).where(accounts: { user_id: current_user.id }, reposts: { status: :failed })
+    repost_scope = repost_scope.where(account_id: params[:account]) if params[:account].present?
+
+    count = scope.count + repost_scope.count
     scope.destroy_all
+    repost_scope.destroy_all
 
     redirect_back fallback_location: dashboard_path,
                   notice: "Discarded #{pluralize(count, 'post')} that never went out."
@@ -380,6 +400,37 @@ class PostsController < ApplicationController
   def render_schedule_error
     load_schedule_form
     render :schedule, status: :unprocessable_entity
+  end
+
+  # The two states whose station reading counts reposts as well as posts.
+  MERGED_REPOST_STATUSES = {
+    "failed" => %i[failed],
+    "awaiting_signature" => %i[awaiting_signature pending_signature]
+  }.freeze
+
+  def reposts_for_filter
+    statuses = MERGED_REPOST_STATUSES[@status_filter]
+    return [] unless statuses
+
+    Repost.joins(:account)
+          .where(accounts: { user_id: current_user.id }, reposts: { status: statuses })
+          .then { |s| @account_filter ? s.where(account_id: @account_filter) : s }
+          .includes(:account, :post)
+          .to_a
+  end
+
+  # Offered right where the failures are listed, scoped to the account filter in
+  # view so it can never clear more than what is on screen — which now means
+  # counting the reposts it also clears.
+  def failed_here_count
+    return 0 unless @status_filter == "failed"
+
+    scoped = lambda do |relation|
+      @account_filter ? relation.where(account_id: @account_filter) : relation
+    end
+
+    scoped.call(Post.joins(:account).where(accounts: { user_id: current_user.id }, posts: { status: :failed })).count +
+      scoped.call(Repost.joins(:account).where(accounts: { user_id: current_user.id }, reposts: { status: :failed })).count
   end
 
   def parse_scheduled_at(value, timezone_param)

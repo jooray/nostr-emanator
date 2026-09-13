@@ -3,7 +3,7 @@
 <div class="mx-auto max-w-6xl">
   <header class="mb-5 flex flex-wrap items-end justify-between gap-4 border-b rule pb-4">
     <div>
-      <h1 class="condensed text-[30px] font-bold uppercase leading-none tracking-[0.06em]">
+      <h1 class="condensed text-[33px] font-bold uppercase leading-none tracking-[0.06em]">
         <%= @month.strftime("%B %Y") %>
       </h1>
       <p class="eng mt-2.5"><%= pluralize(@posts.size, "post") %> &middot; <%= pluralize(@reposts.size, "repost") %></p>
@@ -17,7 +17,7 @@
         </svg>
       <% end %>
       <%= link_to "Today", calendar_path,
-            class: "condensed border border-gray-300 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-600 transition-colors hover:border-amber-500 hover:text-amber-600 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400 dark:hover:text-amber-400" %>
+            class: "condensed border border-gray-300 px-3 py-2 text-[13px] font-semibold uppercase tracking-[0.14em] text-gray-600 transition-colors hover:border-amber-500 hover:text-amber-600 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400 dark:hover:text-amber-400" %>
       <%= link_to calendar_path(month: @month.next_month.strftime("%Y-%m-%d")), "aria-label": "Next month",
             class: "border border-gray-300 p-2 text-gray-600 transition-colors hover:border-amber-500 hover:text-amber-600 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400 dark:hover:text-amber-400" do %>
         <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24" aria-hidden="true">
@@ -37,7 +37,7 @@
         <%= link_to posts_path(account: account.id),
               class: "flex items-center gap-2 no-underline transition-colors hover:text-amber-600 dark:hover:text-amber-400" do %>
           <span class="inline-block h-3 w-3 flex-none" style="background: <%= account.ink %>"></span>
-          <span class="condensed text-[11.5px] font-semibold uppercase tracking-[0.13em]"><%= account.display_name_or_npub %></span>
+          <span class="condensed text-[13.5px] font-semibold uppercase tracking-[0.13em]"><%= account.display_name_or_npub %></span>
         <% end %>
       <% end %>
     </div>
@@ -55,9 +55,9 @@
         <% events = @events_by_date[date] || [] %>
         <% outside = date.month != @month.month %>
         <% today = date == Date.current %>
-        <div class="min-h-[118px] border-b border-r rule p-1.5 <%= "opacity-45" if outside %> <%= "bg-amber-500/6" if today %>">
+        <div class="min-h-[132px] border-b border-r rule p-1.5 <%= "opacity-45" if outside %> <%= "bg-amber-500/6" if today %>">
           <div class="mb-1.5 flex items-baseline justify-between">
-            <span class="font-mono text-[12px] font-bold tabular <%= today ? "text-amber-600 dark:text-amber-400" : "text-gray-500 dark:text-gray-400" %>">
+            <span class="font-mono text-[14px] font-bold tabular <%= today ? "text-amber-600 dark:text-amber-400" : "text-gray-500 dark:text-gray-400" %>">
               <%= date.day %>
             </span>
             <% if today %><span class="eng text-amber-600 dark:text-amber-400">Today</span><% end %>
@@ -70,7 +70,7 @@
                   title: "#{item.account.display_name_or_npub} — #{repost ? 'repost' : item.content.to_s.truncate(80)}",
                   class: "mb-1 flex items-start gap-1.5 no-underline transition-opacity hover:opacity-70" do %>
               <span class="mt-[3px] inline-block h-2.5 w-[3px] flex-none" style="background: <%= item.account.ink %>"></span>
-              <span class="min-w-0 flex-1 truncate text-[11.5px] leading-tight text-gray-700 dark:text-gray-300">
+              <span class="min-w-0 flex-1 truncate text-[13.5px] leading-tight text-gray-700 dark:text-gray-300">
                 <span class="font-mono font-bold tabular"><%= l(item.scheduled_at, format: "%H:%M") %></span>
                 <%= repost ? tag.span("repost", class: "eng") : item.content.to_s.truncate(42) %>
               </span>

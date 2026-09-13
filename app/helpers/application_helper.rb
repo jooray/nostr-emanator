@@ -11,19 +11,27 @@ module ApplicationHelper
 
   def local_time(time, format: "datetime")
     return "" if time.nil?
+
+    # Rendered server-side in the user's own zone (ApplicationController sets
+    # Time.zone per request), so this text is already correct and the client-side
+    # pass in local_time_controller.js agrees with it instead of replacing a UTC
+    # value a moment later. It still runs, because a user reading from a second
+    # machine in another zone should see that machine's clock.
+    #
+    # The fallback used to be suffixed "UTC" unconditionally. That was true when
+    # the server rendered UTC and is a lie now, so the zone is named from the
+    # instant itself — and the title keeps the unambiguous absolute one (L24).
+    local = time.in_time_zone(Time.zone)
     fallback = case format
-               when "time" then time.strftime("%H:%M UTC")
-               when "date" then time.strftime("%b %d, %Y")
-               when "short" then time.strftime("%b %d, %H:%M UTC")
-               else time.strftime("%b %d, %Y %H:%M UTC")
+               when "time" then local.strftime("%H:%M")
+               when "date" then local.strftime("%b %d, %Y")
+               when "short" then local.strftime("%b %d, %H:%M")
+               else local.strftime("%b %d, %Y %H:%M")
                end
     tag.time(
       fallback,
-      datetime: time.iso8601,
-      # The rendered text reformats client-side to local time (local_time_controller.js)
-      # and can flash the server-rendered UTC fallback first — a title with the
-      # unambiguous absolute instant is always correct either way (L24).
-      title: time.strftime("%Y-%m-%d %H:%M:%S UTC"),
+      datetime: local.iso8601,
+      title: "#{local.strftime('%Y-%m-%d %H:%M:%S %Z')} · #{time.utc.strftime('%H:%M UTC')}",
       data: { local_time_format: format }
     )
   end

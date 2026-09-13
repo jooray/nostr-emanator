@@ -1,7 +1,7 @@
 <div class="space-y-6" data-controller="interactions-filter"
      data-interactions-filter-account-ids-value="<%= @accounts.map(&:id).to_json %>">
   <header class="mb-5 border-b rule pb-4">
-    <h1 class="condensed text-[30px] font-bold uppercase leading-none tracking-[0.06em]">Interactions</h1>
+    <h1 class="condensed text-[33px] font-bold uppercase leading-none tracking-[0.06em]">Interactions</h1>
     <p class="eng mt-2.5">Replies, quotes and mentions across <%= pluralize(@accounts.size, "identity") %></p>
   </header>
 
@@ -10,14 +10,14 @@
     <div class="mb-5 flex flex-wrap items-center gap-1.5">
       <button data-interactions-filter-target="toggleAllButton"
               data-action="interactions-filter#toggleAll"
-              class="condensed cursor-pointer border border-gray-300 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-600 transition-colors hover:border-amber-500 hover:text-amber-600 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400 dark:hover:text-amber-400">
+              class="condensed cursor-pointer border border-gray-300 px-3 py-1.5 text-[13px] font-semibold uppercase tracking-[0.14em] text-gray-600 transition-colors hover:border-amber-500 hover:text-amber-600 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400 dark:hover:text-amber-400">
         Unselect all
       </button>
       <% @accounts.each do |account| %>
         <button data-interactions-filter-target="accountButton"
                 data-account-id="<%= account.id %>"
                 data-action="interactions-filter#toggleAccount"
-                class="condensed inline-flex cursor-pointer items-center gap-2 border border-gray-900 px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-900 transition-colors dark:border-gray-100 dark:text-gray-100">
+                class="condensed inline-flex cursor-pointer items-center gap-2 border border-gray-900 px-2.5 py-1.5 text-[13px] font-semibold uppercase tracking-[0.14em] text-gray-900 transition-colors dark:border-gray-100 dark:text-gray-100">
           <span class="inline-block h-3 w-[3px] flex-none" style="background: <%= account.ink %>"></span>
           <% if account.picture_url.present? %>
             <img src="<%= account.picture_url %>" alt="" class="h-4 w-4 flex-none object-cover">
