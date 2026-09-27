@@ -1,7 +1,7 @@
 <%# The NIP-17 send form, shared by the :nip17 and :best_effort branches of the
     composer — the delivery differs, the form does not. %>
 <%= form_with url: conversation_messages_path(conversation), method: :post,
-              data: { controller: "dm-composer", turbo_frame: "_top" }, class: "space-y-2" do %>
+              data: { controller: "dm-composer", action: "turbo:submit-end->dm-composer#clear", turbo_frame: "_top" }, class: "space-y-2" do %>
   <%= text_area_tag :content, nil, rows: 2, required: true,
         placeholder: "Write a private message…",
         data: { dm_composer_target: "input", action: "keydown->dm-composer#maybeSend" },

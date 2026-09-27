@@ -5,6 +5,10 @@ class PostsController < ApplicationController
   before_action :set_post, only: [:show, :edit, :update, :destroy, :schedule, :sign, :retry_sign, :retry_publish, :rebroadcast, :cancel, :reschedule]
   before_action :set_account, only: [:new, :create]
 
+  # How far ahead the schedule screen's "Soon" button sets the publish time:
+  # enough to approve the signature(s) in Amber before it comes due.
+  SOON_MINUTES = 7
+
   # 300 posts across 19 identities used to arrive as one unfiltered, unsorted
   # stream — there was no way to answer "what failed?" or "what is queued for
   # Ember?" without reading the whole list.
@@ -237,7 +241,7 @@ class PostsController < ApplicationController
 
     repost_account_ids = params[:repost_account_ids] || []
     # I6/L11: keep the repost delay window sane (1 hour .. 1 year).
-    max_delay_hours = (params[:max_delay_hours] || 24).to_i.clamp(1, Scheduling::RepostSchedulerService::MAX_DELAY_HOURS)
+    max_delay_hours = (params[:max_delay_hours] || Scheduling::RepostSchedulerService::DEFAULT_MAX_DELAY_HOURS).to_i.clamp(1, Scheduling::RepostSchedulerService::MAX_DELAY_HOURS)
 
     # H8: a post with a blank/garbled time would become "scheduled" but never
     # publish — the enqueue query never matches a NULL scheduled_at.

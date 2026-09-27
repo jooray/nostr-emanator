@@ -8,7 +8,7 @@ module Mcp
     # so the post moves draft -> awaiting_signature -> scheduled on its own and
     # is published at scheduled_at by the periodic publish job.
     class SchedulePost < Base
-      DEFAULT_MAX_DELAY_HOURS = 24
+      DEFAULT_MAX_DELAY_HOURS = Scheduling::RepostSchedulerService::DEFAULT_MAX_DELAY_HOURS
 
       def self.description
         <<~DESC.strip
@@ -35,7 +35,7 @@ module Mcp
               items: { type: "integer" },
               description: "Other accounts you manage that should repost this, each at a random delay."
             },
-            max_delay_hours: { type: "integer", minimum: 1, description: "Upper bound on repost delay. Default 24." }
+            max_delay_hours: { type: "integer", minimum: 1, description: "Upper bound on repost delay. Default #{DEFAULT_MAX_DELAY_HOURS}." }
           }
         }
       end

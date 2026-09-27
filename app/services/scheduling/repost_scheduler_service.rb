@@ -5,9 +5,10 @@ module Scheduling
     MIN_DELAY_MINUTES = 10
     # I6/L11: one year, matching the MCP tool's clamp.
     MAX_DELAY_HOURS = 8760
+    DEFAULT_MAX_DELAY_HOURS = 1
 
     # Schedule reposts for given accounts with random delays
-    def schedule_reposts(post, account_ids, max_delay_hours: 24)
+    def schedule_reposts(post, account_ids, max_delay_hours: DEFAULT_MAX_DELAY_HOURS)
       return [] if account_ids.blank?
 
       # L11: a nil scheduled_at used to blow up mid-flow with NoMethodError,

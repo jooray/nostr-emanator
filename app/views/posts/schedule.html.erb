@@ -1,4 +1,5 @@
 <div class="max-w-3xl mx-auto space-y-6" data-controller="post-scheduler"
+     data-post-scheduler-soon-minutes-value="<%= PostsController::SOON_MINUTES %>"
      data-post-scheduler-suggested-time-value="<%= @suggested_time&.strftime('%Y-%m-%dT%H:%M') %>">
   <!-- Header -->
   <div>
@@ -60,17 +61,28 @@
           <% end %>
         </div>
 
-        <% if @suggested_time.present? %>
-          <div class="flex items-center gap-2">
-            <span class="text-xs text-gray-500 dark:text-gray-400">Suggested:</span>
-            <button type="button"
-                    class="text-xs text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 underline"
-                    data-action="click->post-scheduler#useSuggestion"
-                    data-time="<%= @suggested_time.strftime('%Y-%m-%dT%H:%M') %>">
-              <%= local_time(@suggested_time) %>
-            </button>
-          </div>
-        <% end %>
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <%# "Now" can't be the literal now: signing takes a round-trip to the
+              phone, and a note backdated to cover that never lands at the top
+              of anyone's feed. A few minutes ahead is as close as it gets. %>
+          <button type="button"
+                  class="px-3 py-1 text-xs font-medium text-amber-700 dark:text-amber-300 border border-amber-600 dark:border-amber-400 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-900/30 transition-colors"
+                  data-action="click->post-scheduler#useSoon"
+                  title="Publish <%= PostsController::SOON_MINUTES %> minutes from now, leaving time to approve the signature">
+            Soon
+          </button>
+          <% if @suggested_time.present? %>
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-gray-500 dark:text-gray-400">Suggested:</span>
+              <button type="button"
+                      class="text-xs text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 underline"
+                      data-action="click->post-scheduler#useSuggestion"
+                      data-time="<%= @suggested_time.strftime('%Y-%m-%dT%H:%M') %>">
+                <%= local_time(@suggested_time) %>
+              </button>
+            </div>
+          <% end %>
+        </div>
       </div>
     </div>
 
@@ -147,7 +159,7 @@
         <input type="number"
                id="max_delay_hours"
                name="max_delay_hours"
-               value="24"
+               value="<%= Scheduling::RepostSchedulerService::DEFAULT_MAX_DELAY_HOURS %>"
                min="1"
                max="168"
                class="w-32 rounded-lg border border-gray-200 dark:border-[color:var(--color-rule-dark)] bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-4 py-2 text-sm "

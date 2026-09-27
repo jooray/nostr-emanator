@@ -3,7 +3,7 @@ import flatpickr from "flatpickr"
 
 export default class extends Controller {
   static targets = ["datetimeInput", "delayInput", "timezoneInput"]
-  static values = { suggestedTime: String }
+  static values = { suggestedTime: String, soonMinutes: { type: Number, default: 7 } }
 
   connect() {
     // The submitted zone, so the picked wall-clock time is parsed against the
@@ -41,6 +41,19 @@ export default class extends Controller {
     if (time && this.picker) {
       this.picker.setDate(time, true)
     }
+  }
+
+  useSoon(event) {
+    event.preventDefault()
+    if (!this.picker) return
+    const soon = new Date(Date.now() + this.soonMinutesValue * 60 * 1000)
+    // The picker has minute precision; round up so truncation never eats into
+    // the margin left for signing.
+    if (soon.getSeconds() > 0 || soon.getMilliseconds() > 0) {
+      soon.setSeconds(0, 0)
+      soon.setMinutes(soon.getMinutes() + 1)
+    }
+    this.picker.setDate(soon, true)
   }
 
   toggleReposts(event) {
