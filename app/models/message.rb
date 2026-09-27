@@ -99,10 +99,7 @@ class Message < ApplicationRecord
 
   def delivery_note
     case delivery_tier
-    when "nip65"    then "Sent to their public relays — they have no DM inbox, so it may not arrive"
-    when "fallback" then "Sent to popular relays — they have no relay list at all, so it may not arrive"
-    when "observed" then "Sent to the relays their own messages reach us on — they have no DM inbox, " \
-                         "but their client is reading there"
+    when "nip65", "fallback", "observed" then I18n.t("messaging.delivery_note.#{delivery_tier}")
     end
   end
 
@@ -115,12 +112,25 @@ class Message < ApplicationRecord
   def can_retry? = outbound? && failed?
 
   # What the user is actually giving up, in one place so every warning surface
-  # says the same thing.
-  LEGACY_DOWNGRADE_RISKS = [
-    "Anyone watching the relays can see that you messaged this person, and when.",
-    "Only the message text is encrypted — the sender and recipient are public.",
-    "NIP-04 encryption is unauthenticated, so the ciphertext can be tampered with."
-  ].freeze
+  # says the same thing. Resolved at use time, in the current locale — a frozen
+  # array of strings would be English forever.
+  LEGACY_DOWNGRADE_RISK_KEYS = %i[watchers public_metadata malleable].freeze
+
+  def self.legacy_downgrade_risks
+    LEGACY_DOWNGRADE_RISK_KEYS.map { |key| I18n.t("messaging.legacy_downgrade_risks.#{key}") }
+  end
+
+  # Kept for existing callers: behaves like the array it used to be, but reads
+  # the translations each time it is enumerated.
+  module LegacyDowngradeRisks
+    extend Enumerable
+
+    def self.each(&) = Message.legacy_downgrade_risks.each(&)
+    def self.to_a = Message.legacy_downgrade_risks
+    def self.to_ary = to_a
+    def self.join(separator = nil) = to_a.join(separator)
+  end
+  LEGACY_DOWNGRADE_RISKS = LegacyDowngradeRisks
 
   private
 
@@ -134,7 +144,6 @@ class Message < ApplicationRecord
     return unless legacy_downgrade?
     return if legacy_downgrade_acked_at.present?
 
-    errors.add(:base, "a legacy NIP-04 message can only be sent after the sender " \
-                      "acknowledges that its metadata is public")
+    errors.add(:base, I18n.t("messaging.errors.legacy_unacknowledged"))
   end
 end

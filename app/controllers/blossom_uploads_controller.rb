@@ -19,26 +19,29 @@ class BlossomUploadsController < ApplicationController
     account = current_user.accounts.find(params[:account_id])
     file = params[:file]
 
-    return render_error("No file provided") if file.blank?
+    return render_error(t("blossom_uploads.errors.no_file")) if file.blank?
 
     unless account.has_signer?
-      return render_error("This account has no paired signer")
+      return render_error(t("blossom_uploads.errors.no_signer"))
     end
 
     unless BlossomUpload.allowed_content_type?(file.content_type)
-      return render_error("#{file.original_filename} is not an allowed file type " \
-                          "(#{BlossomUpload.allowed_types_description})")
+      return render_error(t("blossom_uploads.errors.type_not_allowed",
+                            filename: file.original_filename,
+                            types: BlossomUpload.allowed_types_description))
     end
 
     size = declared_size(file)
     if size.to_i > BlossomUpload::MAX_BYTES
       return render_error(
-        "#{file.original_filename} is too large (#{number_to_human_size(size)}). " \
-        "The limit is #{number_to_human_size(BlossomUpload::MAX_BYTES)}.",
+        t("blossom_uploads.errors.too_large",
+          filename: file.original_filename,
+          size: number_to_human_size(size),
+          limit: number_to_human_size(BlossomUpload::MAX_BYTES)),
         status: :payload_too_large
       )
     end
-    return render_error("#{file.original_filename} is empty") if size.to_i.zero?
+    return render_error(t("blossom_uploads.errors.empty", filename: file.original_filename)) if size.to_i.zero?
 
     BlossomUpload.sweep_stale!
 
@@ -46,7 +49,7 @@ class BlossomUploadsController < ApplicationController
       user: current_user,
       account: account,
       status: "pending",
-      step: "Queued…",
+      step: t("blossom_uploads.steps.queued"),
       filename: file.original_filename,
       content_type: normalized_content_type(file.content_type),
       byte_size: size
@@ -57,7 +60,7 @@ class BlossomUploadsController < ApplicationController
 
     render json: status_payload(upload), status: :accepted
   rescue ActiveRecord::RecordInvalid => e
-    render_error(e.record.errors.full_messages.to_sentence.presence || "Could not start the upload")
+    render_error(e.record.errors.full_messages.to_sentence.presence || t("blossom_uploads.errors.could_not_start"))
   end
 
   def show
@@ -102,7 +105,7 @@ class BlossomUploadsController < ApplicationController
   end
 
   def upload_rate_limited
-    render json: { error: "Too many uploads — please wait a minute and try again.", status: "failed" },
+    render json: { error: t("blossom_uploads.errors.rate_limited"), status: "failed" },
            status: :too_many_requests
   end
 

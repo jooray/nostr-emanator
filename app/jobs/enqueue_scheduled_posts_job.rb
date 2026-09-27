@@ -30,7 +30,7 @@ class EnqueueScheduledPostsJob < ApplicationJob
       PublishRepostJob.perform_later(repost.id)
     elsif post.failed?
       repost.update!(status: :failed,
-                     publish_results: { "error" => "Original post failed to publish" })
+                     publish_results: { "error" => repost.account.user.with_locale { I18n.t("posts.jobs.original_failed") } })
       Rails.logger.warn("EnqueueScheduledPostsJob: failing repost #{repost.id}; original post #{post.id} failed")
     else
       # The original hasn't published yet (congestion, still signing) — leave the

@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { t } from "../lib/i18n"
 
 export default class extends Controller {
   static targets = ["refineInput", "form", "editorContainer", "textarea", "refineSection"]
@@ -44,13 +45,13 @@ export default class extends Controller {
     banner.className = "mt-2 flex items-center gap-2 text-xs text-amber-700 dark:text-amber-300"
 
     const label = document.createElement("span")
-    label.textContent = "Your previous text was replaced."
+    label.textContent = t("js.content_builder.replaced")
     banner.appendChild(label)
 
     const button = document.createElement("button")
     button.type = "button"
     button.className = "font-medium underline"
-    button.textContent = "Undo"
+    button.textContent = t("js.content_builder.undo")
     button.addEventListener("click", () => {
       this.textareaTarget.value = previousContent
       this.textareaTarget.dispatchEvent(new Event("input", { bubbles: true }))
@@ -82,7 +83,7 @@ export default class extends Controller {
     const promptInput = this.element.querySelector("input[name='prompt']")
     const prompt = promptInput ? promptInput.value.trim() : ""
     if (!prompt) {
-      alert("Please enter a prompt for the AI")
+      alert(t("js.content_builder.enter_prompt"))
       return
     }
 
@@ -98,8 +99,8 @@ export default class extends Controller {
             </svg>
           </div>
           <div>
-            <p class="text-sm font-medium text-amber-900 dark:text-amber-200" id="streaming-status">Connecting to AI...</p>
-            <p class="text-xs text-amber-700 dark:text-amber-300">Content will appear below as it's generated.</p>
+            <p class="text-sm font-medium text-amber-900 dark:text-amber-200" id="streaming-status">${this.escapeHtml(t("js.content_builder.connecting"))}</p>
+            <p class="text-xs text-amber-700 dark:text-amber-300">${this.escapeHtml(t("js.content_builder.content_below"))}</p>
           </div>
         </div>
         <div class="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 min-h-[400px]">
@@ -124,17 +125,17 @@ export default class extends Controller {
     this.streamSSE(streamUrl, { prompt }, {
       onPhase: (data) => {
         if (data.phase === "generating") {
-          statusEl.textContent = "Generating content..."
+          statusEl.textContent = t("js.content_builder.generating")
         } else if (data.phase === "humanizing") {
           contentEl.textContent = ""
-          statusEl.textContent = "Humanizing content..."
+          statusEl.textContent = t("js.content_builder.humanizing")
         }
       },
       onChunk: (chunk) => {
         contentEl.textContent += chunk
       },
       onComplete: (data) => {
-        statusEl.textContent = "Generation complete!"
+        statusEl.textContent = t("js.content_builder.generation_complete")
         markComplete()
 
         if (data && typeof data === "object" && data.content) {
@@ -150,8 +151,8 @@ export default class extends Controller {
         this.showRefineSection()
       },
       onError: (data) => {
-        const errorMsg = (data && data.message) || "Connection lost. Please try again."
-        statusEl.textContent = "Error: " + errorMsg
+        const errorMsg = (data && data.message) || t("js.content_builder.connection_lost")
+        statusEl.textContent = t("js.content_builder.error", { message: errorMsg })
         spinnerEl.classList.remove("animate-spin")
       }
     })
@@ -165,14 +166,14 @@ export default class extends Controller {
 
     const prompt = this.hasRefineInputTarget ? this.refineInputTarget.value.trim() : ""
     if (!prompt) {
-      alert("Please enter instructions for the AI")
+      alert(t("js.content_builder.enter_instructions"))
       return
     }
 
     // Read current content from the textarea dynamically
     const currentContent = this.hasTextareaTarget ? this.textareaTarget.value.trim() : ""
     if (!currentContent) {
-      alert("No content to refine. Please generate or write some content first.")
+      alert(t("js.content_builder.nothing_to_refine"))
       return
     }
 
@@ -188,8 +189,8 @@ export default class extends Controller {
             </svg>
           </div>
           <div>
-            <p class="text-sm font-medium text-amber-900 dark:text-amber-200" id="streaming-status">Applying AI edits...</p>
-            <p class="text-xs text-amber-700 dark:text-amber-300">Instruction: ${this.escapeHtml(prompt)}</p>
+            <p class="text-sm font-medium text-amber-900 dark:text-amber-200" id="streaming-status">${this.escapeHtml(t("js.content_builder.applying_edits"))}</p>
+            <p class="text-xs text-amber-700 dark:text-amber-300">${this.escapeHtml(t("js.content_builder.instruction", { prompt }))}</p>
           </div>
         </div>
         <div class="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 min-h-[400px]">
@@ -216,17 +217,17 @@ export default class extends Controller {
     this.streamSSE(refineUrl, { user_prompt: prompt, current_content: currentContent }, {
       onPhase: (data) => {
         if (data.phase === "refining") {
-          statusEl.textContent = "Refining content..."
+          statusEl.textContent = t("js.content_builder.refining")
         } else if (data.phase === "humanizing") {
           contentEl.textContent = ""
-          statusEl.textContent = "Humanizing content..."
+          statusEl.textContent = t("js.content_builder.humanizing")
         }
       },
       onChunk: (chunk) => {
         contentEl.textContent += chunk
       },
       onComplete: (data) => {
-        statusEl.textContent = "Refinement complete!"
+        statusEl.textContent = t("js.content_builder.refinement_complete")
         markComplete()
 
         if (data && typeof data === "object" && data.content) {
@@ -239,8 +240,8 @@ export default class extends Controller {
         }
       },
       onError: (data) => {
-        const errorMsg = (data && data.message) || "Connection lost. Please try again."
-        statusEl.textContent = "Error: " + errorMsg
+        const errorMsg = (data && data.message) || t("js.content_builder.connection_lost")
+        statusEl.textContent = t("js.content_builder.error", { message: errorMsg })
         spinnerEl.classList.remove("animate-spin")
       }
     })
@@ -271,7 +272,7 @@ export default class extends Controller {
         signal: controller.signal
       })
     } catch (error) {
-      if (error.name !== "AbortError") onError?.({ message: "Connection lost. Please try again." })
+      if (error.name !== "AbortError") onError?.({ message: t("js.content_builder.connection_lost") })
       return
     }
 
@@ -279,7 +280,7 @@ export default class extends Controller {
     // stream (e.g. a 404/500 before ai_assist_controller's action body runs)
     // — there are no `event:`/`data:` frames to parse, just show the status.
     if (!response.ok || !response.body) {
-      onError?.({ message: `Request failed (${response.status})` })
+      onError?.({ message: t("js.content_builder.request_failed", { status: response.status }) })
       return
     }
 
@@ -302,7 +303,7 @@ export default class extends Controller {
         }
       }
     } catch (error) {
-      if (error.name !== "AbortError") onError?.({ message: "Connection lost. Please try again." })
+      if (error.name !== "AbortError") onError?.({ message: t("js.content_builder.connection_lost") })
     } finally {
       if (this.streamAbortController === controller) this.streamAbortController = null
     }

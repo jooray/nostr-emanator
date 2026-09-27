@@ -15,11 +15,14 @@ class ApplicationController < ActionController::Base
   # Storage is untouched — ActiveRecord persists UTC regardless — and background
   # jobs keep the app default, which is correct: they compare absolute instants.
   around_action :use_user_time_zone
+  around_action :switch_locale
 
   before_action :authenticate_user!
   before_action :trigger_stale_refreshes
 
   helper_method :current_user, :user_signed_in?
+
+  LOCALE_COOKIE = :locale
 
   # L2: malformed event ids / pubkeys are rejected before signing; surface that
   # as a 422 instead of a 500.
@@ -37,6 +40,46 @@ class ApplicationController < ActionController::Base
     return yield unless zone
 
     Time.use_zone(zone, &block)
+  end
+
+  # Chosen language, most explicit first: the signed-in user's setting, the
+  # cookie a visitor's switcher click left (the landing page and login screen
+  # have no user yet), then the browser's Accept-Language. The locale lives in
+  # neither the URL nor the session, so every existing link and route is
+  # unchanged.
+  #
+  # A signed-in user with no saved choice gets the resolved one recorded, so
+  # background jobs — which write progress and error text the user reads later —
+  # can speak the same language (User#with_locale) without a request to ask.
+  def switch_locale(&block)
+    locale = resolve_locale
+    remember_locale(locale)
+    I18n.with_locale(locale, &block)
+  end
+
+  def remember_locale(locale)
+    return unless current_user && current_user.locale.nil?
+
+    current_user.locale = locale
+    current_user.save
+  rescue StandardError => e
+    Rails.logger.warn("Could not store locale: #{e.message}")
+  end
+
+  def resolve_locale
+    available = I18n.available_locales.map(&:to_s)
+    candidates = [current_user&.locale, cookies[LOCALE_COOKIE]]
+    candidates += accepted_languages
+    candidates.compact.map { |c| c.to_s.downcase }.find { |c| available.include?(c) } || I18n.default_locale
+  end
+
+  # "sk-SK,sk;q=0.9,cs;q=0.8,en;q=0.7" -> ["sk", "sk", "cs", "en"], by q.
+  def accepted_languages
+    request.headers["Accept-Language"].to_s.split(",").filter_map do |part|
+      tag, q = part.strip.split(";q=")
+      next if tag.blank?
+      [tag.split("-").first.downcase, (q || 1).to_f]
+    end.sort_by { |_, q| -q }.map(&:first)
   end
 
   def current_user
@@ -60,7 +103,7 @@ class ApplicationController < ActionController::Base
 
   def authenticate_user!
     unless user_signed_in?
-      redirect_to nostr_login_path, alert: "Please sign in to continue"
+      redirect_to nostr_login_path, alert: I18n.t("application.sign_in_required")
     end
   end
 

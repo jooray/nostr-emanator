@@ -17,16 +17,15 @@
   <details class="border rule">
     <summary class="flex cursor-pointer list-none flex-wrap items-center gap-2.5 px-3 py-2.5">
       <span class="lamp" aria-hidden="true"></span>
-      <span class="eng"><%= accounts.size %> accounts cannot message yet</span>
+      <span class="eng"><%= t(".summary", count: accounts.size) %></span>
       <span class="text-sm text-gray-500 dark:text-gray-400">
-        Paired before private messaging existed — re-pair to grant it. Posting is unaffected.
+        <%= t(".summary_hint") %>
       </span>
     </summary>
 
     <div class="border-t rule px-3 py-3">
       <p class="mb-3 max-w-prose text-sm text-gray-600 dark:text-gray-300">
-        Their signers never granted permission to encrypt, seal or decrypt messages.
-        Re-pairing keeps each account's posts, schedule and settings.
+        <%= t(".explanation") %>
       </p>
       <ul class="space-y-1">
         <% accounts.each do |account| %>
@@ -35,7 +34,7 @@
                   class: "flex items-center gap-2.5 py-1.5 hover:text-amber-600 dark:hover:text-amber-400" do %>
               <%= wire(account, height: "16px") %>
               <span class="condensed text-[14px] font-semibold uppercase tracking-[0.13em]"><%= account.display_name_or_npub %></span>
-              <span class="eng ml-auto text-amber-600 dark:text-amber-400">Re-pair</span>
+              <span class="eng ml-auto text-amber-600 dark:text-amber-400"><%= t(".re_pair") %></span>
             <% end %>
           </li>
         <% end %>

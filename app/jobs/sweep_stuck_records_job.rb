@@ -11,8 +11,10 @@
 class SweepStuckRecordsJob < ApplicationJob
   queue_as :default
 
-  STUCK_PUBLISHING_ERROR = "Publishing did not complete — the worker stopped responding. Retry or rebroadcast."
-  STUCK_SIGNING_ERROR = "Signing was never completed. Check your signer app is paired and retry."
+  # Translation keys, resolved per record in its owner's language (the message
+  # is stored and read later on the post page).
+  STUCK_PUBLISHING_ERROR = "posts.jobs.stuck_publishing"
+  STUCK_SIGNING_ERROR = "posts.jobs.stuck_signing"
 
   def perform
     swept = 0
@@ -57,7 +59,8 @@ class SweepStuckRecordsJob < ApplicationJob
     count
   end
 
-  def merged_error(record, message)
+  def merged_error(record, key)
+    message = record.account.user.with_locale { I18n.t(key) }
     (record.publish_results || {}).merge("error" => message)
   end
 end

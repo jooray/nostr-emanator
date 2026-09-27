@@ -57,7 +57,7 @@ class AccountsController < ApplicationController
     auth_session = NostrAuthSession.active.find_by(session_id: session[:account_pairing_session_id])
 
     unless auth_session&.authenticated?
-      redirect_to new_account_path, alert: "Pairing session expired or not yet authenticated"
+      redirect_to new_account_path, alert: t("accounts.create.session_expired")
       return
     end
 
@@ -84,7 +84,7 @@ class AccountsController < ApplicationController
 
   def update
     if @account.update(account_params)
-      redirect_to @account, notice: "Account updated."
+      redirect_to @account, notice: t(".updated")
     else
       render :edit, status: :unprocessable_entity
     end
@@ -92,7 +92,7 @@ class AccountsController < ApplicationController
 
   def destroy
     @account.destroy
-    redirect_to accounts_path, notice: "Account removed."
+    redirect_to accounts_path, notice: t(".removed")
   end
 
   # Nostr profile (kind 0) editor. Amber has no profile editor of its own, so
@@ -105,7 +105,7 @@ class AccountsController < ApplicationController
   def update_profile
     unless @account.profile_editing_capable?
       redirect_to profile_account_path(@account),
-                  alert: "Re-pair this account to grant permission to edit its profile."
+                  alert: t(".needs_re_pair")
       return
     end
 
@@ -124,7 +124,7 @@ class AccountsController < ApplicationController
   # Polled by the editor while the user approves in their signer.
   def profile_status
     update = @account.profile_updates.find_by(id: params[:update_id])
-    return render json: { status: "failed", error: "That update is gone. Please try again." } unless update
+    return render json: { status: "failed", error: t(".gone") } unless update
 
     render json: {
       status: update.display_status,
@@ -138,12 +138,12 @@ class AccountsController < ApplicationController
     # and always claimed success regardless of outcome. Now it's honest —
     # the job runs in the background and the message says exactly that.
     FetchAccountProfileJob.perform_later(@account.id)
-    redirect_to settings_account_path(@account), notice: "Refreshing profile from relays in the background — reload in a few seconds to see changes."
+    redirect_to settings_account_path(@account), notice: t(".notice")
   end
 
   def refresh_relays
     FetchRelayListJob.perform_later(@account.id)
-    redirect_to settings_account_path(@account), notice: "Refreshing relay list in the background — reload in a few seconds to see changes."
+    redirect_to settings_account_path(@account), notice: t(".notice")
   end
 
   def re_pair
@@ -159,7 +159,7 @@ class AccountsController < ApplicationController
 
   def re_pair_poll
     session_id = session[:account_pairing_session_id]
-    return render json: { paired: false, error: "No pending session" } if session_id.blank?
+    return render json: { paired: false, error: t("accounts.no_pending_session") } if session_id.blank?
 
     auth_session = NostrAuthSession.active.find_by(session_id: session_id)
     # No active session left under this id means it expired (or was consumed/
@@ -171,7 +171,7 @@ class AccountsController < ApplicationController
       if auth_session.authenticated_user_pubkey != @account.pubkey_hex
         auth_session.consume!
         session.delete(:account_pairing_session_id)
-        render json: { paired: false, error: "Re-pair aborted: signer returned a different Nostr identity (#{auth_session.authenticated_user_pubkey[0..15]}…) than this account (#{@account.pubkey_hex[0..15]}…)." }
+        render json: { paired: false, error: t(".identity_mismatch", signer: auth_session.authenticated_user_pubkey[0..15], account: @account.pubkey_hex[0..15]) }
         return
       end
 
@@ -179,7 +179,7 @@ class AccountsController < ApplicationController
       # tried to JSON.parse — so the real reason never reached the user and the
       # poll just spun. Answer in JSON whatever happens.
       unless @account.apply_signer(auth_session).save
-        render json: { paired: false, error: "Could not save the signer: #{@account.errors.full_messages.to_sentence}" }
+        render json: { paired: false, error: t(".save_failed", errors: @account.errors.full_messages.to_sentence) }
         return
       end
 
@@ -193,7 +193,7 @@ class AccountsController < ApplicationController
 
   def pair_poll
     session_id = session[:account_pairing_session_id]
-    return render json: { paired: false, error: "No pending session" } if session_id.blank?
+    return render json: { paired: false, error: t("accounts.no_pending_session") } if session_id.blank?
 
     auth_session = NostrAuthSession.active.find_by(session_id: session_id)
     # No active session left under this id means it expired (or was consumed/
@@ -269,11 +269,11 @@ class AccountsController < ApplicationController
     session.delete(:account_pairing_session_id)
     FetchAccountProfileJob.perform_later(account.id)
     FetchRelayListJob.perform_later(account.id)
-    redirect_to account, notice: "Account paired! Fetching profile and relay list in the background."
+    redirect_to account, notice: t("accounts.paired_notice")
   end
 
   def pairing_rate_limited
-    redirect_to accounts_path, alert: "Too many pairing attempts — please wait a minute and try again."
+    redirect_to accounts_path, alert: t("accounts.pairing_rate_limited")
   end
 
   def fetch_recent_interactions

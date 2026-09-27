@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { t } from "../lib/i18n"
 
 export default class extends Controller {
   static targets = ["likeButton", "followButton", "muteButton", "likeStatus", "followStatus", "muteStatus", "likeRefreshButton", "followRefreshButton", "muteRefreshButton"]
@@ -36,17 +37,17 @@ export default class extends Controller {
 
       if (data.success) {
         this.actionIds.like = data.nostr_action_id
-        this.showStatus("likeStatus", "Signing...", "amber")
+        this.showStatus("likeStatus", t("js.interaction_actions.signing"), "amber")
         this.hideRefreshButton("like")
         this.pollActionStatus(data.nostr_action_id, "like")
       } else {
-        this.showStatus("likeStatus", data.error || "Failed", "red")
+        this.showStatus("likeStatus", data.error || t("js.interaction_actions.failed"), "red")
         this.hideRefreshButton("like")
         this.alreadyLikedValue = false
         this.unsetLiked()
       }
     } catch {
-      this.showStatus("likeStatus", "Network error", "red")
+      this.showStatus("likeStatus", t("js.interaction_actions.network_error"), "red")
       this.hideRefreshButton("like")
       this.alreadyLikedValue = false
       this.unsetLiked()
@@ -67,22 +68,22 @@ export default class extends Controller {
       if (data.success) {
         this.actionIds.follow = data.nostr_action_id
         if (data.status === "published") {
-          this.showStatus("followStatus", "Already following", "green")
+          this.showStatus("followStatus", t("js.interaction_actions.already_following"), "green")
           this.hideRefreshButton("follow")
           this.clearStatusAfter("followStatus", 3000)
         } else {
-          this.showStatus("followStatus", "Signing...", "amber")
+          this.showStatus("followStatus", t("js.interaction_actions.signing"), "amber")
           this.hideRefreshButton("follow")
           this.pollActionStatus(data.nostr_action_id, "follow")
         }
       } else {
-        this.showStatus("followStatus", data.error || "Failed", "red")
+        this.showStatus("followStatus", data.error || t("js.interaction_actions.failed"), "red")
         this.hideRefreshButton("follow")
         this.alreadyFollowingValue = false
         this.unsetFollowed()
       }
     } catch {
-      this.showStatus("followStatus", "Network error", "red")
+      this.showStatus("followStatus", t("js.interaction_actions.network_error"), "red")
       this.hideRefreshButton("follow")
       this.alreadyFollowingValue = false
       this.unsetFollowed()
@@ -91,9 +92,9 @@ export default class extends Controller {
 
   async mute() {
     const label = this.muteTargetLabel()
-    if (!confirm(`Mute ${label}? Their posts will be hidden across all your accounts.`)) return
+    if (!confirm(t("js.interaction_actions.mute_confirm", { label }))) return
 
-    this.showStatus("muteStatus", "Muting...", "amber")
+    this.showStatus("muteStatus", t("js.interaction_actions.muting"), "amber")
     this.hideRefreshButton("mute")
 
     try {
@@ -107,14 +108,14 @@ export default class extends Controller {
         if (data.status === "published") {
           this.hideCardsForAuthor()
         } else {
-          this.showStatus("muteStatus", "Signing...", "amber")
+          this.showStatus("muteStatus", t("js.interaction_actions.signing"), "amber")
           this.pollActionStatus(data.nostr_action_id, "mute")
         }
       } else {
-        this.showStatus("muteStatus", data.error || "Failed", "red")
+        this.showStatus("muteStatus", data.error || t("js.interaction_actions.failed"), "red")
       }
     } catch {
-      this.showStatus("muteStatus", "Network error", "red")
+      this.showStatus("muteStatus", t("js.interaction_actions.network_error"), "red")
     }
   }
 
@@ -136,11 +137,12 @@ export default class extends Controller {
   }
 
   muteTargetLabel() {
-    // Prefer the visible label on the Mute button itself (author's name or
-    // truncated pubkey), falling back to the pubkey value. Keeps the confirm
-    // dialog aligned with what the user sees.
-    const span = this.hasMuteButtonTarget ? this.muteButtonTarget.querySelector("span") : null
-    return span?.textContent?.trim() || `@${this.authorPubkeyValue.slice(0, 12)}`
+    // The same name the Mute button shows (author's name or truncated pubkey),
+    // falling back to the pubkey value. Read from a data attribute, not the
+    // button's text: that text already contains the verb, and the confirm
+    // dialog read "Mute Mute @alice?".
+    const label = this.hasMuteButtonTarget ? this.muteButtonTarget.dataset.muteLabel : null
+    return label?.trim() || `@${this.authorPubkeyValue.slice(0, 12)}`
   }
 
   setLiked() {
@@ -171,7 +173,7 @@ export default class extends Controller {
       <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
       </svg>
-      <span>Following</span>`
+      <span>${t("js.interaction_actions.following")}</span>`
     this.followButtonTarget.classList.add("text-green-500", "dark:text-green-400")
     this.followButtonTarget.classList.remove("text-gray-400", "dark:text-gray-500", "hover:text-amber-500", "dark:hover:text-amber-400")
     this.followButtonTarget.disabled = true
@@ -183,7 +185,7 @@ export default class extends Controller {
       <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
       </svg>
-      <span>Follow</span>`
+      <span>${t("js.interaction_actions.follow")}</span>`
     this.followButtonTarget.classList.remove("text-green-500", "dark:text-green-400")
     this.followButtonTarget.classList.add("text-gray-400", "dark:text-gray-500", "hover:text-amber-500", "dark:hover:text-amber-400")
     this.followButtonTarget.disabled = false
@@ -203,25 +205,25 @@ export default class extends Controller {
         switch (data.status) {
           case "pending":
           case "processing":
-            this.showStatus(statusTarget, "Processing...", "amber")
+            this.showStatus(statusTarget, t("js.interaction_actions.processing"), "amber")
             this.hideRefreshButton(type)
             break
           case "awaiting_signature":
-            this.showStatus(statusTarget, "Approve in signer app...", "amber")
+            this.showStatus(statusTarget, t("js.interaction_actions.approve"), "amber")
             this.hideRefreshButton(type)
             break
           case "publishing":
-            this.showStatus(statusTarget, "Publishing...", "amber")
+            this.showStatus(statusTarget, t("js.interaction_actions.publishing"), "amber")
             this.hideRefreshButton(type)
             break
           case "published":
             clearInterval(this._pollIntervals[type])
             this.hideRefreshButton(type)
             if (type === "like") {
-              this.showStatus(statusTarget, "Liked!", "green")
+              this.showStatus(statusTarget, t("js.interaction_actions.liked"), "green")
               this.clearStatusAfter(statusTarget, 3000)
             } else if (type === "follow") {
-              this.showStatus(statusTarget, "Followed!", "green")
+              this.showStatus(statusTarget, t("js.interaction_actions.followed"), "green")
               this.clearStatusAfter(statusTarget, 3000)
             } else if (type === "mute") {
               this.hideCardsForAuthor()
@@ -229,7 +231,7 @@ export default class extends Controller {
             break
           case "failed":
             clearInterval(this._pollIntervals[type])
-            this.showStatus(statusTarget, data.error_message || "Failed", "red")
+            this.showStatus(statusTarget, data.error_message || t("js.interaction_actions.failed"), "red")
             if (data.unsigned_event_present && !data.signed_event_present) {
               this.showRefreshButton(type)
             } else {
@@ -280,7 +282,7 @@ export default class extends Controller {
     if (!actionId) return
 
     try {
-      this.showStatus(statusTarget, "Retrying...", "amber")
+      this.showStatus(statusTarget, t("js.interaction_actions.retrying"), "amber")
       this.hideRefreshButton(type)
 
       const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content
@@ -295,14 +297,14 @@ export default class extends Controller {
       const data = await response.json()
 
       if (!response.ok || !data.success) {
-        this.showStatus(statusTarget, data.error || "Retry failed", "red")
+        this.showStatus(statusTarget, data.error || t("js.interaction_actions.retry_failed"), "red")
         this.showRefreshButton(type)
         return
       }
 
       this.pollActionStatus(actionId, type)
     } catch {
-      this.showStatus(statusTarget, "Retry failed", "red")
+      this.showStatus(statusTarget, t("js.interaction_actions.retry_failed"), "red")
       this.showRefreshButton(type)
     }
   }

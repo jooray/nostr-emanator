@@ -1,0 +1,276 @@
+en:
+  # Formats used across the app with l(time, format: :app_*). Translators may
+  # reorder day and month here; the English values match the old strftime calls.
+  time:
+    formats:
+      app_time: "%H:%M"
+      app_date: "%b %d, %Y"
+      app_short: "%b %d, %H:%M"
+      app_datetime: "%b %d, %Y %H:%M"
+      app_day_month: "%d %b"
+
+  # Post / repost / action status names (ApplicationHelper#status_label).
+  status_labels:
+    draft: Draft
+    pending: Pending
+    pending_signature: Pending signature
+    awaiting_signature: Waiting for approval in signer
+    processing: Processing
+    scheduled: Scheduled
+    publishing: Publishing
+    published: Published
+    failed: Failed
+
+  # ConsoleHelper: lamps, poll strips, delivery sentences, status slugs.
+  console:
+    poll_strip:
+      accepted: accepted
+    delivery:
+      all:
+        one: Reached all %{count} relays.
+        other: Reached all %{count} relays.
+      partial:
+        one: Reached %{ok} of %{count} relays, which is a normal publish.
+        other: Reached %{ok} of %{count} relays, which is a normal publish.
+      thin:
+        one: Reached only 1 of %{count} relays — effectively invisible.
+        other: Reached only 1 of %{count} relays — effectively invisible.
+      none:
+        one: Reached none of the %{count} relays it was sent to.
+        other: Reached none of the %{count} relays it was sent to.
+      not_published: Not published yet.
+    slug:
+      approve_on_phone: Approve on phone
+      barely_out: Barely out %{tally}
+      failed: Failed
+      sending: Sending
+      held: Held
+
+  application:
+    sign_in_required: Please sign in to continue
+
+  activerecord:
+    attributes:
+      user:
+        custom_relays: Custom relays
+    errors:
+      models:
+        user:
+          attributes:
+            custom_relays:
+              unsafe_relay: "%{relay} is not usable: relays must be wss:// URLs on public hosts"
+
+  layouts:
+    application:
+      skip_to_content: Skip to content
+    navigation:
+      theme: Theme
+      station_status: Station status
+      readings:
+        identities:
+          one: "%{count} identity"
+          other: "%{count} identities"
+        waiting:
+          one: "%{count} awaiting signature"
+          other: "%{count} awaiting signature"
+        short:
+          one: "%{count} barely out"
+          other: "%{count} barely out"
+        failed:
+          one: "%{count} never went out"
+          other: "%{count} never went out"
+      signed_in: Signed in
+      sign_out_confirm: Sign out of Emanator?
+      out: Out
+      sign_out: Sign out
+      open_navigation: Open navigation
+      close_navigation: Close navigation
+      main: Main
+    nav_items:
+      dashboard: Dashboard
+      new_post: New post
+      accounts: Accounts
+      posts: Posts
+      interactions: Interactions
+      calendar: Calendar
+    messages_nav_item:
+      messages: Messages
+      unread:
+        one: "%{count} unread message"
+        other: "%{count} unread messages"
+      requests: You have unread message requests
+
+  pwa:
+    manifest:
+      description: Schedule and publish Nostr posts
+
+  sessions:
+    new:
+      tagline: Sign in with your Nostr identity
+      extension_heading: Browser extension
+      extension_button: Continue with extension
+      signer_heading: Signer app
+      open_in_signer: Open in your signer app
+      open_in_signer_hint: Amber, Amethyst, or any signer on this device
+      scan_hint: Scan with a signer on another device
+      copy: Copy
+      bunker_heading: Paste a bunker link
+      bunker_help: Create a connection in your signer and paste the link it gives you.
+      bunker_label: Bunker link
+      connect: Connect
+      waiting: Waiting for your signer…
+      stale: Didn't get the approval? Keep this tab open while you approve, or start over with a new code.
+      new_code: Get a new code
+      auth_challenge: Your signer needs you to approve this in its own window.
+      open_approval: Open approval page
+      expired: This code expired for your security.
+      no_account: No account needed. Your identity is your Nostr key.
+      new_to_nostr: New to Nostr? Get a signer first.
+      desktop_label: "On desktop:"
+      desktop_html: install a NIP-07 browser extension, e.g. %{alby} or %{nos2x}.
+      mobile_label: "On mobile:"
+      mobile_html: install %{amber} (Android), then use "Open in your signer app" above — it hands the connection straight to Amber on the same phone.
+      explainer: Either one generates a Nostr key and lets you approve sign-in/posting requests — Emanator never sees your private key.
+    rate_limited:
+      try_again: Try again
+    errors:
+      too_many_title: Too many attempts
+      too_many_message: Too many authentication attempts. Please try again shortly.
+      capacity_title: Temporarily at capacity
+      capacity_message: Authentication is temporarily at capacity. Please try again shortly.
+    bunker:
+      invalid_link: That does not look like a usable bunker link. It should start with bunker:// and include at least one relay.
+      failed: Could not start the connection. Please try again.
+    refresh_profile:
+      refreshing: Refreshing your profile from relays in the background — reload in a few seconds to see changes.
+      not_signed_in: Not signed in.
+    callback:
+      no_pubkey: "Authentication failed: No public key provided"
+      invalid_pubkey: "Authentication failed: Invalid public key format"
+      bad_signature: "Authentication failed: Signature verification failed"
+      welcome: Welcome, %{name}!
+    destroy:
+      logged_out: Logged out successfully
+
+  shared:
+    locale_switcher:
+      label: Language
+    qr_phishing_warning:
+      login_html: Only scan a QR code shown on <strong>your own screen</strong>. Scanning a code someone sent or showed you logs them into Emanator as you.
+      pairing_html: Only scan a QR code shown on <strong>your own screen</strong>. Scanning a code someone sent or showed you pairs your Nostr key to someone else's Emanator account.
+    forme_row:
+      draft: Draft
+      sent: Sent
+      today: Today
+      tomorrow: Tomorrow
+      repost_of_note: Repost of this note
+      reposts:
+        one: "%{count} repost"
+        other: "%{count} reposts"
+      never_reached: Never reached a relay. Nothing was published.
+      waiting_for_approval: Waiting for approval
+      open: Open
+      rebroadcast: Rebroadcast
+      retry: Retry
+
+  users:
+    edit:
+      title: Settings
+      profile:
+        title: Profile
+        picture_alt: Profile
+        fallback_name: Nostr User
+        refresh: Refresh from Relays
+      language:
+        title: Language
+        help: The language of the Emanator interface. Your posts are not affected.
+        save: Save
+      event_viewer:
+        title: Event Viewer
+        help: Choose which Nostr client opens when you click profile or event links.
+        save: Save
+      custom_relays:
+        title: Custom Relays
+        help: These relays will receive every post you publish, in addition to each account's NIP-65 write relays.
+        label: Relay URLs (one per line)
+        save: Save Relays
+    update:
+      language_updated: Language updated.
+      event_viewer_updated: Event viewer updated.
+      custom_relays_updated: Custom relays updated.
+      settings_updated: Settings updated.
+    api_tokens:
+      title: API Tokens (MCP)
+      intro_html: Connect an AI agent to Emanator over the %{mcp_link}. Point your MCP client at %{endpoint} and send the token as %{header}.
+      mcp_link: Model Context Protocol
+      warning_html: '<strong>A token can post as you.</strong> It reads your accounts and posts, creates drafts, and <strong>schedules posts that are then signed and published automatically under any of your paired identities, without a further approval step</strong> — because your signer approves kind-1 notes without prompting. Treat a token like a posting key: hand it only to an agent you would let speak as these accounts, and revoke it here the moment you stop trusting it.'
+      created_html: Token <strong>%{name}</strong> created. Copy it now — it will not be shown again.
+      copy: Copy
+      name_label: Token name
+      name_placeholder: e.g. content-agent
+      expires_label: Expires
+      expiry:
+        days_30: 30 days
+        days_90: 90 days
+        days_180: 180 days
+        year: 1 year
+        never: Never
+      generate: Generate token
+      columns:
+        name: Name
+        created: Created
+        expires: Expires
+        last_used: Last used
+      never: Never
+      expired_on: Expired %{date}
+      ago: "%{time} ago"
+      revoke: Revoke
+      revoke_confirm: Revoke this token? Anything using it will lose access.
+      empty: No tokens yet.
+
+  api_tokens:
+    create:
+      name_required: Token name required.
+    destroy:
+      revoked: Token revoked.
+
+  # Kaminari pagination (same English as the gem's own defaults).
+  views:
+    pagination:
+      label: pager
+      first: "&laquo; First"
+      last: "Last &raquo;"
+      previous: "&lsaquo; Prev"
+      next: "Next &rsaquo;"
+      truncate: "&hellip;"
+
+  js:
+    nostr_login:
+      paste_first: Paste the bunker link from your signer first.
+      connecting: Connecting…
+      unusable_link: Could not use that bunker link.
+      waiting_approve: Waiting for your signer to approve…
+      unreachable: Could not reach the server. Check your connection and try again.
+      no_extension: No NIP-07 extension found. Please install nos2x, Alby, or another Nostr extension.
+      extension_connecting: Connecting...
+      no_pubkey: Failed to get public key from extension
+      extension_error: "Extension error: %{message}"
+      unknown_error: Unknown error
+      lost_connection: Lost connection to the server. Please reload the page to try again.
+      sign_in_extension: Sign in with Browser Extension
+    theme:
+      names:
+        system: Follow system
+        light: Light
+        dark: Dark
+      next_names:
+        system: follow system
+        light: light
+        dark: dark
+      label: "Theme: %{current}. Switch to %{next}."
+    clipboard:
+      copied: Copied!
+      copy_failed: Copy failed
+    expandable:
+      show_more: Show more
+      show_less: Show less

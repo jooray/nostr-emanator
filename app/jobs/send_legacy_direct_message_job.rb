@@ -23,10 +23,10 @@ class SendLegacyDirectMessageJob < ApplicationJob
 
     account = message.account
     recipient = message.conversation.peer_pubkeys.first
-    return message.update!(status: "failed", step: nil, error: "No recipient.") if recipient.blank?
+    return message.update!(status: "failed", step: nil, error: localized(message, "messaging.errors.no_recipient")) if recipient.blank?
 
     signed = encrypt_and_sign(message, account, recipient)
-    return message.update!(status: "failed", step: nil, error: "Your signer did not return a signed message.") unless signed
+    return message.update!(status: "failed", step: nil, error: localized(message, "messaging.errors.no_signed_message")) unless signed
 
     publish(message, account, recipient, signed)
   rescue StandardError => e
@@ -38,7 +38,7 @@ class SendLegacyDirectMessageJob < ApplicationJob
 
   def encrypt_and_sign(message, account, recipient)
     Nostr::Nip46Rpc.open(account) do |rpc|
-      message.update!(step: "Approve the message in your signer app (1 of 2)…")
+      message.update!(step: localized(message, "messaging.steps.approve_message", index: 1, total: 2))
       ciphertext = rpc.call("nip04_encrypt", [ recipient, message.content ])
 
       unsigned = Nostr::EventSignerService.new.build_unsigned_event(
@@ -46,7 +46,7 @@ class SendLegacyDirectMessageJob < ApplicationJob
         created_at: Time.now.to_i, tags: [ [ "p", recipient ] ]
       )
 
-      message.update!(status: "wrapping", step: "Approve the signature in your signer app (2 of 2)…")
+      message.update!(status: "wrapping", step: localized(message, "messaging.steps.approve_signature", index: 2, total: 2))
       signed = JSON.parse(rpc.call("sign_event", [ JSON.generate(unsigned) ]))
 
       next nil unless Nostr::EventValidator.valid?(signed, kind: Message::LEGACY_KIND, author: account.pubkey_hex)
@@ -60,7 +60,7 @@ class SendLegacyDirectMessageJob < ApplicationJob
   # metadata left to protect by restricting relays — and the recipient's NIP-65
   # READ relays are exactly where they expect to be reached. Defaults included.
   def publish(message, account, recipient, signed)
-    message.update!(status: "publishing", step: "Delivering…")
+    message.update!(status: "publishing", step: localized(message, "messaging.steps.delivering"))
 
     relays = (recipient_read_relays(recipient) + Array(account.write_relays)).uniq
     results = Nostr::EventPublisherService.new.publish(signed, relays: relays)
@@ -77,9 +77,15 @@ class SendLegacyDirectMessageJob < ApplicationJob
       message.update!(
         status: "failed", step: nil,
         publish_results: results.transform_values(&:to_s),
-        error: "No relay accepted the message."
+        error: localized(message, "messaging.errors.no_relay_accepted")
       )
     end
+  end
+
+  # Step and error text is stored on the row and read later, so it is written in
+  # the owner's language rather than whatever locale this worker thread has.
+  def localized(message, key, **options)
+    message.user.with_locale { I18n.t(key, **options) }
   end
 
   def recipient_read_relays(recipient)

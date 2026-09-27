@@ -1,0 +1,291 @@
+sk:
+  time:
+    formats:
+      app_time: "%H:%M"
+      app_date: "%-d. %-m. %Y"
+      app_short: "%-d. %-m. %H:%M"
+      app_datetime: "%-d. %-m. %Y %H:%M"
+      app_day_month: "%-d. %-m."
+
+  status_labels:
+    draft: Koncept
+    pending: Čaká
+    pending_signature: Čaká na podpis
+    awaiting_signature: Čaká na schválenie v podpisovači
+    processing: Spracúva sa
+    scheduled: Naplánované
+    publishing: Zverejňuje sa
+    published: Zverejnené
+    failed: Zlyhalo
+
+  console:
+    poll_strip:
+      accepted: prijaté
+    delivery:
+      all:
+        one: Dosiahlo všetok %{count} relay.
+        few: Dosiahlo všetky %{count} relaye.
+        many: Dosiahlo všetkých %{count} relayov.
+        other: Dosiahlo všetkých %{count} relayov.
+      partial:
+        one: Dosiahnutých %{ok} z %{count} relaya, čo je bežné zverejnenie.
+        few: Dosiahnutých %{ok} z %{count} relayov, čo je bežné zverejnenie.
+        many: Dosiahnutých %{ok} z %{count} relayov, čo je bežné zverejnenie.
+        other: Dosiahnutých %{ok} z %{count} relayov, čo je bežné zverejnenie.
+      thin:
+        one: Dosiahol iba 1 z %{count} relaya, prakticky neviditeľné.
+        few: Dosiahol iba 1 z %{count} relayov, prakticky neviditeľné.
+        many: Dosiahol iba 1 z %{count} relayov, prakticky neviditeľné.
+        other: Dosiahol iba 1 z %{count} relayov, prakticky neviditeľné.
+      none:
+        one: Nedosiahol žiadny z %{count} relaya, na ktorý bol odoslaný.
+        few: Nedosiahol žiadny z %{count} relayov, na ktoré bol odoslaný.
+        many: Nedosiahol žiadny z %{count} relayov, na ktoré bol odoslaný.
+        other: Nedosiahol žiadny z %{count} relayov, na ktoré bol odoslaný.
+      not_published: Ešte nezverejnené.
+    slug:
+      approve_on_phone: Schváľ v telefóne
+      barely_out: Sotva vyšlo %{tally}
+      failed: Zlyhalo
+      sending: Odosiela sa
+      held: Pripravené
+
+  application:
+    sign_in_required: Na pokračovanie sa prihlás
+
+  activerecord:
+    attributes:
+      user:
+        custom_relays: Vlastné relaye
+    errors:
+      models:
+        user:
+          attributes:
+            custom_relays:
+              unsafe_relay: "%{relay} sa nedá použiť: relaye musia byť wss:// URL adresy na verejných hostiteľoch"
+
+  layouts:
+    application:
+      skip_to_content: Preskočiť na obsah
+    navigation:
+      theme: Motív
+      station_status: Stav stanice
+      readings:
+        identities:
+          one: "%{count} identita"
+          few: "%{count} identity"
+          many: "%{count} identity"
+          other: "%{count} identít"
+        waiting:
+          one: "%{count} čaká na podpis"
+          few: "%{count} čakajú na podpis"
+          many: "%{count} čaká na podpis"
+          other: "%{count} čaká na podpis"
+        short:
+          one: "%{count} sotva vyšiel"
+          few: "%{count} sotva vyšli"
+          many: "%{count} sotva vyšlo"
+          other: "%{count} sotva vyšlo"
+        failed:
+          one: "%{count} nikdy nevyšiel"
+          few: "%{count} nikdy nevyšli"
+          many: "%{count} nikdy nevyšlo"
+          other: "%{count} nikdy nevyšlo"
+      signed_in: Prihlásený
+      sign_out_confirm: Odhlásiť sa z Emanatora?
+      out: Odhlásiť
+      sign_out: Odhlásiť sa
+      open_navigation: Otvoriť navigáciu
+      close_navigation: Zavrieť navigáciu
+      main: Hlavné
+    nav_items:
+      dashboard: Prehľad
+      new_post: Nový príspevok
+      accounts: Účty
+      posts: Príspevky
+      interactions: Interakcie
+      calendar: Kalendár
+    messages_nav_item:
+      messages: Správy
+      unread:
+        one: "%{count} neprečítaná správa"
+        few: "%{count} neprečítané správy"
+        many: "%{count} neprečítanej správy"
+        other: "%{count} neprečítaných správ"
+      requests: Máš neprečítané žiadosti o správy
+
+  pwa:
+    manifest:
+      description: Plánuj a zverejňuj príspevky na Nostri
+
+  sessions:
+    new:
+      tagline: Prihlás sa svojou Nostr identitou
+      extension_heading: Rozšírenie prehliadača
+      extension_button: Pokračovať s rozšírením
+      signer_heading: Podpisová aplikácia
+      open_in_signer: Otvoriť v podpisovej aplikácii
+      open_in_signer_hint: Amber, Amethyst alebo ktorýkoľvek podpisovač na tomto zariadení
+      scan_hint: Naskenuj podpisovačom na inom zariadení
+      copy: Kopírovať
+      bunker_heading: Vlož bunker odkaz
+      bunker_help: Vytvor pripojenie vo svojom podpisovači a vlož odkaz, ktorý ti dá.
+      bunker_label: Bunker odkaz
+      connect: Pripojiť
+      waiting: Čaká sa na tvoj podpisovač…
+      stale: Neprišlo schválenie? Nechaj túto kartu otvorenú, kým schvaľuješ, alebo začni znova s novým kódom.
+      new_code: Získať nový kód
+      auth_challenge: Tvoj podpisovač potrebuje, aby si to schválil v jeho vlastnom okne.
+      open_approval: Otvoriť stránku schválenia
+      expired: Tento kód vypršal kvôli tvojej bezpečnosti.
+      no_account: Účet netreba. Tvoja identita je tvoj Nostr kľúč.
+      new_to_nostr: Nový na Nostri? Najprv si zaobstaraj podpisovač.
+      desktop_label: "Na počítači:"
+      desktop_html: nainštaluj NIP-07 rozšírenie prehliadača, napr. %{alby} alebo %{nos2x}.
+      mobile_label: "V mobile:"
+      mobile_html: "nainštaluj %{amber} (Android) a potom použi „Otvoriť v podpisovej aplikácii“ vyššie: pripojenie odovzdá priamo Amberu na tom istom telefóne."
+      explainer: Obe možnosti vygenerujú Nostr kľúč a umožnia ti schvaľovať žiadosti o prihlásenie a zverejnenie. Emanator nikdy nevidí tvoj súkromný kľúč.
+    rate_limited:
+      try_again: Skúsiť znova
+    errors:
+      too_many_title: Príliš veľa pokusov
+      too_many_message: Príliš veľa pokusov o overenie. Skús to znova o chvíľu.
+      capacity_title: Dočasne preťažené
+      capacity_message: Overovanie je dočasne preťažené. Skús to znova o chvíľu.
+    bunker:
+      invalid_link: "To nevyzerá ako použiteľný bunker odkaz. Mal by začínať na bunker:// a obsahovať aspoň jeden relay."
+      failed: Pripojenie sa nepodarilo spustiť. Skús to znova.
+    refresh_profile:
+      refreshing: Na pozadí sa obnovuje tvoj profil z relayov. Obnov stránku o pár sekúnd, aby si videl zmeny.
+      not_signed_in: Chýba prihlásenie.
+    callback:
+      no_pubkey: "Overenie zlyhalo: nebol poskytnutý verejný kľúč"
+      invalid_pubkey: "Overenie zlyhalo: neplatný formát verejného kľúča"
+      bad_signature: "Overenie zlyhalo: overenie podpisu zlyhalo"
+      welcome: Vitaj, %{name}!
+    destroy:
+      logged_out: Odhlásenie prebehlo.
+
+  shared:
+    locale_switcher:
+      label: Jazyk
+    qr_phishing_warning:
+      login_html: Skenuj iba QR kód zobrazený na <strong>tvojej vlastnej obrazovke</strong>. Naskenovaním kódu, ktorý ti niekto poslal alebo ukázal, sa táto osoba prihlási do Emanatora ako ty.
+      pairing_html: Skenuj iba QR kód zobrazený na <strong>tvojej vlastnej obrazovke</strong>. Naskenovaním kódu, ktorý ti niekto poslal alebo ukázal, sa tvoj Nostr kľúč spáruje s cudzím účtom Emanator.
+    forme_row:
+      draft: Koncept
+      sent: Odoslané
+      today: Dnes
+      tomorrow: Zajtra
+      repost_of_note: Repost tejto poznámky
+      reposts:
+        one: "%{count} repost"
+        few: "%{count} reposty"
+        many: "%{count} repostu"
+        other: "%{count} repostov"
+      never_reached: Nikdy sa nedostalo na žiadny relay. Nič sa nezverejnilo.
+      waiting_for_approval: Čaká na schválenie
+      open: Otvoriť
+      rebroadcast: Odoslať znova
+      retry: Skúsiť znova
+
+  users:
+    edit:
+      title: Nastavenia
+      profile:
+        title: Profil
+        picture_alt: Profil
+        fallback_name: Nostr používateľ
+        refresh: Obnoviť z relayov
+      language:
+        title: Jazyk
+        help: Jazyk rozhrania Emanatora. Tvoje príspevky to neovplyvní.
+        save: Uložiť
+      event_viewer:
+        title: Prehliadač udalostí
+        help: Vyber, ktorý Nostr klient sa otvorí, keď klikneš na odkaz na profil alebo udalosť.
+        save: Uložiť
+      custom_relays:
+        title: Vlastné relaye
+        help: Tieto relaye dostanú každý príspevok, ktorý zverejníš, popri zápisových relayoch NIP-65 každého účtu.
+        label: URL adresy relayov (jedna na riadok)
+        save: Uložiť relaye
+    update:
+      language_updated: Jazyk aktualizovaný.
+      event_viewer_updated: Prehliadač udalostí aktualizovaný.
+      custom_relays_updated: Vlastné relaye aktualizované.
+      settings_updated: Nastavenia aktualizované.
+    api_tokens:
+      title: API tokeny (MCP)
+      intro_html: Pripoj AI agenta k Emanatoru cez %{mcp_link}. Nasmeruj svojho MCP klienta na %{endpoint} a pošli token ako %{header}.
+      mcp_link: Model Context Protocol
+      warning_html: '<strong>Token môže zverejňovať príspevky ako ty.</strong> Číta tvoje účty a príspevky, vytvára koncepty a <strong>plánuje príspevky, ktoré sa potom automaticky podpíšu a zverejnia pod ktoroukoľvek z tvojich spárovaných identít, bez ďalšieho schvaľovacieho kroku</strong>, pretože tvoj podpisovač schvaľuje kind-1 poznámky bez pýtania. Zaobchádzaj s tokenom ako s kľúčom na zverejňovanie: daj ho iba agentovi, ktorému by si dovolil hovoriť za tieto účty, a zruš ho tu vo chvíli, keď mu prestaneš dôverovať.'
+      created_html: Token <strong>%{name}</strong> vytvorený. Skopíruj si ho teraz, druhýkrát sa už nezobrazí.
+      copy: Kopírovať
+      name_label: Názov tokenu
+      name_placeholder: napr. content-agent
+      expires_label: Platnosť do
+      expiry:
+        days_30: 30 dní
+        days_90: 90 dní
+        days_180: 180 dní
+        year: 1 rok
+        never: Nikdy
+      generate: Vygenerovať token
+      columns:
+        name: Názov
+        created: Vytvorený
+        expires: Platnosť do
+        last_used: Naposledy použitý
+      never: Nikdy
+      expired_on: Vypršal %{date}
+      ago: pred %{time}
+      revoke: Zrušiť
+      revoke_confirm: Zrušiť tento token? Všetko, čo ho používa, stratí prístup.
+      empty: Zatiaľ žiadne tokeny.
+
+  api_tokens:
+    create:
+      name_required: Názov tokenu je povinný.
+    destroy:
+      revoked: Token zrušený.
+
+  views:
+    pagination:
+      label: stránkovanie
+      first: "&laquo; Prvá"
+      last: "Posledná &raquo;"
+      previous: "&lsaquo; Predch."
+      next: "Ďalšia &rsaquo;"
+      truncate: "&hellip;"
+
+  js:
+    nostr_login:
+      paste_first: Najprv vlož bunker odkaz zo svojho podpisovača.
+      connecting: Pripája sa…
+      unusable_link: Tento bunker odkaz sa nedá použiť.
+      waiting_approve: Čaká sa, kým to tvoj podpisovač schváli…
+      unreachable: Server je nedostupný. Skontroluj pripojenie a skús to znova.
+      no_extension: Nenašlo sa žiadne NIP-07 rozšírenie. Nainštaluj nos2x, Alby alebo iné Nostr rozšírenie.
+      extension_connecting: Pripája sa...
+      no_pubkey: Nepodarilo sa získať verejný kľúč z rozšírenia
+      extension_error: "Chyba rozšírenia: %{message}"
+      unknown_error: Neznáma chyba
+      lost_connection: Spojenie so serverom sa stratilo. Obnov stránku a skús to znova.
+      sign_in_extension: Prihlásiť sa cez rozšírenie prehliadača
+    theme:
+      names:
+        system: Podľa systému
+        light: Svetlý
+        dark: Tmavý
+      next_names:
+        system: podľa systému
+        light: svetlý
+        dark: tmavý
+      label: "Motív: %{current}. Prepnúť na %{next}."
+    clipboard:
+      copied: Skopírované!
+      copy_failed: Kopírovanie zlyhalo
+    expandable:
+      show_more: Zobraziť viac
+      show_less: Zobraziť menej

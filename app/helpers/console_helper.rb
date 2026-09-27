@@ -72,7 +72,7 @@ module ConsoleHelper
       # An unlit cell already says "this one did not take it". Red is reserved
       # for a delivery that actually failed to reach the network.
       state = if ok then "is-ok" elsif alarming then "is-short" else "" end
-      tag.i(nil, class: state, title: "#{relay} — #{ok ? 'accepted' : result}")
+      tag.i(nil, class: state, title: "#{relay} — #{ok ? I18n.t('console.poll_strip.accepted') : result}")
     end
 
     tag.span(class: "inline-flex items-center gap-2.5") do
@@ -84,12 +84,13 @@ module ConsoleHelper
   end
 
   def delivery_sentence(record)
+    total = record.delivery_total
     case record.delivery_grade
-    when :all then "Reached all #{record.delivery_total} relays."
-    when :partial then "Reached #{record.delivery_ok_count} of #{record.delivery_total} relays, which is a normal publish."
-    when :thin then "Reached only 1 of #{record.delivery_total} relays — effectively invisible."
-    when :none then "Reached none of the #{record.delivery_total} relays it was sent to."
-    else "Not published yet."
+    when :all then I18n.t("console.delivery.all", count: total)
+    when :partial then I18n.t("console.delivery.partial", count: total, ok: record.delivery_ok_count)
+    when :thin then I18n.t("console.delivery.thin", count: total)
+    when :none then I18n.t("console.delivery.none", count: total)
+    else I18n.t("console.delivery.not_published")
     end
   end
 
@@ -139,15 +140,15 @@ module ConsoleHelper
   def status_slug(record)
     case record.status
     when "awaiting_signature", "pending_signature"
-      tag.span("Approve on phone", class: "slug slug--wait")
+      tag.span(I18n.t("console.slug.approve_on_phone"), class: "slug slug--wait")
     when "published"
-      record.delivery_alarming? ? tag.span("Barely out #{record.delivery_tally}", class: "slug slug--short") : nil
+      record.delivery_alarming? ? tag.span(I18n.t("console.slug.barely_out", tally: record.delivery_tally), class: "slug slug--short") : nil
     when "failed"
-      tag.span("Failed", class: "slug slug--short")
+      tag.span(I18n.t("console.slug.failed"), class: "slug slug--short")
     when "publishing"
-      tag.span("Sending", class: "slug")
+      tag.span(I18n.t("console.slug.sending"), class: "slug")
     when "scheduled"
-      tag.span("Held", class: "slug")
+      tag.span(I18n.t("console.slug.held"), class: "slug")
     else
       tag.span(status_label(record.status), class: "slug")
     end

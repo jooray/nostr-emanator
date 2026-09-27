@@ -1,0 +1,15 @@
+<%# Language picker: one small POST form per language (see LocalesController).
+    Locals: css (wrapper classes), item_css, active_css — optional. %>
+<% css ||= "flex flex-wrap items-center gap-x-3 gap-y-1" %>
+<% item_css ||= "text-xs uppercase tracking-wide text-gray-500 hover:text-amber-600 dark:text-gray-400 dark:hover:text-amber-400 cursor-pointer bg-transparent border-0 p-0" %>
+<% active_css ||= "text-xs uppercase tracking-wide font-bold text-gray-900 dark:text-white" %>
+<nav class="<%= css %>" aria-label="<%= t("shared.locale_switcher.label") %>">
+  <% ApplicationHelper::LOCALE_NAMES.each do |code, name| %>
+    <% if I18n.locale.to_s == code %>
+      <span class="<%= active_css %>" lang="<%= code %>" aria-current="true"><%= name %></span>
+    <% else %>
+      <%= button_to name, locale_path(locale: code), method: :post, form: { class: "inline" },
+            class: item_css, lang: code, data: { turbo: false } %>
+    <% end %>
+  <% end %>
+</nav>

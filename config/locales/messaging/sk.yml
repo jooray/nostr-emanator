@@ -1,0 +1,245 @@
+sk:
+  conversations:
+    index:
+      title: Správy
+      subtitle: Súkromné, naprieč všetkými spárovanými identitami
+      not_authenticated:
+        one: "%{count} účet nie je overený na relayi"
+        few: "%{count} účty nie sú overené na relayi"
+        many: "%{count} účtu nie je overeného na relayi"
+        other: "%{count} účtov nie je overených na relayi"
+      still_arrive:
+        one: Správy naďalej chodia cez tvoje ostatné relaye. Čo je uložené iba na tomto relayi, môže chýbať.
+        few: Správy naďalej chodia cez tvoje ostatné relaye. Čo je uložené iba na týchto relayoch, môže chýbať.
+        many: Správy naďalej chodia cez tvoje ostatné relaye. Čo je uložené iba na týchto relayoch, môže chýbať.
+        other: Správy naďalej chodia cez tvoje ostatné relaye. Čo je uložené iba na týchto relayoch, môže chýbať.
+      auth_explainer: Tieto relaye odovzdávajú tvoje správy iba overenému klientovi a tvoj podpisovač zatiaľ tento handshake nedokončil.
+      auth_missed_prompt_html: Ak sa ťa Amber spýtal a prehliadol si to, len počkaj, skúsi to znova. Keď sa opýta, <strong>Authentication scope → All relays</strong> zabráni ďalším otázkam.
+      auth_whitelist_html: Ak sa nikdy nespýta, skontroluj <strong>Settings → Client auth whitelist</strong> v Amber. Kým je tento zoznam neprázdny, Amber bez opýtania odmietne žiadosti o overenie relaya od každého hostiteľa, ktorý v ňom nie je. Buď doň pridaj %{hosts}, alebo zoznam vyprázdni, aby sa ťa Amber pýtal namiesto toho.
+      no_accounts: Spáruj účet, aby si mohol začať prijímať súkromné správy.
+      add_account: Pridať účet
+      tabs:
+        known: Doručené
+        requests: Žiadosti
+      who: Kto
+      select_all: Vybrať všetko
+      filter: Filter
+      unread_only: Len neprečítané
+      filter_by_unread: Filtrovať podľa neprečítaných
+      mark_all_read: Označiť všetko ako prečítané
+      mark_all_read_confirm: Označiť všetky neprečítané konverzácie v tomto zobrazení ako prečítané?
+      no_requests: Žiadne žiadosti o správy.
+      no_messages: Zatiaľ žiadne správy.
+      known_hint: Tu sa zobrazujú správy od ľudí, ktorých sleduješ. Všetci ostatní čakajú v Žiadostiach.
+    show:
+      title: Konverzácia
+      conversation_between: konverzácia medzi
+      yourself: tebou
+      and_more: a %{count} ďalších
+      all_participants: Všetci účastníci
+      legacy_title: Staršia NIP-04 konverzácia
+      legacy_body: Text správy je zašifrovaný, ale odosielateľ, príjemca a čas sú verejné na každom relayi, ktorého sa toto vlákno dotklo.
+      request_body: Nesleduješ túto osobu a nesleduje ju ani žiadny z tvojich ostatných účtov.
+      accept: Prijať
+      block: Blokovať
+      showing_recent: Zobrazuje sa posledných %{count} správ.
+      empty: V tejto konverzácii zatiaľ nie sú žiadne správy.
+    accept:
+      moved: Presunuté do doručených.
+    block:
+      blocked: Zablokované. Správy z tejto konverzácie už neuvidíš.
+    mark_all_read:
+      marked:
+        one: Označila sa %{count} konverzácia ako prečítaná.
+        few: Označili sa %{count} konverzácie ako prečítané.
+        many: Označilo sa %{count} konverzácií ako prečítaných.
+        other: Označilo sa %{count} konverzácií ako prečítaných.
+      nothing_unread: Nič neprečítané.
+    composer_body:
+      unavailable: Podpisovač tohto účtu ešte neudelil povolenia na správy.
+      enable_messaging: Povoliť správy
+      checking: Zisťuje sa, kde táto osoba prijíma súkromné správy…
+      no_inbox_title: Táto osoba nemá zverejnenú DM schránku
+      no_inbox_body: Tvoja správa je stále plne zašifrovaná a tvoja identita zostáva skrytá, ale ide na relaye, ktoré táto osoba nikdy neurčila pre správy, takže sa nemusí doručiť. Klienti bez akejkoľvek podpory súkromných správ (Primal, Damus) ju tam nebudú ani hľadať.
+      strong_best_effort: "Silné šifrovanie: doručenie bez záruky"
+      legacy_summary: 'Nedarí sa doručiť? Pošli staršiu NIP-04 správu'
+      legacy_intro: "Staršia NIP-04 správa sa dostane do každého klienta vrátane tých bez podpory súkromných správ (teda väčšiny z nich). Je to však skutočný krok späť:"
+      legacy_placeholder: Správa (text je zašifrovaný, komu si ju poslal, nie je)
+      send_public_metadata: Odoslať s verejnými metadátami
+      legacy_separate: Tým sa s tou istou osobou začne samostatné staršie NIP-04 vlákno, oddelené od tvojho súkromného.
+      basic_encryption: "Základné šifrovanie: metadáta sú verejné"
+      legacy_reply_placeholder: Odpovedz v tomto staršom NIP-04 vlákne…
+      strong_private: "Silné šifrovanie: obsah aj metadáta sú súkromné"
+    conversation_row:
+      you: "Ty:"
+      no_preview: (bez náhľadu)
+      legacy_title: "Staršie NIP-04 vlákno: odosielateľ, príjemca a čas sú verejné"
+      legacy_badge: Staré NIP-04 · metadáta verejné
+      people:
+        one: "%{count} osoba"
+        few: "%{count} osoby"
+        many: "%{count} osoby"
+        other: "%{count} osôb"
+    copyable_name:
+      click_to_copy: "%{npub} (klikni na skopírovanie)"
+    failed_message_actions:
+      not_sent: Neodoslané
+      try_again: Skúsiť znova
+      legacy_summary: Odoslať namiesto toho ako staršiu NIP-04 správu?
+      legacy_intro: "Táto osoba vôbec nedokáže prijímať súkromné správy, takže toto je jediný spôsob, ako ju správa dosiahne, ale je to skutočný krok späť:"
+      send_public_metadata: Odoslať s verejnými metadátami
+      moves_to_legacy: Tým sa presunie do samostatného staršieho NIP-04 vlákna s tou istou osobou.
+    message_bubble:
+      encrypted_file: "[zašifrovaný súbor]"
+      encrypted_file_typed: "[zašifrovaný súbor: %{type}]"
+      downgrade_title: "Odoslané ako staršie NIP-04 DM: odosielateľ, príjemca a čas sú verejné"
+      downgrade_badge: Odoslané s nezašifrovanými metadátami
+      legacy_title: "Staršia NIP-04 správa: odosielateľ, príjemca a čas boli verejné"
+      legacy_badge: Staré NIP-04
+      best_effort: Bez záruky
+      repaired_title: Tejto správe chýbali polia, ktoré vyžaduje NIP-17; obnovené z podpísanej vrstvy seal.
+      repaired: opravené
+      sending: Odosiela sa…
+    private_composer_form:
+      placeholder: Napíš súkromnú správu…
+      approvals:
+        one: Vyžaduje %{count} schválenie v podpisovej aplikácii.
+        few: Vyžaduje %{count} schválenia v podpisovej aplikácii.
+        many: Vyžaduje %{count} schválenia v podpisovej aplikácii.
+        other: Vyžaduje %{count} schválení v podpisovej aplikácii.
+      enter_hint: Enter odošle, Shift+Enter vloží nový riadok.
+      send: Odoslať
+
+  messages:
+    retry:
+      cannot_retry: Túto správu nie je možné skúsiť odoslať znova.
+      no_inbox: Táto osoba stále nemá DM schránku, takže ju súkromná správa nemôže dosiahnuť. Môžeš jej namiesto toho poslať staršiu NIP-04 správu.
+    downgrade:
+      cannot_downgrade: Túto správu nie je možné previesť na starší formát NIP-04.
+
+  messaging:
+    names:
+      unknown: Neznámy
+      note_to_self: Poznámka pre seba
+      peer_and_more: "%{name} +%{count}"
+    classification_badge:
+      own_follow: Sleduješ ich
+      sibling_follow: Sleduje ich iný z tvojich účtov
+      wot: Sleduje ich niekto, koho sleduješ
+      replied: Odpovedal si
+      self: Tvoj vlastný účet
+      manual: Prijal si
+    delivery_note:
+      nip65: "Odoslané na ich verejné relaye: nemajú DM schránku, takže sa to nemusí doručiť"
+      fallback: "Odoslané na obľúbené relaye: nemajú vôbec žiadny zoznam relayov, takže sa to nemusí doručiť"
+      observed: "Odoslané na relaye, cez ktoré nám prichádzajú ich vlastné správy: nemajú DM schránku, ale ich klient tam číta"
+    legacy_downgrade_risks:
+      watchers: Ktokoľvek sleduje relaye, uvidí, že si tejto osobe napísal, aj kedy.
+      public_metadata: "Zašifrovaný je iba text správy: odosielateľ a príjemca sú verejní."
+      malleable: Šifrovanie NIP-04 nie je autentifikované, takže sa so zašifrovaným textom dá manipulovať.
+    errors:
+      legacy_unacknowledged: Staršiu NIP-04 správu je možné odoslať až po tom, čo odosielateľ potvrdí, že jej metadáta sú verejné
+      write_first: Najprv napíš správu.
+      legacy_needs_confirmation: Odoslanie staršej NIP-04 správy vyžaduje výslovné potvrdenie.
+      no_recipient: Žiadny príjemca.
+      no_signed_message: Tvoj podpisovač nevrátil podpísanú správu.
+      no_relay_accepted: Správu neprijal žiadny relay.
+    steps:
+      approve_message: Schváľ správu v podpisovej aplikácii (%{index} z %{total})…
+      approve_signature: Schváľ podpis v podpisovej aplikácii (%{index} z %{total})…
+      delivering_to: "Doručuje sa: %{recipient}…"
+      delivering: Doručuje sa…
+      decrypting: Dešifrujú sa správy v podpisovej aplikácii… hotovo %{processed}, zostáva %{pending}.
+      importing_legacy:
+        one: Importuje sa %{count} staršia správa…
+        few: Importujú sa %{count} staršie správy…
+        many: Importuje sa %{count} staršej správy…
+        other: Importuje sa %{count} starších správ…
+      no_inbox_relays: Pre tento účet zatiaľ nie sú známe žiadne relaye DM schránky.
+      found_new:
+        one: Našla sa %{count} nová správa.
+        few: Našli sa %{count} nové správy.
+        many: Našlo sa %{count} novej správy.
+        other: Našlo sa %{count} nových správ.
+
+  nostr_content:
+    referenced_note: "[odkazovaná poznámka]"
+    unknown_author: Neznámy
+
+  interactions:
+    index:
+      title: Interakcie
+      subtitle:
+        one: Odpovede, citácie a zmienky naprieč %{count} identitou
+        few: Odpovede, citácie a zmienky naprieč %{count} identitami
+        many: Odpovede, citácie a zmienky naprieč %{count} identitami
+        other: Odpovede, citácie a zmienky naprieč %{count} identitami
+      unselect_all: Zrušiť výber všetkých
+    interaction_card:
+      your_post: Tvoj príspevok
+      quoted_post: Citovaný príspevok
+      in_reply_to: Ako odpoveď na
+      labelled: "%{label} (%{author})"
+      show_more: Zobraziť viac
+      open_profile: Otvoriť profil v %{viewer}
+      types:
+        reply: odpoveď
+        quote: citácia
+        mention: zmienka
+      to_account: pre @%{name}
+      time_ago: pred %{time}
+      like: Páči sa
+      follow: Sledovať
+      mute_title: Skryť všetky príspevky od @%{name}
+      mute: Stíšiť @%{name}
+      retry: Skúsiť znova
+      reply: Odpovedať
+      replying_as_html: Odpovedáš ako %{name}
+      like_this_post: Páči sa mi tento príspevok
+      follow_author: Sledovať @%{name}
+      reply_placeholder: Napíš svoju odpoveď...
+      cancel: Zrušiť
+      sign_and_publish: Podpísať a zverejniť
+    interactions_content:
+      empty_title: Zatiaľ žiadne interakcie
+      empty_body: Tu sa zobrazia interakcie od ostatných, keď odpovedia na tvoje účty, citujú ich alebo ich spomenú.
+    loading_toast:
+      loading: Načítavajú sa najnovšie interakcie…
+
+  js:
+    dm_delivery:
+      gave_up: Nepodarilo sa zistiť, kde táto osoba prijíma súkromné správy. Obnov stránku a skús to znova.
+    inline_reply:
+      creating: Vytvára sa odpoveď...
+      signing: Podpisuje sa...
+      create_failed: Vytvorenie odpovede zlyhalo
+      network_error: Chyba siete. Skús to znova.
+      retrying: Skúša sa znova...
+      retry_failed_open_post: Opakovanie zlyhalo. Skús to znova na stránke príspevku.
+      retry_failed: Opakovanie zlyhalo. Skús to znova.
+      signing_approve: Podpisuje sa... (schváľ v podpisovej aplikácii)
+      publishing: Zverejňuje sa...
+      published: Odpoveď zverejnená!
+      signing_stalled: Podpisovanie sa zaseklo. Skús to znova.
+      publishing_failed: Zverejnenie zlyhalo. Skús to znova zo stránky príspevku.
+    interaction_actions:
+      signing: Podpisuje sa...
+      failed: Zlyhalo
+      network_error: Chyba siete
+      already_following: Už sleduješ
+      mute_confirm: Stíšiť %{label}? Jeho príspevky sa skryjú vo všetkých tvojich účtoch.
+      muting: Stišuje sa...
+      processing: Spracúva sa...
+      approve: Schváľ v podpisovej aplikácii...
+      publishing: Zverejňuje sa...
+      liked: Páči sa mi!
+      followed: Sledované!
+      retrying: Skúša sa znova...
+      retry_failed: Opakovanie zlyhalo
+      following: Sledujem
+      follow: Sledovať
+    interactions_filter:
+      none_selected_title: Nie sú vybrané žiadne účty
+      none_selected_body: Vyber vyššie účet, aby si videl jeho interakcie.
+      unselect_all: Zrušiť výber všetkých
+      select_all: Vybrať všetky

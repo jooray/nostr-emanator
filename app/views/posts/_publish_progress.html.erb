@@ -18,12 +18,12 @@
           <%= lamp(short ? :alarm : :on) %>
           <p class="eng <%= "text-red-700 dark:text-red-300" if short %>">
             <% if short %>
-              Reached <%= post.delivery_ok_count %> of <%= post.delivery_total %> relays
+              <%= t(".reached", ok: post.delivery_ok_count, count: post.delivery_total) %>
             <% else %>
               <% if post.delivery_grade == :all %>
-                Pulled &middot; all <%= post.delivery_total %> relays
+                <%= t(".pulled_all_html", count: post.delivery_total) %>
               <% else %>
-                Pulled &middot; <%= post.delivery_tally %> relays
+                <%= t(".pulled_tally_html", tally: post.delivery_tally) %>
               <% end %>
             <% end %>
           </p>
@@ -32,7 +32,7 @@
           <% end %>
         </div>
         <% if post.can_rebroadcast? %>
-          <%= button_to "Rebroadcast", rebroadcast_post_path(post), method: :post,
+          <%= button_to t(".rebroadcast"), rebroadcast_post_path(post), method: :post,
                 class: "slug #{'slug--short' if short} hover:text-amber-600 dark:hover:text-amber-400",
                 form_class: "inline" %>
         <% end %>
@@ -40,9 +40,7 @@
 
       <% if short %>
         <p class="mt-2 max-w-prose text-sm text-red-800 dark:text-red-200">
-          The event is live on the relays that accepted it, but anyone reading only
-          <%= post.delivery_failures.keys.map { |r| r.sub(%r{\Awss?://}, "") }.to_sentence %>
-          will not see it. Rebroadcast sends the same signed event again — it is not re-signed.
+          <%= t(".partial_explanation", relays: post.delivery_failures.keys.map { |r| r.sub(%r{\Awss?://}, "") }.to_sentence) %>
         </p>
       <% end %>
 
@@ -60,7 +58,7 @@
             <li class="flex items-baseline gap-2.5 text-[15px]">
               <%= lamp(:on) %>
               <span class="min-w-0 flex-1 truncate font-mono text-gray-600 dark:text-gray-300"><%= relay %></span>
-              <span class="eng">Accepted</span>
+              <span class="eng"><%= t(".accepted") %></span>
             </li>
           <% end %>
         </ul>
@@ -72,10 +70,10 @@
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-2.5">
           <%= lamp(:alarm) %>
-          <p class="eng text-red-700 dark:text-red-300">Never went out</p>
+          <p class="eng text-red-700 dark:text-red-300"><%= t(".never_went_out") %></p>
         </div>
         <% if post.can_retry_publish? %>
-          <%= button_to "Try again", retry_publish_post_path(post), method: :post,
+          <%= button_to t(".try_again"), retry_publish_post_path(post), method: :post,
                 class: "condensed border border-amber-500 bg-amber-500 px-3.5 py-2 text-[14px] font-semibold uppercase tracking-[0.16em] text-[#1a1714] hover:bg-amber-400" %>
         <% end %>
       </div>
@@ -83,9 +81,9 @@
         <%# The old copy asserted "All relays rejected or timed out" while
             rendering a per-relay list that could say otherwise. %>
         <% if post.delivery_total.positive? %>
-          None of the <%= post.delivery_total %> relays accepted it. Nothing was published.
+          <%= t(".none_accepted", count: post.delivery_total) %>
         <% else %>
-          It never reached a relay. Nothing was published.
+          <%= t(".never_reached") %>
         <% end %>
       </p>
       <% if post.delivery_total.positive? %>
@@ -105,11 +103,10 @@
     <div class="border rule px-4 py-3.5" role="status" aria-live="polite">
       <div class="flex items-center gap-2.5">
         <%= lamp(:wait) %>
-        <p class="eng">Running the press</p>
+        <p class="eng"><%= t(".running_the_press") %></p>
       </div>
       <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-        Sending the signed event to <%= post.account.display_name_or_npub %>'s relays.
-        Each one is asked in turn; results appear here as they answer.
+        <%= t(".sending", name: post.account.display_name_or_npub) %>
       </p>
 
       <%# C4: publishing used to be a dead end — if the job died the spinner span
@@ -117,12 +114,11 @@
       <% if post.updated_at < Post::STALE_PUBLISHING_AFTER.ago %>
         <div class="mt-3.5 border-t rule pt-3">
           <p class="mb-2.5 max-w-prose text-sm text-gray-600 dark:text-gray-300">
-            This has been running for a while, so the publish job may have died.
-            The event may already be live on relays — check before retrying.
+            <%= t(".stale_explanation") %>
           </p>
-          <%= button_to "Retry publishing", retry_publish_post_path(post), method: :post,
+          <%= button_to t(".retry_publishing"), retry_publish_post_path(post), method: :post,
                 class: "condensed border border-amber-500 bg-amber-500 px-3.5 py-2 text-[14px] font-semibold uppercase tracking-[0.16em] text-[#1a1714] hover:bg-amber-400",
-                form: { data: { turbo_confirm: "Retry publishing? If the event already reached relays this is a no-op." } } %>
+                form: { data: { turbo_confirm: t(".retry_publishing_confirm") } } %>
         </div>
       <% end %>
     </div>
@@ -131,10 +127,10 @@
     <div class="border rule px-4 py-3.5" role="status">
       <div class="flex items-center gap-2.5">
         <%= lamp(:wait) %>
-        <p class="eng">Due now</p>
+        <p class="eng"><%= t(".due_now") %></p>
       </div>
       <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-        Its scheduled time has passed. The scheduler picks it up within a minute.
+        <%= t(".due_now_explanation") %>
       </p>
     </div>
   <% end %>

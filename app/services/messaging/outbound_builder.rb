@@ -20,10 +20,10 @@ module Messaging
     # unacknowledged one anyway; this just fails earlier and more clearly.
     def build(content:, reply_to: nil, legacy_ack: false)
       content = content.to_s.strip
-      return Result.new(message: nil, error: "Write a message first.") if content.blank?
+      return Result.new(message: nil, error: I18n.t("messaging.errors.write_first")) if content.blank?
 
       if @conversation.legacy? && !legacy_ack
-        return Result.new(message: nil, error: "Sending a legacy message needs an explicit confirmation.")
+        return Result.new(message: nil, error: I18n.t("messaging.errors.legacy_needs_confirmation"))
       end
 
       # The downgrade is offered from a NIP-17 room whose peer turned out to have

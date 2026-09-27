@@ -30,7 +30,7 @@ class BlossomUpload < ApplicationRecord
   def content_type_allowed
     return if self.class.allowed_content_type?(content_type)
 
-    errors.add(:content_type, "must be #{self.class.allowed_types_description}")
+    errors.add(:content_type, :not_allowed, types: self.class.allowed_types_description)
   end
 
   # A job that died (process restart) would otherwise leave the browser polling
@@ -52,7 +52,7 @@ class BlossomUpload < ApplicationRecord
     return self if finished?
     return self if updated_at > STUCK_AFTER.ago
 
-    fail!("Upload timed out. Please try again.")
+    fail!(I18n.t("blossom_uploads.errors.timed_out"))
     self
   end
 
@@ -69,7 +69,7 @@ class BlossomUpload < ApplicationRecord
   end
 
   def self.allowed_types_description
-    "images, video, audio or PDF"
+    I18n.t("blossom_uploads.allowed_types")
   end
 
   # Where staged uploads live. Kept out of ActiveStorage on purpose: the blob

@@ -1,0 +1,404 @@
+cs:
+  posts:
+    form:
+      errors_prevented:
+        one: "%{count} chyba zabránila uložení tohoto příspěvku:"
+        few: "%{count} chyby zabránily uložení tohoto příspěvku:"
+        other: "%{count} chyb zabránilo uložení tohoto příspěvku:"
+      replying_to: "Odpověď na:"
+      content: Obsah
+      attach: Přiložit
+      reply_placeholder: Napiš svou odpověď...
+      content_placeholder: Co máš na mysli? (obrázky přilož přetažením nebo vložením ze schránky)
+      cancel: Zrušit
+      sign_publish_reply: Podepsat a zveřejnit odpověď
+      save_schedule: Uložit a naplánovat
+    publish_progress:
+      reached:
+        one: "Dosaženo %{ok} z %{count} relaye"
+        few: "Dosaženo %{ok} z %{count} relayů"
+        other: "Dosaženo %{ok} z %{count} relayů"
+      pulled_all_html:
+        one: "Staženo &middot; jediný relay"
+        few: "Staženo &middot; ze všech %{count} relayů"
+        other: "Staženo &middot; ze všech %{count} relayů"
+      pulled_tally_html: "Staženo &middot; %{tally} relayů"
+      rebroadcast: Znovu odeslat
+      partial_explanation: "Událost je aktivní na relayích, které ji přijaly, ale kdokoli čte jen z %{relays}, ji neuvidí. Znovu odeslat pošle tutéž podepsanou událost, nepodepisuje se nanovo."
+      accepted: Přijato
+      never_went_out: Nikdy nevyšlo
+      try_again: Zkusit znovu
+      none_accepted:
+        one: "Jediný relay to nepřijal. Nic nezveřejněno."
+        few: "Ani jeden z %{count} relayů to nepřijal. Nic nezveřejněno."
+        other: "Ani jeden z %{count} relayů to nepřijal. Nic nezveřejněno."
+      never_reached: Nikdy to nedosáhlo žádného relaye. Nic nezveřejněno.
+      running_the_press: Tiskne se
+      sending: "Podepsaná událost se odesílá na relaye účtu %{name}. Oslovujeme je postupně, jeden po druhém; výsledky se objevují tady, jak přicházejí."
+      stale_explanation: Tohle běží už dlouho, takže úloha zveřejnění možná spadla. Událost už může být na relayích živá, ověř to před dalším pokusem.
+      retry_publishing: Zkusit zveřejnit znovu
+      retry_publishing_confirm: "Zkusit zveřejnění znovu? Pokud událost už relaye zaznamenaly, nic se nestane."
+      due_now: Na řadě
+      due_now_explanation: Naplánovaný čas už uplynul. Plánovač si ho vyzvedne během minuty.
+    signing_progress:
+      locked_html:
+        one: "Uzamčeno &middot; %{count} podepsaná událost"
+        few: "Uzamčeno &middot; %{count} podepsané události"
+        other: "Uzamčeno &middot; %{count} podepsaných událostí"
+      signed_and_held: Podepsáno a připraveno. Nic dalšího není potřeba, zveřejní se samo v naplánovaný čas.
+      not_signed: Nepodepsáno
+      no_signature: Tvůj podepisovač nevrátil podpis.
+      why_this_happens: Proč se to stává
+      cause_timeout_html: "<strong>Neschválil jsi to včas.</strong> Amber dává asi dvě minuty. Zkus to znovu a měj telefon po ruce."
+      cause_denied_html: "<strong>Zamítl jsi to.</strong> Další pokus pošle nový požadavek."
+      cause_relay_html: "<strong>Relay podepisovače byl nedostupný.</strong> %{relay} možná omezuje počet požadavků nebo je mimo provoz; relay.damus.io konkrétně škrtí provoz NIP-46."
+      cause_relay_fallback: Relay, přes který je tento účet spárovaný
+      cause_pairing: Spárování proběhlo dřív, než toto oprávnění existovalo.
+      cause_pairing_repair_html: "%{link}: zachová příspěvky i nastavení účtu."
+      repair_link: "Spárovat %{name} znovu"
+      ask_again: Zeptat se znovu
+      approve_in_amber_html:
+        one: "Schval v Amberu &middot; hotovo %{done} z %{count}"
+        few: "Schval v Amberu &middot; hotovo %{done} z %{count}"
+        other: "Schval v Amberu &middot; hotovo %{done} z %{count}"
+      time_elapsed: Uplynulý čas
+      approvals_queued_html:
+        one: "<strong>%{count} samostatné schválení</strong> je ve frontě: jedno pro příspěvek a jedno pro každý repost. Amber je vyžádá postupně."
+        few: "<strong>%{count} samostatná schválení</strong> jsou ve frontě: jedno pro příspěvek a jedno pro každý repost. Amber je vyžádá postupně."
+        other: "<strong>%{count} samostatných schválení</strong> je ve frontě: jedno pro příspěvek a jedno pro každý repost. Amber je vyžádá postupně."
+      one_approval_queued: Ve frontě je jedno schválení, pro samotný příspěvek.
+      timing_html: "Obvykle to trvá do 30 sekund; Amber na každý požadavek dává asi dvě minuty. <strong>Tento panel můžeš zavřít</strong>, podepisování pokračuje na pozadí."
+      past_two_minutes: Uplynuly dvě minuty. Amber už pravděpodobně přestal čekat, zkontroluj telefon a zkus to znovu.
+      position:
+        one: "%{position} z %{count}"
+        few: "%{position} z %{count}"
+        other: "%{position} z %{count}"
+      locked: Uzamčeno
+      asking: Dotazování
+      queued: Ve frontě
+    edit:
+      title: Upravit příspěvek
+      editing_for_html: "Úprava příspěvku pro %{name}"
+      ai_refinement: Vylepšení pomocí AI
+      ai_refinement_help: Zadej pokyny, jak má AI aktuální obsah vylepšit.
+      refinement_instructions: Pokyny pro vylepšení
+      refine_placeholder: např. Udělej to kratší a úderné…
+      refine: Vylepšit
+    index:
+      page_title: Příspěvky
+      title: Všechny příspěvky
+      across:
+        one: "Napříč %{count} identitou"
+        few: "Napříč %{count} identitami"
+        other: "Napříč %{count} identitami"
+      discard_all:
+        one: "Zahodit vše (%{count})"
+        few: "Zahodit vše (%{count})"
+        other: "Zahodit vše (%{count})"
+      discard_confirm:
+        one: "Zahodit %{count} příspěvek, který nikdy nevyšel? Zahození znamená smazání, ne jen zrušení plánu. Tohle nejde vzít zpět."
+        few: "Zahodit %{count} příspěvky, které nikdy nevyšly? Zahození znamená smazání, ne jen zrušení plánu. Tohle nejde vzít zpět."
+        other: "Zahodit %{count} příspěvků, které nikdy nevyšly? Zahození znamená smazání, ne jen zrušení plánu. Tohle nejde vzít zpět."
+      new_post: Nový příspěvek
+      state: Stav
+      who: Kdo
+      filters:
+        all: Vše
+        short: Sotva vyšlo
+        failed: Nikdy nevyšlo
+        awaiting_signature: Čeká
+        scheduled: Naplánováno
+        published: Zveřejněno
+        draft: Koncepty
+      nothing_here: Nic tady není
+      empty_short: Všechno zveřejněné se dostalo do sítě. Občasné odmítnutí od některého relaye je normální a nepočítá se.
+      empty_filtered: Žádné příspěvky neodpovídají tomuto filtru.
+      empty_none: Zatím nic nenapsáno.
+      clear_filters: Zrušit filtry
+      write_one: Napsat příspěvek
+    new:
+      title: Nový příspěvek
+      posting_as_html: "Publikuješ jako %{name}"
+      ai_generation: Generování pomocí AI
+      ai_generation_help: Popiš, co chceš napsat, a nech AI vygenerovat obsah.
+      prompt: Prompt
+      prompt_placeholder: např. Napiš krátkou poznámku o důležitosti soukromí…
+      generate: Vygenerovat
+      refine_placeholder: např. Udělej to kratší a úderné…
+      refine: Vylepšit
+    select_account:
+      title: Nový příspěvek
+      choose_account: Vyber účet, který tento příspěvek zveřejní.
+      filter_placeholder: Filtrovat účty podle jména, uživatelského jména nebo npub…
+      unnamed_account: Nepojmenovaný účet
+      no_match: Žádné účty neodpovídají tvému filtru.
+      no_accounts: Žádné spárované účty
+      no_accounts_help: Spáruj svůj první Nostr účet a začni plánovat příspěvky.
+      pair_account: Spárovat účet
+    show:
+      back: Zpět na všechny příspěvky
+      title: Forma
+      pulled: "Staženo %{tally}"
+      kind_set_ago_html: "Kind %{kind} &middot; nastaveno před %{ago}"
+      due: Termín
+      due_in: "za %{time}"
+      event: "Událost:"
+      view_on: "Zobrazit na %{viewer}"
+      show_event_id: Zobrazit ID události
+      the_signed_event: Podepsaná událost
+      hide_signed_event: Skrýt podepsanou událost
+      signed_event: Podepsaná událost
+      unsigned_event: Nepodepsaná událost
+      edit: Upravit
+      schedule: Naplánovat
+      reschedule: Přeplánovat
+      reschedule_confirm: Přeplánovat tento příspěvek? Vrátí se do konceptu kvůli novému podpisu.
+      cancel_schedule: Zrušit naplánování
+      cancel_confirm: Zrušit tento příspěvek? Všechny reposty se odstraní a příspěvek se vrátí do konceptu.
+      delete: Smazat
+      delete_confirm: Opravdu chceš tento příspěvek smazat?
+      actions: Akce
+    reposts_list:
+      title: Reposty
+      scheduled_for_html: "Naplánováno na %{time}"
+      relay_tally:
+        one: "%{ok}/%{count} relay"
+        few: "%{ok}/%{count} relayů"
+        other: "%{ok}/%{count} relayů"
+      retry_signing: Zkusit podepsat znovu
+      rebroadcast: Znovu odeslat
+      repost_now: Repostovat teď
+      repost_now_confirm: Tohle repost znovu podepíše a hned zveřejní. Pokračovat?
+      cancel_confirm: Zrušit tento repost?
+      relay_details: Podrobnosti o relayích
+    schedule:
+      title: Naplánovat příspěvek
+      subtitle: Nastav, kdy se má zveřejnit, a připrav reposty.
+      post_preview: Náhled příspěvku
+      edit: Upravit
+      delete: Smazat
+      delete_confirm: Opravdu chceš tento příspěvek smazat?
+      schedule_time: Čas zveřejnění
+      publish_date_time: Datum a čas zveřejnění
+      select_date_time: Vyber datum a čas
+      soon_title:
+        one: "Zveřejnit za %{count} minutu, ať zbude čas schválit podpis"
+        few: "Zveřejnit za %{count} minuty, ať zbude čas schválit podpis"
+        other: "Zveřejnit za %{count} minut, ať zbude čas schválit podpis"
+      soon: Brzy
+      suggested: "Navrhováno:"
+      also_post_as: Zveřejnit i jako
+      select_all_shown: Vybrat všechny zobrazené
+      filter_identities: Filtrovat identity
+      filter_placeholder: Filtrovat podle jména, npub nebo pubkey
+      already_scheduled: Už naplánováno
+      no_identity_matches: Tomu neodpovídá žádná identita.
+      repost_delay: Zpoždění repostu
+      max_delay: Maximální zpoždění repostů (v hodinách)
+      max_delay_help: Reposty se náhodně rozprostřou v tomto časovém okně po zveřejnění původního příspěvku.
+      existing_reposts: Existující reposty
+      cancel: Zrušit
+      sign_schedule: Podepsat a naplánovat
+    flash:
+      discarded:
+        one: "Zahozen %{count} příspěvek, který nikdy nevyšel."
+        few: "Zahozeny %{count} příspěvky, které nikdy nevyšly."
+        other: "Zahozeno %{count} příspěvků, které nikdy nevyšly."
+      reply_no_signer: "%{name} nemá spárovaný podepisovač, takže tuto odpověď nelze podepsat. Nejdřív spáruj účet."
+      reply_created: Odpověď vytvořena. Probíhá podepisování...
+      signing: Podepisování...
+      saved_as_draft: Příspěvek uložen jako koncept.
+      cannot_edit: Tento příspěvek nelze upravit.
+      updated_signature_discarded: Příspěvek aktualizován. Čekající podpis zahozen, protože se změnil obsah. Naplánuj a podepiš ho znovu.
+      updated: Příspěvek aktualizován.
+      deleted: Příspěvek smazán.
+      cannot_schedule: Tento příspěvek nelze naplánovat.
+      cannot_schedule_status: "Tento příspěvek nelze naplánovat (má stav %{status})."
+      post_no_signer_pair_first: "%{name} nemá spárovaný podepisovač, takže tento příspěvek nelze podepsat. Nejdřív spáruj účet."
+      pick_date_time: Vyber datum a čas zveřejnění tohoto příspěvku.
+      invalid_date_time: Tomuto datu a času nerozumíme. Vyber platné datum a čas.
+      time_in_past: Čas zveřejnění musí být v budoucnosti.
+      no_signer_for_account: Tento účet nemá spárovaný podepisovač
+      signing_in_progress: Probíhá podepisování.
+      reposts_scheduled:
+        one: "Naplánován %{count} repost."
+        few: "Naplánovány %{count} reposty."
+        other: "Naplánováno %{count} repostů."
+      reposts_skipped:
+        one: "%{count} repost přeskočen (účet nemá spárovaný podepisovač)."
+        few: "%{count} reposty přeskočeny (účet nemá spárovaný podepisovač)."
+        other: "%{count} repostů přeskočeno (účet nemá spárovaný podepisovač)."
+      not_awaiting_signature: Příspěvek nečeká na podpis.
+      post_no_signer: "%{name} nemá spárovaný podepisovač, takže tento příspěvek nelze podepsat."
+      pair_signer_to_continue: Spáruj podepisovač, abys mohl pokračovat.
+      retrying_signature: Znovu se žádá o podpis...
+      cannot_retry_publish: Zveřejnění nelze zkusit znovu.
+      retrying_publish: Zkouší se zveřejnit znovu...
+      cannot_rebroadcast: Tento příspěvek nelze znovu odeslat.
+      rebroadcasting: Odesílá se znovu na relaye...
+      cannot_cancel: Tento příspěvek nelze zrušit.
+      cancelled: Příspěvek zrušen a vrácen do konceptu.
+      cannot_reschedule: Tento příspěvek nelze přeplánovat.
+      pick_new_time: Vyber nový čas zveřejnění.
+    jobs:
+      signing_timed_out: Podepisování vypršelo. Schval žádost ve své podepisovací aplikaci a zkus to znovu.
+      post_signature_invalid: Uložený podpis neprošel ověřením. Podepiš tento příspěvek znovu.
+      repost_signature_invalid: Uložený podpis neprošel ověřením. Podepiš tento repost znovu.
+      original_failed: Původní příspěvek se nepodařilo zveřejnit
+      stuck_publishing: Zveřejnění nedoběhlo do konce, worker přestal odpovídat. Zkus to znovu nebo znovu odešli.
+      stuck_signing: Podepisování se nikdy nedokončilo. Zkontroluj, že je tvá podepisovací aplikace spárovaná, a zkus to znovu.
+    errors:
+      invalid_reference:
+        parent_event_id: Neplatné ID nadřazené události
+        parent_author_pubkey: Neplatný pubkey autora nadřazené události
+        root_event_id: Neplatné ID kořenové události
+        author_pubkey: Neplatný pubkey autora
+  calendar:
+    index:
+      page_title: Kalendář
+      month_format: "%B %Y"
+      post_count:
+        one: "%{count} příspěvek"
+        few: "%{count} příspěvky"
+        other: "%{count} příspěvků"
+      repost_count:
+        one: "%{count} repost"
+        few: "%{count} reposty"
+        other: "%{count} repostů"
+      previous_month: Předchozí měsíc
+      next_month: Další měsíc
+      today: Dnes
+      who: Kdo
+      event_title: "%{name} – %{what}"
+      repost: repost
+      more:
+        one: "+%{count} další"
+        few: "+%{count} další"
+        other: "+%{count} dalších"
+  dashboard:
+    index:
+      page_title: V tisku
+      held:
+        one: "%{count} podržený"
+        few: "%{count} podržené"
+        other: "%{count} podržených"
+      on_the_stone_html:
+        one: "Na kameni &middot; %{count} identita"
+        few: "Na kameni &middot; %{count} identity"
+        other: "Na kameni &middot; %{count} identit"
+      barely_reached_html:
+        one: "příspěvek sotva<br>dosáhl sítě"
+        few: "příspěvky sotva<br>dosáhly sítě"
+        other: "příspěvků sotva<br>dosáhlo sítě"
+      new_post: Nový příspěvek
+      no_identities: Žádné spárované identity
+      no_identities_help: Emanator zveřejňuje jako účty, které už máš pod kontrolou. Spáruj jeden se svým podepisovačem a jeho naplánované příspěvky se objeví tady.
+      pair_account: Spárovat účet
+      waiting_on_you: Čeká se na tebe
+      barely_reached_heading: Sotva dosáhlo sítě
+      barely_reached_help: Přijal je jeden relay nebo žádný, takže je skoro nikdo nevidí. Znovu odeslat pošle tutéž podepsanou událost, nepodepisuje se nanovo.
+      never_went_out: Nikdy nevyšlo
+      never_went_out_total:
+        one: "Nikdy nevyšlo &middot; %{count}"
+        few: "Nikdy nevyšlo &middot; %{count}"
+        other: "Nikdy nevyšlo &middot; %{count}"
+      discard_all:
+        one: "Zahodit vše (%{count})"
+        few: "Zahodit vše (%{count})"
+        other: "Zahodit vše (%{count})"
+      discard_confirm:
+        one: "Zahodit %{count} příspěvek, který nikdy nevyšel? Zahození znamená smazání, ne jen zrušení plánu. Tohle nejde vzít zpět."
+        few: "Zahodit %{count} příspěvky, které nikdy nevyšly? Zahození znamená smazání, ne jen zrušení plánu. Tohle nejde vzít zpět."
+        other: "Zahodit %{count} příspěvků, které nikdy nevyšly? Zahození znamená smazání, ne jen zrušení plánu. Tohle nejde vzít zpět."
+      scheduled: Naplánováno
+      all_posts: Všechny příspěvky
+      nothing_scheduled: Nic není naplánováno. Kámen je prázdný.
+      write_one: Napsat příspěvek
+      last_pulled: Naposledy staženo
+  reposts:
+    flash:
+      cannot_cancel: Tento repost nelze zrušit.
+      cancelled: Repost zrušen.
+      not_awaiting_signature: Repost nečeká na podpis.
+      retrying_sign_and_publish: Znovu se zkouší podepsat a zveřejnit repost...
+      retrying_sign: Znovu se žádá o podpis repostu...
+      cannot_rebroadcast: Tento repost nelze znovu odeslat.
+      rebroadcasting: Repost se odesílá znovu...
+      not_ready: Repost ještě není připravený ke zveřejnění.
+      original_unavailable: Událost původního příspěvku není dostupná.
+      publishing_now: Repost se znovu podepisuje a zveřejňuje...
+  ai_assist:
+    rate_limited: Dosažen limit požadavků na AI, počkej chvíli a zkus to znovu.
+  blossom_uploads:
+    allowed_types: obrázky, video, zvuk nebo PDF
+    steps:
+      queued: Ve frontě…
+      preparing: Připravuje se…
+      approve: Schval nahrání ve své podepisovací aplikaci…
+      approve_attempt:
+        one: "Schval nahrání ve své podepisovací aplikaci (%{attempt} z %{count})…"
+        few: "Schval nahrání ve své podepisovací aplikaci (%{attempt} z %{count})…"
+        other: "Schval nahrání ve své podepisovací aplikaci (%{attempt} z %{count})…"
+      uploading: Nahrává se na mediální server…
+      media_fallback: Endpoint pro média není dostupný, zkouší se standardní endpoint
+    errors:
+      no_file: Nebyl poskytnut žádný soubor
+      no_signer: Tento účet nemá spárovaný podepisovač
+      type_not_allowed: "%{filename} není povolený typ souboru (%{types})"
+      too_large: "%{filename} je příliš velký (%{size}). Limit je %{limit}."
+      empty: "%{filename} je prázdný"
+      could_not_start: Nahrávání se nepodařilo spustit
+      rate_limited: Příliš mnoho nahrávání, počkej minutu a zkus to znovu.
+      timed_out: Nahrávání vypršelo. Zkus to znovu.
+      staged_file_gone: Připravený soubor zmizel, přilož ho znovu
+      signing_failed: Podepisování vypršelo nebo bylo odmítnuto. Schval žádost ve své podepisovací aplikaci a zkus to znovu.
+      unexpected: Nahrávání neočekávaně selhalo. Zkus to znovu.
+      account_no_signer: Účet nemá spárovaný podepisovač
+      empty_file: Prázdný soubor
+      unreachable: "Blossom server nedostupný: %{error}"
+      http_failed: "Nahrání na Blossom selhalo (HTTP %{status}): %{reason}"
+      missing_url: Odpověď z Blossom neobsahuje url
+      invalid_response: "Neplatná odpověď z Blossom: %{error}"
+      server_rejected: "Mediální server odmítl: %{error}"
+      generic_rejection: mediální server odmítl nahrání
+  activerecord:
+    errors:
+      models:
+        blossom_upload:
+          attributes:
+            content_type:
+              not_allowed: "musí být %{types}"
+  js:
+    repost_picker:
+      none: "Žádné reposty: jedno schválení, pro samotný příspěvek."
+      selected:
+        one: "%{count} repost: %{approvals} samostatných schválení v tvém podepisovači, jedno po druhém."
+        few: "%{count} reposty: %{approvals} samostatných schválení v tvém podepisovači, jedno po druhém."
+        other: "%{count} repostů: %{approvals} samostatných schválení v tvém podepisovači, jedno po druhém."
+    content_builder:
+      replaced: Tvůj předchozí text nahrazen.
+      undo: Zpět
+      enter_prompt: Zadej prompt pro AI
+      enter_instructions: Zadej pokyny pro AI
+      nothing_to_refine: Není co vylepšovat. Nejdřív obsah vygeneruj nebo napiš.
+      connecting: Připojování k AI...
+      content_below: Obsah se bude zobrazovat níže, jak vzniká.
+      applying_edits: Aplikují se úpravy AI...
+      instruction: "Pokyn: %{prompt}"
+      generating: Generuje se obsah...
+      humanizing: Zlidšťuje se obsah...
+      refining: Vylepšuje se obsah...
+      generation_complete: Generování dokončeno!
+      refinement_complete: Vylepšení dokončeno!
+      connection_lost: Spojení ztraceno. Zkus to znovu.
+      error: "Chyba: %{message}"
+      request_failed: "Požadavek selhal (%{status})"
+    markdown_editor:
+      placeholder: Napiš sem svůj text...
+    blossom_upload:
+      uploading: Nahrává se…
+      waiting: Čeká se na nahrání…
+      failed: Nahrání selhalo
+      failed_status: "Nahrání selhalo (%{status})"
+      status_unreadable: "Nepodařilo se přečíst stav nahrávání (%{status})"
+      timed_out: Nahrávání vypršelo

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="<%= I18n.locale %>" class="h-full">
   <head>
     <title><%= content_for(:title) || "Emanator" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -29,6 +29,7 @@
       })();
     <% end %>
 
+    <%= render "layouts/i18n_head" %>
     <%= yield :head %>
 
     <link rel="icon" href="/icon.png" type="image/png">
@@ -63,7 +64,7 @@
     <%# A keyboard user should not tab seven rail links and a sign-out before
         reaching the work. The landing page has always had one of these. %>
     <% if user_signed_in? %>
-      <a href="#main" class="skip-link">Skip to content</a>
+      <a href="#main" class="skip-link"><%= t(".skip_to_content") %></a>
       <%= render "layouts/navigation" %>
     <% end %>
 

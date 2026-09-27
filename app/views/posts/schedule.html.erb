@@ -4,21 +4,21 @@
   <!-- Header -->
   <div>
     <div class="flex items-center gap-3 mb-1">
-      <%= link_to post_path(@post), class: "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors" do %>
+      <%= link_to account_posts_path(@post.account), class: "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors" do %>
         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>
       <% end %>
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Schedule Post</h1>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white"><%= t(".title") %></h1>
     </div>
     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-      Configure when to publish and set up reposts.
+      <%= t(".subtitle") %>
     </p>
   </div>
 
   <!-- Post Content Preview -->
   <div class="border rule p-6">
-    <h2 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">Post Preview</h2>
+    <h2 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3"><%= t(".post_preview") %></h2>
     <div class="flex items-start gap-3">
       <div class="h-8 w-8 flex items-center justify-center flex-shrink-0 flex items-center justify-center border border-gray-400 dark:border-gray-500"><span class="font-medium text-xs condensed font-bold uppercase tracking-wide text-gray-600 dark:text-gray-300"><%= @post.account.display_name_or_npub[0].upcase %></span></div>
       <div class="flex-1 min-w-0">
@@ -27,6 +27,30 @@
         </p>
         <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap break-words"><%= render_nostr_content(@post.content) %></p>
       </div>
+    </div>
+
+    <%# Saving from the composer lands here directly, so the edit/delete that
+        used to live on the post page have to be reachable from the preview.
+        Outside the sign form below: a button_to inside it would nest forms. %>
+    <div class="mt-4 flex flex-wrap gap-3">
+      <%= link_to edit_post_path(@post),
+        class: "condensed inline-flex items-center gap-2 border border-gray-400 px-3 py-1.5 text-[13px] font-semibold uppercase tracking-[0.16em] text-gray-700 transition-colors hover:border-amber-500 hover:text-amber-600 dark:border-[color:var(--color-rule-dark)] dark:text-gray-200 dark:hover:text-amber-400" do %>
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+        </svg>
+        <%= t(".edit") %>
+      <% end %>
+      <% if @post.draft? %>
+      <%= button_to post_path(@post),
+        method: :delete,
+        data: { turbo_confirm: t(".delete_confirm") },
+        class: "condensed inline-flex items-center gap-2 border border-red-500 px-3 py-1.5 text-[13px] font-semibold uppercase tracking-[0.16em] text-red-600 transition-colors hover:bg-red-500/10 dark:text-red-400" do %>
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+        </svg>
+        <%= t(".delete") %>
+      <% end %>
+      <% end %>
     </div>
   </div>
 
@@ -40,20 +64,20 @@
         <svg class="h-4 w-4 inline-block mr-1 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
-        Schedule Time
+        <%= t(".schedule_time") %>
       </h2>
 
       <div class="space-y-4">
         <div>
           <label for="scheduled_at" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Publish Date &amp; Time
+            <%= t(".publish_date_time") %>
           </label>
           <input type="text"
                  id="scheduled_at"
                  name="scheduled_at"
                  required
                  value="<%= params[:scheduled_at] %>"
-                 placeholder="Select date and time"
+                 placeholder="<%= t(".select_date_time") %>"
                  class="w-full sm:w-auto rounded-lg border <%= @schedule_error.present? ? 'border-red-400 dark:border-red-500' : 'border-gray-200 dark:border-[color:var(--color-rule-dark)]' %> bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-4 py-2 text-sm "
                  data-post-scheduler-target="datetimeInput">
           <% if @schedule_error.present? %>
@@ -68,12 +92,12 @@
           <button type="button"
                   class="px-3 py-1 text-xs font-medium text-amber-700 dark:text-amber-300 border border-amber-600 dark:border-amber-400 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-900/30 transition-colors"
                   data-action="click->post-scheduler#useSoon"
-                  title="Publish <%= PostsController::SOON_MINUTES %> minutes from now, leaving time to approve the signature">
-            Soon
+                  title="<%= t(".soon_title", count: PostsController::SOON_MINUTES) %>">
+            <%= t(".soon") %>
           </button>
           <% if @suggested_time.present? %>
             <div class="flex items-center gap-2">
-              <span class="text-xs text-gray-500 dark:text-gray-400">Suggested:</span>
+              <span class="text-xs text-gray-500 dark:text-gray-400"><%= t(".suggested") %></span>
               <button type="button"
                       class="text-xs text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 underline"
                       data-action="click->post-scheduler#useSuggestion"
@@ -93,12 +117,12 @@
           unfiltered rows and a bare "Select All". %>
       <div class="border rule p-5" data-controller="repost-picker">
         <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
-          <h2 class="eng">Also post as</h2>
+          <h2 class="eng"><%= t(".also_post_as") %></h2>
           <label class="flex cursor-pointer items-center gap-2">
             <input type="checkbox" data-repost-picker-target="selectAll"
                    data-action="change->repost-picker#toggleAll change->post-scheduler#toggleReposts"
                    class="border-gray-300 text-amber-600 dark:border-[color:var(--color-rule-dark)]">
-            <span class="eng">Select all shown</span>
+            <span class="eng"><%= t(".select_all_shown") %></span>
           </label>
         </div>
 
@@ -106,10 +130,10 @@
            data-level="quiet" role="status" aria-live="polite"></p>
 
         <% if @other_accounts.size > 6 %>
-          <label class="sr-only" for="repost-filter">Filter identities</label>
+          <label class="sr-only" for="repost-filter"><%= t(".filter_identities") %></label>
           <input type="search" id="repost-filter" data-repost-picker-target="filter"
                  data-action="input->repost-picker#filter"
-                 placeholder="Filter by name, npub or pubkey"
+                 placeholder="<%= t(".filter_placeholder") %>"
                  class="mb-3 w-full border border-gray-300 bg-white px-3 py-2 text-sm dark:border-[color:var(--color-rule-dark)] dark:bg-[color:var(--color-chassis)]">
         <% end %>
 
@@ -129,14 +153,14 @@
                        <%= "checked" if already_reposting %>>
                 <%= identity(account, link: false) %>
                 <% if already_reposting %>
-                  <span class="slug ml-auto">Already scheduled</span>
+                  <span class="slug ml-auto"><%= t(".already_scheduled") %></span>
                 <% end %>
               </label>
             </li>
           <% end %>
         </ul>
         <p class="py-3 text-sm text-gray-500 dark:text-gray-400" data-repost-picker-target="empty" hidden>
-          No identity matches that.
+          <%= t(".no_identity_matches") %>
         </p>
       </div>
     <% end %>
@@ -150,11 +174,11 @@
         <svg class="h-4 w-4 inline-block mr-1 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
-        Repost Delay
+        <%= t(".repost_delay") %>
       </h2>
       <div>
         <label for="max_delay_hours" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Maximum delay for reposts (hours)
+          <%= t(".max_delay") %>
         </label>
         <input type="number"
                id="max_delay_hours"
@@ -165,7 +189,7 @@
                class="w-32 rounded-lg border border-gray-200 dark:border-[color:var(--color-rule-dark)] bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-4 py-2 text-sm "
                data-post-scheduler-target="delayInput">
         <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-          Reposts will be randomly spread out within this time window after the original post is published.
+          <%= t(".max_delay_help") %>
         </p>
       </div>
     </div>
@@ -176,7 +200,7 @@
       <div class="border rule overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-200 dark:border-[color:var(--color-rule-dark)]">
           <h2 class="text-sm font-medium text-gray-900 dark:text-white">
-            Existing Reposts
+            <%= t(".existing_reposts") %>
             <span class="ml-1 text-gray-400">(<%= @existing_reposts.count %>)</span>
           </h2>
         </div>
@@ -211,14 +235,14 @@
 
     <!-- Submit -->
     <div class="flex items-center justify-end gap-3">
-      <%= link_to "Cancel", post_path(@post),
+      <%= link_to t(".cancel"), post_path(@post),
         class: "px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-[color:var(--color-rule-dark)] rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" %>
       <button type="submit"
               class="inline-flex items-center gap-2 px-6 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors">
         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
         </svg>
-        Sign &amp; Schedule
+        <%= t(".sign_schedule") %>
       </button>
     </div>
   <% end %>

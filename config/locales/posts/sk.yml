@@ -1,0 +1,431 @@
+sk:
+  posts:
+    form:
+      errors_prevented:
+        one: "Uloženiu tohto príspevku zabránila %{count} chyba:"
+        few: "Uloženiu tohto príspevku zabránili %{count} chyby:"
+        many: "Uloženiu tohto príspevku zabránilo %{count} chyby:"
+        other: "Uloženiu tohto príspevku zabránilo %{count} chýb:"
+      replying_to: "Odpoveď na:"
+      content: Obsah
+      attach: Priložiť
+      reply_placeholder: Napíš svoju odpoveď...
+      content_placeholder: Čo máš na mysli? (obrázky priložíš pretiahnutím alebo vložením)
+      cancel: Zrušiť
+      sign_publish_reply: Podpísať a zverejniť odpoveď
+      save_schedule: Uložiť a naplánovať
+    publish_progress:
+      reached:
+        one: Dosiahnutých %{ok} z %{count} relaya
+        few: Dosiahnutých %{ok} z %{count} relayov
+        many: Dosiahnutých %{ok} z %{count} relayov
+        other: Dosiahnutých %{ok} z %{count} relayov
+      pulled_all_html:
+        one: Overené &middot; všetkých %{count} relayov
+        few: Overené &middot; všetkých %{count} relayov
+        many: Overené &middot; všetkých %{count} relayov
+        other: Overené &middot; všetkých %{count} relayov
+      pulled_tally_html: Overené &middot; %{tally} relayov
+      rebroadcast: Odoslať znova
+      partial_explanation: Udalosť je živá na relayoch, ktoré ju prijali, ale ktokoľvek číta iba %{relays}, ju neuvidí. Odoslať znova pošle rovnakú podpísanú udalosť ešte raz, nepodpisuje sa nanovo.
+      accepted: Prijaté
+      never_went_out: Nevyšlo
+      try_again: Skúsiť znova
+      none_accepted:
+        one: Neprijal ho ani jeden z %{count} relaya. Nič sa nezverejnilo.
+        few: Neprijal ho žiadny z %{count} relayov. Nič sa nezverejnilo.
+        many: Neprijal ho žiadny z %{count} relayov. Nič sa nezverejnilo.
+        other: Neprijal ho žiadny z %{count} relayov. Nič sa nezverejnilo.
+      never_reached: Nikdy sa nedostalo na žiadny relay. Nič sa nezverejnilo.
+      running_the_press: Beží tlač
+      sending: Podpísaná udalosť sa odosiela na relaye účtu %{name}. Každý sa pýta postupne; výsledky sa tu zobrazujú, ako odpovedajú.
+      stale_explanation: Toto beží už dlhšie, takže úloha na zverejnenie možno spadla. Udalosť už môže byť na relayoch živá. Over to pred ďalším pokusom.
+      retry_publishing: Skúsiť zverejniť znova
+      retry_publishing_confirm: Skúsiť zverejniť znova? Ak sa udalosť už dostala na relaye, nič sa nestane.
+      due_now: Na rade
+      due_now_explanation: Naplánovaný čas už uplynul. Plánovač ho vyzdvihne do minúty.
+    signing_progress:
+      locked_html:
+        one: Uzamknuté &middot; %{count} udalosť podpísaná
+        few: Uzamknuté &middot; %{count} udalosti podpísané
+        many: Uzamknuté &middot; %{count} udalosti podpísanej
+        other: Uzamknuté &middot; %{count} udalostí podpísaných
+      signed_and_held: Podpísané a pripravené. Už nič ďalšie netreba. Zverejní sa samo v naplánovanom čase.
+      not_signed: Nepodpísané
+      no_signature: Tvoj podpisovač nevrátil podpis.
+      why_this_happens: Prečo sa to stáva
+      cause_timeout_html: "<strong>Neschválil si to včas.</strong> Amber dáva na to asi dve minúty. Skús to znova a maj telefón poruke."
+      cause_denied_html: "<strong>Zamietol si to.</strong> Opakovanie odošle novú žiadosť."
+      cause_relay_html: "<strong>Relay podpisovača bol nedostupný.</strong> %{relay} možno obmedzuje rýchlosť požiadaviek alebo je mimo prevádzky; relay.damus.io konkrétne obmedzuje NIP-46 prenos."
+      cause_relay_fallback: Relay, cez ktorý je tento účet spárovaný
+      cause_pairing: Spárovanie je staršie ako toto povolenie.
+      cause_pairing_repair_html: "%{link}: zachová príspevky a nastavenia účtu."
+      repair_link: Spáruj %{name} znova
+      ask_again: Vyžiadať znova
+      approve_in_amber_html:
+        one: Schváľ v Amber &middot; %{done} z %{count} hotovo
+        few: Schváľ v Amber &middot; %{done} z %{count} hotovo
+        many: Schváľ v Amber &middot; %{done} z %{count} hotovo
+        other: Schváľ v Amber &middot; %{done} z %{count} hotovo
+      time_elapsed: Uplynutý čas
+      approvals_queued_html:
+        one: "V rade čaká <strong>%{count} samostatné schválenie</strong>: jedno pre príspevok a jedno pre každý repost. Amber si ich pýta postupne."
+        few: "V rade čakajú <strong>%{count} samostatné schválenia</strong>: jedno pre príspevok a jedno pre každý repost. Amber si ich pýta postupne."
+        many: "V rade čaká <strong>%{count} samostatného schválenia</strong>: jedno pre príspevok a jedno pre každý repost. Amber si ich pýta postupne."
+        other: "V rade čaká <strong>%{count} samostatných schválení</strong>: jedno pre príspevok a jedno pre každý repost. Amber si ich pýta postupne."
+      one_approval_queued: V rade čaká jedno schválenie, pre samotný príspevok.
+      timing_html: "Zvyčajne to trvá menej ako 30 sekúnd; Amber dáva na jednu žiadosť asi dve minúty. <strong>Túto kartu môžeš zavrieť</strong>, podpisovanie pokračuje na pozadí."
+      past_two_minutes: Uplynuli dve minúty. Amber už pravdepodobne prestal čakať, skontroluj telefón a vyžiadaj to znova.
+      position:
+        one: "%{position} z %{count}"
+        few: "%{position} z %{count}"
+        many: "%{position} z %{count}"
+        other: "%{position} z %{count}"
+      locked: Uzamknuté
+      asking: Pýta sa
+      queued: V rade
+    edit:
+      title: Upraviť príspevok
+      editing_for_html: Upravuješ príspevok pre %{name}
+      ai_refinement: Vylepšenie pomocou AI
+      ai_refinement_help: Zadaj pokyny na vylepšenie aktuálneho obsahu pomocou AI.
+      refinement_instructions: Pokyny na vylepšenie
+      refine_placeholder: napr. Skráť to a urob to údernejšie...
+      refine: Vylepšiť
+    index:
+      page_title: Príspevky
+      title: Všetky príspevky
+      across:
+        one: Naprieč %{count} identitou
+        few: Naprieč %{count} identitami
+        many: Naprieč %{count} identitami
+        other: Naprieč %{count} identitami
+      discard_all:
+        one: Zahodiť všetky (%{count})
+        few: Zahodiť všetky (%{count})
+        many: Zahodiť všetky (%{count})
+        other: Zahodiť všetky (%{count})
+      discard_confirm:
+        one: Zahodiť %{count} príspevok, ktorý nevyšiel? Vymaže sa, nie iba zruší naplánovanie. Toto sa nedá vrátiť späť.
+        few: Zahodiť %{count} príspevky, ktoré nevyšli? Vymažú sa, nie iba zrušia naplánovanie. Toto sa nedá vrátiť späť.
+        many: Zahodiť %{count} príspevku, ktorý nevyšiel? Vymaže sa, nie iba zruší naplánovanie. Toto sa nedá vrátiť späť.
+        other: Zahodiť %{count} príspevkov, ktoré nevyšli? Vymažú sa, nie iba zrušia naplánovanie. Toto sa nedá vrátiť späť.
+      new_post: Nový príspevok
+      state: Stav
+      who: Kto
+      filters:
+        all: Všetko
+        short: Sotva vyšlo
+        failed: Nevyšlo
+        awaiting_signature: Čaká
+        scheduled: Naplánované
+        published: Zverejnené
+        draft: Koncepty
+      nothing_here: Nič tu nie je
+      empty_short: Všetko zverejnené sa dostalo do siete. Občasné odmietnutie relayom je bežné a nepočíta sa.
+      empty_filtered: Tomuto filtru nezodpovedajú žiadne príspevky.
+      empty_none: Zatiaľ nič napísané.
+      clear_filters: Zrušiť filtre
+      write_one: Napísať jeden
+    new:
+      title: Nový príspevok
+      posting_as_html: Zverejňuješ ako %{name}
+      ai_generation: Generovanie pomocou AI
+      ai_generation_help: Opíš, čo chceš zverejniť, a nech za teba AI vygeneruje obsah.
+      prompt: Prompt
+      prompt_placeholder: napr. Napíš krátku poznámku o dôležitosti súkromia...
+      generate: Generovať
+      refine_placeholder: napr. Skráť to a urob to údernejšie...
+      refine: Vylepšiť
+    select_account:
+      title: Nový príspevok
+      choose_account: Vyber účet, ktorý tento príspevok zverejní.
+      filter_placeholder: Filtruj účty podľa mena, používateľského mena alebo npub…
+      unnamed_account: Nepomenovaný účet
+      no_match: Tvojmu filtru nezodpovedajú žiadne účty.
+      no_accounts: Žiadne spárované účty
+      no_accounts_help: Spáruj svoj prvý Nostr účet a začni plánovať príspevky.
+      pair_account: Spárovať účet
+    show:
+      back: Späť na všetky príspevky
+      title: Forma
+      pulled: Overené %{tally}
+      kind_set_ago_html: Kind %{kind} &middot; nastavené pred %{ago}
+      due: Vyjde
+      due_in: o %{time}
+      event: "Udalosť:"
+      view_on: Zobraziť na %{viewer}
+      show_event_id: Zobraziť ID udalosti
+      the_signed_event: Podpísaná udalosť
+      hide_signed_event: Skryť podpísanú udalosť
+      signed_event: Podpísaná udalosť
+      unsigned_event: Nepodpísaná udalosť
+      edit: Upraviť
+      schedule: Naplánovať
+      reschedule: Preplánovať
+      reschedule_confirm: Preplánovať tento príspevok? Vráti sa do konceptu na opätovné podpísanie.
+      cancel_schedule: Zrušiť naplánovanie
+      cancel_confirm: Zrušiť tento príspevok? Všetky reposty sa odstránia a príspevok sa vráti do konceptu.
+      delete: Vymazať
+      delete_confirm: Naozaj chceš vymazať tento príspevok?
+      actions: Akcie
+    reposts_list:
+      title: Reposty
+      scheduled_for_html: Naplánované na %{time}
+      relay_tally:
+        one: "%{ok}/%{count} relay"
+        few: "%{ok}/%{count} relaye"
+        many: "%{ok}/%{count} relaya"
+        other: "%{ok}/%{count} relayov"
+      retry_signing: Skúsiť podpísať znova
+      rebroadcast: Odoslať znova
+      repost_now: Repostovať teraz
+      repost_now_confirm: Toto repost znova podpíše a hneď zverejní. Pokračovať?
+      cancel_confirm: Zrušiť tento repost?
+      relay_details: Podrobnosti o relayoch
+    schedule:
+      title: Naplánovať príspevok
+      subtitle: Nastav, kedy sa má zverejniť, a priprav reposty.
+      post_preview: Náhľad príspevku
+      edit: Upraviť
+      delete: Vymazať
+      delete_confirm: Naozaj chceš vymazať tento príspevok?
+      schedule_time: Čas naplánovania
+      publish_date_time: Dátum a čas zverejnenia
+      select_date_time: Vyber dátum a čas
+      soon_title:
+        one: Zverejniť o %{count} minútu od teraz, aby ostal čas na schválenie podpisu
+        few: Zverejniť o %{count} minúty od teraz, aby ostal čas na schválenie podpisu
+        many: Zverejniť o %{count} minúty od teraz, aby ostal čas na schválenie podpisu
+        other: Zverejniť o %{count} minút od teraz, aby ostal čas na schválenie podpisu
+      soon: Čoskoro
+      suggested: "Navrhované:"
+      also_post_as: Zverejniť aj ako
+      select_all_shown: Vybrať všetky zobrazené
+      filter_identities: Filtrovať identity
+      filter_placeholder: Filtruj podľa mena, npub alebo pubkey
+      already_scheduled: Už naplánované
+      no_identity_matches: Tomu nezodpovedá žiadna identita.
+      repost_delay: Oneskorenie repostu
+      max_delay: Maximálne oneskorenie repostov (v hodinách)
+      max_delay_help: Reposty sa náhodne rozložia v rámci tohto časového okna po zverejnení pôvodného príspevku.
+      existing_reposts: Existujúce reposty
+      cancel: Zrušiť
+      sign_schedule: Podpísať a naplánovať
+    flash:
+      discarded:
+        one: Zahodený %{count} príspevok, ktorý nevyšiel.
+        few: Zahodené %{count} príspevky, ktoré nevyšli.
+        many: Zahodených %{count} príspevkov, ktoré nevyšli.
+        other: Zahodených %{count} príspevkov, ktoré nevyšli.
+      reply_no_signer: "%{name} nemá spárovaný podpisovač, takže túto odpoveď nie je možné podpísať. Najprv spáruj účet."
+      reply_created: Odpoveď vytvorená. Prebieha podpisovanie...
+      signing: Podpisuje sa...
+      saved_as_draft: Príspevok uložený ako koncept.
+      cannot_edit: Tento príspevok nie je možné upraviť.
+      updated_signature_discarded: Príspevok aktualizovaný. Čakajúci podpis sa zrušil, pretože sa zmenil obsah. Naplánuj a podpíš ho znova.
+      updated: Príspevok aktualizovaný.
+      deleted: Príspevok vymazaný.
+      cannot_schedule: Tento príspevok nie je možné naplánovať.
+      cannot_schedule_status: Tento príspevok nie je možné naplánovať (stav je %{status}).
+      post_no_signer_pair_first: "%{name} nemá spárovaný podpisovač, takže tento príspevok nie je možné podpísať. Najprv spáruj účet."
+      pick_date_time: Vyber dátum a čas na zverejnenie tohto príspevku.
+      invalid_date_time: Tomuto dátumu a času sa nedalo porozumieť. Vyber platný dátum a čas.
+      time_in_past: Čas zverejnenia musí byť v budúcnosti.
+      no_signer_for_account: Pre tento účet nie je spárovaný podpisovač
+      signing_in_progress: Prebieha podpisovanie.
+      reposts_scheduled:
+        one: Naplánovaný %{count} repost.
+        few: Naplánované %{count} reposty.
+        many: Naplánovaných %{count} repostov.
+        other: Naplánovaných %{count} repostov.
+      reposts_skipped:
+        one: Vynechaný %{count} repost (účet nemá spárovaný podpisovač).
+        few: Vynechané %{count} reposty (účet nemá spárovaný podpisovač).
+        many: Vynechaných %{count} repostov (účet nemá spárovaný podpisovač).
+        other: Vynechaných %{count} repostov (účet nemá spárovaný podpisovač).
+      not_awaiting_signature: Príspevok nečaká na podpis.
+      post_no_signer: "%{name} nemá spárovaný podpisovač, takže tento príspevok nie je možné podpísať."
+      pair_signer_to_continue: Na pokračovanie spáruj podpisovač.
+      retrying_signature: Žiadosť o podpis sa skúša znova...
+      cannot_retry_publish: Zverejnenie nie je možné skúsiť znova.
+      retrying_publish: Zverejnenie sa skúša znova...
+      cannot_rebroadcast: Tento príspevok nie je možné odoslať znova.
+      rebroadcasting: Odosiela sa znova na relaye...
+      cannot_cancel: Tento príspevok nie je možné zrušiť.
+      cancelled: Príspevok zrušený a vrátený do konceptu.
+      cannot_reschedule: Tento príspevok nie je možné preplánovať.
+      pick_new_time: Vyber nový čas naplánovania.
+    jobs:
+      signing_timed_out: Podpisovaniu vypršal čas. Schváľ žiadosť v podpisovej aplikácii a skús to znova.
+      post_signature_invalid: Uložený podpis neprešiel overením. Podpíš tento príspevok znova.
+      repost_signature_invalid: Uložený podpis neprešiel overením. Podpíš tento repost znova.
+      original_failed: Pôvodný príspevok sa nepodarilo zverejniť
+      stuck_publishing: "Zverejnenie sa nedokončilo: worker prestal reagovať. Skús to znova alebo odošli znova."
+      stuck_signing: Podpisovanie sa nikdy nedokončilo. Skontroluj, či je podpisová aplikácia spárovaná, a skús to znova.
+    errors:
+      invalid_reference:
+        parent_event_id: Neplatné ID nadradenej udalosti
+        parent_author_pubkey: Neplatný pubkey autora nadradenej udalosti
+        root_event_id: Neplatné ID koreňovej udalosti
+        author_pubkey: Neplatný pubkey autora
+  calendar:
+    index:
+      page_title: Kalendár
+      month_format: "%B %Y"
+      post_count:
+        one: "%{count} príspevok"
+        few: "%{count} príspevky"
+        many: "%{count} príspevku"
+        other: "%{count} príspevkov"
+      repost_count:
+        one: "%{count} repost"
+        few: "%{count} reposty"
+        many: "%{count} repostu"
+        other: "%{count} repostov"
+      previous_month: Predchádzajúci mesiac
+      next_month: Nasledujúci mesiac
+      today: Dnes
+      who: Kto
+      event_title: "%{name}: %{what}"
+      repost: repost
+      more:
+        one: +%{count} ďalšie
+        few: +%{count} ďalšie
+        many: +%{count} ďalšie
+        other: +%{count} ďalšie
+  dashboard:
+    index:
+      page_title: Tlač
+      held:
+        one: "%{count} pripravené"
+        few: "%{count} pripravené"
+        many: "%{count} pripravené"
+        other: "%{count} pripravené"
+      on_the_stone_html:
+        one: Na kameni &middot; %{count} identita
+        few: Na kameni &middot; %{count} identity
+        many: Na kameni &middot; %{count} identity
+        other: Na kameni &middot; %{count} identít
+      barely_reached_html:
+        one: "príspevok sotva<br>zasiahol sieť"
+        few: "príspevky sotva<br>zasiahli sieť"
+        many: "príspevkov sotva<br>zasiahlo sieť"
+        other: "príspevkov sotva<br>zasiahlo sieť"
+      new_post: Nový príspevok
+      no_identities: Žiadne spárované identity
+      no_identities_help: Emanator zverejňuje ako účty, ktoré už ovládaš. Spáruj jeden so svojím podpisovačom a jeho naplánované poznámky sa zobrazia tu.
+      pair_account: Spáruj účet
+      waiting_on_you: Čaká sa na teba
+      barely_reached_heading: Sotva zasiahlo sieť
+      barely_reached_help: Prijal ich jeden relay alebo žiadny, takže ich takmer nikto nevidí. Odoslať znova pošle rovnakú podpísanú udalosť ešte raz, nepodpisuje sa nanovo.
+      never_went_out: Nevyšlo
+      never_went_out_total:
+        one: Nevyšlo &middot; %{count}
+        few: Nevyšlo &middot; %{count}
+        many: Nevyšlo &middot; %{count}
+        other: Nevyšlo &middot; %{count}
+      discard_all:
+        one: Zahodiť všetky (%{count})
+        few: Zahodiť všetky (%{count})
+        many: Zahodiť všetky (%{count})
+        other: Zahodiť všetky (%{count})
+      discard_confirm:
+        one: Zahodiť %{count} príspevok, ktorý nevyšiel? Vymaže sa, nie iba zruší naplánovanie. Toto sa nedá vrátiť späť.
+        few: Zahodiť %{count} príspevky, ktoré nevyšli? Vymažú sa, nie iba zrušia naplánovanie. Toto sa nedá vrátiť späť.
+        many: Zahodiť %{count} príspevku, ktorý nevyšiel? Vymaže sa, nie iba zruší naplánovanie. Toto sa nedá vrátiť späť.
+        other: Zahodiť %{count} príspevkov, ktoré nevyšli? Vymažú sa, nie iba zrušia naplánovanie. Toto sa nedá vrátiť späť.
+      scheduled: Naplánované
+      all_posts: Všetky príspevky
+      nothing_scheduled: Nič naplánované. Kameň je čistý.
+      write_one: Napísať jeden
+      last_pulled: Naposledy overené
+  reposts:
+    flash:
+      cannot_cancel: Tento repost nie je možné zrušiť.
+      cancelled: Repost zrušený.
+      not_awaiting_signature: Repost nečaká na podpis.
+      retrying_sign_and_publish: Žiadosť o podpis a zverejnenie repostu sa skúša znova...
+      retrying_sign: Žiadosť o podpis repostu sa skúša znova...
+      cannot_rebroadcast: Tento repost nie je možné odoslať znova.
+      rebroadcasting: Repost sa odosiela znova...
+      not_ready: Repost ešte nie je pripravený na zverejnenie.
+      original_unavailable: Udalosť pôvodného príspevku nie je dostupná.
+      publishing_now: Repost sa teraz znova podpisuje a zverejňuje...
+  ai_assist:
+    rate_limited: Dosiahnutý limit požiadaviek na AI. Počkaj chvíľu a skús to znova.
+  blossom_uploads:
+    allowed_types: obrázky, video, audio alebo PDF
+    steps:
+      queued: V rade…
+      preparing: Pripravuje sa…
+      approve: Schváľ nahrávanie v podpisovej aplikácii…
+      approve_attempt:
+        one: Schváľ nahrávanie v podpisovej aplikácii (%{attempt} z %{count})…
+        few: Schváľ nahrávanie v podpisovej aplikácii (%{attempt} z %{count})…
+        many: Schváľ nahrávanie v podpisovej aplikácii (%{attempt} z %{count})…
+        other: Schváľ nahrávanie v podpisovej aplikácii (%{attempt} z %{count})…
+      uploading: Nahráva sa na mediálny server…
+      media_fallback: "Endpoint pre médiá nie je dostupný: skúša sa štandardný endpoint"
+    errors:
+      no_file: Nebol poskytnutý žiadny súbor
+      no_signer: Tento účet nemá spárovaný podpisovač
+      type_not_allowed: "%{filename} nie je povolený typ súboru (%{types})"
+      too_large: "%{filename} je príliš veľký (%{size}). Limit je %{limit}."
+      empty: "%{filename} je prázdny"
+      could_not_start: Nahrávanie sa nepodarilo spustiť
+      rate_limited: Príliš veľa nahrávaní. Počkaj minútu a skús to znova.
+      timed_out: Nahrávaniu vypršal čas. Skús to znova.
+      staged_file_gone: Pripravený súbor sa stratil. Prilož ho znova
+      signing_failed: Podpisovaniu vypršal čas alebo bolo zamietnuté. Schváľ žiadosť v podpisovej aplikácii a skús to znova.
+      unexpected: Nahrávanie neočakávane zlyhalo. Skús to znova.
+      account_no_signer: Účet nemá spárovaný podpisovač
+      empty_file: Prázdny súbor
+      unreachable: "Blossom server nedostupný: %{error}"
+      http_failed: "Nahrávanie na Blossom zlyhalo (HTTP %{status}): %{reason}"
+      missing_url: Odpoveď z Blossom neobsahuje url
+      invalid_response: "Neplatná odpoveď z Blossom: %{error}"
+      server_rejected: "Mediálny server odmietol: %{error}"
+      generic_rejection: mediálny server odmietol nahrávanie
+  activerecord:
+    errors:
+      models:
+        blossom_upload:
+          attributes:
+            content_type:
+              not_allowed: musí byť %{types}
+  js:
+    repost_picker:
+      none: "Žiadne reposty: jedno schválenie, pre samotný príspevok."
+      selected:
+        one: "%{count} repost: %{approvals} samostatných schválení v podpisovači, jedno za druhým."
+        few: "%{count} reposty: %{approvals} samostatných schválení v podpisovači, jedno za druhým."
+        many: "%{count} repostu: %{approvals} samostatných schválení v podpisovači, jedno za druhým."
+        other: "%{count} repostov: %{approvals} samostatných schválení v podpisovači, jedno za druhým."
+    content_builder:
+      replaced: Tvoj predchádzajúci text sa nahradil.
+      undo: Vrátiť späť
+      enter_prompt: Zadaj prompt pre AI
+      enter_instructions: Zadaj pokyny pre AI
+      nothing_to_refine: Nie je čo vylepšovať. Najprv vygeneruj alebo napíš nejaký obsah.
+      connecting: Pripája sa k AI...
+      content_below: Obsah sa zobrazí nižšie, ako sa generuje.
+      applying_edits: Aplikujú sa úpravy od AI...
+      instruction: "Pokyn: %{prompt}"
+      generating: Generuje sa obsah...
+      humanizing: Obsah sa robí prirodzenejším...
+      refining: Vylepšuje sa obsah...
+      generation_complete: Generovanie dokončené!
+      refinement_complete: Vylepšenie dokončené!
+      connection_lost: Spojenie sa stratilo. Skús to znova.
+      error: "Chyba: %{message}"
+      request_failed: Žiadosť zlyhala (%{status})
+    markdown_editor:
+      placeholder: Sem napíš svoj obsah...
+    blossom_upload:
+      uploading: Nahráva sa…
+      waiting: Čaká sa na nahranie…
+      failed: Nahrávanie zlyhalo
+      failed_status: Nahrávanie zlyhalo (%{status})
+      status_unreadable: Nepodarilo sa prečítať stav nahrávania (%{status})
+      timed_out: Nahrávaniu vypršal čas

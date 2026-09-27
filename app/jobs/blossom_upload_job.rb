@@ -12,13 +12,23 @@ class BlossomUploadJob < ApplicationJob
     upload = BlossomUpload.find(upload_id)
     return if upload.finished?
 
+    # Step and error strings are stored on the row and read later by the
+    # composer, so they are written in the uploader's language.
+    upload.user.with_locale { run(upload) }
+  end
+
+  private
+
+  def run(upload)
+    upload_id = upload.id
+
     path = upload.file_path
     unless path.present? && File.exist?(path)
-      upload.fail!("The staged file is gone — please attach it again")
+      upload.fail!(I18n.t("blossom_uploads.errors.staged_file_gone"))
       return
     end
 
-    upload.start!(step: "Preparing…")
+    upload.start!(step: I18n.t("blossom_uploads.steps.preparing"))
 
     progress = ->(_stage, message) { upload.progress(message) }
     service = Nostr::BlossomUploaderService.new(upload.account, progress: progress)
@@ -29,12 +39,12 @@ class BlossomUploadJob < ApplicationJob
     end
   rescue Nostr::BlossomUploaderService::SigningError => e
     Rails.logger.warn("BlossomUploadJob #{upload_id}: signing failed: #{e.message}")
-    upload&.fail!("Signing timed out or was rejected. Approve the request in your signer app and try again.")
+    upload&.fail!(I18n.t("blossom_uploads.errors.signing_failed"))
   rescue Nostr::BlossomUploaderService::UploadError => e
     upload&.fail!(e.message)
   rescue StandardError => e
     Rails.logger.error("BlossomUploadJob #{upload_id}: #{e.class}: #{e.message}")
-    upload&.fail!("Upload failed unexpectedly. Please try again.")
+    upload&.fail!(I18n.t("blossom_uploads.errors.unexpected"))
     raise
   end
 end

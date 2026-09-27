@@ -13,16 +13,13 @@
       </svg>
       <div class="min-w-0 flex-1">
         <p class="text-sm font-medium text-amber-900 dark:text-amber-200">
-          Messaging is not enabled for <%= account.display_name_or_npub %>
+          <%= t(".title", name: account.display_name_or_npub) %>
         </p>
         <p class="mt-1 text-sm text-amber-800 dark:text-amber-300">
           <% if account.messaging_denied? %>
-            Your signer refused a message operation for this account. Re-pair and choose
-            <strong>Always</strong> when it asks about decrypting messages.
+            <%= t(".denied_html") %>
           <% else %>
-            This account was paired before private messaging existed, so its signer has not
-            granted permission to encrypt, seal or decrypt messages. Re-pairing keeps your
-            posts and settings.
+            <%= t(".not_granted") %>
           <% end %>
         </p>
         <%= link_to re_pair_account_path(account, reason: "messaging"),
@@ -30,7 +27,7 @@
           <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
           </svg>
-          Enable messaging
+          <%= t(".enable") %>
         <% end %>
       </div>
     </div>

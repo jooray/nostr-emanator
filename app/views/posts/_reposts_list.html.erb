@@ -4,7 +4,7 @@
     <div class="border rule overflow-hidden">
       <div class="px-6 py-4 border-b border-gray-200 dark:border-[color:var(--color-rule-dark)]">
         <h2 class="text-sm font-medium text-gray-900 dark:text-white">
-          Reposts
+          <%= t(".title") %>
           <span class="ml-1 text-gray-400">(<%= reposts.count %>)</span>
         </h2>
       </div>
@@ -22,7 +22,7 @@
                   <p class="text-sm font-medium text-gray-900 dark:text-white"><%= repost.account.display_name_or_npub %></p>
                   <% if repost.scheduled_at.present? %>
                     <p class="text-xs text-gray-500 dark:text-gray-400">
-                      Scheduled for <%= local_time(repost.scheduled_at, format: "short") %>
+                      <%= t(".scheduled_for_html", time: local_time(repost.scheduled_at, format: "short")) %>
                     </p>
                   <% end %>
                 </div>
@@ -40,7 +40,7 @@
                 <% if repost.publish_results.present? %>
                   <% ok = repost.publish_results.values.count { |v| v == "ok" } %>
                   <% total = repost.publish_results.size %>
-                  <span class="text-xs text-gray-400"><%= ok %>/<%= total %> relays</span>
+                  <span class="text-xs text-gray-400"><%= t(".relay_tally", ok: ok, count: total) %></span>
                 <% end %>
                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium <%= repost_badge %>">
                   <%= status_label(repost.status) %>
@@ -49,7 +49,7 @@
                   <%= button_to retry_sign_post_repost_path(post, repost),
                     method: :post,
                     class: "text-amber-500 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-200 p-1 transition-colors",
-                    title: "Retry signing" do %>
+                    title: t(".retry_signing") do %>
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                     </svg>
@@ -59,7 +59,7 @@
                   <%= button_to rebroadcast_post_repost_path(post, repost),
                     method: :post,
                     class: "text-amber-500 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-200 p-1 transition-colors",
-                    title: "Rebroadcast" do %>
+                    title: t(".rebroadcast") do %>
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                     </svg>
@@ -68,9 +68,9 @@
                 <% if repost.scheduled? %>
                   <%= button_to publish_now_post_repost_path(post, repost),
                     method: :post,
-                    data: { turbo_confirm: "This will re-sign and publish this repost now. Continue?" },
+                    data: { turbo_confirm: t(".repost_now_confirm") },
                     class: "text-green-500 hover:text-green-700 dark:text-green-400 dark:hover:text-green-200 p-1 transition-colors",
-                    title: "Repost now" do %>
+                    title: t(".repost_now") do %>
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -80,7 +80,7 @@
                 <% if repost.can_cancel? %>
                   <%= button_to post_repost_path(post, repost),
                     method: :delete,
-                    data: { turbo_confirm: "Cancel this repost?" },
+                    data: { turbo_confirm: t(".cancel_confirm") },
                     class: "text-red-400 hover:text-red-600 dark:text-red-500 dark:hover:text-red-300 p-1 transition-colors" do %>
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -92,7 +92,7 @@
             <% if repost.publish_results.present? %>
               <details class="mt-2 ml-11">
                 <summary class="text-xs text-gray-400 dark:text-gray-500 cursor-pointer hover:text-gray-600 dark:hover:text-gray-300 select-none">
-                  Relay details
+                  <%= t(".relay_details") %>
                 </summary>
                 <div class="mt-1 space-y-0.5">
                   <% repost.publish_results.each do |relay, result| %>

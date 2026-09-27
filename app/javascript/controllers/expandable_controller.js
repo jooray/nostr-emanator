@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { t } from "../lib/i18n"
 
 export default class extends Controller {
   static targets = ["content", "toggle"]
@@ -37,7 +38,7 @@ export default class extends Controller {
     this.expanded = !this.expanded
     this.contentTarget.classList.toggle("line-clamp-3", !this.expanded)
     this.contentTarget.classList.toggle("line-clamp-6", false)
-    this.toggleTarget.textContent = this.expanded ? "Show less" : "Show more"
+    this.toggleTarget.textContent = this.expanded ? t("js.expandable.show_less") : t("js.expandable.show_more")
     if (!this.expanded) this.evaluateOverflow()
   }
 }

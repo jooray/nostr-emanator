@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { t } from "../lib/i18n"
 
 export default class extends Controller {
   static values = { text: String }
@@ -19,17 +20,17 @@ export default class extends Controller {
       } else {
         this.legacyCopy(text)
       }
-      this.flash("Copied!")
+      this.flash(t("js.clipboard.copied"))
     } catch (error) {
       // navigator.clipboard.writeText can reject (permissions prompt denied,
       // insecure context, focus lost, etc.) — fall back to the legacy
       // execCommand path instead of leaving an unhandled rejection.
       try {
         this.legacyCopy(text)
-        this.flash("Copied!")
+        this.flash(t("js.clipboard.copied"))
       } catch (fallbackError) {
         console.error("Copy to clipboard failed:", fallbackError)
-        this.flash("Copy failed")
+        this.flash(t("js.clipboard.copy_failed"))
       }
     }
   }

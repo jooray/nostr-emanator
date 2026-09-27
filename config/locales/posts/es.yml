@@ -1,0 +1,377 @@
+es:
+  posts:
+    form:
+      errors_prevented:
+        one: "%{count} error impidió guardar esta publicación:"
+        other: "%{count} errores impidieron guardar esta publicación:"
+      replying_to: "Respondiendo a:"
+      content: Contenido
+      attach: Adjuntar
+      reply_placeholder: Escribe tu respuesta…
+      content_placeholder: "¿Qué estás pensando? (arrastra y suelta o pega imágenes para adjuntarlas)"
+      cancel: Cancelar
+      sign_publish_reply: Firmar y publicar respuesta
+      save_schedule: Guardar y programar
+    publish_progress:
+      reached:
+        one: "Alcanzó %{ok} de %{count} relays"
+        other: "Alcanzó %{ok} de %{count} relays"
+      pulled_all_html:
+        one: "Consultado &middot; los %{count} relays"
+        other: "Consultado &middot; los %{count} relays"
+      pulled_tally_html: "Consultado &middot; %{tally} relays"
+      rebroadcast: Retransmitir
+      partial_explanation: "El evento ya está en los relays que lo aceptaron, pero quien solo lea %{relays} no lo verá. Retransmitir envía otra vez el mismo evento firmado: no se vuelve a firmar."
+      accepted: Aceptado
+      never_went_out: Nunca salió
+      try_again: Reintentar
+      none_accepted:
+        one: "Ninguno de los %{count} relays lo aceptó. No se publicó nada."
+        other: "Ninguno de los %{count} relays lo aceptó. No se publicó nada."
+      never_reached: Nunca llegó a un relay. No se publicó nada.
+      running_the_press: En prensa
+      sending: "Enviando el evento firmado a los relays de %{name}. Se les pregunta uno a uno; los resultados aparecen aquí a medida que responden."
+      stale_explanation: "Esto lleva un rato en marcha, así que la tarea de publicación puede haberse detenido. El evento podría ya estar en los relays: compruébalo antes de reintentar."
+      retry_publishing: Reintentar publicación
+      retry_publishing_confirm: "¿Reintentar la publicación? Si el evento ya llegó a los relays, esto no hace nada."
+      due_now: Sale ahora
+      due_now_explanation: Su hora programada ya pasó. El planificador lo recogerá en menos de un minuto.
+    signing_progress:
+      locked_html:
+        one: "Cerrado &middot; %{count} evento firmado"
+        other: "Cerrado &middot; %{count} eventos firmados"
+      signed_and_held: "Firmado y en espera. No necesitas hacer nada más: se publicará solo a la hora programada."
+      not_signed: Sin firmar
+      no_signature: Tu firmante no devolvió ninguna firma.
+      why_this_happens: Por qué pasa esto
+      cause_timeout_html: "<strong>No lo aprobaste a tiempo.</strong> Amber te da unos dos minutos. Reintenta y ten el teléfono a mano."
+      cause_denied_html: "<strong>Lo rechazaste.</strong> Reintentar envía una solicitud nueva."
+      cause_relay_html: "<strong>No se pudo contactar con el relay del firmante.</strong> %{relay} podría estar limitando la velocidad o caído; relay.damus.io en particular restringe el tráfico NIP-46."
+      cause_relay_fallback: El relay por el que se vincula esta cuenta
+      cause_pairing: La vinculación es anterior a este permiso.
+      cause_pairing_repair_html: "%{link}: conserva las publicaciones y los ajustes de la cuenta."
+      repair_link: "Vuelve a vincular %{name}"
+      ask_again: Pedir de nuevo
+      approve_in_amber_html:
+        one: "Aprobar en Amber &middot; %{done} de %{count} hechos"
+        other: "Aprobar en Amber &middot; %{done} de %{count} hechos"
+      time_elapsed: Tiempo transcurrido
+      approvals_queued_html:
+        one: "<strong>%{count} aprobaciones distintas</strong> están en cola: una para la publicación y una por cada repost. Amber las pide una a una."
+        other: "<strong>%{count} aprobaciones distintas</strong> están en cola: una para la publicación y una por cada repost. Amber las pide una a una."
+      one_approval_queued: Hay una aprobación en cola, para la publicación en sí.
+      timing_html: "Normalmente tarda menos de 30 segundos; Amber permite unos dos minutos por solicitud. <strong>Puedes cerrar esta pestaña</strong>: la firma continúa en segundo plano."
+      past_two_minutes: "Pasaron más de dos minutos. Amber probablemente dejó de esperar: revisa el teléfono y vuelve a pedirlo."
+      position:
+        one: "%{position} de %{count}"
+        other: "%{position} de %{count}"
+      locked: Cerrado
+      asking: Preguntando
+      queued: En cola
+    edit:
+      title: Editar publicación
+      editing_for_html: "Editando publicación de %{name}"
+      ai_refinement: Refinamiento con IA
+      ai_refinement_help: Da instrucciones para refinar el contenido actual con IA.
+      refinement_instructions: Instrucciones de refinamiento
+      refine_placeholder: p. ej., Hazlo más corto y directo…
+      refine: Refinar
+    index:
+      page_title: Publicaciones
+      title: Todas las publicaciones
+      across:
+        one: "En %{count} identidad"
+        other: "En %{count} identidades"
+      discard_all:
+        one: "Descartar las %{count}"
+        other: "Descartar las %{count}"
+      discard_confirm:
+        one: "¿Descartar %{count} publicación que nunca salió? Se eliminan, no se desprograman. Esto no se puede deshacer."
+        other: "¿Descartar %{count} publicaciones que nunca salieron? Se eliminan, no se desprograman. Esto no se puede deshacer."
+      new_post: Nueva publicación
+      state: Estado
+      who: Quién
+      filters:
+        all: Todas
+        short: Apenas salió
+        failed: Nunca salió
+        awaiting_signature: Pendiente
+        scheduled: Programadas
+        published: Publicadas
+        draft: Borradores
+      nothing_here: Nada aquí
+      empty_short: Todo lo publicado llegó a la red. Que algún relay lo rechace de vez en cuando es normal y no se cuenta.
+      empty_filtered: Ninguna publicación coincide con este filtro.
+      empty_none: Todavía no se ha escrito nada.
+      clear_filters: Borrar filtros
+      write_one: Escribe una
+    new:
+      title: Nueva publicación
+      posting_as_html: "Publicando como %{name}"
+      ai_generation: Generación con IA
+      ai_generation_help: Describe lo que quieres publicar y deja que la IA genere el contenido por ti.
+      prompt: Prompt
+      prompt_placeholder: "p. ej., Escribe una nota breve sobre la importancia de la privacidad…"
+      generate: Generar
+      refine_placeholder: p. ej., Hazlo más corto y directo…
+      refine: Refinar
+    select_account:
+      title: Nueva publicación
+      choose_account: Elige qué cuenta usarás para esta publicación.
+      filter_placeholder: Filtra cuentas por nombre, usuario o npub…
+      unnamed_account: Cuenta sin nombre
+      no_match: Ninguna cuenta coincide con tu filtro.
+      no_accounts: Ninguna cuenta vinculada
+      no_accounts_help: Vincula tu primera cuenta de Nostr para empezar a programar publicaciones.
+      pair_account: Vincular cuenta
+    show:
+      back: Volver a todas las publicaciones
+      title: La forma
+      pulled: "Consultado %{tally}"
+      kind_set_ago_html: "Kind %{kind} &middot; fijado hace %{ago}"
+      due: Sale
+      due_in: "en %{time}"
+      event: "Evento:"
+      view_on: "Ver en %{viewer}"
+      show_event_id: Mostrar el ID del evento
+      the_signed_event: El evento firmado
+      hide_signed_event: Ocultar el evento firmado
+      signed_event: Evento firmado
+      unsigned_event: Evento sin firmar
+      edit: Editar
+      schedule: Programar
+      reschedule: Reprogramar
+      reschedule_confirm: "¿Reprogramar esta publicación? Volverá a borrador para firmarla de nuevo."
+      cancel_schedule: Cancelar programación
+      cancel_confirm: "¿Cancelar esta publicación? Se eliminarán todos los reposts y volverá a borrador."
+      delete: Eliminar
+      delete_confirm: "¿Seguro que quieres eliminar esta publicación?"
+      actions: Acciones
+    reposts_list:
+      title: Reposts
+      scheduled_for_html: "Programado para %{time}"
+      relay_tally:
+        one: "%{ok}/%{count} relays"
+        other: "%{ok}/%{count} relays"
+      retry_signing: Reintentar firma
+      rebroadcast: Retransmitir
+      repost_now: Republicar ahora
+      repost_now_confirm: "Esto volverá a firmar y republicará este repost ahora. ¿Continuar?"
+      cancel_confirm: "¿Cancelar este repost?"
+      relay_details: Detalles del relay
+    schedule:
+      title: Programar publicación
+      subtitle: Configura cuándo se publica y organiza los reposts.
+      post_preview: Vista previa de la publicación
+      edit: Editar
+      delete: Eliminar
+      delete_confirm: "¿Seguro que quieres eliminar esta publicación?"
+      schedule_time: Hora de programación
+      publish_date_time: Fecha y hora de publicación
+      select_date_time: Selecciona fecha y hora
+      soon_title:
+        one: "Publica dentro de %{count} minutos, dejando tiempo para aprobar la firma"
+        other: "Publica dentro de %{count} minutos, dejando tiempo para aprobar la firma"
+      soon: Pronto
+      suggested: "Sugerido:"
+      also_post_as: También publicar como
+      select_all_shown: Seleccionar todo lo visible
+      filter_identities: Filtrar identidades
+      filter_placeholder: Filtra por nombre, npub o pubkey
+      already_scheduled: Ya programado
+      no_identity_matches: Ninguna identidad coincide.
+      repost_delay: Retraso del repost
+      max_delay: Retraso máximo para los reposts (horas)
+      max_delay_help: Los reposts se repartirán al azar dentro de esta ventana de tiempo después de que se publique la publicación original.
+      existing_reposts: Reposts existentes
+      cancel: Cancelar
+      sign_schedule: Firmar y programar
+    flash:
+      discarded:
+        one: "Se descartó %{count} publicación que nunca salió."
+        other: "Se descartaron %{count} publicaciones que nunca salieron."
+      reply_no_signer: "%{name} no tiene ningún firmante vinculado, así que esta respuesta no se puede firmar. Vincula la cuenta primero."
+      reply_created: Respuesta creada. Firmando…
+      signing: Firmando…
+      saved_as_draft: Publicación guardada como borrador.
+      cannot_edit: No se puede editar esta publicación.
+      updated_signature_discarded: "Publicación actualizada. Se descartó la firma pendiente porque el contenido cambió: prográmala y fírmala de nuevo."
+      updated: Publicación actualizada.
+      deleted: Publicación eliminada.
+      cannot_schedule: No se puede programar esta publicación.
+      cannot_schedule_status: "No se puede programar esta publicación (está %{status})."
+      post_no_signer_pair_first: "%{name} no tiene ningún firmante vinculado, así que esta publicación no se puede firmar. Vincula la cuenta primero."
+      pick_date_time: Elige una fecha y hora de publicación.
+      invalid_date_time: No se entendió esa fecha y hora. Elige una fecha y hora válidas.
+      time_in_past: La hora de publicación debe ser en el futuro.
+      no_signer_for_account: Esta cuenta no tiene ningún firmante vinculado
+      signing_in_progress: Firma en curso.
+      reposts_scheduled:
+        one: "Se programó %{count} repost."
+        other: "Se programaron %{count} reposts."
+      reposts_skipped:
+        one: "Se omitió %{count} repost (la cuenta no tiene firmante vinculado)."
+        other: "Se omitieron %{count} reposts (la cuenta no tiene firmante vinculado)."
+      not_awaiting_signature: La publicación no está esperando firma.
+      post_no_signer: "%{name} no tiene ningún firmante vinculado, así que esta publicación no se puede firmar."
+      pair_signer_to_continue: Vincula un firmante para continuar.
+      retrying_signature: Reintentando la solicitud de firma…
+      cannot_retry_publish: No se puede reintentar la publicación.
+      retrying_publish: Reintentando la publicación…
+      cannot_rebroadcast: No se puede retransmitir esta publicación.
+      rebroadcasting: Retransmitiendo a los relays…
+      cannot_cancel: No se puede cancelar esta publicación.
+      cancelled: Publicación cancelada y devuelta a borrador.
+      cannot_reschedule: No se puede reprogramar esta publicación.
+      pick_new_time: Elige una nueva hora de programación.
+    jobs:
+      signing_timed_out: Se agotó el tiempo de firma. Aprueba la solicitud en tu app de firma y reintenta.
+      post_signature_invalid: La firma guardada no superó la verificación. Vuelve a firmar esta publicación.
+      repost_signature_invalid: La firma guardada no superó la verificación. Vuelve a firmar este repost.
+      original_failed: La publicación original no se pudo publicar
+      stuck_publishing: "La publicación no terminó: el proceso dejó de responder. Reintenta o retransmite."
+      stuck_signing: La firma nunca se completó. Comprueba que tu app de firma esté vinculada y reintenta.
+    errors:
+      invalid_reference:
+        parent_event_id: ID de evento padre no válido
+        parent_author_pubkey: Pubkey del autor padre no válida
+        root_event_id: ID de evento raíz no válido
+        author_pubkey: Pubkey del autor no válida
+  calendar:
+    index:
+      page_title: Calendario
+      month_format: "%B %Y"
+      post_count:
+        one: "%{count} publicación"
+        other: "%{count} publicaciones"
+      repost_count:
+        one: "%{count} repost"
+        other: "%{count} reposts"
+      previous_month: Mes anterior
+      next_month: Mes siguiente
+      today: Hoy
+      who: Quién
+      event_title: "%{name}: %{what}"
+      repost: repost
+      more:
+        one: "+%{count} más"
+        other: "+%{count} más"
+  dashboard:
+    index:
+      page_title: Tirada
+      held:
+        one: "%{count} en espera"
+        other: "%{count} en espera"
+      on_the_stone_html:
+        one: "En la piedra &middot; %{count} identidad"
+        other: "En la piedra &middot; %{count} identidades"
+      barely_reached_html:
+        one: "publicación que apenas<br>llegó a la red"
+        other: "publicaciones que apenas<br>llegaron a la red"
+      new_post: Nueva publicación
+      no_identities: Ninguna identidad vinculada
+      no_identities_help: Emanator publica como cuentas que ya controlas. Vincula una con tu firmante y sus notas programadas aparecerán aquí.
+      pair_account: Vincula una cuenta
+      waiting_on_you: Esperando tu aprobación
+      barely_reached_heading: Apenas llegó a la red
+      barely_reached_help: "Uno o ningún relay aceptó estas publicaciones, así que casi nadie puede verlas. Retransmitir envía otra vez el mismo evento firmado: no se vuelve a firmar."
+      never_went_out: Nunca salió
+      never_went_out_total:
+        one: "Nunca salió · %{count}"
+        other: "Nunca salió · %{count}"
+      discard_all:
+        one: "Descartar las %{count}"
+        other: "Descartar las %{count}"
+      discard_confirm:
+        one: "¿Descartar %{count} publicación que nunca salió? Se eliminan, no se desprograman. Esto no se puede deshacer."
+        other: "¿Descartar %{count} publicaciones que nunca salieron? Se eliminan, no se desprograman. Esto no se puede deshacer."
+      scheduled: Programadas
+      all_posts: Todas las publicaciones
+      nothing_scheduled: Nada programado. La piedra está despejada.
+      write_one: Escribe una
+      last_pulled: Última consulta
+  reposts:
+    flash:
+      cannot_cancel: No se puede cancelar este repost.
+      cancelled: Repost cancelado.
+      not_awaiting_signature: El repost no está esperando firma.
+      retrying_sign_and_publish: Reintentando la firma y publicación del repost…
+      retrying_sign: Reintentando la firma del repost…
+      cannot_rebroadcast: No se puede retransmitir este repost.
+      rebroadcasting: Retransmitiendo el repost…
+      not_ready: El repost no está listo para publicarse ahora.
+      original_unavailable: El evento de la publicación original no está disponible.
+      publishing_now: Volviendo a firmar y republicando el repost ahora…
+  ai_assist:
+    rate_limited: "Se alcanzó el límite de solicitudes a la IA: espera un poco antes de volver a intentarlo."
+  blossom_uploads:
+    allowed_types: imágenes, vídeo, audio o PDF
+    steps:
+      queued: En cola…
+      preparing: Preparando…
+      approve: Aprueba la subida en tu app de firma…
+      approve_attempt:
+        one: "Aprueba la subida en tu app de firma (%{attempt} de %{count})…"
+        other: "Aprueba la subida en tu app de firma (%{attempt} de %{count})…"
+      uploading: Subiendo al servidor multimedia…
+      media_fallback: "Endpoint multimedia no disponible: reintentando con el endpoint estándar"
+    errors:
+      no_file: No se proporcionó ningún archivo
+      no_signer: Esta cuenta no tiene ningún firmante vinculado
+      type_not_allowed: "%{filename} no es un tipo de archivo permitido (%{types})"
+      too_large: "%{filename} es demasiado grande (%{size}). El límite es %{limit}."
+      empty: "%{filename} está vacío"
+      could_not_start: No se pudo iniciar la subida
+      rate_limited: "Demasiadas subidas: espera un minuto e inténtalo de nuevo."
+      timed_out: Se agotó el tiempo de la subida. Inténtalo de nuevo.
+      staged_file_gone: "El archivo preparado ya no está: adjúntalo de nuevo"
+      signing_failed: Se agotó el tiempo de firma o se rechazó la solicitud. Apruébala en tu app de firma e inténtalo de nuevo.
+      unexpected: La subida falló de forma inesperada. Inténtalo de nuevo.
+      account_no_signer: La cuenta no tiene ningún firmante vinculado
+      empty_file: Archivo vacío
+      unreachable: "No se pudo contactar con el servidor Blossom: %{error}"
+      http_failed: "Falló la subida a Blossom (HTTP %{status}): %{reason}"
+      missing_url: La respuesta de Blossom no incluye la URL
+      invalid_response: "Respuesta de Blossom no válida: %{error}"
+      server_rejected: "El servidor multimedia lo rechazó: %{error}"
+      generic_rejection: el servidor multimedia rechazó la subida
+  activerecord:
+    errors:
+      models:
+        blossom_upload:
+          attributes:
+            content_type:
+              not_allowed: "debe ser %{types}"
+  js:
+    repost_picker:
+      none: "Sin reposts: una aprobación, para la publicación en sí."
+      selected:
+        one: "%{count} repost: %{approvals} aprobaciones distintas en tu firmante, una tras otra."
+        other: "%{count} reposts: %{approvals} aprobaciones distintas en tu firmante, una tras otra."
+    content_builder:
+      replaced: Se reemplazó tu texto anterior.
+      undo: Deshacer
+      enter_prompt: Escribe un prompt para la IA
+      enter_instructions: Escribe instrucciones para la IA
+      nothing_to_refine: No hay contenido que refinar. Genera o escribe algo de contenido primero.
+      connecting: Conectando con la IA…
+      content_below: El contenido aparecerá abajo a medida que se genera.
+      applying_edits: Aplicando los cambios de la IA…
+      instruction: "Instrucción: %{prompt}"
+      generating: Generando contenido…
+      humanizing: Humanizando el contenido…
+      refining: Refinando el contenido…
+      generation_complete: "¡Generación completa!"
+      refinement_complete: "¡Refinamiento completo!"
+      connection_lost: Se perdió la conexión. Inténtalo de nuevo.
+      error: "Error: %{message}"
+      request_failed: "Falló la solicitud (%{status})"
+    markdown_editor:
+      placeholder: Escribe aquí tu contenido…
+    blossom_upload:
+      uploading: Subiendo…
+      waiting: Esperando la subida…
+      failed: Falló la subida
+      failed_status: "Falló la subida (%{status})"
+      status_unreadable: "No se pudo leer el estado de la subida (%{status})"
+      timed_out: Se agotó el tiempo de la subida

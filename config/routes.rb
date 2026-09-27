@@ -116,6 +116,7 @@ Rails.application.routes.draw do
   # User settings
   get "user/edit", to: "users#edit", as: :edit_user
   patch "user", to: "users#update", as: :user
+  post "locale", to: "locales#update", as: :locale
 
   # API tokens (for MCP access)
   resources :api_tokens, only: [:create, :destroy]

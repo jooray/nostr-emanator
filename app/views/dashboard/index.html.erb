@@ -1,4 +1,4 @@
-<% content_for :title, "Press run" %>
+<% content_for :title, t(".page_title") %>
 
 <%# The stone. Everything here is ordered by what the operator has to act on,
     not by what is easy to count. There are no metric tiles: "Total posts 204"
@@ -9,9 +9,9 @@
   <header class="mb-7 flex flex-wrap items-end justify-between gap-4 border-b rule pb-4">
     <div>
       <h1 class="condensed text-[38px] font-bold uppercase leading-none tracking-[0.06em]">
-        <%= @held_count %> held
+        <%= t(".held", count: @held_count) %>
       </h1>
-      <p class="eng mt-2.5">On the stone &middot; <%= pluralize(station_status[:identities], "identity") %></p>
+      <p class="eng mt-2.5"><%= t(".on_the_stone_html", count: station_status[:identities]) %></p>
     </div>
 
     <div class="flex items-center gap-3">
@@ -19,23 +19,22 @@
         <%= link_to posts_path(status: "short"), class: "alarm no-underline" do %>
           <span class="condensed text-[24px] font-bold leading-none text-red-600 dark:text-red-400 tabular"><%= @unreached.size %></span>
           <span class="condensed text-[13px] uppercase leading-tight tracking-[0.16em] text-red-800 dark:text-red-300">
-            <%= @unreached.size == 1 ? "post barely" : "posts barely" %><br>reached the network
+            <%= t(".barely_reached_html", count: @unreached.size) %>
           </span>
         <% end %>
       <% end %>
-      <%= link_to "New post", new_post_path,
+      <%= link_to t(".new_post"), new_post_path,
             class: "condensed inline-block border border-amber-500 bg-amber-500 px-4 py-2.5 text-[14px] font-semibold uppercase tracking-[0.16em] text-[#1a1714] transition-colors hover:bg-amber-400" %>
     </div>
   </header>
 
   <% unless @has_accounts %>
     <div class="border rule px-6 py-10 text-center">
-      <p class="eng mb-3">No identities paired</p>
+      <p class="eng mb-3"><%= t(".no_identities") %></p>
       <p class="mx-auto mb-5 max-w-md text-gray-600 dark:text-gray-300">
-        Emanator posts as accounts you already control. Pair one with your signer
-        and its scheduled notes appear here.
+        <%= t(".no_identities_help") %>
       </p>
-      <%= link_to "Pair an account", new_account_path,
+      <%= link_to t(".pair_account"), new_account_path,
             class: "condensed inline-block border border-amber-500 bg-amber-500 px-4 py-2.5 text-[14px] font-semibold uppercase tracking-[0.16em] text-[#1a1714]" %>
     </div>
   <% end %>
@@ -44,7 +43,7 @@
   <% if @waiting.any? %>
     <section class="mb-8" aria-labelledby="sec-waiting">
       <h2 id="sec-waiting" class="eng mb-3 flex items-center gap-2.5">
-        <%= lamp(:wait) %> Waiting on you
+        <%= lamp(:wait) %> <%= t(".waiting_on_you") %>
       </h2>
       <div class="border-t rule">
         <% @waiting.each do |post| %>
@@ -60,11 +59,10 @@
   <% if @unreached.any? %>
     <section class="mb-8" aria-labelledby="sec-unreached">
       <h2 id="sec-unreached" class="eng mb-3 flex items-center gap-2.5">
-        <%= lamp(:alarm) %> Barely reached the network
+        <%= lamp(:alarm) %> <%= t(".barely_reached_heading") %>
       </h2>
       <p class="mb-3 max-w-prose text-sm text-gray-600 dark:text-gray-300">
-        One relay or none accepted these, so almost nobody can see them.
-        Rebroadcast sends the same signed event again — it is not re-signed.
+        <%= t(".barely_reached_help") %>
       </p>
       <div class="border-t rule">
         <% @unreached.each do |post| %>
@@ -79,14 +77,14 @@
     <section class="mb-8" aria-labelledby="sec-failed">
       <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
         <h2 id="sec-failed" class="eng flex items-center gap-2.5">
-          <%= lamp(:alarm) %> Never went out<%= " · #{@failed_total}" if @failed_total > @failed.size %>
+          <%= lamp(:alarm) %> <%= @failed_total > @failed.size ? t(".never_went_out_total", count: @failed_total) : t(".never_went_out") %>
         </h2>
         <%# A post scheduled in March is not going to be retried in September.
             Without this the only way to clear a dead backlog was to open each
             one, so the section stayed permanently alarming. %>
-        <%= button_to "Discard all #{@failed_total}", discard_failed_posts_path, method: :delete,
+        <%= button_to t(".discard_all", count: @failed_total), discard_failed_posts_path, method: :delete,
               class: "slug hover:text-red-600 dark:hover:text-red-400",
-              form: { data: { turbo_confirm: "Discard #{pluralize(@failed_total, 'post')} that never went out? They are deleted, not unscheduled. This cannot be undone." } } %>
+              form: { data: { turbo_confirm: t(".discard_confirm", count: @failed_total) } } %>
       </div>
       <div class="border-t rule">
         <% @failed.each do |post| %>
@@ -98,18 +96,18 @@
 
   <%# -------------------------------------------------------------- the queue %>
   <section class="mb-8" aria-labelledby="sec-queue">
-    <h2 id="sec-queue" class="eng mb-3">Scheduled</h2>
+    <h2 id="sec-queue" class="eng mb-3"><%= t(".scheduled") %></h2>
     <% if @upcoming.any? %>
       <div class="border-t rule">
         <% @upcoming.each do |post| %>
           <%= render "shared/forme_row", post: post %>
         <% end %>
       </div>
-      <%= link_to "All posts", posts_path, class: "condensed mt-3 inline-block text-[14px] font-semibold uppercase tracking-[0.16em] text-amber-600 underline underline-offset-4 hover:text-amber-500 dark:text-amber-400" %>
+      <%= link_to t(".all_posts"), posts_path, class: "condensed mt-3 inline-block text-[14px] font-semibold uppercase tracking-[0.16em] text-amber-600 underline underline-offset-4 hover:text-amber-500 dark:text-amber-400" %>
     <% elsif @has_accounts %>
       <div class="border rule px-6 py-8 text-center">
-        <p class="text-gray-600 dark:text-gray-300">Nothing scheduled. The stone is clear.</p>
-        <%= link_to "Write one", new_post_path, class: "eng mt-3 inline-block text-amber-600 hover:text-amber-500 dark:text-amber-400" %>
+        <p class="text-gray-600 dark:text-gray-300"><%= t(".nothing_scheduled") %></p>
+        <%= link_to t(".write_one"), new_post_path, class: "eng mt-3 inline-block text-amber-600 hover:text-amber-500 dark:text-amber-400" %>
       </div>
     <% end %>
   </section>
@@ -117,7 +115,7 @@
   <%# ---------------------------------------------------------------- recent %>
   <% if @recent.any? %>
     <section aria-labelledby="sec-recent">
-      <h2 id="sec-recent" class="eng mb-3">Last pulled</h2>
+      <h2 id="sec-recent" class="eng mb-3"><%= t(".last_pulled") %></h2>
       <div class="border-t rule">
         <% @recent.each do |post| %>
           <%= render "shared/forme_row", post: post, sent: true %>

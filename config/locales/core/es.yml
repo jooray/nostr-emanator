@@ -1,0 +1,276 @@
+es:
+  # Formats used across the app with l(time, format: :app_*). Translators may
+  # reorder day and month here; the English values match the old strftime calls.
+  time:
+    formats:
+      app_time: "%H:%M"
+      app_date: "%-d %b %Y"
+      app_short: "%-d %b %H:%M"
+      app_datetime: "%-d %b %Y %H:%M"
+      app_day_month: "%-d %b"
+
+  # Post / repost / action status names (ApplicationHelper#status_label).
+  status_labels:
+    draft: Borrador
+    pending: Pendiente
+    pending_signature: Firma pendiente
+    awaiting_signature: Esperando aprobación en el firmante
+    processing: Procesando
+    scheduled: Programado
+    publishing: Publicando
+    published: Publicado
+    failed: Fallido
+
+  # ConsoleHelper: lamps, poll strips, delivery sentences, status slugs.
+  console:
+    poll_strip:
+      accepted: aceptado
+    delivery:
+      all:
+        one: Alcanzó los %{count} relays.
+        other: Alcanzó los %{count} relays.
+      partial:
+        one: Alcanzó %{ok} de %{count} relays, lo cual es una publicación normal.
+        other: Alcanzó %{ok} de %{count} relays, lo cual es una publicación normal.
+      thin:
+        one: "Alcanzó solo 1 de %{count} relays: prácticamente invisible."
+        other: "Alcanzó solo 1 de %{count} relays: prácticamente invisible."
+      none:
+        one: No alcanzó ninguno de los %{count} relays a los que se envió.
+        other: No alcanzó ninguno de los %{count} relays a los que se envió.
+      not_published: Todavía no se publicó.
+    slug:
+      approve_on_phone: Aprobar en el teléfono
+      barely_out: Apenas salió %{tally}
+      failed: Falló
+      sending: Enviando
+      held: En espera
+
+  application:
+    sign_in_required: Inicia sesión para continuar
+
+  activerecord:
+    attributes:
+      user:
+        custom_relays: Relays personalizados
+    errors:
+      models:
+        user:
+          attributes:
+            custom_relays:
+              unsafe_relay: "%{relay} no se puede usar: los relays deben ser URLs wss:// en hosts públicos"
+
+  layouts:
+    application:
+      skip_to_content: Saltar al contenido
+    navigation:
+      theme: Tema
+      station_status: Estado de la estación
+      readings:
+        identities:
+          one: "%{count} identidad"
+          other: "%{count} identidades"
+        waiting:
+          one: "%{count} esperando firma"
+          other: "%{count} esperando firma"
+        short:
+          one: "%{count} con entrega corta"
+          other: "%{count} con entrega corta"
+        failed:
+          one: "%{count} sin salir"
+          other: "%{count} sin salir"
+      signed_in: Sesión iniciada
+      sign_out_confirm: "¿Cerrar sesión en Emanator?"
+      out: Salir
+      sign_out: Cerrar sesión
+      open_navigation: Abrir navegación
+      close_navigation: Cerrar navegación
+      main: Principal
+    nav_items:
+      dashboard: Panel
+      new_post: Nueva publicación
+      accounts: Cuentas
+      posts: Publicaciones
+      interactions: Interacciones
+      calendar: Calendario
+    messages_nav_item:
+      messages: Mensajes
+      unread:
+        one: "%{count} mensaje sin leer"
+        other: "%{count} mensajes sin leer"
+      requests: Tienes solicitudes de mensajes sin leer
+
+  pwa:
+    manifest:
+      description: Programa y publica tus notas de Nostr
+
+  sessions:
+    new:
+      tagline: Inicia sesión con tu identidad de Nostr
+      extension_heading: Extensión del navegador
+      extension_button: Continuar con la extensión
+      signer_heading: App de firma
+      open_in_signer: Abrir en tu app de firma
+      open_in_signer_hint: Amber, Amethyst o cualquier firmante en este dispositivo
+      scan_hint: Escanea con un firmante en otro dispositivo
+      copy: Copiar
+      bunker_heading: Pega un enlace bunker
+      bunker_help: Crea una conexión en tu firmante y pega el enlace que te da.
+      bunker_label: Enlace bunker
+      connect: Conectar
+      waiting: Esperando a tu firmante…
+      stale: "¿No te llegó la aprobación? Mantén esta pestaña abierta mientras apruebas, o empieza de nuevo con un código nuevo."
+      new_code: Obtener un código nuevo
+      auth_challenge: Tu firmante necesita que lo apruebes en su propia ventana.
+      open_approval: Abrir la página de aprobación
+      expired: Este código expiró por tu seguridad.
+      no_account: No necesitas cuenta. Tu identidad es tu clave de Nostr.
+      new_to_nostr: "¿Nuevo en Nostr? Consigue primero un firmante."
+      desktop_label: "En escritorio:"
+      desktop_html: instala una extensión de navegador NIP-07, por ejemplo %{alby} o %{nos2x}.
+      mobile_label: "En el móvil:"
+      mobile_html: 'instala %{amber} (Android) y luego usa «Abrir en tu app de firma» de arriba: pasa la conexión directamente a Amber en el mismo teléfono.'
+      explainer: "Cualquiera de las dos genera una clave de Nostr y te deja aprobar las solicitudes de inicio de sesión o publicación: Emanator nunca ve tu clave privada."
+    rate_limited:
+      try_again: Reintentar
+    errors:
+      too_many_title: Demasiados intentos
+      too_many_message: Demasiados intentos de autenticación. Inténtalo de nuevo en breve.
+      capacity_title: Temporalmente al límite de capacidad
+      capacity_message: La autenticación está temporalmente al límite de su capacidad. Inténtalo de nuevo en breve.
+    bunker:
+      invalid_link: "Ese enlace no parece un enlace bunker válido. Debe empezar por bunker:// e incluir al menos un relay."
+      failed: No se pudo iniciar la conexión. Inténtalo de nuevo.
+    refresh_profile:
+      refreshing: "Actualizando tu perfil desde los relays en segundo plano: recarga en unos segundos para ver los cambios."
+      not_signed_in: No has iniciado sesión.
+    callback:
+      no_pubkey: "Fallo de autenticación: no se proporcionó ninguna clave pública"
+      invalid_pubkey: "Fallo de autenticación: formato de clave pública no válido"
+      bad_signature: "Fallo de autenticación: la verificación de la firma falló"
+      welcome: "¡Bienvenido, %{name}!"
+    destroy:
+      logged_out: Sesión cerrada correctamente
+
+  shared:
+    locale_switcher:
+      label: Idioma
+    qr_phishing_warning:
+      login_html: Escanea únicamente un código QR que se muestre en <strong>tu propia pantalla</strong>. Escanear un código que alguien te envió o te mostró lo conecta a Emanator como si fueras tú.
+      pairing_html: Escanea únicamente un código QR que se muestre en <strong>tu propia pantalla</strong>. Escanear un código que alguien te envió o te mostró vincula tu clave de Nostr a la cuenta de Emanator de otra persona.
+    forme_row:
+      draft: Borrador
+      sent: Enviado
+      today: Hoy
+      tomorrow: Mañana
+      repost_of_note: Repost de esta nota
+      reposts:
+        one: "%{count} repost"
+        other: "%{count} reposts"
+      never_reached: Nunca llegó a un relay. No se publicó nada.
+      waiting_for_approval: Esperando aprobación
+      open: Abrir
+      rebroadcast: Retransmitir
+      retry: Reintentar
+
+  users:
+    edit:
+      title: Ajustes
+      profile:
+        title: Perfil
+        picture_alt: Perfil
+        fallback_name: Usuario de Nostr
+        refresh: Actualizar desde los relays
+      language:
+        title: Idioma
+        help: El idioma de la interfaz de Emanator. No afecta a tus publicaciones.
+        save: Guardar
+      event_viewer:
+        title: Visor de eventos
+        help: Elige qué cliente de Nostr se abre al hacer clic en enlaces de perfil o de eventos.
+        save: Guardar
+      custom_relays:
+        title: Relays personalizados
+        help: Estos relays recibirán cada publicación que publiques, además de los relays de escritura NIP-65 de cada cuenta.
+        label: URLs de relays (una por línea)
+        save: Guardar relays
+    update:
+      language_updated: Idioma actualizado.
+      event_viewer_updated: Visor de eventos actualizado.
+      custom_relays_updated: Relays personalizados actualizados.
+      settings_updated: Ajustes actualizados.
+    api_tokens:
+      title: Tokens de API (MCP)
+      intro_html: Conecta un agente de IA a Emanator mediante %{mcp_link}. Apunta tu cliente MCP a %{endpoint} y envía el token como %{header}.
+      mcp_link: Model Context Protocol
+      warning_html: '<strong>Un token puede publicar como si fueras tú.</strong> Lee tus cuentas y publicaciones, crea borradores y <strong>programa publicaciones que luego se firman y publican automáticamente bajo cualquiera de tus identidades vinculadas, sin ningún paso de aprobación adicional</strong>, porque tu firmante aprueba las notas kind 1 sin preguntar. Trata un token como una clave de publicación: dáselo solo a un agente al que dejarías hablar en nombre de estas cuentas, y revócalo aquí en cuanto dejes de confiar en él.'
+      created_html: "Token <strong>%{name}</strong> creado. Cópialo ahora: no se volverá a mostrar."
+      copy: Copiar
+      name_label: Nombre del token
+      name_placeholder: p. ej. content-agent
+      expires_label: Expira
+      expiry:
+        days_30: 30 días
+        days_90: 90 días
+        days_180: 180 días
+        year: 1 año
+        never: Nunca
+      generate: Generar token
+      columns:
+        name: Nombre
+        created: Creado
+        expires: Expira
+        last_used: Último uso
+      never: Nunca
+      expired_on: Expiró el %{date}
+      ago: "hace %{time}"
+      revoke: Revocar
+      revoke_confirm: "¿Revocar este token? Cualquier cosa que lo use perderá el acceso."
+      empty: Todavía no hay tokens.
+
+  api_tokens:
+    create:
+      name_required: Se requiere un nombre para el token.
+    destroy:
+      revoked: Token revocado.
+
+  # Kaminari pagination (same English as the gem's own defaults).
+  views:
+    pagination:
+      label: paginador
+      first: "&laquo; Primera"
+      last: "Última &raquo;"
+      previous: "&lsaquo; Ant."
+      next: "Sig. &rsaquo;"
+      truncate: "&hellip;"
+
+  js:
+    nostr_login:
+      paste_first: Pega primero el enlace bunker de tu firmante.
+      connecting: Conectando…
+      unusable_link: No se pudo usar ese enlace bunker.
+      waiting_approve: Esperando a que tu firmante lo apruebe…
+      unreachable: No se pudo contactar con el servidor. Comprueba tu conexión e inténtalo de nuevo.
+      no_extension: No se encontró ninguna extensión NIP-07. Instala nos2x, Alby u otra extensión de Nostr.
+      extension_connecting: Conectando…
+      no_pubkey: No se pudo obtener la clave pública de la extensión
+      extension_error: "Error de la extensión: %{message}"
+      unknown_error: Error desconocido
+      lost_connection: Se perdió la conexión con el servidor. Recarga la página para intentarlo de nuevo.
+      sign_in_extension: Iniciar sesión con la extensión del navegador
+    theme:
+      names:
+        system: Seguir al sistema
+        light: Claro
+        dark: Oscuro
+      next_names:
+        system: seguir al sistema
+        light: claro
+        dark: oscuro
+      label: "Tema: %{current}. Cambiar a %{next}."
+    clipboard:
+      copied: "¡Copiado!"
+      copy_failed: Error al copiar
+    expandable:
+      show_more: Mostrar más
+      show_less: Mostrar menos

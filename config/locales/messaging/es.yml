@@ -1,0 +1,229 @@
+es:
+  conversations:
+    index:
+      title: Mensajes
+      subtitle: Privados, en todas las identidades vinculadas
+      not_authenticated:
+        one: "%{count} cuenta sin autenticar en el relay"
+        other: "%{count} cuentas sin autenticar en el relay"
+      still_arrive:
+        one: "Los mensajes siguen llegando por tus otros relays: lo que esté guardado solo en este podría faltar."
+        other: "Los mensajes siguen llegando por tus otros relays: lo que esté guardado solo en estos podría faltar."
+      auth_explainer: Estos relays solo entregan tus mensajes a un cliente autenticado, y tu firmante todavía no ha completado ese proceso.
+      auth_missed_prompt_html: "Si Amber te lo pidió y no lo viste, espera: lo reintenta. Cuando pregunte, <strong>Alcance de autenticación → Todos los relays</strong> hace que no vuelva a preguntar."
+      auth_whitelist_html: Si nunca pregunta, revisa <strong>Ajustes → Lista blanca de autenticación de clientes</strong> en Amber. Mientras esa lista no esté vacía, Amber rechaza sin preguntar las solicitudes de autenticación de cualquier host que no esté en ella. Añade %{hosts} a la lista, o bórrala para que Amber te pregunte a ti.
+      no_accounts: Vincula una cuenta para empezar a recibir mensajes privados.
+      add_account: Añadir una cuenta
+      tabs:
+        known: Recibidos
+        requests: Solicitudes
+      who: Quién
+      select_all: Seleccionar todo
+      filter: Filtrar
+      unread_only: Solo no leídos
+      filter_by_unread: Filtrar por no leídos
+      mark_all_read: Marcar todo como leído
+      mark_all_read_confirm: "¿Marcar como leídas todas las conversaciones sin leer de esta vista?"
+      no_requests: No hay solicitudes de mensajes.
+      no_messages: Todavía no hay mensajes.
+      known_hint: Aquí aparecen los mensajes de las personas que sigues. El resto espera en Solicitudes.
+    show:
+      title: Conversación
+      conversation_between: conversación entre
+      yourself: tú mismo
+      and_more: "y %{count} más"
+      all_participants: Todos los participantes
+      legacy_title: Conversación NIP-04 antigua
+      legacy_body: El texto del mensaje está cifrado, pero el remitente, el destinatario y el momento de envío son públicos en cada relay por el que pasó este hilo.
+      request_body: No sigues a esta persona, y tampoco lo hace ninguna de tus otras cuentas.
+      accept: Aceptar
+      block: Bloquear
+      showing_recent: Mostrando los %{count} mensajes más recientes.
+      empty: Todavía no hay mensajes en esta conversación.
+    accept:
+      moved: Se movió a tu bandeja de entrada.
+    block:
+      blocked: Bloqueado. No verás mensajes de esta conversación.
+    mark_all_read:
+      marked:
+        one: Se marcó %{count} conversación como leída.
+        other: Se marcaron %{count} conversaciones como leídas.
+      nothing_unread: No hay nada sin leer.
+    composer_body:
+      unavailable: El firmante de esta cuenta todavía no ha concedido permisos de mensajería.
+      enable_messaging: Habilitar mensajería
+      checking: Comprobando dónde recibe esta persona mensajes privados…
+      no_inbox_title: Esta persona no ha publicado una bandeja de mensajes privados
+      no_inbox_body: "Tu mensaje sigue totalmente cifrado y tu identidad se mantiene oculta, pero va a relays que esta persona nunca designó para mensajes, así que podría no llegar. Los clientes sin ningún soporte de mensajería privada (Primal, Damus) no lo buscarán ahí."
+      strong_best_effort: "Cifrado fuerte: entrega sin garantías"
+      legacy_summary: "¿No llega? Envía un mensaje antiguo en su lugar"
+      legacy_intro: "Un mensaje antiguo llega a todos los clientes, incluidos los que no tienen soporte de mensajería privada, que son la mayoría. Pero es un retroceso real:"
+      legacy_placeholder: Mensaje (el texto está cifrado; a quién se lo enviaste, no)
+      send_public_metadata: Enviar con metadatos públicos
+      legacy_separate: Esto inicia un hilo antiguo aparte con la misma persona, separado de tu hilo privado.
+      basic_encryption: "Cifrado básico: los metadatos son públicos"
+      legacy_reply_placeholder: Responde en este hilo antiguo…
+      strong_private: "Cifrado fuerte: el contenido y los metadatos son privados"
+    conversation_row:
+      you: "Tú:"
+      no_preview: (sin vista previa)
+      legacy_title: "Hilo NIP-04 antiguo: el remitente, el destinatario y el momento de envío son públicos"
+      legacy_badge: Antiguo · metadatos públicos
+      people:
+        one: "%{count} persona"
+        other: "%{count} personas"
+    copyable_name:
+      click_to_copy: "%{npub}: haz clic para copiar"
+    failed_message_actions:
+      not_sent: No se envió
+      try_again: Reintentar
+      legacy_summary: "¿Enviarlo como mensaje antiguo en su lugar?"
+      legacy_intro: "No pueden recibir mensajes privados de ninguna forma, así que esta es la única manera de que les llegue. Pero es un retroceso real:"
+      send_public_metadata: Enviar con metadatos públicos
+      moves_to_legacy: Esto lo mueve a un hilo antiguo aparte con la misma persona.
+    message_bubble:
+      encrypted_file: "[archivo cifrado]"
+      encrypted_file_typed: "[archivo cifrado: %{type}]"
+      downgrade_title: "Enviado como mensaje privado NIP-04 antiguo: el remitente, el destinatario y el momento de envío son públicos"
+      downgrade_badge: Enviado con metadatos sin cifrar
+      legacy_title: "Mensaje NIP-04 antiguo: el remitente, el destinatario y el momento de envío eran públicos"
+      legacy_badge: Antiguo
+      best_effort: Sin garantías
+      repaired_title: Este mensaje omitía campos que exige NIP-17; se recuperó a partir del sello firmado.
+      repaired: recuperado
+      sending: Enviando…
+    private_composer_form:
+      placeholder: Escribe un mensaje privado…
+      approvals:
+        one: Necesita %{count} aprobación en tu app de firma.
+        other: Necesita %{count} aprobaciones en tu app de firma.
+      enter_hint: Intro para enviar, Mayús+Intro para una nueva línea.
+      send: Enviar
+
+  messages:
+    retry:
+      cannot_retry: Ese mensaje no se puede reintentar.
+      no_inbox: Esta persona todavía no tiene bandeja de mensajes privados, así que un mensaje privado no puede llegarle. Puedes enviarlo como mensaje antiguo en su lugar.
+    downgrade:
+      cannot_downgrade: Ese mensaje no se puede convertir en antiguo.
+
+  messaging:
+    names:
+      unknown: Desconocido
+      note_to_self: Nota para ti mismo
+      peer_and_more: "%{name} +%{count}"
+    classification_badge:
+      own_follow: Los sigues
+      sibling_follow: Seguido por otra de tus cuentas
+      wot: Seguido por alguien a quien sigues
+      replied: Respondiste
+      self: Tu propia cuenta
+      manual: Lo aceptaste
+    delivery_note:
+      nip65: "Enviado a sus relays públicos: no tienen bandeja de mensajes privados, así que podría no llegar"
+      fallback: "Enviado a relays populares: no tienen ninguna lista de relays, así que podría no llegar"
+      observed: "Enviado a los relays por los que nos llegan sus propios mensajes: no tienen bandeja de mensajes privados, pero su cliente lee ahí"
+    legacy_downgrade_risks:
+      watchers: Cualquiera que vigile los relays puede ver que le escribiste a esta persona, y cuándo.
+      public_metadata: "Solo el texto del mensaje está cifrado: el remitente y el destinatario son públicos."
+      malleable: El cifrado NIP-04 no está autenticado, así que el texto cifrado se puede manipular.
+    errors:
+      legacy_unacknowledged: un mensaje NIP-04 antiguo solo se puede enviar después de que el remitente reconozca que sus metadatos son públicos
+      write_first: Escribe un mensaje primero.
+      legacy_needs_confirmation: Enviar un mensaje antiguo necesita una confirmación explícita.
+      no_recipient: Sin destinatario.
+      no_signed_message: Tu firmante no devolvió ningún mensaje firmado.
+      no_relay_accepted: Ningún relay aceptó el mensaje.
+    steps:
+      approve_message: Aprueba el mensaje en tu app de firma (%{index} de %{total})…
+      approve_signature: Aprueba la firma en tu app de firma (%{index} de %{total})…
+      delivering_to: Entregando a %{recipient}…
+      delivering: Entregando…
+      decrypting: Descifrando mensajes en tu app de firma… %{processed} hechos, %{pending} pendientes.
+      importing_legacy:
+        one: Importando %{count} mensaje antiguo…
+        other: Importando %{count} mensajes antiguos…
+      no_inbox_relays: Todavía no se conocen relays de bandeja de mensajes privados para esta cuenta.
+      found_new:
+        one: Se encontró %{count} mensaje nuevo.
+        other: Se encontraron %{count} mensajes nuevos.
+
+  nostr_content:
+    referenced_note: "[nota referenciada]"
+    unknown_author: Desconocido
+
+  interactions:
+    index:
+      title: Interacciones
+      subtitle:
+        one: Respuestas, citas y menciones en %{count} identidad
+        other: Respuestas, citas y menciones en %{count} identidades
+      unselect_all: Deseleccionar todo
+    interaction_card:
+      your_post: Tu publicación
+      quoted_post: Publicación citada
+      in_reply_to: En respuesta a
+      labelled: "%{label} (%{author})"
+      show_more: Mostrar más
+      open_profile: Abrir perfil en %{viewer}
+      types:
+        reply: respuesta
+        quote: cita
+        mention: mención
+      to_account: a @%{name}
+      time_ago: "hace %{time}"
+      like: Me gusta
+      follow: Seguir
+      mute_title: Ocultar todas las publicaciones de @%{name}
+      mute: Silenciar a @%{name}
+      retry: Reintentar
+      reply: Responder
+      replying_as_html: Respondiendo como %{name}
+      like_this_post: Dar me gusta a esta publicación
+      follow_author: Seguir a @%{name}
+      reply_placeholder: Escribe tu respuesta…
+      cancel: Cancelar
+      sign_and_publish: Firmar y publicar
+    interactions_content:
+      empty_title: Todavía no hay interacciones
+      empty_body: Aquí aparecerán las interacciones de otras personas a medida que respondan, citen o mencionen a tus cuentas.
+    loading_toast:
+      loading: Cargando las últimas interacciones…
+
+  js:
+    dm_delivery:
+      gave_up: No se pudo averiguar dónde recibe esta persona mensajes privados. Recarga para intentarlo de nuevo.
+    inline_reply:
+      creating: Creando la respuesta…
+      signing: Firmando…
+      create_failed: No se pudo crear la respuesta
+      network_error: Error de red. Inténtalo de nuevo.
+      retrying: Reintentando…
+      retry_failed_open_post: El reintento falló. Abre la página de la publicación para intentarlo de nuevo.
+      retry_failed: El reintento falló. Inténtalo de nuevo.
+      signing_approve: Firmando… (aprueba en tu app de firma)
+      publishing: Publicando…
+      published: "¡Respuesta publicada!"
+      signing_stalled: La firma se estancó. Reintenta para volver a intentarlo.
+      publishing_failed: La publicación falló. Inténtalo de nuevo desde la página de la publicación.
+    interaction_actions:
+      signing: Firmando…
+      failed: Falló
+      network_error: Error de red
+      already_following: Ya lo sigues
+      mute_confirm: "¿Silenciar a %{label}? Sus publicaciones se ocultarán en todas tus cuentas."
+      muting: Silenciando…
+      processing: Procesando…
+      approve: Aprueba en tu app de firma…
+      publishing: Publicando…
+      liked: "¡Te gusta!"
+      followed: "¡Siguiendo!"
+      retrying: Reintentando…
+      retry_failed: El reintento falló
+      following: Siguiendo
+      follow: Seguir
+    interactions_filter:
+      none_selected_title: Ninguna cuenta seleccionada
+      none_selected_body: Selecciona una cuenta arriba para ver sus interacciones.
+      unselect_all: Deseleccionar todo
+      select_all: Seleccionar todo

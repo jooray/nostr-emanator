@@ -1,17 +1,17 @@
 <div class="max-w-2xl mx-auto space-y-6">
-  <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Settings</h1>
+  <h1 class="text-2xl font-bold text-gray-900 dark:text-white"><%= t(".title") %></h1>
 
   <!-- Profile Info (read-only, from Nostr) -->
   <div class="border rule p-6">
-    <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Profile</h2>
+    <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4"><%= t(".profile.title") %></h2>
     <div class="flex items-center gap-4 mb-4">
       <% if @user.picture_url.present? %>
-        <img src="<%= @user.picture_url %>" alt="Profile" class="h-16 w-16 rounded-full object-cover">
+        <img src="<%= @user.picture_url %>" alt="<%= t(".profile.picture_alt") %>" class="h-16 w-16 rounded-full object-cover">
       <% else %>
         <div class="h-16 w-16 flex items-center justify-center flex items-center justify-center border border-gray-400 dark:border-gray-500"><span class="font-bold text-xl condensed font-bold uppercase tracking-wide text-gray-600 dark:text-gray-300"><%= @user.display_name_or_npub[0].upcase %></span></div>
       <% end %>
       <div>
-        <p class="text-lg font-medium text-gray-900 dark:text-white"><%= @user.display_name || @user.username || "Nostr User" %></p>
+        <p class="text-lg font-medium text-gray-900 dark:text-white"><%= @user.display_name || @user.username || t(".profile.fallback_name") %></p>
         <p class="text-sm text-gray-500 dark:text-gray-400"><%= @user.npub %></p>
       </div>
     </div>
@@ -23,16 +23,33 @@
         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
         </svg>
-        Refresh from Relays
+        <%= t(".profile.refresh") %>
       <% end %>
     </div>
   </div>
 
+  <!-- Language -->
+  <div class="border rule p-6">
+    <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4"><%= t(".language.title") %></h2>
+    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4"><%= t(".language.help") %></p>
+    <%= form_with url: user_path, method: :patch, class: "flex flex-wrap items-center gap-3", data: { turbo: false } do |f| %>
+      <select name="locale" aria-label="<%= t(".language.title") %>"
+              class="rounded-lg border-gray-300 dark:border-[color:var(--color-rule-dark)] dark:bg-[color:var(--color-chassis)] dark:text-gray-100 text-sm">
+        <% ApplicationHelper::LOCALE_NAMES.each do |code, name| %>
+          <option value="<%= code %>" lang="<%= code %>" <%= "selected" if I18n.locale.to_s == code %>><%= name %></option>
+        <% end %>
+      </select>
+      <button type="submit" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors">
+        <%= t(".language.save") %>
+      </button>
+    <% end %>
+  </div>
+
   <!-- Event Viewer -->
   <div class="border rule p-6">
-    <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Event Viewer</h2>
+    <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4"><%= t(".event_viewer.title") %></h2>
     <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
-      Choose which Nostr client opens when you click profile or event links.
+      <%= t(".event_viewer.help") %>
     </p>
     <%= form_with url: user_path, method: :patch, class: "space-y-4" do |f| %>
       <div class="flex items-center gap-4">
@@ -47,7 +64,7 @@
       </div>
       <div>
         <button type="submit" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors">
-          Save
+          <%= t(".event_viewer.save") %>
         </button>
       </div>
     <% end %>
@@ -55,13 +72,13 @@
 
   <!-- Custom Relays -->
   <div class="border rule p-6">
-    <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Custom Relays</h2>
+    <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4"><%= t(".custom_relays.title") %></h2>
     <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
-      These relays will receive every post you publish, in addition to each account's NIP-65 write relays.
+      <%= t(".custom_relays.help") %>
     </p>
     <%= form_with url: user_path, method: :patch, class: "space-y-4" do |f| %>
       <div>
-        <label for="user_custom_relays" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Relay URLs (one per line)</label>
+        <label for="user_custom_relays" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><%= t(".custom_relays.label") %></label>
         <textarea
           name="user[custom_relays]"
           id="user_custom_relays"
@@ -72,7 +89,7 @@
       </div>
       <div>
         <button type="submit" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors">
-          Save Relays
+          <%= t(".custom_relays.save") %>
         </button>
       </div>
     <% end %>

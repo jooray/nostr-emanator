@@ -1,0 +1,283 @@
+es:
+  activerecord:
+    attributes:
+      account:
+        personality: Personalidad
+        blossom_server: Servidor Blossom
+      nostr_action:
+        target_pubkey: Pubkey de destino
+        target_event_id: Evento de destino
+        target_event_kind: Kind del evento de destino
+    errors:
+      models:
+        nostr_action:
+          attributes:
+            target_pubkey:
+              invalid_hex_pubkey: debe ser una pubkey hexadecimal en minúsculas de 64 caracteres
+            target_event_id:
+              invalid_hex_event_id: debe ser un id de evento hexadecimal en minúsculas de 64 caracteres
+            target_event_kind:
+              unsupported_kind: no es un kind de evento admitido
+
+  accounts:
+    # Shared across the accounts views.
+    unnamed_account: Cuenta sin nombre
+    signer_connected: Firmante conectado
+    no_signer: Sin firmante
+    posts_count:
+      one: "%{count} publicación"
+      other: "%{count} publicaciones"
+    waiting_for_signer: Esperando la conexión del firmante…
+
+    form:
+      errors_heading:
+        one: "%{count} error impidió guardar esta cuenta:"
+        other: "%{count} errores impidieron guardar esta cuenta:"
+      markdown_supported: Admite Markdown
+      personality_help: Define el estilo de escritura y la personalidad de las publicaciones generadas por IA en esta cuenta. Esto guía el tono, el vocabulario y la estructura del contenido generado.
+      personality_placeholder: Describe la personalidad de escritura de esta cuenta…
+      blossom_label: Servidor multimedia Blossom
+      blossom_help_html: Dónde se suben las imágenes y archivos adjuntos de esta cuenta. Déjalo en blanco para usar el predeterminado (%{server}).
+      cancel: Cancelar
+      submit: Guardar cuenta
+
+    messaging_banner:
+      title: La mensajería no está habilitada para %{name}
+      denied_html: Tu firmante rechazó una operación de mensajes para esta cuenta. Vuelve a vincularla y elige <strong>Siempre</strong> cuando te pregunte por descifrar mensajes.
+      not_granted: Esta cuenta se vinculó antes de que existiera la mensajería privada, así que su firmante no ha concedido permiso para cifrar, sellar o descifrar mensajes. Volver a vincularla conserva tus publicaciones y ajustes.
+      enable: Habilitar mensajería
+
+    messaging_repair_list:
+      summary:
+        one: "%{count} cuenta todavía no puede enviar mensajes"
+        other: "%{count} cuentas todavía no pueden enviar mensajes"
+      summary_hint: "Vinculada antes de que existiera la mensajería privada: vuelve a vincularla para concederla. Esto no afecta a la publicación."
+      explanation: Sus firmantes nunca concedieron permiso para cifrar, sellar o descifrar mensajes. Volver a vincularlas conserva las publicaciones, la programación y los ajustes de cada cuenta.
+      re_pair: Volver a vincular
+
+    profile_image_field:
+      upload: Subir
+
+    edit:
+      title: Editar cuenta
+      profile_info: Información del perfil
+      profile_info_help: 'Los datos del perfil se obtienen de los relays de Nostr y no se pueden editar aquí. Usa «Actualizar perfil» en la página de la cuenta para actualizarlos.'
+      display_name: Nombre visible
+      username: Nombre de usuario
+      npub: Npub
+      about: Acerca de
+      not_set: Sin definir
+      writing_personality: Personalidad de escritura
+      writing_personality_help: Define cómo deben sonar las publicaciones generadas por IA en esta cuenta.
+
+    index:
+      title: Cuentas
+      subtitle: Gestiona tus cuentas de Nostr vinculadas
+      pair_account: Vincular cuenta
+      new_post: Nueva publicación
+      copy_npub_title: Haz clic para copiar la npub
+      copy_npub_aria: Copiar la npub al portapapeles
+      view_profile: Ver perfil
+      view: Ver
+      settings: Ajustes
+      empty_title: Ninguna cuenta vinculada
+      empty_body: Vincula tu primera cuenta de Nostr para empezar a programar publicaciones.
+
+    new:
+      title: Vincular cuenta
+      heading: Conectar mediante NIP-46
+      intro: Escanea el código QR de abajo con Amber o con una app de firma NIP-46 compatible para vincular esta cuenta de Nostr.
+      open_in_signer: Abrir en tu app de firma
+      scan_other_device: O escanea con un firmante en otro dispositivo
+      copy: Copiar
+      no_account_summary: "¿Todavía no tienes una cuenta de Nostr?"
+      no_account_create_html: Crea una en tu app de firma y luego vincúlala aquí. En %{amber_link}, elige <span class="font-medium text-gray-700 dark:text-gray-300">Generar una clave nueva</span> y haz una copia de seguridad cuando te lo pida.
+      no_account_then_html: Después vuelve aquí y usa el botón de arriba. Una vez vinculada, puedes definir su nombre, biografía e imágenes desde <span class="font-medium text-gray-700 dark:text-gray-300">Perfil de Nostr</span> en los ajustes de la cuenta.
+      key_stays: La clave se queda en tu firmante. Emanator solo recibe eventos que tú ya has aprobado.
+      how_to_pair: Cómo vincular
+      steps:
+        open_signer: "Abre tu app de firma NIP-46 (por ejemplo, Amber en Android)"
+        scan: Escanea el código QR o pega el URI de conexión
+        approve: Aprueba la solicitud de conexión en tu firmante
+        automatic: La cuenta se vinculará automáticamente en cuanto se confirme
+
+    re_pair:
+      title: Volver a vincular el firmante
+      heading_messaging: Habilitar mensajería
+      heading_reconnect: Reconectar firmante
+      intro_messaging: "Los mensajes privados necesitan permisos que tu firmante todavía no ha concedido: cifrar, sellar y descifrar mensajes. Vuelve a vincularla para solicitarlos. Tus publicaciones y ajustes se conservarán."
+      intro_reconnect: Escanea el código QR con Amber para volver a vincular el firmante en un nuevo relay. Tus publicaciones y ajustes se conservarán.
+      show_details: Mostrar detalles de conexión
+      uri: "URI:"
+      relays: "Relays:"
+      how_to_re_pair: Cómo volver a vincular
+      steps:
+        open_amber: Abre Amber (o tu firmante NIP-46)
+        scan: Escanea el código QR o pega el URI de conexión
+        approve_messaging: "Aprueba la conexión: ahora también cubre el cifrado y sellado de mensajes"
+        decrypt_always_html: En el primer aviso de «descifrar», elige <strong>Siempre</strong> con alcance <strong>Todos</strong>. De lo contrario, cada mensaje necesitará que lo apruebes en el teléfono.
+        relay_auth_html: "Cuando Amber pregunte por la <strong>autenticación de relay</strong>, elige el alcance <strong>Todos los relays</strong>. Si usas la <strong>lista blanca de autenticación de clientes</strong> de Amber, añade a ella tus relays de bandeja de mensajes privados: mientras esa lista no esté vacía, Amber rechaza sin preguntar cualquier otro relay."
+        approve_reconnect: "Aprueba la conexión: los campos del firmante se actualizan, todo lo demás se mantiene"
+
+    recent_events:
+      empty: No se encontraron eventos recientes en los relays.
+
+    recent_interactions:
+      your_post: Tu publicación
+      your_post_linked_html: "%{link}:"
+      your_post_plain: "Tu publicación:"
+      time_ago: "hace %{time}"
+      types:
+        reply: respuesta
+        quote: cita
+        mention: mención
+      reply: Responder
+      reply_placeholder: Escribe tu respuesta…
+      cancel: Cancelar
+      sign_and_publish: Firmar y publicar
+      empty: No se encontraron interacciones recientes.
+
+    show:
+      title: Cuenta
+      new_post: Nueva publicación
+      settings: Ajustes
+      scheduled_posts: Publicaciones programadas
+      scheduled_posts_help: Próximas publicaciones en cola para esta cuenta
+      reposts_count:
+        one: "%{count} repost"
+        other: "%{count} reposts"
+      no_scheduled_html: No hay publicaciones programadas. %{link}.
+      create_one: Crea una
+      recent_events: Eventos recientes
+      recent_events_help: Últimas notas obtenidas de los relays
+      recent_interactions: Interacciones recientes
+      recent_interactions_help: Respuestas, citas y menciones de otras personas
+      view_all: Ver todo
+
+    settings:
+      title: Ajustes de la cuenta
+      messaging_enabled: Mensajería habilitada
+      messaging_needs_re_pair: La mensajería necesita volver a vincularse
+      edit: Editar
+      nostr_profile: Perfil de Nostr
+      refresh_profile: Actualizar perfil
+      refresh_relays: Actualizar relays
+      re_pair_signer: Volver a vincular el firmante
+      personality: Personalidad
+      write_relays: Relays de escritura
+      no_write_relays: 'No se encontraron relays de escritura. Haz clic en «Actualizar relays» para obtenerlos de la red.'
+      danger_zone: Zona de peligro
+      remove_title: Eliminar esta cuenta
+      remove_help: Esto eliminará la vinculación de la cuenta y todas sus publicaciones asociadas.
+      remove_confirm: "¿Seguro? Esto eliminará la cuenta y todas sus publicaciones."
+      remove_button: Eliminar cuenta
+
+    profile:
+      back_to_html: "&larr; Volver a %{name}"
+      back_fallback: la cuenta
+      title: Perfil de Nostr
+      intro_html: "Se publica como kind&nbsp;0 y se firma en tu app de firma. Emanator nunca ve tu clave."
+      needs_re_pair: Esta cuenta se vinculó antes de que existiera la edición de perfil, así que su firmante no ha concedido permiso para publicar un perfil.
+      re_pair_link: Vuelve a vincular esta cuenta
+      identity: Identidad
+      display_name: Nombre visible
+      display_name_help: Se muestra en negrita. Puede contener espacios y emojis.
+      handle: Alias
+      handle_help: Nombre de usuario corto, sin espacios. Se muestra como @alias.
+      bio: Biografía
+      images: Imágenes
+      avatar: Avatar
+      avatar_help: Cuadrado. La mayoría de los clientes lo muestran en círculo.
+      banner: Banner
+      banner_help: "Ancho. Los clientes lo recortan aproximadamente a 3:1, así que mantén lo importante centrado."
+      links: Enlaces
+      website: Sitio web
+      nip05: Dirección de Nostr (NIP-05)
+      nip05_help: Tiene forma de correo electrónico. La verifica el dominio, no nosotros.
+      lightning: Dirección Lightning
+      unmodelled_fields_kept: Los campos definidos por otros clientes que no se muestran aquí se conservan tal cual.
+      publish: Publicar perfil
+      how_it_looks: Cómo se ve
+      preview_note: Cada cliente lo muestra con un estilo distinto. Lo que importa son los recortes y los dos campos de nombre.
+
+    # Controller flash messages and JSON errors.
+    create:
+      session_expired: La sesión de vinculación expiró o todavía no se autenticó
+    paired_notice: "¡Cuenta vinculada! Obteniendo el perfil y la lista de relays en segundo plano."
+    pairing_rate_limited: "Demasiados intentos de vinculación: espera un minuto e inténtalo de nuevo."
+    update:
+      updated: Cuenta actualizada.
+    destroy:
+      removed: Cuenta eliminada.
+    update_profile:
+      needs_re_pair: Vuelve a vincular esta cuenta para conceder permiso para editar su perfil.
+    profile_status:
+      gone: Esa actualización ya no está disponible. Inténtalo de nuevo.
+    refresh_profile:
+      notice: "Actualizando el perfil desde los relays en segundo plano: recarga en unos segundos para ver los cambios."
+    refresh_relays:
+      notice: "Actualizando la lista de relays en segundo plano: recarga en unos segundos para ver los cambios."
+    no_pending_session: No hay ninguna sesión pendiente
+    re_pair_poll:
+      identity_mismatch: "Vinculación cancelada: el firmante devolvió una identidad de Nostr (%{signer}…) distinta de la de esta cuenta (%{account}…)."
+      save_failed: "No se pudo guardar el firmante: %{errors}"
+
+  nostr_actions:
+    duplicate: Acción duplicada
+    not_retryable: La acción no está esperando un reintento.
+    # Written by ProcessNostrActionJob onto the action row, shown later.
+    errors:
+      unreachable:
+        contact_list: No se pudo contactar con ningún relay para leer tu lista de contactos. Se canceló el seguimiento para evitar pérdida de datos.
+        mute_list: No se pudo contactar con ningún relay para leer tu lista de silenciados. Se canceló el silenciado para evitar pérdida de datos.
+      missing:
+        contact_list: Los relays no devolvieron ninguna lista de contactos. Se canceló el seguimiento para evitar pérdida de datos.
+        mute_list: Los relays no devolvieron ninguna lista de silenciados. Se canceló el silenciado para evitar pérdida de datos.
+      stale_contact_list: Los relays devolvieron una lista de contactos desactualizada. Se canceló el seguimiento para evitar pérdida de datos.
+      stale_mute_list: Los relays devolvieron una lista de silenciados desactualizada. Se canceló el silenciado para evitar pérdida de datos.
+      empty_contact_list: La lista de contactos parece estar vacía. Se canceló el seguimiento para evitar pérdida de datos.
+      existing_mute_list_missing: Los relays no devolvieron tu lista de silenciados existente. Se canceló el silenciado para evitar pérdida de datos.
+      signing_timed_out: Se agotó el tiempo de firma. Aprueba la solicitud en tu app de firma.
+      publish_failed: La publicación falló en todos los relays
+
+  profile_updates:
+    abandoned: Esto tardó demasiado y se abandonó. Inténtalo de nuevo.
+    # Written by PublishProfileJob / Nostr::ProfilePublisherService, polled by the editor.
+    steps:
+      preparing: Preparando…
+      fetching: Leyendo tu perfil actual…
+      signing: Aprueba la actualización del perfil en tu app de firma…
+      publishing: Publicando en los relays…
+    errors:
+      no_signer: Esta cuenta no tiene ningún firmante vinculado.
+      needs_re_pair: Vuelve a vincular esta cuenta para conceder el permiso de perfil e inténtalo de nuevo.
+      no_relay_accepted: Ningún relay aceptó la actualización del perfil.
+      signing_failed: Se agotó el tiempo de firma o se rechazó la solicitud. Apruébala en tu app de firma e inténtalo de nuevo.
+      unexpected: La publicación falló de forma inesperada. Inténtalo de nuevo.
+      interrupted: Se interrumpió antes de terminar. Inténtalo de nuevo.
+
+  js:
+    account_pairing:
+      server_error: Falló la vinculación (error del servidor %{status}). Recarga e inténtalo de nuevo.
+      qr_expired: "El código QR expiró:"
+      generate_new: haz clic para generar uno nuevo
+      additional_auth: "Tu firmante requiere autorización adicional. "
+      continue_in_signer: Continuar en el firmante
+      re_paired: "¡Firmante vuelto a vincular!"
+      paired_creating: "¡Cuenta vinculada! Creando…"
+    profile_editor:
+      unnamed: Sin nombre
+      uploading: Subiendo…
+      upload_failed: Error al subir el archivo.
+      server_unreachable: No se pudo contactar con el servidor.
+      uploaded: Subido.
+      working: Trabajando…
+      lost_contact: Se perdió el contacto con el servidor.
+      publishing: Publicando…
+      preparing: Preparando…
+      could_not_start: No se pudo iniciar la publicación.
+      server_unreachable_publish: No se pudo contactar con el servidor. Comprueba tu conexión e inténtalo de nuevo.
+      published: Publicado.
+      publish_profile: Publicar perfil
+      publish_failed: Falló la publicación.
+      lost_contact_publish: Se perdió el contacto con el servidor durante la publicación.

@@ -36,13 +36,15 @@ class SignRepostJob < ApplicationJob
     post.reload
     # Broadcast to both streams — signing stream is active when the post
     # is awaiting_signature, publishing stream when it's already scheduled
-    %W[post_signing_#{post.id} post_publishing_#{post.id}].each do |stream|
-      Turbo::StreamsChannel.broadcast_replace_to(
-        stream,
-        target: "reposts-list",
-        partial: "posts/reposts_list",
-        locals: { post: post }
-      )
+    post.account.user.with_locale do
+      %W[post_signing_#{post.id} post_publishing_#{post.id}].each do |stream|
+        Turbo::StreamsChannel.broadcast_replace_to(
+          stream,
+          target: "reposts-list",
+          partial: "posts/reposts_list",
+          locals: { post: post }
+        )
+      end
     end
   rescue => e
     Rails.logger.error("Failed to broadcast repost signing progress: #{e.message}")

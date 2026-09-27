@@ -12,7 +12,7 @@
         data: local_assigns[:mobile] ? { action: "click->mobile-nav#close" } : {} do %>
     <% unread = dm_unread_count(current_user) %>
     <span class="lamp<%= unread.positive? ? ' lamp--wait' : (' lamp--wait' if active) %>" aria-hidden="true"></span>
-    Messages
+    <%= t(".messages") %>
     <% if unread.positive? %>
       <%# Counts unread in the Inbox only. Anyone can send you a gift wrap, so
           letting Requests drive a numbered badge would hand strangers control of
@@ -20,10 +20,10 @@
       <span class="ml-auto font-mono text-[13px] font-bold tabular text-amber-600 dark:text-amber-400">
         <%= unread > 99 ? "99+" : unread %>
       </span>
-      <span class="sr-only"><%= pluralize(unread, "unread message") %></span>
+      <span class="sr-only"><%= t(".unread", count: unread) %></span>
     <% elsif dm_has_requests?(current_user) %>
       <span class="lamp ml-auto" aria-hidden="true"></span>
-      <span class="sr-only">You have unread message requests</span>
+      <span class="sr-only"><%= t(".requests") %></span>
     <% end %>
   <% end %>
 </li>

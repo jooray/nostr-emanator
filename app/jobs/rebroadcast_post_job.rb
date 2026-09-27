@@ -54,18 +54,20 @@ class RebroadcastPostJob < ApplicationJob
 
   def broadcast_progress(post)
     post.reload
-    Turbo::StreamsChannel.broadcast_replace_to(
-      "post_publishing_#{post.id}",
-      target: "publish-progress",
-      partial: "posts/publish_progress",
-      locals: { post: post }
-    )
-    Turbo::StreamsChannel.broadcast_replace_to(
-      "post_publishing_#{post.id}",
-      target: "reposts-list",
-      partial: "posts/reposts_list",
-      locals: { post: post }
-    )
+    post.account.user.with_locale do
+      Turbo::StreamsChannel.broadcast_replace_to(
+        "post_publishing_#{post.id}",
+        target: "publish-progress",
+        partial: "posts/publish_progress",
+        locals: { post: post }
+      )
+      Turbo::StreamsChannel.broadcast_replace_to(
+        "post_publishing_#{post.id}",
+        target: "reposts-list",
+        partial: "posts/reposts_list",
+        locals: { post: post }
+      )
+    end
   rescue => e
     Rails.logger.error("Failed to broadcast rebroadcast progress: #{e.message}")
   end

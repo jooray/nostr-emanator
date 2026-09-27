@@ -1,8 +1,8 @@
 <div class="space-y-6" data-controller="interactions-filter"
      data-interactions-filter-account-ids-value="<%= @accounts.map(&:id).to_json %>">
   <header class="mb-5 border-b rule pb-4">
-    <h1 class="condensed text-[33px] font-bold uppercase leading-none tracking-[0.06em]">Interactions</h1>
-    <p class="eng mt-2.5">Replies, quotes and mentions across <%= pluralize(@accounts.size, "identity") %></p>
+    <h1 class="condensed text-[33px] font-bold uppercase leading-none tracking-[0.06em]"><%= t(".title") %></h1>
+    <p class="eng mt-2.5"><%= t(".subtitle", count: @accounts.size) %></p>
   </header>
 
   <!-- Account Filter Tabs -->
@@ -11,7 +11,7 @@
       <button data-interactions-filter-target="toggleAllButton"
               data-action="interactions-filter#toggleAll"
               class="condensed cursor-pointer border border-gray-300 px-3 py-1.5 text-[13px] font-semibold uppercase tracking-[0.14em] text-gray-600 transition-colors hover:border-amber-500 hover:text-amber-600 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400 dark:hover:text-amber-400">
-        Unselect all
+        <%= t(".unselect_all") %>
       </button>
       <% @accounts.each do |account| %>
         <button data-interactions-filter-target="accountButton"

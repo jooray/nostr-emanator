@@ -47,6 +47,14 @@ module NostrEmanator
       secure: Rails.env.production?,
       same_site: :lax
 
+    # Interface languages. Strings live in config/locales/<area>/<locale>.yml;
+    # a key missing from a translation falls back to English rather than
+    # rendering "translation missing". Locale choice: see ApplicationController.
+    config.i18n.available_locales = %i[en sk cs es]
+    config.i18n.default_locale = :en
+    config.i18n.fallbacks = [:en]
+    config.i18n.load_path += Dir[Rails.root.join("config/locales/**/*.yml")]
+
     # Don't generate system test files.
     config.generators.system_tests = nil
   end

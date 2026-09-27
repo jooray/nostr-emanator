@@ -14,7 +14,7 @@ class PublishRepostJob < ApplicationJob
     return unless repost.signed_event.present?
 
     # M4: re-verify the stored signature (see ApplicationJob).
-    return repost.update!(status: :failed, publish_results: { "error" => "Stored signature failed verification. Re-sign this repost." }) unless signed_event_verified?(repost)
+    return repost.update!(status: :failed, publish_results: { "error" => repost.account.user.with_locale { I18n.t("posts.jobs.repost_signature_invalid") } }) unless signed_event_verified?(repost)
 
     # M8: same atomic claim as PublishPostJob.
     unless repost.claim_for_publishing!(allow_resume: executions > 1)
@@ -49,18 +49,20 @@ class PublishRepostJob < ApplicationJob
   def broadcast_repost_progress(repost)
     post = repost.post
     post.reload
-    Turbo::StreamsChannel.broadcast_replace_to(
-      "post_publishing_#{post.id}",
-      target: "publish-progress",
-      partial: "posts/publish_progress",
-      locals: { post: post }
-    )
-    Turbo::StreamsChannel.broadcast_replace_to(
-      "post_publishing_#{post.id}",
-      target: "reposts-list",
-      partial: "posts/reposts_list",
-      locals: { post: post }
-    )
+    post.account.user.with_locale do
+      Turbo::StreamsChannel.broadcast_replace_to(
+        "post_publishing_#{post.id}",
+        target: "publish-progress",
+        partial: "posts/publish_progress",
+        locals: { post: post }
+      )
+      Turbo::StreamsChannel.broadcast_replace_to(
+        "post_publishing_#{post.id}",
+        target: "reposts-list",
+        partial: "posts/reposts_list",
+        locals: { post: post }
+      )
+    end
   rescue => e
     Rails.logger.error("Failed to broadcast repost progress: #{e.message}")
   end

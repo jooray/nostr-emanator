@@ -1,8 +1,8 @@
 <div class="space-y-6" data-controller="account-picker">
   <div>
-    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">New Post</h1>
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white"><%= t(".title") %></h1>
     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-      Choose which account will publish this post.
+      <%= t(".choose_account") %>
     </p>
   </div>
 
@@ -13,7 +13,7 @@
       </svg>
       <input
         type="text"
-        placeholder="Filter accounts by name, username, or npub…"
+        placeholder="<%= t(".filter_placeholder") %>"
         autocomplete="off"
         data-account-picker-target="input"
         data-action="input->account-picker#filter keydown.enter->account-picker#submit"
@@ -34,7 +34,7 @@
             <div class="flex-1 min-w-0">
               <div class="flex items-baseline gap-2">
                 <h3 class="text-base font-semibold text-gray-900 dark:text-white truncate">
-                  <%= account.display_name.presence || "Unnamed Account" %>
+                  <%= account.display_name.presence || t(".unnamed_account") %>
                 </h3>
                 <% if account.username.present? %>
                   <span class="text-sm text-gray-500 dark:text-gray-400 truncate">@<%= account.username %></span>
@@ -53,23 +53,23 @@
     </ul>
 
     <div data-account-picker-target="empty" class="border rule hidden p-8 text-center">
-      <p class="text-sm text-gray-500 dark:text-gray-400">No accounts match your filter.</p>
+      <p class="text-sm text-gray-500 dark:text-gray-400"><%= t(".no_match") %></p>
     </div>
   <% else %>
     <div class="border rule p-12 text-center">
       <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
       </svg>
-      <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">No accounts paired</h3>
+      <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white"><%= t(".no_accounts") %></h3>
       <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-        Pair your first Nostr account to get started with scheduling posts.
+        <%= t(".no_accounts_help") %>
       </p>
       <div class="mt-6">
         <%= link_to new_account_path, class: "inline-flex items-center gap-2 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-amber-600 hover:bg-amber-700 transition-colors" do %>
           <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
           </svg>
-          Pair Account
+          <%= t(".pair_account") %>
         <% end %>
       </div>
     </div>

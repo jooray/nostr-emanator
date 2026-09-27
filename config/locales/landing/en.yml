@@ -1,0 +1,79 @@
+en:
+  home:
+    index:
+      meta_description: Emanator schedules your Nostr posts and coordinates reposts across the accounts you run.
+      title: Emanator - Give every Nostr identity a head start
+      skip_to_content: Skip to content
+      main_navigation: Main navigation
+      home_label: Emanator home
+      theme_toggle_title: Toggle color theme
+      switch_to_dark: Switch to dark mode
+      switch_to_light: Switch to light mode
+      launch_app: Launch app
+      hero:
+        eyebrow: Scheduling for Nostr
+        title_html: Give every identity a <span class="accent-word">head start.</span>
+        lead: "A new Nostr account starts with no audience. Emanator lets the accounts you already run give it a push: write a post once, schedule when it goes out, and line up reposts from your other accounts to follow."
+        see_how: See how it works
+        key_note: Your keys stay with your Nostr signer.
+        stage_label: Emanator running on desktop and mobile
+        dashboard_alt: Emanator dashboard showing account, scheduled, published and total post counts, with a list of upcoming posts across managed Nostr accounts
+      proof:
+        label: Product principles
+        intro: Built for accounts that need reach, not another social dashboard.
+        calendar: One calendar for every account you manage.
+        signing: Remote signing through Amber. Emanator never stores your private key.
+        always_on: Posts and reposts go out on time, even when your devices are offline.
+      workflow:
+        title: From a quiet identity to a coordinated launch.
+        lead: Use the accounts you already run to back each other up, so you are not posting to each one by hand.
+        connect_label: 01 / Connect
+        connect_title: Pair your accounts
+        connect_body: Connect the accounts you manage through Amber, using NIP-46 remote signing.
+        compose_label: 02 / Compose
+        compose_title: Write the post
+        compose_body: Draft the note and attach media. Each account keeps its own style guide, so the AI assist can help without making everything sound the same.
+        emanate_label: 03 / Emanate
+        emanate_title: Schedule and sign
+        emanate_body: Pick when it publishes, set random delays for the reposts, and sign once. Emanator sends everything at the right time.
+      control:
+        title: Automation with a clear chain of custody.
+        lead: "Built on how Nostr already works: your identity is portable, the relays are open, and you hold the signing keys."
+        publishing_tag: Publishing control
+        publishing_title: See every post and repost before it goes out.
+        publishing_body: One calendar shows what each account has queued across the month, so nothing publishes that you have not looked at.
+        calendar_alt: Emanator calendar for September 2026, with scheduled posts and reposts laid out day by day across every managed account
+        identity_tag: Identity first
+        identity_title: Your signer holds the keys.
+        identity_body: Emanator asks your signer to approve each event over NIP-46. Your Nostr private key stays in Amber, where it belongs.
+        no_custody: No nsec custody
+        ai_tag: Account-aware AI
+        ai_title: Keep each account sounding like itself.
+        ai_body: Give every account its own style guide. The AI drafts and edits in that voice, instead of flattening them all into one generic tone.
+      tour:
+        title: The whole workflow, on the web and your phone.
+        lead: Draft, schedule, and keep an eye on replies from wherever you are. The interface follows your system light or dark theme.
+        interactions_alt: Emanator interactions view showing mentions and replies to a managed account, with follow, mute and reply actions
+        interactions_title: One inbox for replies and mentions
+        interactions_body: Read the mentions and replies for each account you run, then reply without leaving the app.
+        calendar_alt: Emanator month calendar with scheduled posts marked in color and reposts shown in italics
+        calendar_title: A month you can plan against
+        calendar_body: Scheduled posts and their reposts sit side by side, so a launch week is easy to read at a glance.
+        mobile_label: Emanator on mobile
+        compose_light_alt: Composing a new post on Emanator mobile, with an AI generation prompt below the editor
+        compose_dark_alt: Composing a new post on Emanator mobile in dark theme
+        compose_caption: Compose
+        schedule_light_alt: Picking a publish date and time on Emanator mobile, with accounts to repost from listed below
+        schedule_dark_alt: Picking a publish date and time on Emanator mobile in dark theme
+        schedule_caption: Schedule
+        review_light_alt: Emanator calendar on mobile showing the month with scheduled posts
+        review_dark_alt: Emanator calendar on mobile in dark theme
+        review_caption: Review
+      cta:
+        title: Let the right accounts carry the signal.
+        body: Run your next Nostr launch from one calendar. Every account stays independently yours.
+        button: Launch Emanator
+      footer:
+        back_to_top: Back to top
+        tagline: Post scheduling for the open social web.
+        github_label: View source on GitHub

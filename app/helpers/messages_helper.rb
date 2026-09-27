@@ -23,7 +23,7 @@ module MessagesHelper
 
   # Display name for a pubkey, falling back to a shortened npub.
   def dm_display_name(pubkey_hex)
-    return "Unknown" if pubkey_hex.blank?
+    return I18n.t("messaging.names.unknown") if pubkey_hex.blank?
 
     resolve_author_name(pubkey_hex).presence || dm_short_npub(pubkey_hex)
   end
@@ -52,20 +52,16 @@ module MessagesHelper
   # The other side of a conversation, as one label. Groups have no single peer.
   def dm_peer_label(conversation)
     peers = conversation.peer_pubkeys
-    return "Note to self" if peers.empty?
+    return I18n.t("messaging.names.note_to_self") if peers.empty?
     return dm_display_name(peers.first) if peers.size == 1
 
-    "#{dm_display_name(peers.first)} +#{peers.size - 1}"
+    I18n.t("messaging.names.peer_and_more", name: dm_display_name(peers.first), count: peers.size - 1)
   end
 
   def dm_classification_badge(conversation)
     case conversation.classification_reason
-    when "own_follow"     then "You follow them"
-    when "sibling_follow" then "Followed by another of your accounts"
-    when "wot"            then "Followed by someone you follow"
-    when "replied"        then "You replied"
-    when "self"           then "Your own account"
-    when "manual"         then "You accepted"
+    when "own_follow", "sibling_follow", "wot", "replied", "self", "manual"
+      I18n.t("messaging.classification_badge.#{conversation.classification_reason}")
     end
   end
 end

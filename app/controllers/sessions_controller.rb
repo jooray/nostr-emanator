@@ -59,7 +59,7 @@ class SessionsController < ApplicationController
     if result.nil?
       render json: {
         ok: false,
-        error: "That does not look like a usable bunker link. It should start with bunker:// and include at least one relay."
+        error: t(".invalid_link")
       }, status: :unprocessable_content
       return
     end
@@ -70,7 +70,7 @@ class SessionsController < ApplicationController
     render json: { ok: true, relays: result[:relay_urls] }
   rescue StandardError => e
     Rails.logger.error("Bunker login failed: #{e.class} - #{e.message}")
-    render json: { ok: false, error: "Could not start the connection. Please try again." },
+    render json: { ok: false, error: t(".failed") },
            status: :internal_server_error
   end
 
@@ -114,9 +114,9 @@ class SessionsController < ApplicationController
     # say only what is actually true at this point.
     notice = if current_user
       FetchUserProfileJob.perform_later(current_user.id)
-      "Refreshing your profile from relays in the background — reload in a few seconds to see changes."
+      t(".refreshing")
     else
-      "Not signed in."
+      t(".not_signed_in")
     end
 
     redirect_back fallback_location: dashboard_path, notice: notice
@@ -126,18 +126,18 @@ class SessionsController < ApplicationController
     pubkey_hex = params[:pubkey]
 
     if pubkey_hex.blank?
-      redirect_to nostr_login_path, alert: "Authentication failed: No public key provided"
+      redirect_to nostr_login_path, alert: t(".no_pubkey")
       return
     end
 
     unless Nostr::KeyConverter.valid_hex_pubkey?(pubkey_hex)
-      redirect_to nostr_login_path, alert: "Authentication failed: Invalid public key format"
+      redirect_to nostr_login_path, alert: t(".invalid_pubkey")
       return
     end
     pubkey_hex = pubkey_hex.downcase
 
     unless Nostr::AuthService.new.verify_nip07_auth(pubkey_hex, params[:signed_event], challenge: session.delete(:nip07_challenge))
-      redirect_to nostr_login_path, alert: "Authentication failed: Signature verification failed"
+      redirect_to nostr_login_path, alert: t(".bad_signature")
       return
     end
 
@@ -147,7 +147,7 @@ class SessionsController < ApplicationController
     import_primary_account(user)
     complete_authentication!(user)
 
-    redirect_to dashboard_path, notice: "Welcome, #{user.display_name_or_npub}!"
+    redirect_to dashboard_path, notice: t(".welcome", name: user.display_name_or_npub)
   end
 
   def destroy
@@ -156,7 +156,7 @@ class SessionsController < ApplicationController
     # stops working the moment the user logs out.
     current_user&.increment!(:session_version)
     reset_session
-    redirect_to nostr_login_path, notice: "Logged out successfully"
+    redirect_to nostr_login_path, notice: t(".logged_out")
   end
 
   private
@@ -164,13 +164,13 @@ class SessionsController < ApplicationController
   def rate_limit_exceeded
     response.set_header("Retry-After", "60")
     render "sessions/rate_limited",
-      locals: { title: "Too many attempts", message: "Too many authentication attempts. Please try again shortly." },
+      locals: { title: I18n.t("sessions.errors.too_many_title"), message: I18n.t("sessions.errors.too_many_message") },
       status: :too_many_requests
   end
 
   def render_capacity_error
     render "sessions/rate_limited",
-      locals: { title: "Temporarily at capacity", message: "Authentication is temporarily at capacity. Please try again shortly." },
+      locals: { title: I18n.t("sessions.errors.capacity_title"), message: I18n.t("sessions.errors.capacity_message") },
       status: :service_unavailable
   end
 

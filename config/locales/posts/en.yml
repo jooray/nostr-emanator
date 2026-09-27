@@ -1,0 +1,377 @@
+en:
+  posts:
+    form:
+      errors_prevented:
+        one: "%{count} error prevented this post from being saved:"
+        other: "%{count} errors prevented this post from being saved:"
+      replying_to: "Replying to:"
+      content: Content
+      attach: Attach
+      reply_placeholder: Write your reply...
+      content_placeholder: What's on your mind? (drag & drop or paste images to attach)
+      cancel: Cancel
+      sign_publish_reply: Sign & Publish Reply
+      save_schedule: Save & Schedule
+    publish_progress:
+      reached:
+        one: "Reached %{ok} of %{count} relays"
+        other: "Reached %{ok} of %{count} relays"
+      pulled_all_html:
+        one: "Pulled &middot; all %{count} relays"
+        other: "Pulled &middot; all %{count} relays"
+      pulled_tally_html: "Pulled &middot; %{tally} relays"
+      rebroadcast: Rebroadcast
+      partial_explanation: "The event is live on the relays that accepted it, but anyone reading only %{relays} will not see it. Rebroadcast sends the same signed event again — it is not re-signed."
+      accepted: Accepted
+      never_went_out: Never went out
+      try_again: Try again
+      none_accepted:
+        one: "None of the %{count} relays accepted it. Nothing was published."
+        other: "None of the %{count} relays accepted it. Nothing was published."
+      never_reached: It never reached a relay. Nothing was published.
+      running_the_press: Running the press
+      sending: "Sending the signed event to %{name}'s relays. Each one is asked in turn; results appear here as they answer."
+      stale_explanation: This has been running for a while, so the publish job may have died. The event may already be live on relays — check before retrying.
+      retry_publishing: Retry publishing
+      retry_publishing_confirm: Retry publishing? If the event already reached relays this is a no-op.
+      due_now: Due now
+      due_now_explanation: Its scheduled time has passed. The scheduler picks it up within a minute.
+    signing_progress:
+      locked_html:
+        one: "Locked &middot; %{count} event signed"
+        other: "Locked &middot; %{count} events signed"
+      signed_and_held: Signed and held. Nothing else is needed from you — it publishes at its scheduled time on its own.
+      not_signed: Not signed
+      no_signature: Your signer did not return a signature.
+      why_this_happens: Why this happens
+      cause_timeout_html: "<strong>You did not approve it in time.</strong> Amber gives you about two minutes. Retry and keep the phone in hand."
+      cause_denied_html: "<strong>You denied it.</strong> Retry sends a fresh request."
+      cause_relay_html: "<strong>The signer relay was unreachable.</strong> %{relay} may be rate-limiting or down; relay.damus.io in particular throttles NIP-46 traffic."
+      cause_relay_fallback: The relay this account pairs through
+      cause_pairing: The pairing predates this permission.
+      cause_pairing_repair_html: "%{link} — it keeps the account's posts and settings."
+      repair_link: "Re-pair %{name}"
+      ask_again: Ask again
+      approve_in_amber_html:
+        one: "Approve in Amber &middot; %{done} of %{count} done"
+        other: "Approve in Amber &middot; %{done} of %{count} done"
+      time_elapsed: Time elapsed
+      approvals_queued_html:
+        one: "<strong>%{count} separate approvals</strong> are queued — one for the post and one for each repost. Amber asks for them in turn."
+        other: "<strong>%{count} separate approvals</strong> are queued — one for the post and one for each repost. Amber asks for them in turn."
+      one_approval_queued: One approval is queued, for the post itself.
+      timing_html: "Usually under 30 seconds; Amber allows about two minutes per request. <strong>You can close this tab</strong> — signing continues in the background."
+      past_two_minutes: Past two minutes. Amber has probably stopped waiting — check your phone, then ask again.
+      position:
+        one: "%{position} of %{count}"
+        other: "%{position} of %{count}"
+      locked: Locked
+      asking: Asking
+      queued: Queued
+    edit:
+      title: Edit Post
+      editing_for_html: "Editing post for %{name}"
+      ai_refinement: AI Refinement
+      ai_refinement_help: Give instructions to refine the current content using AI.
+      refinement_instructions: Refinement Instructions
+      refine_placeholder: e.g., Make it shorter and more punchy...
+      refine: Refine
+    index:
+      page_title: Posts
+      title: All posts
+      across:
+        one: "Across %{count} identity"
+        other: "Across %{count} identities"
+      discard_all:
+        one: "Discard all %{count}"
+        other: "Discard all %{count}"
+      discard_confirm:
+        one: "Discard %{count} post that never went out? They are deleted, not unscheduled. This cannot be undone."
+        other: "Discard %{count} posts that never went out? They are deleted, not unscheduled. This cannot be undone."
+      new_post: New post
+      state: State
+      who: Who
+      filters:
+        all: All
+        short: Barely out
+        failed: Never went out
+        awaiting_signature: Awaiting
+        scheduled: Scheduled
+        published: Published
+        draft: Drafts
+      nothing_here: Nothing here
+      empty_short: Everything published has reached the network. A relay declining here and there is normal and is not counted.
+      empty_filtered: No posts match this filter.
+      empty_none: Nothing written yet.
+      clear_filters: Clear filters
+      write_one: Write one
+    new:
+      title: New Post
+      posting_as_html: "Posting as %{name}"
+      ai_generation: AI Generation
+      ai_generation_help: Describe what you want to post and let AI generate content for you.
+      prompt: Prompt
+      prompt_placeholder: e.g., Write a short note about the importance of privacy...
+      generate: Generate
+      refine_placeholder: e.g., Make it shorter and more punchy...
+      refine: Refine
+    select_account:
+      title: New Post
+      choose_account: Choose which account will publish this post.
+      filter_placeholder: Filter accounts by name, username, or npub…
+      unnamed_account: Unnamed Account
+      no_match: No accounts match your filter.
+      no_accounts: No accounts paired
+      no_accounts_help: Pair your first Nostr account to get started with scheduling posts.
+      pair_account: Pair Account
+    show:
+      back: Back to all posts
+      title: The forme
+      pulled: "Pulled %{tally}"
+      kind_set_ago_html: "Kind %{kind} &middot; set %{ago} ago"
+      due: Due
+      due_in: "in %{time}"
+      event: "Event:"
+      view_on: "View on %{viewer}"
+      show_event_id: Show event ID
+      the_signed_event: The signed event
+      hide_signed_event: Hide the signed event
+      signed_event: Signed Event
+      unsigned_event: Unsigned Event
+      edit: Edit
+      schedule: Schedule
+      reschedule: Reschedule
+      reschedule_confirm: Reschedule this post? It will return to draft for re-signing.
+      cancel_schedule: Cancel Schedule
+      cancel_confirm: Cancel this post? All reposts will be removed and the post will return to draft.
+      delete: Delete
+      delete_confirm: Are you sure you want to delete this post?
+      actions: Actions
+    reposts_list:
+      title: Reposts
+      scheduled_for_html: "Scheduled for %{time}"
+      relay_tally:
+        one: "%{ok}/%{count} relays"
+        other: "%{ok}/%{count} relays"
+      retry_signing: Retry signing
+      rebroadcast: Rebroadcast
+      repost_now: Repost now
+      repost_now_confirm: This will re-sign and publish this repost now. Continue?
+      cancel_confirm: Cancel this repost?
+      relay_details: Relay details
+    schedule:
+      title: Schedule Post
+      subtitle: Configure when to publish and set up reposts.
+      post_preview: Post Preview
+      edit: Edit
+      delete: Delete
+      delete_confirm: Are you sure you want to delete this post?
+      schedule_time: Schedule Time
+      publish_date_time: Publish Date & Time
+      select_date_time: Select date and time
+      soon_title:
+        one: "Publish %{count} minutes from now, leaving time to approve the signature"
+        other: "Publish %{count} minutes from now, leaving time to approve the signature"
+      soon: Soon
+      suggested: "Suggested:"
+      also_post_as: Also post as
+      select_all_shown: Select all shown
+      filter_identities: Filter identities
+      filter_placeholder: Filter by name, npub or pubkey
+      already_scheduled: Already scheduled
+      no_identity_matches: No identity matches that.
+      repost_delay: Repost Delay
+      max_delay: Maximum delay for reposts (hours)
+      max_delay_help: Reposts will be randomly spread out within this time window after the original post is published.
+      existing_reposts: Existing Reposts
+      cancel: Cancel
+      sign_schedule: Sign & Schedule
+    flash:
+      discarded:
+        one: "Discarded %{count} post that never went out."
+        other: "Discarded %{count} posts that never went out."
+      reply_no_signer: "%{name} has no paired signer, so this reply cannot be signed. Pair the account first."
+      reply_created: Reply created. Signing in progress...
+      signing: Signing...
+      saved_as_draft: Post saved as draft.
+      cannot_edit: Cannot edit this post.
+      updated_signature_discarded: Post updated. The pending signature was discarded because the content changed — schedule and sign it again.
+      updated: Post updated.
+      deleted: Post deleted.
+      cannot_schedule: Cannot schedule this post.
+      cannot_schedule_status: "Cannot schedule this post (it is %{status})."
+      post_no_signer_pair_first: "%{name} has no paired signer, so this post cannot be signed. Pair the account first."
+      pick_date_time: Pick a date and time to publish this post.
+      invalid_date_time: That date and time could not be understood. Pick a valid date and time.
+      time_in_past: The publish time must be in the future.
+      no_signer_for_account: No paired signer for this account
+      signing_in_progress: Signing in progress.
+      reposts_scheduled:
+        one: "%{count} repost scheduled."
+        other: "%{count} reposts scheduled."
+      reposts_skipped:
+        one: "%{count} repost skipped (account has no paired signer)."
+        other: "%{count} reposts skipped (account has no paired signer)."
+      not_awaiting_signature: Post is not awaiting signature.
+      post_no_signer: "%{name} has no paired signer, so this post cannot be signed."
+      pair_signer_to_continue: Pair a signer to continue.
+      retrying_signature: Retrying signature request...
+      cannot_retry_publish: Cannot retry publishing.
+      retrying_publish: Retrying publish...
+      cannot_rebroadcast: Cannot rebroadcast this post.
+      rebroadcasting: Rebroadcasting to relays...
+      cannot_cancel: Cannot cancel this post.
+      cancelled: Post cancelled and returned to draft.
+      cannot_reschedule: Cannot reschedule this post.
+      pick_new_time: Pick a new schedule time.
+    jobs:
+      signing_timed_out: Signing timed out. Approve the request in your signer app and retry.
+      post_signature_invalid: Stored signature failed verification. Re-sign this post.
+      repost_signature_invalid: Stored signature failed verification. Re-sign this repost.
+      original_failed: Original post failed to publish
+      stuck_publishing: Publishing did not complete — the worker stopped responding. Retry or rebroadcast.
+      stuck_signing: Signing was never completed. Check your signer app is paired and retry.
+    errors:
+      invalid_reference:
+        parent_event_id: Invalid parent event id
+        parent_author_pubkey: Invalid parent author pubkey
+        root_event_id: Invalid root event id
+        author_pubkey: Invalid author pubkey
+  calendar:
+    index:
+      page_title: Calendar
+      month_format: "%B %Y"
+      post_count:
+        one: "%{count} post"
+        other: "%{count} posts"
+      repost_count:
+        one: "%{count} repost"
+        other: "%{count} reposts"
+      previous_month: Previous month
+      next_month: Next month
+      today: Today
+      who: Who
+      event_title: "%{name} — %{what}"
+      repost: repost
+      more:
+        one: "+%{count} more"
+        other: "+%{count} more"
+  dashboard:
+    index:
+      page_title: Press run
+      held:
+        one: "%{count} held"
+        other: "%{count} held"
+      on_the_stone_html:
+        one: "On the stone &middot; %{count} identity"
+        other: "On the stone &middot; %{count} identities"
+      barely_reached_html:
+        one: "post barely<br>reached the network"
+        other: "posts barely<br>reached the network"
+      new_post: New post
+      no_identities: No identities paired
+      no_identities_help: Emanator posts as accounts you already control. Pair one with your signer and its scheduled notes appear here.
+      pair_account: Pair an account
+      waiting_on_you: Waiting on you
+      barely_reached_heading: Barely reached the network
+      barely_reached_help: One relay or none accepted these, so almost nobody can see them. Rebroadcast sends the same signed event again — it is not re-signed.
+      never_went_out: Never went out
+      never_went_out_total:
+        one: "Never went out · %{count}"
+        other: "Never went out · %{count}"
+      discard_all:
+        one: "Discard all %{count}"
+        other: "Discard all %{count}"
+      discard_confirm:
+        one: "Discard %{count} post that never went out? They are deleted, not unscheduled. This cannot be undone."
+        other: "Discard %{count} posts that never went out? They are deleted, not unscheduled. This cannot be undone."
+      scheduled: Scheduled
+      all_posts: All posts
+      nothing_scheduled: Nothing scheduled. The stone is clear.
+      write_one: Write one
+      last_pulled: Last pulled
+  reposts:
+    flash:
+      cannot_cancel: Cannot cancel this repost.
+      cancelled: Repost cancelled.
+      not_awaiting_signature: Repost is not awaiting signature.
+      retrying_sign_and_publish: Retrying repost signing and publish request...
+      retrying_sign: Retrying repost signing request...
+      cannot_rebroadcast: Cannot rebroadcast this repost.
+      rebroadcasting: Rebroadcasting repost...
+      not_ready: Repost is not ready to publish now.
+      original_unavailable: Original post event not available.
+      publishing_now: Re-signing and publishing repost now...
+  ai_assist:
+    rate_limited: AI request limit reached — please wait a bit before trying again.
+  blossom_uploads:
+    allowed_types: images, video, audio or PDF
+    steps:
+      queued: Queued…
+      preparing: Preparing…
+      approve: Approve the upload in your signer app…
+      approve_attempt:
+        one: "Approve the upload in your signer app (%{attempt} of %{count})…"
+        other: "Approve the upload in your signer app (%{attempt} of %{count})…"
+      uploading: Uploading to the media server…
+      media_fallback: Media endpoint unavailable — retrying with the standard endpoint
+    errors:
+      no_file: No file provided
+      no_signer: This account has no paired signer
+      type_not_allowed: "%{filename} is not an allowed file type (%{types})"
+      too_large: "%{filename} is too large (%{size}). The limit is %{limit}."
+      empty: "%{filename} is empty"
+      could_not_start: Could not start the upload
+      rate_limited: Too many uploads — please wait a minute and try again.
+      timed_out: Upload timed out. Please try again.
+      staged_file_gone: The staged file is gone — please attach it again
+      signing_failed: Signing timed out or was rejected. Approve the request in your signer app and try again.
+      unexpected: Upload failed unexpectedly. Please try again.
+      account_no_signer: Account has no paired signer
+      empty_file: Empty file
+      unreachable: "Could not reach Blossom server: %{error}"
+      http_failed: "Blossom upload failed (HTTP %{status}): %{reason}"
+      missing_url: Blossom response missing url
+      invalid_response: "Invalid Blossom response: %{error}"
+      server_rejected: "Media server rejected: %{error}"
+      generic_rejection: the media server rejected the upload
+  activerecord:
+    errors:
+      models:
+        blossom_upload:
+          attributes:
+            content_type:
+              not_allowed: "must be %{types}"
+  js:
+    repost_picker:
+      none: No reposts — one approval, for the post itself.
+      selected:
+        one: "%{count} repost — %{approvals} separate approvals in your signer, one after another."
+        other: "%{count} reposts — %{approvals} separate approvals in your signer, one after another."
+    content_builder:
+      replaced: Your previous text was replaced.
+      undo: Undo
+      enter_prompt: Please enter a prompt for the AI
+      enter_instructions: Please enter instructions for the AI
+      nothing_to_refine: No content to refine. Please generate or write some content first.
+      connecting: Connecting to AI...
+      content_below: Content will appear below as it's generated.
+      applying_edits: Applying AI edits...
+      instruction: "Instruction: %{prompt}"
+      generating: Generating content...
+      humanizing: Humanizing content...
+      refining: Refining content...
+      generation_complete: Generation complete!
+      refinement_complete: Refinement complete!
+      connection_lost: Connection lost. Please try again.
+      error: "Error: %{message}"
+      request_failed: "Request failed (%{status})"
+    markdown_editor:
+      placeholder: Type your content here...
+    blossom_upload:
+      uploading: Uploading…
+      waiting: Waiting for upload…
+      failed: Upload failed
+      failed_status: "Upload failed (%{status})"
+      status_unreadable: "Could not read upload status (%{status})"
+      timed_out: Upload timed out

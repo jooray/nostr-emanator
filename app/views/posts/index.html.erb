@@ -1,18 +1,18 @@
-<% content_for :title, "Posts" %>
+<% content_for :title, t(".page_title") %>
 
 <div class="mx-auto max-w-6xl">
   <header class="mb-5 flex flex-wrap items-end justify-between gap-4 border-b rule pb-4">
     <div>
-      <h1 class="condensed text-[33px] font-bold uppercase leading-none tracking-[0.06em]">All posts</h1>
-      <p class="eng mt-2.5">Across <%= pluralize(@accounts.size, "identity") %></p>
+      <h1 class="condensed text-[33px] font-bold uppercase leading-none tracking-[0.06em]"><%= t(".title") %></h1>
+      <p class="eng mt-2.5"><%= t(".across", count: @accounts.size) %></p>
     </div>
     <div class="flex flex-wrap items-center gap-3">
       <% if @failed_here.positive? %>
-        <%= button_to "Discard all #{@failed_here}", discard_failed_posts_path(account: @account_filter), method: :delete,
+        <%= button_to t(".discard_all", count: @failed_here), discard_failed_posts_path(account: @account_filter), method: :delete,
               class: "condensed border border-red-500 px-3.5 py-2.5 text-[14px] font-semibold uppercase tracking-[0.16em] text-red-600 transition-colors hover:bg-red-500/10 dark:text-red-400",
-              form: { data: { turbo_confirm: "Discard #{pluralize(@failed_here, 'post')} that never went out? They are deleted, not unscheduled. This cannot be undone." } } %>
+              form: { data: { turbo_confirm: t(".discard_confirm", count: @failed_here) } } %>
       <% end %>
-      <%= link_to "New post", new_post_path,
+      <%= link_to t(".new_post"), new_post_path,
             class: "condensed inline-block border border-amber-500 bg-amber-500 px-4 py-2.5 text-[14px] font-semibold uppercase tracking-[0.16em] text-[#1a1714] transition-colors hover:bg-amber-400" %>
     </div>
   </header>
@@ -21,9 +21,9 @@
       come here to find; it is the only filter that has to be graded in Ruby. %>
   <div class="mb-5 space-y-2.5">
     <div class="flex flex-wrap items-center gap-x-1 gap-y-2">
-      <span class="eng mr-2 w-12">State</span>
-      <% [["All", nil], ["Barely out", "short"], ["Never went out", "failed"], ["Awaiting", "awaiting_signature"],
-          ["Scheduled", "scheduled"], ["Published", "published"], ["Drafts", "draft"]].each do |label, value| %>
+      <span class="eng mr-2 w-12"><%= t(".state") %></span>
+      <% [[t(".filters.all"), nil], [t(".filters.short"), "short"], [t(".filters.failed"), "failed"], [t(".filters.awaiting_signature"), "awaiting_signature"],
+          [t(".filters.scheduled"), "scheduled"], [t(".filters.published"), "published"], [t(".filters.draft"), "draft"]].each do |label, value| %>
         <% on = @status_filter == value %>
         <%= link_to label, posts_path(status: value, account: @account_filter),
               class: "condensed border px-2.5 py-1.5 text-[13px] font-semibold uppercase tracking-[0.14em] transition-colors #{on ? 'border-amber-500 bg-amber-500/12 text-amber-600 dark:text-amber-400' : 'border-gray-300 text-gray-600 hover:border-gray-400 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400 dark:hover:text-gray-200'}",
@@ -33,9 +33,9 @@
 
     <% if @accounts.size > 1 %>
       <div class="flex flex-wrap items-center gap-x-1 gap-y-2">
-        <span class="eng mr-2 w-12">Who</span>
+        <span class="eng mr-2 w-12"><%= t(".who") %></span>
         <% on = @account_filter.nil? %>
-        <%= link_to "All", posts_path(status: @status_filter),
+        <%= link_to t(".filters.all"), posts_path(status: @status_filter),
               class: "condensed border px-2.5 py-1.5 text-[13px] font-semibold uppercase tracking-[0.14em] #{on ? 'border-amber-500 bg-amber-500/12 text-amber-600 dark:text-amber-400' : 'border-gray-300 text-gray-600 hover:border-gray-400 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400'}" %>
         <% @accounts.each do |account| %>
           <% on = @account_filter == account.id.to_s %>
@@ -67,21 +67,20 @@
     </div>
   <% else %>
     <div class="border rule px-6 py-10 text-center">
-      <p class="eng mb-3">Nothing here</p>
+      <p class="eng mb-3"><%= t(".nothing_here") %></p>
       <p class="mx-auto mb-5 max-w-md text-gray-600 dark:text-gray-300">
         <% if @status_filter == "short" %>
-          Everything published has reached the network. A relay declining here and
-          there is normal and is not counted.
+          <%= t(".empty_short") %>
         <% elsif @status_filter || @account_filter %>
-          No posts match this filter.
+          <%= t(".empty_filtered") %>
         <% else %>
-          Nothing written yet.
+          <%= t(".empty_none") %>
         <% end %>
       </p>
       <% if @status_filter || @account_filter %>
-        <%= link_to "Clear filters", posts_path, class: "eng text-amber-600 underline underline-offset-4 hover:text-amber-500 dark:text-amber-400" %>
+        <%= link_to t(".clear_filters"), posts_path, class: "eng text-amber-600 underline underline-offset-4 hover:text-amber-500 dark:text-amber-400" %>
       <% else %>
-        <%= link_to "Write one", new_post_path,
+        <%= link_to t(".write_one"), new_post_path,
               class: "condensed inline-block border border-amber-500 bg-amber-500 px-4 py-2.5 text-[14px] font-semibold uppercase tracking-[0.16em] text-[#1a1714]" %>
       <% end %>
     </div>

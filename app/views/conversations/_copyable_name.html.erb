@@ -7,5 +7,5 @@
         data-controller="clipboard"
         data-clipboard-text-value="<%= dm_npub(pubkey) %>"
         data-action="click->clipboard#copy"
-        title="<%= dm_npub(pubkey) %> — click to copy"
+        title="<%= t(".click_to_copy", npub: dm_npub(pubkey)) %>"
         class="<%= local_assigns[:small] ? 'text-xs' : 'text-sm' %> font-semibold text-gray-900 underline decoration-dotted underline-offset-4 transition-colors hover:text-amber-600 dark:text-white dark:hover:text-amber-400"><%= label %></button>

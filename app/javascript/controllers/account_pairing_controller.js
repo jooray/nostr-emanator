@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { t } from "../lib/i18n"
 
 export default class extends Controller {
   static targets = ["status", "form"]
@@ -28,7 +29,7 @@ export default class extends Controller {
         // buried in the console. Stop and say something instead.
         if (!response.ok) {
           this.stopPolling()
-          this.onError(`Pairing failed (server error ${response.status}). Reload and try again.`)
+          this.onError(t("js.account_pairing.server_error", { status: response.status }))
           return
         }
 
@@ -81,13 +82,13 @@ export default class extends Controller {
         <svg class="h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
-        <span class="text-sm">QR expired —</span>
+        <span class="text-sm">${t("js.account_pairing.qr_expired")}</span>
       </div>
     `
     const button = document.createElement("button")
     button.type = "button"
     button.className = "mt-1 text-sm font-medium text-amber-600 dark:text-amber-400 underline"
-    button.textContent = "click to generate a new one"
+    button.textContent = t("js.account_pairing.generate_new")
     button.addEventListener("click", () => window.location.reload())
     this.statusTarget.appendChild(button)
   }
@@ -95,13 +96,13 @@ export default class extends Controller {
   showAuthUrl(url) {
     if (!this.hasStatusTarget) return
 
-    this.statusTarget.textContent = "Your signer requires additional authorization. "
+    this.statusTarget.textContent = t("js.account_pairing.additional_auth")
     const link = document.createElement("a")
     link.href = url
     link.target = "_blank"
     link.rel = "noopener noreferrer"
     link.className = "font-medium text-amber-600 dark:text-amber-400 underline"
-    link.textContent = "Continue in signer"
+    link.textContent = t("js.account_pairing.continue_in_signer")
     this.statusTarget.appendChild(link)
   }
 
@@ -112,7 +113,7 @@ export default class extends Controller {
           <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
           </svg>
-          <span class="text-sm font-medium">${this.rePairValue ? "Signer re-paired!" : "Account paired! Creating..."}</span>
+          <span class="text-sm font-medium">${this.rePairValue ? t("js.account_pairing.re_paired") : t("js.account_pairing.paired_creating")}</span>
         </div>
       `
     }

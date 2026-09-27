@@ -1,12 +1,25 @@
 module ApplicationHelper
+  # Language names are always shown in their own language, so a visitor who
+  # landed in the wrong one can still find theirs.
+  LOCALE_NAMES = { "en" => "English", "sk" => "Slovenčina", "cs" => "Čeština", "es" => "Español" }.freeze
+
+  # The `js` subtree for the current locale, over English so a key missing
+  # from a translation still reads as something instead of its key.
+  def js_translations
+    english = I18n.t("js", locale: :en, default: {})
+    return english if I18n.locale == :en
+
+    english.deep_merge(I18n.t("js", default: {}))
+  end
+
   # `awaiting_signature` reads as internal jargon to end users — show a
   # friendlier label everywhere a post/repost status is displayed (L28).
-  STATUS_LABELS = {
-    "awaiting_signature" => "Waiting for approval in signer"
-  }.freeze
-
+  # Looked up at call time (config/locales/core: status_labels.*) so it follows
+  # the request's language; an unknown status still reads as itself.
   def status_label(status)
-    STATUS_LABELS[status.to_s] || status.to_s.humanize
+    return status.to_s.humanize if status.blank?
+
+    I18n.t("status_labels.#{status}", default: status.to_s.humanize)
   end
 
   def local_time(time, format: "datetime")
@@ -23,10 +36,10 @@ module ApplicationHelper
     # instant itself — and the title keeps the unambiguous absolute one (L24).
     local = time.in_time_zone(Time.zone)
     fallback = case format
-               when "time" then local.strftime("%H:%M")
-               when "date" then local.strftime("%b %d, %Y")
-               when "short" then local.strftime("%b %d, %H:%M")
-               else local.strftime("%b %d, %Y %H:%M")
+               when "time" then I18n.l(local, format: :app_time)
+               when "date" then I18n.l(local, format: :app_date)
+               when "short" then I18n.l(local, format: :app_short)
+               else I18n.l(local, format: :app_datetime)
                end
     tag.time(
       fallback,

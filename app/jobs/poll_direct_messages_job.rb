@@ -60,7 +60,7 @@ class PollDirectMessagesJob < ApplicationJob
     if relays.empty?
       # Nothing to listen on yet. Not an error: the account has no published
       # 10050 and no NIP-65 read relays, so nobody can reach it anyway.
-      sync.progress!(step: "No DM inbox relays known for this account yet.")
+      sync.progress!(step: account.user.with_locale { I18n.t("messaging.steps.no_inbox_relays") })
       return
     end
 
@@ -70,7 +70,7 @@ class PollDirectMessagesJob < ApplicationJob
     sync.observe_relays!(relays)
 
     sync.observe_wrap!(newest_seen_at(wraps))
-    sync.progress!(step: stored.positive? ? "Found #{stored} new message(s)." : nil,
+    sync.progress!(step: stored.positive? ? account.user.with_locale { I18n.t("messaging.steps.found_new", count: stored) } : nil,
                    pending: account.gift_wraps.pending.count)
 
     DecryptGiftWrapsJob.perform_later(account.id) if account.gift_wraps.pending.exists?

@@ -24,15 +24,14 @@ class MessagesController < ApplicationController
 
   def retry
     conversation = @message.conversation
-    return redirect_to conversation_path(conversation), alert: "That message cannot be retried." unless @message.can_retry?
+    return redirect_to conversation_path(conversation), alert: t(".cannot_retry") unless @message.can_retry?
 
     # Retrying a private message to somebody with no kind 10050 is guaranteed to
     # fail the same way — there is nowhere to deliver it. Point at the downgrade
     # instead of spending another round of signer calls to learn that again.
     if undeliverable_privately?(@message)
       return redirect_to conversation_path(conversation),
-                         alert: "This person still has no DM inbox, so a private message cannot reach them. " \
-                                "You can send it as a legacy message instead."
+                         alert: t(".no_inbox")
     end
 
     @message.update!(status: "pending", error: nil)
@@ -48,7 +47,7 @@ class MessagesController < ApplicationController
   def downgrade
     conversation = @message.conversation
     unless @message.can_retry? && @message.kind != Message::LEGACY_KIND
-      return redirect_to conversation_path(conversation), alert: "That message cannot be downgraded."
+      return redirect_to conversation_path(conversation), alert: t(".cannot_downgrade")
     end
 
     result = Messaging::OutboundBuilder.new(conversation).build(content: @message.content, legacy_ack: true)

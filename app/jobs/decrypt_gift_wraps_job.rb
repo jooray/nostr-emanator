@@ -56,7 +56,9 @@ class DecryptGiftWrapsJob < ApplicationJob
         break if claimed.empty?
 
         sync.progress!(
-          step: "Decrypting messages in your signer app… #{processed} done, #{account.gift_wraps.pending.count} to go.",
+          step: account.user.with_locale do
+            I18n.t("messaging.steps.decrypting", processed: processed, pending: account.gift_wraps.pending.count)
+          end,
           pending: account.gift_wraps.pending.count,
           processed: processed
         )

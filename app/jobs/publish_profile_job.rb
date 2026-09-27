@@ -11,7 +11,16 @@ class PublishProfileJob < ApplicationJob
     update = ProfileUpdate.find(profile_update_id)
     return if update.finished?
 
-    update.progress("Preparing…")
+    # Every step and error written onto the row is read later by the browser,
+    # so produce it in the language of the user who asked for the update.
+    update.user.with_locale { publish(update) }
+  end
+
+  private
+
+  def publish(update)
+    profile_update_id = update.id
+    update.progress(I18n.t("profile_updates.steps.preparing"))
 
     progress = ->(_stage, message) { update.progress(message) }
     service = Nostr::ProfilePublisherService.new(update.account, progress: progress)
@@ -24,16 +33,16 @@ class PublishProfileJob < ApplicationJob
     FetchAccountProfileJob.perform_later(update.account_id)
   rescue Nostr::ProfilePublisherService::SigningError => e
     Rails.logger.warn("PublishProfileJob #{profile_update_id}: signing failed: #{e.message}")
-    update&.fail!("Signing timed out or was rejected. Approve the request in your signer app and try again.")
+    update&.fail!(I18n.t("profile_updates.errors.signing_failed"))
   rescue Nostr::ProfilePublisherService::PublishError => e
     update&.fail!(e.message)
   rescue StandardError => e
     Rails.logger.error("PublishProfileJob #{profile_update_id}: #{e.class}: #{e.message}")
-    update&.fail!("Publishing failed unexpectedly. Please try again.")
+    update&.fail!(I18n.t("profile_updates.errors.unexpected"))
     raise
   ensure
     # A worker shutdown interrupts the thread rather than raising StandardError,
     # so `rescue` alone would strand this row in `running` forever.
-    update.fail!("Interrupted before it finished. Please try again.") if update && !update.finished?
+    update.fail!(I18n.t("profile_updates.errors.interrupted")) if update && !update.finished?
   end
 end

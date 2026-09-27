@@ -23,11 +23,10 @@
     <div class="border rule px-4 py-3.5">
       <div class="flex items-center gap-2.5">
         <%= lamp(:on) %>
-        <p class="eng">Locked &middot; <%= pluralize(total_events, "event") %> signed</p>
+        <p class="eng"><%= t(".locked_html", count: total_events) %></p>
       </div>
       <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-        Signed and held. Nothing else is needed from you — it publishes at its
-        scheduled time on its own.
+        <%= t(".signed_and_held") %>
       </p>
     </div>
 
@@ -35,30 +34,30 @@
     <div class="alarm is-stacked" role="alert">
       <div class="flex items-center gap-2.5">
         <%= lamp(:alarm) %>
-        <p class="eng text-red-700 dark:text-red-300">Not signed</p>
+        <p class="eng text-red-700 dark:text-red-300"><%= t(".not_signed") %></p>
       </div>
       <p class="mt-2 text-sm text-red-800 dark:text-red-200">
-        <%= local_assigns[:error] || "Your signer did not return a signature." %>
+        <%= local_assigns[:error] || t(".no_signature") %>
       </p>
 
       <%# Four causes the codebase actually distinguishes, instead of one
           sentence that covers all of them and helps with none. %>
       <details class="mt-3">
-        <summary class="eng cursor-pointer text-red-700 dark:text-red-300">Why this happens</summary>
+        <summary class="eng cursor-pointer text-red-700 dark:text-red-300"><%= t(".why_this_happens") %></summary>
         <ul class="mt-2 space-y-1.5 text-sm text-red-800 dark:text-red-200">
-          <li><strong>You did not approve it in time.</strong> Amber gives you about two minutes. Retry and keep the phone in hand.</li>
-          <li><strong>You denied it.</strong> Retry sends a fresh request.</li>
-          <li><strong>The signer relay was unreachable.</strong> <%= post.account.signer_relay.presence || "The relay this account pairs through" %> may be rate-limiting or down; relay.damus.io in particular throttles NIP-46 traffic.</li>
+          <li><%= t(".cause_timeout_html") %></li>
+          <li><%= t(".cause_denied_html") %></li>
+          <li><%= t(".cause_relay_html", relay: post.account.signer_relay.presence || t(".cause_relay_fallback")) %></li>
           <li>
-            <strong>The pairing predates this permission.</strong>
-            <%= link_to "Re-pair #{post.account.display_name_or_npub}", re_pair_account_path(post.account),
-                  class: "underline underline-offset-2" %> — it keeps the account's posts and settings.
+            <strong><%= t(".cause_pairing") %></strong>
+            <%= t(".cause_pairing_repair_html", link: link_to(t(".repair_link", name: post.account.display_name_or_npub), re_pair_account_path(post.account),
+                  class: "underline underline-offset-2")) %>
           </li>
         </ul>
       </details>
 
       <div class="mt-3.5">
-        <%= button_to "Ask again", retry_sign_post_path(post), method: :post,
+        <%= button_to t(".ask_again"), retry_sign_post_path(post), method: :post,
               class: "condensed border border-amber-500 bg-amber-500 px-3.5 py-2 text-[14px] font-semibold uppercase tracking-[0.16em] text-[#1a1714] hover:bg-amber-400" %>
       </div>
     </div>
@@ -71,26 +70,24 @@
         <div class="flex items-center gap-2.5">
           <%= lamp(:wait) %>
           <p class="eng text-amber-700 dark:text-amber-400">
-            Approve in Amber &middot; <%= signed_count %> of <%= total_events %> done
+            <%= t(".approve_in_amber_html", done: signed_count, count: total_events) %>
           </p>
         </div>
         <p class="font-mono text-[15px] font-bold tabular text-amber-700 dark:text-amber-400"
-           data-elapsed-target="readout" aria-label="Time elapsed">00:00</p>
+           data-elapsed-target="readout" aria-label="<%= t(".time_elapsed") %>">00:00</p>
       </div>
 
       <p class="mt-2.5 max-w-prose text-sm text-gray-700 dark:text-gray-200">
         <% if total_events > 1 %>
-          <strong><%= total_events %> separate approvals</strong> are queued — one for the post and
-          one for each repost. Amber asks for them in turn.
+          <%= t(".approvals_queued_html", count: total_events) %>
         <% else %>
-          One approval is queued, for the post itself.
+          <%= t(".one_approval_queued") %>
         <% end %>
-        Usually under 30 seconds; Amber allows about two minutes per request.
-        <strong>You can close this tab</strong> — signing continues in the background.
+        <%= t(".timing_html") %>
       </p>
 
       <p class="mt-2 text-sm text-red-700 dark:text-red-400" data-elapsed-target="note" hidden>
-        Past two minutes. Amber has probably stopped waiting — check your phone, then ask again.
+        <%= t(".past_two_minutes") %>
       </p>
 
       <%# The queue itself. Each row names the identity being asked for, because
@@ -99,16 +96,16 @@
       <ul class="mt-3.5 border-t border-amber-500/30">
         <li class="flex items-center gap-3 border-b border-amber-500/20 py-2">
           <%= lamp(post.signed_event.present? ? :on : :wait) %>
-          <span class="eng w-14">1 of <%= total_events %></span>
+          <span class="eng w-14"><%= t(".position", position: 1, count: total_events) %></span>
           <%= identity(post.account) %>
-          <span class="ml-auto eng"><%= post.signed_event.present? ? "Locked" : "Asking" %></span>
+          <span class="ml-auto eng"><%= post.signed_event.present? ? t(".locked") : t(".asking") %></span>
         </li>
         <% reposts.each_with_index do |repost, i| %>
           <li class="flex items-center gap-3 border-b border-amber-500/20 py-2">
             <%= lamp(repost.signed_event.present? ? :on : :off) %>
-            <span class="eng w-14"><%= i + 2 %> of <%= total_events %></span>
+            <span class="eng w-14"><%= t(".position", position: i + 2, count: total_events) %></span>
             <%= identity(repost.account) %>
-            <span class="ml-auto eng"><%= repost.signed_event.present? ? "Locked" : "Queued" %></span>
+            <span class="ml-auto eng"><%= repost.signed_event.present? ? t(".locked") : t(".queued") %></span>
           </li>
         <% end %>
       </ul>

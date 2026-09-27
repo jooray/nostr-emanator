@@ -16,7 +16,7 @@
     <% end %>
     <div data-controller="theme" data-theme-current-value="<%= current_user&.theme || 'system' %>">
       <button type="button" data-action="click->theme#toggle"
-              aria-label="Theme"
+              aria-label="<%= t(".theme") %>"
               class="p-1.5 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200">
         <svg data-theme-icon="moon" class="h-4 w-4 hidden" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
@@ -33,18 +33,18 @@
   </div>
 
   <div class="border-t rule px-4 py-3.5">
-    <p class="eng mb-2.5">Station status</p>
+    <p class="eng mb-2.5"><%= t(".station_status") %></p>
     <%# Every reading goes to the thing it is counting. A lamp that reports a
         problem and cannot be followed is a dead end — the operator has to go
         find it themselves, which is exactly the work the lamp exists to save. %>
     <ul class="space-y-0.5">
-      <%= render "layouts/station_reading", label: pluralize(status[:identities], "identity"),
+      <%= render "layouts/station_reading", label: t(".readings.identities", count: status[:identities]),
             count: status[:identities], state: :neutral, path: accounts_path %>
-      <%= render "layouts/station_reading", label: "#{status[:waiting]} awaiting signature",
+      <%= render "layouts/station_reading", label: t(".readings.waiting", count: status[:waiting]),
             count: status[:waiting], state: :wait, path: posts_path(status: "awaiting_signature") %>
-      <%= render "layouts/station_reading", label: "#{status[:short]} barely out",
+      <%= render "layouts/station_reading", label: t(".readings.short", count: status[:short]),
             count: status[:short], state: :alarm, path: posts_path(status: "short") %>
-      <%= render "layouts/station_reading", label: "#{status[:failed]} never went out",
+      <%= render "layouts/station_reading", label: t(".readings.failed", count: status[:failed]),
             count: status[:failed], state: :alarm, path: posts_path(status: "failed") %>
     </ul>
   </div>
@@ -52,13 +52,13 @@
   <div class="flex items-center gap-2.5 border-t rule px-4 py-3">
     <%= render "shared/avatar", pubkey: current_user.pubkey_hex, size: :sm %>
     <div class="min-w-0 flex-1">
-      <p class="condensed text-[14px] font-semibold uppercase tracking-[0.13em] truncate"><%= current_user.display_name.presence || "Signed in" %></p>
+      <p class="condensed text-[14px] font-semibold uppercase tracking-[0.13em] truncate"><%= current_user.display_name.presence || t(".signed_in") %></p>
       <p class="font-mono text-[11.5px] text-gray-500 dark:text-gray-400 truncate"><%= current_user.npub.to_s.truncate(18) %></p>
     </div>
     <%= button_to logout_path, method: :delete,
           class: "eng text-gray-500 hover:text-red-600 dark:hover:text-red-400",
-          form: { data: { turbo_confirm: "Sign out of Emanator?" } } do %>
-      Out
+          form: { data: { turbo_confirm: t(".sign_out_confirm") } } do %>
+      <%= t(".out") %>
     <% end %>
   </div>
 <% end %>
@@ -68,7 +68,7 @@
   <div class="fixed top-0 left-0 right-0 z-40 border-b rule bg-white px-4 py-3 dark:bg-[color:var(--color-chassis)]">
     <div class="flex items-center justify-between">
       <button type="button" data-action="click->mobile-nav#toggle" data-mobile-nav-target="toggle"
-              aria-label="Open navigation" aria-expanded="false"
+              aria-label="<%= t(".open_navigation") %>" aria-expanded="false"
               class="p-1 -ml-1 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200">
         <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
@@ -78,7 +78,7 @@
         Eman<span class="text-amber-500">a</span>tor
       <% end %>
       <div data-controller="theme" data-theme-current-value="<%= current_user&.theme || 'system' %>">
-        <button type="button" data-action="click->theme#toggle" aria-label="Theme"
+        <button type="button" data-action="click->theme#toggle" aria-label="<%= t(".theme") %>"
                 class="p-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200">
           <svg data-theme-icon="moon" class="h-5 w-5 hidden" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
@@ -94,14 +94,14 @@
   <div data-mobile-nav-target="backdrop" data-action="click->mobile-nav#close"
        class="fixed inset-0 z-40 bg-black/60 opacity-0 pointer-events-none transition-opacity duration-300"></div>
 
-  <nav data-mobile-nav-target="panel" aria-label="Main"
+  <nav data-mobile-nav-target="panel" aria-label="<%= t(".main") %>"
        class="fixed inset-y-0 left-0 z-50 flex w-60 -translate-x-full flex-col border-r rule bg-white transition-transform duration-300 dark:bg-[color:var(--color-chassis)]">
     <div class="flex items-center justify-between border-b rule px-4 py-3.5">
       <%= link_to dashboard_path, class: "condensed text-[19px] font-bold uppercase tracking-[0.16em] text-gray-900 dark:text-gray-100",
             data: { action: "click->mobile-nav#close" } do %>
         Eman<span class="text-amber-500">a</span>tor
       <% end %>
-      <button type="button" data-action="click->mobile-nav#close" aria-label="Close navigation"
+      <button type="button" data-action="click->mobile-nav#close" aria-label="<%= t(".close_navigation") %>"
               class="p-1 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200">
         <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
@@ -114,13 +114,13 @@
     </div>
 
     <div class="border-t rule px-4 py-3.5">
-      <p class="eng mb-2.5">Station status</p>
+      <p class="eng mb-2.5"><%= t(".station_status") %></p>
       <ul class="space-y-0.5">
-        <%= render "layouts/station_reading", label: "#{status[:waiting]} awaiting signature",
+        <%= render "layouts/station_reading", label: t(".readings.waiting", count: status[:waiting]),
               count: status[:waiting], state: :wait, path: posts_path(status: "awaiting_signature"), mobile: true %>
-        <%= render "layouts/station_reading", label: "#{status[:short]} barely out",
+        <%= render "layouts/station_reading", label: t(".readings.short", count: status[:short]),
               count: status[:short], state: :alarm, path: posts_path(status: "short"), mobile: true %>
-        <%= render "layouts/station_reading", label: "#{status[:failed]} never went out",
+        <%= render "layouts/station_reading", label: t(".readings.failed", count: status[:failed]),
               count: status[:failed], state: :alarm, path: posts_path(status: "failed"), mobile: true %>
       </ul>
     </div>
@@ -128,8 +128,8 @@
     <div class="border-t rule px-4 py-3">
       <%= button_to logout_path, method: :delete,
             class: "eng text-gray-500 hover:text-red-600 dark:hover:text-red-400",
-            form: { data: { turbo_confirm: "Sign out of Emanator?" } } do %>
-        Sign out
+            form: { data: { turbo_confirm: t(".sign_out_confirm") } } do %>
+        <%= t(".sign_out") %>
       <% end %>
     </div>
   </nav>

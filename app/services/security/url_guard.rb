@@ -65,7 +65,7 @@ module Security
       addresses = resolve(uri.host)
       addresses.each do |address|
         if blocked?(address)
-          raise UnsafeUrlError, "#{uri.host} resolves to a non-public address (#{address}) and cannot be used"
+          raise UnsafeUrlError, I18n.t("security.url_guard.non_public", host: uri.host, address: address)
         end
       end
 
@@ -108,18 +108,18 @@ module Security
     end
 
     def parse(url, schemes)
-      raise UnsafeUrlError, "URL is blank" if url.blank?
+      raise UnsafeUrlError, I18n.t("security.url_guard.blank") if url.blank?
 
       uri = URI.parse(url.to_s.strip)
       unless schemes.include?(uri.scheme)
-        raise UnsafeUrlError, "URL must use #{schemes.map { |s| "#{s}://" }.join(" or ")}"
+        raise UnsafeUrlError, I18n.t("security.url_guard.scheme", schemes: schemes.map { |s| "#{s}://" }.join(", "))
       end
-      raise UnsafeUrlError, "URL must include a host" if uri.host.blank?
-      raise UnsafeUrlError, "URL must not contain credentials" if uri.userinfo.present?
+      raise UnsafeUrlError, I18n.t("security.url_guard.no_host") if uri.host.blank?
+      raise UnsafeUrlError, I18n.t("security.url_guard.credentials") if uri.userinfo.present?
 
       uri
     rescue URI::InvalidURIError
-      raise UnsafeUrlError, "URL is not valid"
+      raise UnsafeUrlError, I18n.t("security.url_guard.invalid")
     end
 
     def resolve(host)
@@ -132,11 +132,11 @@ module Security
          dns.getresources(host, Resolv::DNS::Resource::IN::AAAA)).map { |r| r.address.to_s }
       end
 
-      raise UnsafeUrlError, "#{host} could not be resolved" if addresses.empty?
+      raise UnsafeUrlError, I18n.t("security.url_guard.unresolved", host: host) if addresses.empty?
 
       addresses
     rescue Resolv::ResolvError, Resolv::ResolvTimeout
-      raise UnsafeUrlError, "#{host} could not be resolved"
+      raise UnsafeUrlError, I18n.t("security.url_guard.unresolved", host: host)
     end
 
     def literal_ip?(host)

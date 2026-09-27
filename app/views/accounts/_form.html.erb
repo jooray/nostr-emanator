@@ -7,7 +7,7 @@
         </svg>
         <div class="ml-3">
           <h3 class="text-sm font-medium text-red-800 dark:text-red-200">
-            <%= pluralize(account.errors.count, "error") %> prevented this account from being saved:
+            <%= t(".errors_heading", count: account.errors.count) %>
           </h3>
           <ul class="mt-2 list-disc list-inside text-sm text-red-700 dark:text-red-300">
             <% account.errors.full_messages.each do |message| %>
@@ -23,12 +23,12 @@
   <div>
     <div class="flex items-center justify-between mb-2">
       <%= form.label :personality, class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
-      <span class="text-xs text-gray-400 dark:text-gray-500">Markdown supported</span>
+      <span class="text-xs text-gray-400 dark:text-gray-500"><%= t(".markdown_supported") %></span>
     </div>
     <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
-      Define the writing style and personality for AI-generated posts on this account. This guides the tone, vocabulary, and structure of generated content.
+      <%= t(".personality_help") %>
     </p>
-    <div data-controller="markdown-editor" data-markdown-editor-placeholder-value="Describe the writing personality for this account...">
+    <div data-controller="markdown-editor" data-markdown-editor-placeholder-value="<%= t(".personality_placeholder") %>">
       <%= form.text_area :personality,
         data: { markdown_editor_target: "textarea" },
         class: "hidden",
@@ -38,10 +38,9 @@
 
   <!-- Blossom media server -->
   <div>
-    <%= form.label :blossom_server, "Blossom media server", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+    <%= form.label :blossom_server, t(".blossom_label"), class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
     <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
-      Where attached images/files are uploaded for this account. Leave blank to use the default
-      (<code class="font-mono"><%= Account.default_blossom_server %></code>).
+      <%= t(".blossom_help_html", server: tag.code(Account.default_blossom_server, class: "font-mono")) %>
     </p>
     <%= form.text_field :blossom_server,
       value: account.settings&.dig("blossom_server"),
@@ -51,7 +50,7 @@
 
   <!-- Submit -->
   <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-[color:var(--color-rule-dark)]">
-    <%= link_to "Cancel", account.persisted? ? account_path(account) : accounts_path, class: "px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-200 transition-colors" %>
-    <%= form.submit "Save Account", class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-colors cursor-pointer" %>
+    <%= link_to t(".cancel"), account.persisted? ? account_path(account) : accounts_path, class: "px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-200 transition-colors" %>
+    <%= form.submit t(".submit"), class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-colors cursor-pointer" %>
   </div>
 <% end %>

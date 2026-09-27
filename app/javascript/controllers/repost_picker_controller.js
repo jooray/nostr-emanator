@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { t } from "../lib/i18n"
 
 // The highest-consequence decision in the product, and it used to be the one
 // with the least information attached.
@@ -47,12 +48,12 @@ export default class extends Controller {
     if (!this.hasReadoutTarget) return
 
     if (checked === 0) {
-      this.readoutTarget.textContent = "No reposts — one approval, for the post itself."
+      this.readoutTarget.textContent = t("js.repost_picker.none")
       this.readoutTarget.dataset.level = "quiet"
     } else {
       const approvals = checked + 1
       this.readoutTarget.textContent =
-        `${checked} repost${checked === 1 ? "" : "s"} — ${approvals} separate approvals in your signer, one after another.`
+        t("js.repost_picker.selected", { count: checked, approvals })
       this.readoutTarget.dataset.level = approvals > 4 ? "loud" : "quiet"
     }
   }

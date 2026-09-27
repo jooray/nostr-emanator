@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { t } from "../lib/i18n"
 
 export default class extends Controller {
   static targets = ["form", "textarea", "status", "replyButton", "submitButton", "likeCheckbox", "followCheckbox", "refreshButton"]
@@ -33,7 +34,7 @@ export default class extends Controller {
 
     this.submitButtonTarget.disabled = true
     this.textareaTarget.disabled = true
-    this.statusTarget.textContent = "Creating reply..."
+    this.statusTarget.textContent = t("js.inline_reply.creating")
     this.statusTarget.className = "text-sm text-amber-600 dark:text-amber-400"
 
     try {
@@ -61,18 +62,18 @@ export default class extends Controller {
 
       if (data.success) {
         this.postId = data.post_id
-        this.statusTarget.textContent = "Signing..."
+        this.statusTarget.textContent = t("js.inline_reply.signing")
         this.hideRefreshButton()
         this.fireSideEffects()
         this.pollStatus(data.post_id)
       } else {
-        this.statusTarget.textContent = data.error || "Failed to create reply"
+        this.statusTarget.textContent = data.error || t("js.inline_reply.create_failed")
         this.statusTarget.className = "text-sm text-red-600 dark:text-red-400"
         this.submitButtonTarget.disabled = false
         this.textareaTarget.disabled = false
       }
     } catch (error) {
-      this.statusTarget.textContent = "Network error. Please try again."
+      this.statusTarget.textContent = t("js.inline_reply.network_error")
       this.statusTarget.className = "text-sm text-red-600 dark:text-red-400"
       this.submitButtonTarget.disabled = false
       this.textareaTarget.disabled = false
@@ -83,7 +84,7 @@ export default class extends Controller {
     if (!this.postId) return
 
     try {
-      this.statusTarget.textContent = "Retrying..."
+      this.statusTarget.textContent = t("js.inline_reply.retrying")
       this.statusTarget.className = "text-sm text-amber-600 dark:text-amber-400"
       this.hideRefreshButton()
 
@@ -99,7 +100,7 @@ export default class extends Controller {
       const data = await response.json()
 
       if (!response.ok || !data.success) {
-        this.statusTarget.textContent = data.error || "Retry failed. Open the post page to try again."
+        this.statusTarget.textContent = data.error || t("js.inline_reply.retry_failed_open_post")
         this.statusTarget.className = "text-sm text-red-600 dark:text-red-400"
         this.showRefreshButton()
         return
@@ -107,7 +108,7 @@ export default class extends Controller {
 
       this.pollStatus(this.postId)
     } catch (error) {
-      this.statusTarget.textContent = "Retry failed. Please try again."
+      this.statusTarget.textContent = t("js.inline_reply.retry_failed")
       this.statusTarget.className = "text-sm text-red-600 dark:text-red-400"
       this.showRefreshButton()
     }
@@ -142,23 +143,23 @@ export default class extends Controller {
 
         switch (data.status) {
           case "awaiting_signature":
-            this.statusTarget.textContent = "Signing... (approve in your signer app)"
+            this.statusTarget.textContent = t("js.inline_reply.signing_approve")
             this.statusTarget.className = "text-sm text-amber-600 dark:text-amber-400"
             this.hideRefreshButton()
             break
           case "scheduled":
-            this.statusTarget.textContent = "Publishing..."
+            this.statusTarget.textContent = t("js.inline_reply.publishing")
             this.statusTarget.className = "text-sm text-amber-600 dark:text-amber-400"
             this.hideRefreshButton()
             break
           case "publishing":
-            this.statusTarget.textContent = "Publishing..."
+            this.statusTarget.textContent = t("js.inline_reply.publishing")
             this.statusTarget.className = "text-sm text-amber-600 dark:text-amber-400"
             this.hideRefreshButton()
             break
           case "published":
             clearInterval(this._pollInterval)
-            this.statusTarget.textContent = "Reply published!"
+            this.statusTarget.textContent = t("js.inline_reply.published")
             this.statusTarget.className = "text-sm text-green-600 dark:text-green-400"
             this.hideRefreshButton()
             this.textareaTarget.value = ""
@@ -173,11 +174,11 @@ export default class extends Controller {
           case "failed":
             clearInterval(this._pollInterval)
             if (data.unsigned_event_present && !data.signed_event_present) {
-              this.statusTarget.textContent = "Signing stalled. Retry to try again."
+              this.statusTarget.textContent = t("js.inline_reply.signing_stalled")
               this.statusTarget.className = "text-sm text-red-600 dark:text-red-400"
               this.showRefreshButton()
             } else {
-              this.statusTarget.textContent = "Publishing failed. Please try again from the post page."
+              this.statusTarget.textContent = t("js.inline_reply.publishing_failed")
               this.statusTarget.className = "text-sm text-red-600 dark:text-red-400"
               this.hideRefreshButton()
             }

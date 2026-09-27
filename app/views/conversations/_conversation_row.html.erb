@@ -15,9 +15,9 @@
 
       <p class="mt-0.5 truncate text-sm text-gray-600 dark:text-gray-300">
         <% if conversation.last_message_from_self %>
-          <span class="text-gray-400 dark:text-gray-500">You:</span>
+          <span class="text-gray-400 dark:text-gray-500"><%= t(".you") %></span>
         <% end %>
-        <%= conversation.last_message_preview.presence || conversation.subject.presence || "(no preview)" %>
+        <%= conversation.last_message_preview.presence || conversation.subject.presence || t(".no_preview") %>
       </p>
 
       <div class="mt-1.5 flex flex-wrap items-center gap-2">
@@ -31,14 +31,14 @@
         <% if conversation.legacy? %>
           <%# Kind 4: the metadata was never private. Say so wherever it appears. %>
           <span class="inline-flex items-center rounded-full bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-800 dark:bg-orange-900 dark:text-orange-200"
-                title="Legacy NIP-04 thread — sender, recipient and timing are public">
-            Legacy · metadata public
+                title="<%= t(".legacy_title") %>">
+            <%= t(".legacy_badge") %>
           </span>
         <% end %>
 
         <% if conversation.group? %>
           <span class="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-300">
-            <%= conversation.participant_pubkeys.size %> people
+            <%= t(".people", count: conversation.participant_pubkeys.size) %>
           </span>
         <% end %>
 

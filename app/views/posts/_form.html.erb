@@ -7,7 +7,7 @@
         </svg>
         <div class="ml-3">
           <h3 class="text-sm font-medium text-red-800 dark:text-red-200">
-            <%= pluralize(post.errors.count, "error") %> prevented this post from being saved:
+            <%= t(".errors_prevented", count: post.errors.count) %>
           </h3>
           <ul class="mt-2 text-sm text-red-700 dark:text-red-300 list-disc list-inside">
             <% post.errors.full_messages.each do |message| %>
@@ -21,7 +21,7 @@
 
   <% if post.is_reply? && (defined?(reply_context) && reply_context.present? || @reply_context.present?) %>
     <div class="rounded-lg border border-gray-200 dark:border-[color:var(--color-rule-dark)] bg-gray-50 dark:bg-gray-900 p-4">
-      <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Replying to:</p>
+      <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1"><%= t(".replying_to") %></p>
       <p class="text-sm text-gray-700 dark:text-gray-300 line-clamp-3"><%= reply_context.presence || @reply_context %></p>
     </div>
   <% end %>
@@ -30,7 +30,7 @@
        data-blossom-upload-upload-url-value="<%= account_blossom_uploads_path(@account) %>">
     <div class="flex items-center justify-between mb-2">
       <label for="post_content" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-        Content
+        <%= t(".content") %>
       </label>
       <div class="flex items-center gap-3">
         <span data-blossom-upload-target="status" class="text-xs text-gray-400"></span>
@@ -40,14 +40,14 @@
           <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
           </svg>
-          Attach
+          <%= t(".attach") %>
         </button>
       </div>
     </div>
     <%= form.text_area :content,
       rows: 8,
       class: "w-full rounded-lg border border-gray-200 dark:border-[color:var(--color-rule-dark)] bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-4 py-3 text-sm placeholder-gray-400 dark:placeholder-gray-500 resize-y",
-      placeholder: post.is_reply? ? "Write your reply..." : "What's on your mind? (drag & drop or paste images to attach)",
+      placeholder: post.is_reply? ? t(".reply_placeholder") : t(".content_placeholder"),
       data: {
         media_preview_target: "content",
         content_builder_target: "textarea",
@@ -72,14 +72,14 @@
   <% end %>
 
   <div class="flex items-center justify-end gap-3">
-    <%= link_to "Cancel",
-      post.persisted? ? post_path(post) : account_posts_path(post.account),
+    <%= link_to t(".cancel"),
+      post.persisted? ? (post.can_schedule? ? schedule_post_path(post) : post_path(post)) : account_posts_path(post.account),
       class: "px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-[color:var(--color-rule-dark)] rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" %>
     <% if post.is_reply? %>
-      <%= form.submit "Sign & Publish Reply",
+      <%= form.submit t(".sign_publish_reply"),
         class: "px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors cursor-pointer" %>
     <% else %>
-      <%= form.submit post.persisted? ? "Update Post" : "Save as Draft",
+      <%= form.submit t(".save_schedule"),
         class: "px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors cursor-pointer" %>
     <% end %>
   </div>

@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { t } from "../lib/i18n"
 
 // Drives the Nostr profile editor: the live preview, Blossom image uploads, and
 // the publish-then-poll cycle.
@@ -37,7 +38,7 @@ export default class extends Controller {
 
     // Clients fall back through display_name -> name -> something generic, so
     // the preview has to do the same or it lies about an empty display name.
-    this.previewDisplayNameTarget.textContent = displayName || handle || "Unnamed"
+    this.previewDisplayNameTarget.textContent = displayName || handle || t("js.profile_editor.unnamed")
     this.previewHandleTarget.textContent = handle ? `@${handle}` : ""
     this.previewAboutTarget.textContent = this.valueOf_("about")
     this.previewNip05Target.textContent = this.valueOf_("nip05")
@@ -105,7 +106,7 @@ export default class extends Controller {
 
   async upload(field, file) {
     const statusTarget = this[`${field}StatusTarget`]
-    statusTarget.textContent = "Uploading…"
+    statusTarget.textContent = t("js.profile_editor.uploading")
 
     const body = new FormData()
     body.append("file", file)
@@ -119,13 +120,13 @@ export default class extends Controller {
       const data = await response.json()
 
       if (data.status === "failed" || data.error) {
-        statusTarget.textContent = data.error || "Upload failed."
+        statusTarget.textContent = data.error || t("js.profile_editor.upload_failed")
         return
       }
       this.pollUpload(field, data.status_url)
     } catch (error) {
       console.error("Upload error:", error)
-      statusTarget.textContent = "Could not reach the server."
+      statusTarget.textContent = t("js.profile_editor.server_unreachable")
     }
   }
 
@@ -137,19 +138,19 @@ export default class extends Controller {
 
         if (data.status === "completed" && data.url) {
           this[`${field}Target`].value = data.url
-          statusTarget.textContent = "Uploaded."
+          statusTarget.textContent = t("js.profile_editor.uploaded")
           this.sync()
           return
         }
         if (data.status === "failed") {
-          statusTarget.textContent = data.error || "Upload failed."
+          statusTarget.textContent = data.error || t("js.profile_editor.upload_failed")
           return
         }
-        statusTarget.textContent = data.step || "Working…"
+        statusTarget.textContent = data.step || t("js.profile_editor.working")
         this.later(tick, 1000)
       } catch (error) {
         console.error("Upload poll error:", error)
-        statusTarget.textContent = "Lost contact with the server."
+        statusTarget.textContent = t("js.profile_editor.lost_contact")
       }
     }
     this.later(tick, 600)
@@ -162,8 +163,8 @@ export default class extends Controller {
     this.hideError()
 
     this.publishButtonTarget.disabled = true
-    this.publishLabelTarget.textContent = "Publishing…"
-    this.statusTarget.textContent = "Preparing…"
+    this.publishLabelTarget.textContent = t("js.profile_editor.publishing")
+    this.statusTarget.textContent = t("js.profile_editor.preparing")
 
     try {
       const response = await fetch(this.publishUrlValue, {
@@ -177,13 +178,13 @@ export default class extends Controller {
       const data = await response.json()
 
       if (!data.ok) {
-        this.failPublish(data.error || "Could not start publishing.")
+        this.failPublish(data.error || t("js.profile_editor.could_not_start"))
         return
       }
       this.pollPublish(data.poll_url)
     } catch (error) {
       console.error("Publish error:", error)
-      this.failPublish("Could not reach the server. Check your connection and try again.")
+      this.failPublish(t("js.profile_editor.server_unreachable_publish"))
     }
   }
 
@@ -204,20 +205,20 @@ export default class extends Controller {
         const data = await (await fetch(pollUrl)).json()
 
         if (data.status === "completed") {
-          this.statusTarget.textContent = "Published."
+          this.statusTarget.textContent = t("js.profile_editor.published")
           this.publishButtonTarget.disabled = false
-          this.publishLabelTarget.textContent = "Publish profile"
+          this.publishLabelTarget.textContent = t("js.profile_editor.publish_profile")
           return
         }
         if (data.status === "failed") {
-          this.failPublish(data.error || "Publishing failed.")
+          this.failPublish(data.error || t("js.profile_editor.publish_failed"))
           return
         }
-        this.statusTarget.textContent = data.step || "Working…"
+        this.statusTarget.textContent = data.step || t("js.profile_editor.working")
         this.later(tick, 1000)
       } catch (error) {
         console.error("Publish poll error:", error)
-        this.failPublish("Lost contact with the server while publishing.")
+        this.failPublish(t("js.profile_editor.lost_contact_publish"))
       }
     }
     this.later(tick, 600)
@@ -226,7 +227,7 @@ export default class extends Controller {
   failPublish(message) {
     this.statusTarget.textContent = ""
     this.publishButtonTarget.disabled = false
-    this.publishLabelTarget.textContent = "Publish profile"
+    this.publishLabelTarget.textContent = t("js.profile_editor.publish_profile")
     this.showError(message)
   }
 

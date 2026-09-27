@@ -33,7 +33,7 @@ class ProfileUpdate < ApplicationRecord
 
   def display_error
     return error if error.present?
-    return "This took too long and was abandoned. Please try again." if stuck?
+    return I18n.t("profile_updates.abandoned") if stuck?
 
     nil
   end

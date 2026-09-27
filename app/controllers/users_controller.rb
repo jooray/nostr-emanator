@@ -15,6 +15,15 @@ class UsersController < ApplicationController
       return
     end
 
+    if params[:locale].present?
+      @user.locale = params[:locale]
+      @user.save!
+      cookies.permanent[LOCALE_COOKIE] = @user.locale if @user.locale
+      I18n.locale = @user.locale || I18n.locale
+      redirect_to edit_user_path, notice: t("users.update.language_updated")
+      return
+    end
+
     if params[:timezone].present?
       @user.timezone = params[:timezone]
       @user.save!
@@ -25,7 +34,7 @@ class UsersController < ApplicationController
     if params[:user] && params[:user].key?(:event_viewer)
       @user.event_viewer = params[:user][:event_viewer]
       @user.save!
-      redirect_to edit_user_path, notice: "Event viewer updated."
+      redirect_to edit_user_path, notice: t(".event_viewer_updated")
       return
     end
 
@@ -33,7 +42,7 @@ class UsersController < ApplicationController
       @user.custom_relays = params[:user][:custom_relays]
       # H4: unsafe relay URLs are rejected by the model — show why.
       if @user.save
-        redirect_to edit_user_path, notice: "Custom relays updated."
+        redirect_to edit_user_path, notice: t(".custom_relays_updated")
       else
         redirect_to edit_user_path, alert: @user.errors.full_messages.join(" ")
       end
@@ -41,7 +50,7 @@ class UsersController < ApplicationController
     end
 
     if @user.update(user_params)
-      redirect_to edit_user_path, notice: "Settings updated."
+      redirect_to edit_user_path, notice: t(".settings_updated")
     else
       render :edit, status: :unprocessable_entity
     end

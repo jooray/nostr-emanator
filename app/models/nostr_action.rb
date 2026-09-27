@@ -17,10 +17,10 @@ class NostrAction < ApplicationRecord
   HEX_32 = /\A[0-9a-f]{64}\z/
   ALLOWED_TARGET_KINDS = [ 1, 6, 7, 20, 1111, 9802, 30023 ].freeze
 
-  validates :target_pubkey, presence: true, format: { with: HEX_32, message: "must be a 64-character lowercase hex pubkey" }
+  validates :target_pubkey, presence: true, format: { with: HEX_32, message: :invalid_hex_pubkey }
   validates :target_event_id, presence: true, if: :reaction?
-  validates :target_event_id, format: { with: HEX_32, message: "must be a 64-character lowercase hex event id" }, allow_blank: true
-  validates :target_event_kind, inclusion: { in: ALLOWED_TARGET_KINDS, message: "is not a supported event kind" }, allow_nil: true
+  validates :target_event_id, format: { with: HEX_32, message: :invalid_hex_event_id }, allow_blank: true
+  validates :target_event_kind, inclusion: { in: ALLOWED_TARGET_KINDS, message: :unsupported_kind }, allow_nil: true
 
   scope :reactions_for_event, ->(account_id, event_id) {
     where(account_id: account_id, action_type: :reaction, target_event_id: event_id).where.not(status: :failed)

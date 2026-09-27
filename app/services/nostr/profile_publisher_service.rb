@@ -24,12 +24,12 @@ module Nostr
     # is"; an empty string means "clear this field".
     # Returns the published event hash.
     def publish(edits)
-      raise PublishError, "This account has no signer paired." unless @account.has_signer?
+      raise PublishError, I18n.t("profile_updates.errors.no_signer") unless @account.has_signer?
       unless @account.profile_editing_capable?
-        raise PublishError, "Re-pair this account to grant profile permission, then try again."
+        raise PublishError, I18n.t("profile_updates.errors.needs_re_pair")
       end
 
-      report(:fetching, "Reading your current profile…")
+      report(:fetching, I18n.t("profile_updates.steps.fetching"))
       existing = fetch_existing_event
 
       content = merge_content(existing&.dig("content"), edits)
@@ -42,16 +42,16 @@ module Nostr
         tags: []
       )
 
-      report(:signing, "Approve the profile update in your signer app…")
+      report(:signing, I18n.t("profile_updates.steps.signing"))
       signed = @signer.request_signature(@account, unsigned)
       raise SigningError, "Signing timed out or was rejected" unless signed
 
-      report(:publishing, "Publishing to relays…")
+      report(:publishing, I18n.t("profile_updates.steps.publishing"))
       relays = (@account.write_relays || []) + (@account.user.custom_relays || [])
       results = EventPublisherService.new.publish(signed, relays: relays)
 
       accepted = results.values.count { |v| v == :ok }
-      raise PublishError, "No relay accepted the profile update." if accepted.zero?
+      raise PublishError, I18n.t("profile_updates.errors.no_relay_accepted") if accepted.zero?
 
       { event: signed, results: results, accepted: accepted }
     end

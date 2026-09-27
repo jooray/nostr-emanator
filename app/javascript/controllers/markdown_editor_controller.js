@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { t } from "../lib/i18n"
 import EasyMDE from "easymde"
 
 export default class extends Controller {
@@ -8,7 +9,7 @@ export default class extends Controller {
   connect() {
     const placeholder = this.hasPlaceholderValue
       ? this.placeholderValue
-      : "Type your content here..."
+      : t("js.markdown_editor.placeholder")
 
     this.editor = new EasyMDE({
       element: this.textareaTarget,

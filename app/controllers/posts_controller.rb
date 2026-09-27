@@ -80,7 +80,7 @@ class PostsController < ApplicationController
     repost_scope.destroy_all
 
     redirect_back fallback_location: dashboard_path,
-                  notice: "Discarded #{pluralize(count, 'post')} that never went out."
+                  notice: t("posts.flash.discarded", count: count)
   end
 
   def select_account
@@ -119,7 +119,7 @@ class PostsController < ApplicationController
         # H15: without a paired signer the reply can never be signed — say so
         # now instead of parking it in "Signing in progress..." forever.
         unless @post.account.has_signer?
-          message = "#{@post.account.display_name_or_npub} has no paired signer, so this reply cannot be signed. Pair the account first."
+          message = t("posts.flash.reply_no_signer", name: @post.account.display_name_or_npub)
           respond_to do |format|
             format.html { redirect_to re_pair_account_path(@post.account), alert: message }
             format.json { render json: { success: false, error: message, post_id: @post.id }, status: :unprocessable_entity }
@@ -146,12 +146,14 @@ class PostsController < ApplicationController
         SignPostJob.perform_later(@post.id)
 
         respond_to do |format|
-          format.html { redirect_to @post, notice: "Reply created. Signing in progress..." }
-          format.json { render json: { success: true, post_id: @post.id, message: "Signing..." } }
+          format.html { redirect_to @post, notice: t("posts.flash.reply_created") }
+          format.json { render json: { success: true, post_id: @post.id, message: t("posts.flash.signing") } }
         end
       else
         respond_to do |format|
-          format.html { redirect_to @post, notice: "Post created." }
+          # The composer already shows the post; go straight to scheduling
+          # rather than a read-only page whose only real action is "Schedule".
+          format.html { redirect_to schedule_post_path(@post), notice: t("posts.flash.saved_as_draft") }
           format.json { render json: { success: true, post_id: @post.id } }
         end
       end
@@ -165,12 +167,12 @@ class PostsController < ApplicationController
   end
 
   def edit
-    redirect_to @post, alert: "Cannot edit this post." unless @post.can_edit?
+    redirect_to @post, alert: t("posts.flash.cannot_edit") unless @post.can_edit?
   end
 
   def update
     unless @post.can_edit?
-      redirect_to @post, alert: "Cannot edit this post."
+      redirect_to @post, alert: t("posts.flash.cannot_edit")
       return
     end
 
@@ -201,11 +203,11 @@ class PostsController < ApplicationController
       end
 
       notice = if invalidated
-        "Post updated. The pending signature was discarded because the content changed — schedule and sign it again."
+        t("posts.flash.updated_signature_discarded")
       else
-        "Post updated."
+        t("posts.flash.updated")
       end
-      redirect_to @post, notice: notice
+      redirect_to (@post.can_schedule? ? schedule_post_path(@post) : @post), notice: notice
     else
       render :edit, status: :unprocessable_entity
     end
@@ -213,12 +215,12 @@ class PostsController < ApplicationController
 
   def destroy
     @post.destroy
-    redirect_to account_posts_path(@post.account), notice: "Post deleted."
+    redirect_to account_posts_path(@post.account), notice: t("posts.flash.deleted")
   end
 
   def schedule
     unless @post.can_schedule?
-      redirect_to @post, alert: "Cannot schedule this post."
+      redirect_to @post, alert: t("posts.flash.cannot_schedule")
       return
     end
 
@@ -228,14 +230,14 @@ class PostsController < ApplicationController
   def sign
     # I5: never re-sign a post that has moved past the schedulable states.
     unless @post.can_schedule?
-      redirect_to @post, alert: "Cannot schedule this post (it is #{helpers.status_label(@post.status).downcase})."
+      redirect_to @post, alert: t("posts.flash.cannot_schedule_status", status: helpers.status_label(@post.status).downcase)
       return
     end
 
     # H15: without a paired signer nothing can ever sign this post.
     unless @post.account.has_signer?
       redirect_to re_pair_account_path(@post.account),
-                  alert: "#{@post.account.display_name_or_npub} has no paired signer, so this post cannot be signed. Pair the account first."
+                  alert: t("posts.flash.post_no_signer_pair_first", name: @post.account.display_name_or_npub)
       return
     end
 
@@ -247,10 +249,10 @@ class PostsController < ApplicationController
     # publish — the enqueue query never matches a NULL scheduled_at.
     parsed_at = parse_scheduled_at(params[:scheduled_at], params[:timezone])
     if parsed_at.nil?
-      @schedule_error = params[:scheduled_at].blank? ? "Pick a date and time to publish this post." : "That date and time could not be understood. Pick a valid date and time."
+      @schedule_error = params[:scheduled_at].blank? ? t("posts.flash.pick_date_time") : t("posts.flash.invalid_date_time")
       return render_schedule_error
     elsif parsed_at <= Time.current
-      @schedule_error = "The publish time must be in the future."
+      @schedule_error = t("posts.flash.time_in_past")
       return render_schedule_error
     end
 
@@ -281,7 +283,7 @@ class PostsController < ApplicationController
       # H15: a repost account with no signer can never be signed — fail it now
       # rather than stranding it in awaiting_signature.
       unless repost.account.has_signer?
-        repost.update!(status: :failed, publish_results: { "error" => "No paired signer for this account" })
+        repost.update!(status: :failed, publish_results: { "error" => t("posts.flash.no_signer_for_account") })
         next
       end
 
@@ -297,9 +299,9 @@ class PostsController < ApplicationController
 
     reposts_count = @post.reposts.awaiting_signature.count
     skipped_count = @post.reposts.failed.count
-    notice = "Signing in progress."
-    notice += " #{reposts_count} #{'repost'.pluralize(reposts_count)} scheduled." if reposts_count > 0
-    notice += " #{skipped_count} #{'repost'.pluralize(skipped_count)} skipped (account has no paired signer)." if skipped_count > 0
+    notice = t("posts.flash.signing_in_progress")
+    notice += " #{t("posts.flash.reposts_scheduled", count: reposts_count)}" if reposts_count > 0
+    notice += " #{t("posts.flash.reposts_skipped", count: skipped_count)}" if skipped_count > 0
     redirect_to @post, notice: notice
   end
 
@@ -312,8 +314,8 @@ class PostsController < ApplicationController
   def retry_sign
     unless (@post.awaiting_signature? || (@post.failed? && @post.signed_event.blank?)) && @post.unsigned_event.present?
       respond_to do |format|
-        format.html { redirect_to @post, alert: "Post is not awaiting signature." }
-        format.json { render json: { success: false, error: "Post is not awaiting signature." }, status: :unprocessable_entity }
+        format.html { redirect_to @post, alert: t("posts.flash.not_awaiting_signature") }
+        format.json { render json: { success: false, error: t("posts.flash.not_awaiting_signature") }, status: :unprocessable_entity }
       end
       return
     end
@@ -322,11 +324,11 @@ class PostsController < ApplicationController
     # "Waiting for signature…" until the sweeper gives up 20 minutes later.
     # Say what is actually wrong and link to re-pairing instead.
     unless @post.account.has_signer?
-      message = "#{@post.account.display_name_or_npub} has no paired signer, so this post cannot be signed."
+      message = t("posts.flash.post_no_signer", name: @post.account.display_name_or_npub)
       respond_to do |format|
         format.html do
           redirect_to re_pair_account_path(@post.account),
-                      alert: "#{message} Pair a signer to continue."
+                      alert: "#{message} #{t("posts.flash.pair_signer_to_continue")}"
         end
         format.json { render json: { success: false, error: message }, status: :unprocessable_entity }
       end
@@ -337,14 +339,14 @@ class PostsController < ApplicationController
     SignPostJob.perform_later(@post.id)
 
     respond_to do |format|
-      format.html { redirect_to @post, notice: "Retrying signature request..." }
+      format.html { redirect_to @post, notice: t("posts.flash.retrying_signature") }
       format.json { render json: { success: true, status: @post.status } }
     end
   end
 
   def retry_publish
     unless @post.can_retry_publish?
-      redirect_to @post, alert: "Cannot retry publishing."
+      redirect_to @post, alert: t("posts.flash.cannot_retry_publish")
       return
     end
 
@@ -356,38 +358,38 @@ class PostsController < ApplicationController
       PublishRepostJob.perform_later(repost.id)
     end
 
-    redirect_to @post, notice: "Retrying publish..."
+    redirect_to @post, notice: t("posts.flash.retrying_publish")
   end
 
   def rebroadcast
     unless @post.can_rebroadcast?
-      redirect_to @post, alert: "Cannot rebroadcast this post."
+      redirect_to @post, alert: t("posts.flash.cannot_rebroadcast")
       return
     end
 
     RebroadcastPostJob.perform_later(@post.id)
-    redirect_to @post, notice: "Rebroadcasting to relays..."
+    redirect_to @post, notice: t("posts.flash.rebroadcasting")
   end
 
   def cancel
     unless @post.can_cancel?
-      redirect_to @post, alert: "Cannot cancel this post."
+      redirect_to @post, alert: t("posts.flash.cannot_cancel")
       return
     end
 
     @post.cancel!
-    redirect_to @post, notice: "Post cancelled and returned to draft."
+    redirect_to @post, notice: t("posts.flash.cancelled")
   end
 
   def reschedule
     unless @post.can_reschedule?
-      redirect_to @post, alert: "Cannot reschedule this post."
+      redirect_to @post, alert: t("posts.flash.cannot_reschedule")
       return
     end
 
     repost_account_ids = @post.reschedule_reset!
     redirect_to schedule_post_path(@post, repost_account_ids: repost_account_ids),
-                notice: "Pick a new schedule time."
+                notice: t("posts.flash.pick_new_time")
   end
 
   private

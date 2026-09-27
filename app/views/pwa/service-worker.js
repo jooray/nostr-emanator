@@ -2,7 +2,7 @@
 // changes this file's bytes, so the browser installs a fresh worker, drops old
 // caches on activate, and (with skipWaiting + clients.claim + the page-side
 // controllerchange reload) auto-updates without a manual hard refresh.
-const CACHE_VERSION = "v2"
+const CACHE_VERSION = "v3"
 const CACHE_NAME = `emanator-${CACHE_VERSION}`
 
 // Precache only tiny, stable app-shell icons.

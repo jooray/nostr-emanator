@@ -30,6 +30,24 @@ class User < ApplicationRecord
     settings&.dig("timezone") || "UTC"
   end
 
+  # Interface language. nil means "not chosen": the browser's Accept-Language
+  # decides, so a new user is not pinned to English by the first request.
+  def locale
+    value = settings&.dig("locale")
+    value if I18n.available_locales.map(&:to_s).include?(value)
+  end
+
+  # For code outside a request (jobs): run in this user's language.
+  def with_locale(&block)
+    I18n.with_locale(locale || I18n.default_locale, &block)
+  end
+
+  def locale=(value)
+    value = value.to_s
+    value = nil unless I18n.available_locales.map(&:to_s).include?(value)
+    self.settings = (settings || {}).merge("locale" => value)
+  end
+
   def timezone=(value)
     self.settings = (settings || {}).merge("timezone" => value)
   end
@@ -61,7 +79,7 @@ class User < ApplicationRecord
 
   def custom_relays_must_be_safe
     Array(@rejected_custom_relays).each do |relay|
-      errors.add(:custom_relays, "#{relay} is not usable: relays must be wss:// URLs on public hosts")
+      errors.add(:custom_relays, :unsafe_relay, relay: relay)
     end
   end
 end

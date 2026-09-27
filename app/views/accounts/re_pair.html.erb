@@ -5,7 +5,7 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
       </svg>
     <% end %>
-    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Re-pair Signer</h1>
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white"><%= t(".title") %></h1>
   </div>
 
   <div class="max-w-lg mx-auto">
@@ -37,18 +37,16 @@
           </svg>
         </div>
         <h2 class="mt-4 text-lg font-semibold text-gray-900 dark:text-white">
-          <%= @messaging_repair ? "Enable Messaging" : "Re-connect Signer" %>
+          <%= @messaging_repair ? t(".heading_messaging") : t(".heading_reconnect") %>
         </h2>
         <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
           <% if @messaging_repair %>
-            Private messages need permissions your signer has not granted yet — encrypting,
-            sealing and decrypting messages. Re-pair to request them. Your posts and settings
-            will be preserved.
+            <%= t(".intro_messaging") %>
           <% else %>
-            Scan the QR code with Amber to re-pair the signer on a new relay. Your posts and settings will be preserved.
+            <%= t(".intro_reconnect") %>
           <% end %>
         </p>
-        <%= render "shared/qr_phishing_warning", caption: "pairs your Nostr key to someone else's Emanator account" %>
+        <%= render "shared/qr_phishing_warning", context: :pairing %>
       </div>
 
       <!-- QR Code -->
@@ -67,11 +65,11 @@
         </div>
 
         <details class="mt-4 text-center text-xs text-gray-500 dark:text-gray-400">
-          <summary class="cursor-pointer hover:text-gray-700 dark:hover:text-gray-300">Show connection details</summary>
+          <summary class="cursor-pointer hover:text-gray-700 dark:hover:text-gray-300"><%= t(".show_details") %></summary>
           <div class="mt-2 p-2 bg-gray-100 dark:bg-gray-700 rounded text-left break-all">
-            <p class="font-medium mb-1">URI:</p>
+            <p class="font-medium mb-1"><%= t(".uri") %></p>
             <code class="text-xs select-all"><%= @connect_data[:uri] %></code>
-            <p class="font-medium mt-2 mb-1">Relays:</p>
+            <p class="font-medium mt-2 mb-1"><%= t(".relays") %></p>
             <code class="text-xs"><%= @connect_data[:relay_urls].join(", ") %></code>
           </div>
         </details>
@@ -83,30 +81,30 @@
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
         </svg>
-        Waiting for signer connection...
+        <%= t("accounts.waiting_for_signer") %>
       </div>
 
       <!-- Pairing Steps -->
       <div class="border-t border-gray-200 dark:border-[color:var(--color-rule-dark)] pt-6">
-        <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-3">How to re-pair</h3>
+        <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-3"><%= t(".how_to_re_pair") %></h3>
         <ol class="space-y-3 text-sm text-gray-600 dark:text-gray-400">
           <% steps = if @messaging_repair
                [
-                 "Open Amber (or your NIP-46 signer)",
-                 "Scan the QR code or paste the connection URI",
-                 "Approve the connection — it now also covers message encryption and sealing",
-                 "On the first “decrypt” prompt, choose <strong>Always</strong> and scope <strong>All</strong>. Otherwise every single message needs a tap on your phone.".html_safe,
+                 t(".steps.open_amber"),
+                 t(".steps.scan"),
+                 t(".steps.approve_messaging"),
+                 t(".steps.decrypt_always_html"),
                  # Amber's "Client auth whitelist" auto-rejects kind-22242 from any
                  # host not on it, without prompting — which presents as an empty
                  # inbox with nothing explaining why. Wording matches Amber's own
                  # strings.xml; the list holds hostnames and has no wildcard.
-                 "When Amber asks about <strong>relay authentication</strong>, choose scope <strong>All relays</strong>. If you use Amber's <strong>Client auth whitelist</strong>, add your DM inbox relays to it — while that list is non-empty Amber rejects every other relay without asking.".html_safe
+                 t(".steps.relay_auth_html")
                ]
              else
                [
-                 "Open Amber (or your NIP-46 signer)",
-                 "Scan the QR code or paste the connection URI",
-                 "Approve the connection — signer fields update, everything else stays"
+                 t(".steps.open_amber"),
+                 t(".steps.scan"),
+                 t(".steps.approve_reconnect")
                ]
              end %>
           <% steps.each_with_index do |step, index| %>

@@ -1,0 +1,229 @@
+en:
+  conversations:
+    index:
+      title: Messages
+      subtitle: Private, across every paired identity
+      not_authenticated:
+        one: "%{count} account not relay-authenticated"
+        other: "%{count} accounts not relay-authenticated"
+      still_arrive:
+        one: Messages still arrive through your other relays — anything stored only on this one may be missing.
+        other: Messages still arrive through your other relays — anything stored only on these may be missing.
+      auth_explainer: These relays hand your messages only to an authenticated client, and your signer has not completed that handshake yet.
+      auth_missed_prompt_html: If Amber prompted you and you missed it, just wait — it retries. When it asks, <strong>Authentication scope → All relays</strong> stops it asking again.
+      auth_whitelist_html: If it never prompts, check <strong>Settings → Client auth whitelist</strong> in Amber. While that list is non-empty, Amber rejects relay-auth requests from any host that is not on it, without asking. Either add %{hosts} to the list, or clear the list so Amber asks you instead.
+      no_accounts: Pair an account to start receiving private messages.
+      add_account: Add an account
+      tabs:
+        known: Inbox
+        requests: Requests
+      who: Who
+      select_all: Select all
+      filter: Filter
+      unread_only: Unread only
+      filter_by_unread: Filter by unread
+      mark_all_read: Mark all as read
+      mark_all_read_confirm: Mark every unread conversation in this view as read?
+      no_requests: No message requests.
+      no_messages: No messages yet.
+      known_hint: Messages from people you follow appear here. Everyone else waits in Requests.
+    show:
+      title: Conversation
+      conversation_between: conversation between
+      yourself: yourself
+      and_more: and %{count} more
+      all_participants: All participants
+      legacy_title: Legacy NIP-04 conversation
+      legacy_body: The message text is encrypted, but the sender, the recipient and the timing are public on every relay this thread touched.
+      request_body: You do not follow this person, and neither does any of your other accounts.
+      accept: Accept
+      block: Block
+      showing_recent: Showing the most recent %{count} messages.
+      empty: No messages in this conversation yet.
+    accept:
+      moved: Moved to your inbox.
+    block:
+      blocked: Blocked. You will not see messages from this conversation.
+    mark_all_read:
+      marked:
+        one: Marked %{count} conversation as read.
+        other: Marked %{count} conversations as read.
+      nothing_unread: Nothing unread.
+    composer_body:
+      unavailable: This account's signer has not granted messaging permissions yet.
+      enable_messaging: Enable messaging
+      checking: Checking where this person receives private messages…
+      no_inbox_title: This person has not published a DM inbox
+      no_inbox_body: Your message is still fully encrypted and your identity stays hidden, but it goes to relays they never designated for messages — so it may not arrive. Clients with no private-messaging support at all (Primal, Damus) will not look for it.
+      strong_best_effort: Strong encryption — best-effort delivery
+      legacy_summary: Not getting through? Send a legacy message instead
+      legacy_intro: "A legacy message reaches every client, including those with no private-messaging support — which is most of them. But it is a real downgrade:"
+      legacy_placeholder: Message (the text is encrypted; who you sent it to is not)
+      send_public_metadata: Send with public metadata
+      legacy_separate: This starts a separate legacy thread with the same person, kept apart from your private one.
+      basic_encryption: Basic encryption — metadata is public
+      legacy_reply_placeholder: Reply in this legacy thread…
+      strong_private: Strong encryption — content and metadata are private
+    conversation_row:
+      you: "You:"
+      no_preview: (no preview)
+      legacy_title: Legacy NIP-04 thread — sender, recipient and timing are public
+      legacy_badge: Legacy · metadata public
+      people:
+        one: "%{count} person"
+        other: "%{count} people"
+    copyable_name:
+      click_to_copy: "%{npub} — click to copy"
+    failed_message_actions:
+      not_sent: Not sent
+      try_again: Try again
+      legacy_summary: Send it as a legacy message instead?
+      legacy_intro: "They cannot receive private messages at all, so this is the only way it will reach them — but it is a real downgrade:"
+      send_public_metadata: Send with public metadata
+      moves_to_legacy: This moves it to a separate legacy thread with the same person.
+    message_bubble:
+      encrypted_file: "[encrypted file]"
+      encrypted_file_typed: "[encrypted file — %{type}]"
+      downgrade_title: Sent as a legacy NIP-04 DM — the sender, recipient and timing are public
+      downgrade_badge: Sent unencrypted-metadata
+      legacy_title: Legacy NIP-04 message — the sender, recipient and timing were public
+      legacy_badge: Legacy
+      best_effort: Best effort
+      repaired_title: This message omitted fields NIP-17 requires; recovered from the signed seal.
+      repaired: repaired
+      sending: Sending…
+    private_composer_form:
+      placeholder: Write a private message…
+      approvals:
+        one: Needs %{count} approval in your signer app.
+        other: Needs %{count} approvals in your signer app.
+      enter_hint: Enter to send, Shift+Enter for a new line.
+      send: Send
+
+  messages:
+    retry:
+      cannot_retry: That message cannot be retried.
+      no_inbox: This person still has no DM inbox, so a private message cannot reach them. You can send it as a legacy message instead.
+    downgrade:
+      cannot_downgrade: That message cannot be downgraded.
+
+  messaging:
+    names:
+      unknown: Unknown
+      note_to_self: Note to self
+      peer_and_more: "%{name} +%{count}"
+    classification_badge:
+      own_follow: You follow them
+      sibling_follow: Followed by another of your accounts
+      wot: Followed by someone you follow
+      replied: You replied
+      self: Your own account
+      manual: You accepted
+    delivery_note:
+      nip65: Sent to their public relays — they have no DM inbox, so it may not arrive
+      fallback: Sent to popular relays — they have no relay list at all, so it may not arrive
+      observed: Sent to the relays their own messages reach us on — they have no DM inbox, but their client is reading there
+    legacy_downgrade_risks:
+      watchers: Anyone watching the relays can see that you messaged this person, and when.
+      public_metadata: Only the message text is encrypted — the sender and recipient are public.
+      malleable: NIP-04 encryption is unauthenticated, so the ciphertext can be tampered with.
+    errors:
+      legacy_unacknowledged: a legacy NIP-04 message can only be sent after the sender acknowledges that its metadata is public
+      write_first: Write a message first.
+      legacy_needs_confirmation: Sending a legacy message needs an explicit confirmation.
+      no_recipient: No recipient.
+      no_signed_message: Your signer did not return a signed message.
+      no_relay_accepted: No relay accepted the message.
+    steps:
+      approve_message: Approve the message in your signer app (%{index} of %{total})…
+      approve_signature: Approve the signature in your signer app (%{index} of %{total})…
+      delivering_to: Delivering to %{recipient}…
+      delivering: Delivering…
+      decrypting: Decrypting messages in your signer app… %{processed} done, %{pending} to go.
+      importing_legacy:
+        one: Importing %{count} legacy message(s)…
+        other: Importing %{count} legacy message(s)…
+      no_inbox_relays: No DM inbox relays known for this account yet.
+      found_new:
+        one: Found %{count} new message(s).
+        other: Found %{count} new message(s).
+
+  nostr_content:
+    referenced_note: "[referenced note]"
+    unknown_author: Unknown
+
+  interactions:
+    index:
+      title: Interactions
+      subtitle:
+        one: Replies, quotes and mentions across %{count} identity
+        other: Replies, quotes and mentions across %{count} identities
+      unselect_all: Unselect all
+    interaction_card:
+      your_post: Your post
+      quoted_post: Quoted post
+      in_reply_to: In reply to
+      labelled: "%{label} (%{author})"
+      show_more: Show more
+      open_profile: Open profile in %{viewer}
+      types:
+        reply: reply
+        quote: quote
+        mention: mention
+      to_account: to @%{name}
+      time_ago: "%{time} ago"
+      like: Like
+      follow: Follow
+      mute_title: Hide all posts from @%{name}
+      mute: Mute @%{name}
+      retry: Retry
+      reply: Reply
+      replying_as_html: Replying as %{name}
+      like_this_post: Like this post
+      follow_author: Follow @%{name}
+      reply_placeholder: Write your reply...
+      cancel: Cancel
+      sign_and_publish: Sign & Publish
+    interactions_content:
+      empty_title: No interactions yet
+      empty_body: Interactions from others will appear here as they reply to, quote, or mention your accounts.
+    loading_toast:
+      loading: Loading latest interactions…
+
+  js:
+    dm_delivery:
+      gave_up: Could not work out where this person receives private messages. Reload to try again.
+    inline_reply:
+      creating: Creating reply...
+      signing: Signing...
+      create_failed: Failed to create reply
+      network_error: Network error. Please try again.
+      retrying: Retrying...
+      retry_failed_open_post: Retry failed. Open the post page to try again.
+      retry_failed: Retry failed. Please try again.
+      signing_approve: Signing... (approve in your signer app)
+      publishing: Publishing...
+      published: Reply published!
+      signing_stalled: Signing stalled. Retry to try again.
+      publishing_failed: Publishing failed. Please try again from the post page.
+    interaction_actions:
+      signing: Signing...
+      failed: Failed
+      network_error: Network error
+      already_following: Already following
+      mute_confirm: Mute %{label}? Their posts will be hidden across all your accounts.
+      muting: Muting...
+      processing: Processing...
+      approve: Approve in signer app...
+      publishing: Publishing...
+      liked: Liked!
+      followed: Followed!
+      retrying: Retrying...
+      retry_failed: Retry failed
+      following: Following
+      follow: Follow
+    interactions_filter:
+      none_selected_title: No accounts selected
+      none_selected_body: Select an account above to see its interactions.
+      unselect_all: Unselect All
+      select_all: Select All

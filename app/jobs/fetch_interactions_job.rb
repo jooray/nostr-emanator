@@ -12,6 +12,8 @@ class FetchInteractionsJob < ApplicationJob
     user = User.find_by(id: user_id)
     return unless user
 
+    @user = user
+
     accounts = user.accounts.to_a
     return if accounts.empty?
 
@@ -50,10 +52,14 @@ class FetchInteractionsJob < ApplicationJob
   # updated in place rather than replaced — avoids avatar flicker and
   # preserves Stimulus controller state across refreshes.
   def broadcast(stream_name, interactions)
-    html = ApplicationController.render(
-      partial: "interactions/interactions_content",
-      locals: { interactions: interactions }
-    )
+    # Rendered outside any request, so the locale has to come from the user
+    # whose stream this is, not from the worker thread's default.
+    html = @user.with_locale do
+      ApplicationController.render(
+        partial: "interactions/interactions_content",
+        locals: { interactions: interactions }
+      )
+    end
 
     Turbo::StreamsChannel.broadcast_action_to(
       stream_name,

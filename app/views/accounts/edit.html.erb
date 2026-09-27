@@ -5,15 +5,15 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
       </svg>
     <% end %>
-    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Edit Account</h1>
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white"><%= t(".title") %></h1>
   </div>
 
   <!-- Read-only Profile Info -->
   <div class="border rule overflow-hidden">
     <div class="px-6 py-4 border-b border-gray-200 dark:border-[color:var(--color-rule-dark)]">
-      <h3 class="text-lg font-medium text-gray-900 dark:text-white">Profile Info</h3>
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white"><%= t(".profile_info") %></h3>
       <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-        Profile data is fetched from Nostr relays and cannot be edited here. Use "Refresh Profile" on the account page to update.
+        <%= t(".profile_info_help") %>
       </p>
     </div>
     <div class="px-6 py-4">
@@ -26,20 +26,20 @@
         <div class="flex-1 min-w-0">
           <dl class="space-y-3">
             <div>
-              <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Display Name</dt>
-              <dd class="mt-0.5 text-sm text-gray-900 dark:text-white"><%= @account.display_name.presence || "Not set" %></dd>
+              <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"><%= t(".display_name") %></dt>
+              <dd class="mt-0.5 text-sm text-gray-900 dark:text-white"><%= @account.display_name.presence || t(".not_set") %></dd>
             </div>
             <div>
-              <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Username</dt>
-              <dd class="mt-0.5 text-sm text-gray-900 dark:text-white"><%= @account.username.present? ? "@#{@account.username}" : "Not set" %></dd>
+              <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"><%= t(".username") %></dt>
+              <dd class="mt-0.5 text-sm text-gray-900 dark:text-white"><%= @account.username.present? ? "@#{@account.username}" : t(".not_set") %></dd>
             </div>
             <div>
-              <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Npub</dt>
+              <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"><%= t(".npub") %></dt>
               <dd class="mt-0.5 text-xs text-gray-600 dark:text-gray-400 font-mono break-all"><%= @account.npub %></dd>
             </div>
             <% if @account.about.present? %>
               <div>
-                <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">About</dt>
+                <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"><%= t(".about") %></dt>
                 <dd class="mt-0.5 text-sm text-gray-900 dark:text-white"><%= @account.about %></dd>
               </div>
             <% end %>
@@ -52,9 +52,9 @@
   <!-- Editable Personality Form -->
   <div class="border rule overflow-hidden">
     <div class="px-6 py-4 border-b border-gray-200 dark:border-[color:var(--color-rule-dark)]">
-      <h3 class="text-lg font-medium text-gray-900 dark:text-white">Writing Personality</h3>
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white"><%= t(".writing_personality") %></h3>
       <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-        Define how AI-generated posts should sound for this account.
+        <%= t(".writing_personality_help") %>
       </p>
     </div>
     <div class="px-6 py-4">

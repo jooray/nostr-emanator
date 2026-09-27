@@ -28,7 +28,7 @@ class SignPostJob < ApplicationJob
       else
         # C3: never stomp a post that another signer already scheduled/published.
         if post.fail_if_awaiting_signature!
-          broadcast_signing_progress(post, failed: true, error: "Signing timed out. Approve the request in your signer app and retry.")
+          broadcast_signing_progress(post, failed: true, error: post.account.user.with_locale { I18n.t("posts.jobs.signing_timed_out") })
         else
           Rails.logger.info("SignPostJob: signing timed out for post #{post.id} but it is now #{post.status}; leaving as is")
         end
@@ -57,7 +57,7 @@ class SignPostJob < ApplicationJob
     # fail it loudly instead of stranding it in awaiting_signature forever.
     signable, unsignable = pending.partition { |repost| repost.account.has_signer? }
     unsignable.each do |repost|
-      repost.fail_if_awaiting_signature!(publish_results: { "error" => "No paired signer for this account" })
+      repost.fail_if_awaiting_signature!(publish_results: { "error" => post.account.user.with_locale { I18n.t("posts.flash.no_signer_for_account") } })
     end
     broadcast_signing_progress(post) if unsignable.any?
 
@@ -89,34 +89,36 @@ class SignPostJob < ApplicationJob
 
   def broadcast_signing_progress(post, failed: false, error: nil)
     post.reload
-    Turbo::StreamsChannel.broadcast_replace_to(
-      "post_signing_#{post.id}",
-      target: "signing-progress",
-      partial: "posts/signing_progress",
-      locals: { post: post, failed: failed, error: error }
-    )
-    Turbo::StreamsChannel.broadcast_replace_to(
-      "post_signing_#{post.id}",
-      target: "reposts-list",
-      partial: "posts/reposts_list",
-      locals: { post: post }
-    )
-    # Update the status badge in the page header
-    status_colors = {
-      "published"          => "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-      "scheduled"          => "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-      "draft"              => "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-      "awaiting_signature" => "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
-      "publishing"         => "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
-      "failed"             => "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-    }
-    badge_class = status_colors[post.status] || "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
-    badge_html = "<div id=\"post-status-badge\"><span class=\"inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium #{badge_class}\">#{ApplicationController.helpers.status_label(post.status)}</span></div>"
-    Turbo::StreamsChannel.broadcast_replace_to(
-      "post_signing_#{post.id}",
-      target: "post-status-badge",
-      html: badge_html
-    )
+    post.account.user.with_locale do
+      Turbo::StreamsChannel.broadcast_replace_to(
+        "post_signing_#{post.id}",
+        target: "signing-progress",
+        partial: "posts/signing_progress",
+        locals: { post: post, failed: failed, error: error }
+      )
+      Turbo::StreamsChannel.broadcast_replace_to(
+        "post_signing_#{post.id}",
+        target: "reposts-list",
+        partial: "posts/reposts_list",
+        locals: { post: post }
+      )
+      # Update the status badge in the page header
+      status_colors = {
+        "published"          => "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+        "scheduled"          => "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+        "draft"              => "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+        "awaiting_signature" => "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
+        "publishing"         => "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
+        "failed"             => "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+      }
+      badge_class = status_colors[post.status] || "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
+      badge_html = "<div id=\"post-status-badge\"><span class=\"inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium #{badge_class}\">#{ApplicationController.helpers.status_label(post.status)}</span></div>"
+      Turbo::StreamsChannel.broadcast_replace_to(
+        "post_signing_#{post.id}",
+        target: "post-status-badge",
+        html: badge_html
+      )
+    end
   rescue => e
     Rails.logger.error("Failed to broadcast signing progress: #{e.message}")
   end

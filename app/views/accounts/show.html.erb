@@ -7,21 +7,21 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>
       <% end %>
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Account</h1>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white"><%= t(".title") %></h1>
     </div>
     <div class="flex items-center gap-3">
       <%= link_to new_account_post_path(@account), class: "inline-flex items-center gap-2 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-amber-600 hover:bg-amber-700 transition-colors" do %>
         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
         </svg>
-        New Post
+        <%= t(".new_post") %>
       <% end %>
       <%= link_to settings_account_path(@account), class: "inline-flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-[color:var(--color-rule-dark)] text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors" do %>
         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
         </svg>
-        Settings
+        <%= t(".settings") %>
       <% end %>
     </div>
   </div>
@@ -36,7 +36,7 @@
       <% end %>
       <div class="flex-1 min-w-0">
         <h2 class="text-lg font-bold text-gray-900 dark:text-white truncate">
-          <%= @account.display_name.presence || "Unnamed Account" %>
+          <%= @account.display_name.presence || t("accounts.unnamed_account") %>
         </h2>
         <% if @account.username.present? %>
           <p class="text-sm text-gray-500 dark:text-gray-400">@<%= @account.username %></p>
@@ -46,16 +46,16 @@
         <% if @account.has_signer? %>
           <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
             <span class="flex h-2 w-2 rounded-full bg-green-500"></span>
-            Signer connected
+            <%= t("accounts.signer_connected") %>
           </span>
         <% else %>
           <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
             <span class="flex h-2 w-2 rounded-full bg-yellow-500"></span>
-            No signer
+            <%= t("accounts.no_signer") %>
           </span>
         <% end %>
         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
-          <%= @account.posts.count %> posts
+          <%= t("accounts.posts_count", count: @account.posts.count) %>
         </span>
       </div>
     </div>
@@ -64,8 +64,8 @@
   <!-- Scheduled Posts -->
   <div class="border rule overflow-hidden">
     <div class="px-6 py-4 border-b border-gray-200 dark:border-[color:var(--color-rule-dark)]">
-      <h3 class="text-lg font-medium text-gray-900 dark:text-white">Scheduled Posts</h3>
-      <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Upcoming posts queued for this account</p>
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white"><%= t(".scheduled_posts") %></h3>
+      <p class="mt-1 text-xs text-gray-500 dark:text-gray-400"><%= t(".scheduled_posts_help") %></p>
     </div>
     <% if @scheduled_posts.any? %>
       <ul class="divide-y divide-gray-200 dark:divide-gray-700">
@@ -81,7 +81,7 @@
                       <%= status_label(post.status) %>
                     </span>
                     <% if post.reposts.any? %>
-                      <span class="text-xs text-gray-400 dark:text-gray-500"><%= pluralize(post.reposts.size, "repost") %></span>
+                      <span class="text-xs text-gray-400 dark:text-gray-500"><%= t(".reposts_count", count: post.reposts.size) %></span>
                     <% end %>
                   </div>
                   <p class="text-sm text-gray-900 dark:text-gray-100 line-clamp-2"><%= render_nostr_content(truncate(post.content, length: 200)) %></p>
@@ -97,8 +97,7 @@
       </ul>
     <% else %>
       <div class="px-6 py-10 text-center text-sm text-gray-500 dark:text-gray-400">
-        No scheduled posts.
-        <%= link_to "Create one", new_account_post_path(@account), class: "font-medium text-amber-600 dark:text-amber-400 hover:text-amber-500 dark:hover:text-amber-300" %>.
+        <%= t(".no_scheduled_html", link: link_to(t(".create_one"), new_account_post_path(@account), class: "font-medium text-amber-600 dark:text-amber-400 hover:text-amber-500 dark:hover:text-amber-300")) %>
       </div>
     <% end %>
   </div>
@@ -106,8 +105,8 @@
   <!-- Recent Events (lazy loaded) -->
   <div class="border rule overflow-hidden">
     <div class="px-6 py-4 border-b border-gray-200 dark:border-[color:var(--color-rule-dark)]">
-      <h3 class="text-lg font-medium text-gray-900 dark:text-white">Recent Events</h3>
-      <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Latest notes fetched from relays</p>
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white"><%= t(".recent_events") %></h3>
+      <p class="mt-1 text-xs text-gray-500 dark:text-gray-400"><%= t(".recent_events_help") %></p>
     </div>
     <%= turbo_frame_tag "recent_events", src: recent_events_account_path(@account), loading: :lazy do %>
       <%= render "shared/loading_skeleton", lines: 4 %>
@@ -118,11 +117,11 @@
   <div class="border rule overflow-hidden">
     <div class="px-6 py-4 border-b border-gray-200 dark:border-[color:var(--color-rule-dark)] flex items-center justify-between">
       <div>
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white">Recent Interactions</h3>
-        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Replies, quotes, and mentions from others</p>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white"><%= t(".recent_interactions") %></h3>
+        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400"><%= t(".recent_interactions_help") %></p>
       </div>
       <%= link_to interactions_path(account_id: @account.id), class: "text-sm font-medium text-amber-600 dark:text-amber-400 hover:text-amber-500 dark:hover:text-amber-300 transition-colors" do %>
-        View all
+        <%= t(".view_all") %>
       <% end %>
     </div>
     <%= turbo_frame_tag "recent_interactions", src: recent_interactions_account_path(@account), loading: :lazy do %>

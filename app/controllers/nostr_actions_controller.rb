@@ -31,7 +31,7 @@ class NostrActionsController < ApplicationController
       target_event_id: action_params[:target_event_id],
       target_pubkey: action_params[:target_pubkey]
     )
-    return render json: { success: false, error: "Duplicate action" }, status: :unprocessable_entity unless existing
+    return render json: { success: false, error: t("nostr_actions.duplicate") }, status: :unprocessable_entity unless existing
 
     if existing.failed?
       existing.update!(status: :pending, error_message: nil, publish_results: nil)
@@ -55,7 +55,7 @@ class NostrActionsController < ApplicationController
     can_retry = @nostr_action.awaiting_signature? || (@nostr_action.failed? && @nostr_action.unsigned_event.present? && @nostr_action.signed_event.blank?)
 
     unless can_retry
-      render json: { success: false, error: "Action is not waiting for a retry." }, status: :unprocessable_entity
+      render json: { success: false, error: t("nostr_actions.not_retryable") }, status: :unprocessable_entity
       return
     end
 

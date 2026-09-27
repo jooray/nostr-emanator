@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<%= I18n.locale %>">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light dark">
     <meta name="theme-color" content="#f7f5f0" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
-    <meta name="description" content="Emanator schedules your Nostr posts and coordinates reposts across the accounts you run.">
-    <title>Emanator - Give every Nostr identity a head start</title>
+    <meta name="description" content="<%= t(".meta_description") %>">
+    <title><%= t(".title") %></title>
     <style>
       :root {
         color-scheme: light;
@@ -913,6 +913,44 @@
         height: 1rem;
       }
 
+      .lang-switch {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.2rem 0.75rem;
+      }
+
+      .lang-switch form {
+        display: inline;
+        margin: 0;
+      }
+
+      .lang-item,
+      .lang-active {
+        font: inherit;
+        font-size: 0.72rem;
+        letter-spacing: 0.02em;
+      }
+
+      .lang-item {
+        padding: 0;
+        border: 0;
+        background: none;
+        color: var(--faint);
+        cursor: pointer;
+      }
+
+      .lang-item:hover {
+        color: var(--ink);
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
+      }
+
+      .lang-active {
+        color: var(--ink);
+        font-weight: 750;
+      }
+
       :focus-visible {
         outline: 3px solid color-mix(in srgb, var(--amber) 72%, transparent);
         outline-offset: 3px;
@@ -1101,11 +1139,11 @@
     <% end %>
   </head>
   <body>
-    <a class="skip-link" href="#main">Skip to content</a>
+    <a class="skip-link" href="#main"><%= t(".skip_to_content") %></a>
 
     <header class="site-header shell">
-      <nav class="nav" aria-label="Main navigation">
-        <a class="brand" href="#main" aria-label="Emanator home">
+      <nav class="nav" aria-label="<%= t(".main_navigation") %>">
+        <a class="brand" href="#main" aria-label="<%= t(".home_label") %>">
           <span class="brand-mark" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="6" cy="12" r="2"></circle>
@@ -1117,7 +1155,8 @@
           <span class="brand-word">Emanator</span>
         </a>
         <div class="nav-actions">
-          <button class="theme-toggle" type="button" aria-label="Switch to dark mode" title="Toggle color theme">
+          <button class="theme-toggle" type="button" aria-label="<%= t(".switch_to_dark") %>" title="<%= t(".theme_toggle_title") %>"
+                  data-label-dark="<%= t(".switch_to_dark") %>" data-label-light="<%= t(".switch_to_light") %>">
             <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path d="M20.5 14.2A8.2 8.2 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"></path>
             </svg>
@@ -1127,7 +1166,7 @@
             </svg>
           </button>
           <a class="button button-primary" href="/auth/nostr">
-            Launch app
+            <%= t(".launch_app") %>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path d="M5 12h14M13 6l6 6-6 6"></path>
             </svg>
@@ -1139,30 +1178,30 @@
     <main id="main">
       <section class="hero shell" aria-labelledby="hero-title">
         <div class="hero-copy">
-          <div class="eyebrow">Scheduling for Nostr</div>
-          <h1 id="hero-title">Give every identity a <span class="accent-word">head start.</span></h1>
+          <div class="eyebrow"><%= t(".hero.eyebrow") %></div>
+          <h1 id="hero-title"><%= t(".hero.title_html") %></h1>
           <p>
-            A new Nostr account starts with no audience. Emanator lets the accounts you already run give it a push: write a post once, schedule when it goes out, and line up reposts from your other accounts to follow.
+            <%= t(".hero.lead") %>
           </p>
           <div class="hero-actions">
             <a class="button button-primary" href="/auth/nostr">
-              Launch app
+              <%= t(".launch_app") %>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <path d="M5 12h14M13 6l6 6-6 6"></path>
               </svg>
             </a>
-            <a class="button" href="#workflow">See how it works</a>
+            <a class="button" href="#workflow"><%= t(".hero.see_how") %></a>
           </div>
           <div class="key-note">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path>
               <path d="m9 12 2 2 4-4"></path>
             </svg>
-            Your keys stay with your Nostr signer.
+            <%= t(".hero.key_note") %>
           </div>
         </div>
 
-        <div class="product-stage" aria-label="Emanator running on desktop and mobile">
+        <div class="product-stage" aria-label="<%= t(".hero.stage_label") %>">
           <div class="orbit" aria-hidden="true">
             <i class="relay-dot"></i>
             <i class="relay-dot"></i>
@@ -1174,7 +1213,7 @@
               <i></i><i></i><i></i>
               <span class="browser-url">emanator.cypherpunk.today</span>
             </div>
-            <img src="/landing/shots/dashboard-desktop.png" width="1261" height="836" alt="Emanator dashboard showing account, scheduled, published and total post counts, with a list of upcoming posts across managed Nostr accounts">
+            <img src="/landing/shots/dashboard-desktop.png" width="1261" height="836" alt="<%= t(".hero.dashboard_alt") %>">
           </div>
 
           <div class="device hero-phone" aria-hidden="true">
@@ -1184,85 +1223,85 @@
         </div>
       </section>
 
-      <section class="proof-strip shell" aria-label="Product principles">
-        <div class="proof-item">Built for accounts that need reach, not another social dashboard.</div>
-        <div class="proof-item"><span class="proof-number">01</span><p>One calendar for every account you manage.</p></div>
-        <div class="proof-item"><span class="proof-number">NIP-46</span><p>Remote signing through Amber. Emanator never stores your private key.</p></div>
-        <div class="proof-item"><span class="proof-number">24/7</span><p>Posts and reposts go out on time, even when your devices are offline.</p></div>
+      <section class="proof-strip shell" aria-label="<%= t(".proof.label") %>">
+        <div class="proof-item"><%= t(".proof.intro") %></div>
+        <div class="proof-item"><span class="proof-number">01</span><p><%= t(".proof.calendar") %></p></div>
+        <div class="proof-item"><span class="proof-number">NIP-46</span><p><%= t(".proof.signing") %></p></div>
+        <div class="proof-item"><span class="proof-number">24/7</span><p><%= t(".proof.always_on") %></p></div>
       </section>
 
       <section class="section shell" id="workflow" aria-labelledby="workflow-title">
         <div class="section-heading">
-          <h2 id="workflow-title">From a quiet identity to a coordinated launch.</h2>
-          <p>Use the accounts you already run to back each other up, so you are not posting to each one by hand.</p>
+          <h2 id="workflow-title"><%= t(".workflow.title") %></h2>
+          <p><%= t(".workflow.lead") %></p>
         </div>
         <div class="steps">
           <article class="step">
-            <div class="step-number">01 / Connect</div>
+            <div class="step-number"><%= t(".workflow.connect_label") %></div>
             <div class="step-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"></path></svg>
             </div>
-            <h3>Pair your accounts</h3>
-            <p>Connect the accounts you manage through Amber, using NIP-46 remote signing.</p>
+            <h3><%= t(".workflow.connect_title") %></h3>
+            <p><%= t(".workflow.connect_body") %></p>
           </article>
           <article class="step">
-            <div class="step-number">02 / Compose</div>
+            <div class="step-number"><%= t(".workflow.compose_label") %></div>
             <div class="step-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"></path></svg>
             </div>
-            <h3>Write the post</h3>
-            <p>Draft the note and attach media. Each account keeps its own style guide, so the AI assist can help without making everything sound the same.</p>
+            <h3><%= t(".workflow.compose_title") %></h3>
+            <p><%= t(".workflow.compose_body") %></p>
           </article>
           <article class="step">
-            <div class="step-number">03 / Emanate</div>
+            <div class="step-number"><%= t(".workflow.emanate_label") %></div>
             <div class="step-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="12" r="2"></circle><circle cx="19" cy="5" r="2"></circle><circle cx="19" cy="19" r="2"></circle><path d="m7 11 10-5M7 13l10 5"></path></svg>
             </div>
-            <h3>Schedule and sign</h3>
-            <p>Pick when it publishes, set random delays for the reposts, and sign once. Emanator sends everything at the right time.</p>
+            <h3><%= t(".workflow.emanate_title") %></h3>
+            <p><%= t(".workflow.emanate_body") %></p>
           </article>
         </div>
       </section>
 
       <section class="section shell" aria-labelledby="control-title">
         <div class="section-heading">
-          <h2 id="control-title">Automation with a clear chain of custody.</h2>
-          <p>Built on how Nostr already works: your identity is portable, the relays are open, and you hold the signing keys.</p>
+          <h2 id="control-title"><%= t(".control.title") %></h2>
+          <p><%= t(".control.lead") %></p>
         </div>
         <div class="feature-grid">
           <article class="feature-card wide">
-            <span class="feature-tag">Publishing control</span>
-            <h3>See every post and repost before it goes out.</h3>
-            <p>One calendar shows what each account has queued across the month, so nothing publishes that you have not looked at.</p>
+            <span class="feature-tag"><%= t(".control.publishing_tag") %></span>
+            <h3><%= t(".control.publishing_title") %></h3>
+            <p><%= t(".control.publishing_body") %></p>
             <div class="feature-shot browser-frame">
               <div class="browser-bar" aria-hidden="true">
                 <i></i><i></i><i></i>
                 <span class="browser-url">emanator.cypherpunk.today/calendar</span>
               </div>
-              <img src="/landing/shots/calendar-desktop.png" width="1276" height="829" alt="Emanator calendar for September 2026, with scheduled posts and reposts laid out day by day across every managed account">
+              <img src="/landing/shots/calendar-desktop.png" width="1276" height="829" alt="<%= t(".control.calendar_alt") %>">
             </div>
           </article>
           <article class="feature-card">
-            <span class="feature-tag">Identity first</span>
-            <h3>Your signer holds the keys.</h3>
-            <p>Emanator asks your signer to approve each event over NIP-46. Your Nostr private key stays in Amber, where it belongs.</p>
+            <span class="feature-tag"><%= t(".control.identity_tag") %></span>
+            <h3><%= t(".control.identity_title") %></h3>
+            <p><%= t(".control.identity_body") %></p>
             <div class="privacy-line">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path><path d="m9 12 2 2 4-4"></path></svg>
-              No nsec custody
+              <%= t(".control.no_custody") %>
             </div>
           </article>
           <article class="feature-card">
-            <span class="feature-tag">Account-aware AI</span>
-            <h3>Keep each account sounding like itself.</h3>
-            <p>Give every account its own style guide. The AI drafts and edits in that voice, instead of flattening them all into one generic tone.</p>
+            <span class="feature-tag"><%= t(".control.ai_tag") %></span>
+            <h3><%= t(".control.ai_title") %></h3>
+            <p><%= t(".control.ai_body") %></p>
           </article>
         </div>
       </section>
 
       <section class="section shell" id="tour" aria-labelledby="tour-title">
         <div class="section-heading">
-          <h2 id="tour-title">The whole workflow, on the web and your phone.</h2>
-          <p>Draft, schedule, and keep an eye on replies from wherever you are. The interface follows your system light or dark theme.</p>
+          <h2 id="tour-title"><%= t(".tour.title") %></h2>
+          <p><%= t(".tour.lead") %></p>
         </div>
         <div class="tour-grid">
           <figure class="tour-card">
@@ -1271,11 +1310,11 @@
                 <i></i><i></i><i></i>
                 <span class="browser-url">emanator.cypherpunk.today/interactions</span>
               </div>
-              <img src="/landing/shots/interactions-desktop.png" width="1258" height="830" alt="Emanator interactions view showing mentions and replies to a managed account, with follow, mute and reply actions">
+              <img src="/landing/shots/interactions-desktop.png" width="1258" height="830" alt="<%= t(".tour.interactions_alt") %>">
             </div>
             <figcaption>
-              <strong>One inbox for replies and mentions</strong>
-              Read the mentions and replies for each account you run, then reply without leaving the app.
+              <strong><%= t(".tour.interactions_title") %></strong>
+              <%= t(".tour.interactions_body") %>
             </figcaption>
           </figure>
           <figure class="tour-card">
@@ -1284,59 +1323,60 @@
                 <i></i><i></i><i></i>
                 <span class="browser-url">emanator.cypherpunk.today/calendar</span>
               </div>
-              <img src="/landing/shots/calendar-desktop.png" width="1276" height="829" alt="Emanator month calendar with scheduled posts marked in color and reposts shown in italics">
+              <img src="/landing/shots/calendar-desktop.png" width="1276" height="829" alt="<%= t(".tour.calendar_alt") %>">
             </div>
             <figcaption>
-              <strong>A month you can plan against</strong>
-              Scheduled posts and their reposts sit side by side, so a launch week is easy to read at a glance.
+              <strong><%= t(".tour.calendar_title") %></strong>
+              <%= t(".tour.calendar_body") %>
             </figcaption>
           </figure>
         </div>
-        <div class="tour-phones" aria-label="Emanator on mobile">
+        <div class="tour-phones" aria-label="<%= t(".tour.mobile_label") %>">
           <figure>
             <div class="device">
-              <img class="shot-light" src="/landing/shots/newpost-mobile-light.png" width="487" height="773" alt="Composing a new post on Emanator mobile, with an AI generation prompt below the editor">
-              <img class="shot-dark" src="/landing/shots/newpost-mobile-dark.png" width="487" height="773" alt="Composing a new post on Emanator mobile in dark theme">
+              <img class="shot-light" src="/landing/shots/newpost-mobile-light.png" width="487" height="773" alt="<%= t(".tour.compose_light_alt") %>">
+              <img class="shot-dark" src="/landing/shots/newpost-mobile-dark.png" width="487" height="773" alt="<%= t(".tour.compose_dark_alt") %>">
             </div>
-            <figcaption>Compose</figcaption>
+            <figcaption><%= t(".tour.compose_caption") %></figcaption>
           </figure>
           <figure>
             <div class="device">
-              <img class="shot-light" src="/landing/shots/schedule-mobile-light.png" width="476" height="811" alt="Picking a publish date and time on Emanator mobile, with accounts to repost from listed below">
-              <img class="shot-dark" src="/landing/shots/schedule-mobile-dark.png" width="476" height="811" alt="Picking a publish date and time on Emanator mobile in dark theme">
+              <img class="shot-light" src="/landing/shots/schedule-mobile-light.png" width="476" height="811" alt="<%= t(".tour.schedule_light_alt") %>">
+              <img class="shot-dark" src="/landing/shots/schedule-mobile-dark.png" width="476" height="811" alt="<%= t(".tour.schedule_dark_alt") %>">
             </div>
-            <figcaption>Schedule</figcaption>
+            <figcaption><%= t(".tour.schedule_caption") %></figcaption>
           </figure>
           <figure>
             <div class="device">
-              <img class="shot-light" src="/landing/shots/calendar-mobile-light.png" width="485" height="797" alt="Emanator calendar on mobile showing the month with scheduled posts">
-              <img class="shot-dark" src="/landing/shots/calendar-mobile-dark.png" width="485" height="797" alt="Emanator calendar on mobile in dark theme">
+              <img class="shot-light" src="/landing/shots/calendar-mobile-light.png" width="485" height="797" alt="<%= t(".tour.review_light_alt") %>">
+              <img class="shot-dark" src="/landing/shots/calendar-mobile-dark.png" width="485" height="797" alt="<%= t(".tour.review_dark_alt") %>">
             </div>
-            <figcaption>Review</figcaption>
+            <figcaption><%= t(".tour.review_caption") %></figcaption>
           </figure>
         </div>
       </section>
 
       <section class="cta shell" aria-labelledby="cta-title">
-        <h2 id="cta-title">Let the right accounts carry the signal.</h2>
-        <p>Run your next Nostr launch from one calendar. Every account stays independently yours.</p>
+        <h2 id="cta-title"><%= t(".cta.title") %></h2>
+        <p><%= t(".cta.body") %></p>
         <a class="button button-primary" href="/auth/nostr">
-          Launch Emanator
+          <%= t(".cta.button") %>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
         </a>
       </section>
     </main>
 
     <footer class="shell">
-      <a class="brand" href="#main" aria-label="Back to top">
+      <a class="brand" href="#main" aria-label="<%= t(".footer.back_to_top") %>">
         <span class="brand-mark" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="12" r="2"></circle><circle cx="18" cy="6" r="2"></circle><circle cx="18" cy="18" r="2"></circle><path d="m8 11 8-4M8 13l8 4"></path></svg>
         </span>
         Emanator
       </a>
       <div class="footer-links">
-        <span>Post scheduling for the open social web.</span>
-        <a href="https://github.com/jooray/nostr-emanator" aria-label="View source on GitHub">
+        <span><%= t(".footer.tagline") %></span>
+        <%= render "shared/locale_switcher", css: "lang-switch", item_css: "lang-item", active_css: "lang-active" %>
+        <a href="https://github.com/jooray/nostr-emanator" aria-label="<%= t(".footer.github_label") %>">
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.73.5.98 5.24.98 11.52c0 5.02 3.25 9.27 7.77 10.77.57.1.78-.25.78-.55 0-.27-.01-1.16-.02-2.11-3.16.69-3.83-1.34-3.83-1.34-.52-1.31-1.26-1.66-1.26-1.66-1.03-.7.08-.69.08-.69 1.14.08 1.74 1.17 1.74 1.17 1.01 1.73 2.65 1.23 3.3.94.1-.73.4-1.23.72-1.51-2.52-.29-5.17-1.26-5.17-5.62 0-1.24.44-2.26 1.17-3.05-.12-.29-.51-1.45.11-3.02 0 0 .96-.31 3.14 1.16a10.9 10.9 0 0 1 5.72 0c2.18-1.47 3.14-1.16 3.14-1.16.62 1.57.23 2.73.11 3.02.73.79 1.17 1.81 1.17 3.05 0 4.37-2.66 5.32-5.19 5.6.41.36.77 1.06.77 2.15 0 1.55-.01 2.8-.01 3.18 0 .3.2.66.79.55 4.52-1.5 7.76-5.75 7.76-10.77C23.02 5.24 18.27.5 12 .5Z"></path></svg>
           GitHub
         </a>
@@ -1354,7 +1394,7 @@
         }
 
         function updateLabel() {
-          button.setAttribute("aria-label", "Switch to " + (currentTheme() === "dark" ? "light" : "dark") + " mode")
+          button.setAttribute("aria-label", currentTheme() === "dark" ? button.dataset.labelLight : button.dataset.labelDark)
         }
 
         button.addEventListener("click", function () {

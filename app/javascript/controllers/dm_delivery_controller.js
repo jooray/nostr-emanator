@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { t } from "../lib/i18n"
 
 // Resolves the composer's "checking where this person receives messages" state
 // on its own, so the user never has to reload to find out.
@@ -56,7 +57,6 @@ export default class extends Controller {
     clearInterval(this.timer)
     if (!this.hasStatusTarget) return
 
-    this.statusTarget.textContent =
-      "Could not work out where this person receives private messages. Reload to try again."
+    this.statusTarget.textContent = t("js.dm_delivery.gave_up")
   }
 }

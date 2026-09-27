@@ -1,24 +1,24 @@
-<% content_for :title, "Calendar" %>
+<% content_for :title, t(".page_title") %>
 
 <div class="mx-auto max-w-6xl">
   <header class="mb-5 flex flex-wrap items-end justify-between gap-4 border-b rule pb-4">
     <div>
       <h1 class="condensed text-[33px] font-bold uppercase leading-none tracking-[0.06em]">
-        <%= @month.strftime("%B %Y") %>
+        <%= l(@month, format: t(".month_format")) %>
       </h1>
-      <p class="eng mt-2.5"><%= pluralize(@posts.size, "post") %> &middot; <%= pluralize(@reposts.size, "repost") %></p>
+      <p class="eng mt-2.5"><%= t(".post_count", count: @posts.size) %> &middot; <%= t(".repost_count", count: @reposts.size) %></p>
     </div>
 
     <div class="flex items-center gap-1">
-      <%= link_to calendar_path(month: @month.prev_month.strftime("%Y-%m-%d")), "aria-label": "Previous month",
+      <%= link_to calendar_path(month: @month.prev_month.strftime("%Y-%m-%d")), "aria-label": t(".previous_month"),
             class: "border border-gray-300 p-2 text-gray-600 transition-colors hover:border-amber-500 hover:text-amber-600 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400 dark:hover:text-amber-400" do %>
         <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
         </svg>
       <% end %>
-      <%= link_to "Today", calendar_path,
+      <%= link_to t(".today"), calendar_path,
             class: "condensed border border-gray-300 px-3 py-2 text-[13px] font-semibold uppercase tracking-[0.14em] text-gray-600 transition-colors hover:border-amber-500 hover:text-amber-600 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400 dark:hover:text-amber-400" %>
-      <%= link_to calendar_path(month: @month.next_month.strftime("%Y-%m-%d")), "aria-label": "Next month",
+      <%= link_to calendar_path(month: @month.next_month.strftime("%Y-%m-%d")), "aria-label": t(".next_month"),
             class: "border border-gray-300 p-2 text-gray-600 transition-colors hover:border-amber-500 hover:text-amber-600 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400 dark:hover:text-amber-400" do %>
         <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
@@ -32,7 +32,7 @@
       meant nothing unless you already knew what it meant. %>
   <% if @legend.any? %>
     <div class="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2">
-      <span class="eng">Who</span>
+      <span class="eng"><%= t(".who") %></span>
       <% @legend.each do |account| %>
         <%= link_to posts_path(account: account.id),
               class: "flex items-center gap-2 no-underline transition-colors hover:text-amber-600 dark:hover:text-amber-400" do %>
@@ -45,7 +45,7 @@
 
   <div class="border rule">
     <div class="grid grid-cols-7 border-b rule">
-      <% %w[Mon Tue Wed Thu Fri Sat Sun].each do |day| %>
+      <% t("date.abbr_day_names").rotate(1).each do |day| %>
         <div class="eng px-2 py-2.5 text-center"><%= day %></div>
       <% end %>
     </div>
@@ -60,19 +60,19 @@
             <span class="font-mono text-[14px] font-bold tabular <%= today ? "text-amber-600 dark:text-amber-400" : "text-gray-500 dark:text-gray-400" %>">
               <%= date.day %>
             </span>
-            <% if today %><span class="eng text-amber-600 dark:text-amber-400">Today</span><% end %>
+            <% if today %><span class="eng text-amber-600 dark:text-amber-400"><%= t(".today") %></span><% end %>
           </div>
 
           <% events.first(5).each do |event| %>
             <% item = event[:item] %>
             <% repost = event[:type] == :repost %>
             <%= link_to post_path(repost ? item.post : item),
-                  title: "#{item.account.display_name_or_npub} — #{repost ? 'repost' : item.content.to_s.truncate(80)}",
+                  title: t(".event_title", name: item.account.display_name_or_npub, what: repost ? t(".repost") : item.content.to_s.truncate(80)),
                   class: "mb-1 flex items-start gap-1.5 no-underline transition-opacity hover:opacity-70" do %>
               <span class="mt-[3px] inline-block h-2.5 w-[3px] flex-none" style="background: <%= item.account.ink %>"></span>
               <span class="min-w-0 flex-1 truncate text-[13.5px] leading-tight text-gray-700 dark:text-gray-300">
                 <span class="font-mono font-bold tabular"><%= l(item.scheduled_at, format: "%H:%M") %></span>
-                <%= repost ? tag.span("repost", class: "eng") : item.content.to_s.truncate(42) %>
+                <%= repost ? tag.span(t(".repost"), class: "eng") : item.content.to_s.truncate(42) %>
               </span>
             <% end %>
           <% end %>
@@ -80,7 +80,7 @@
           <% if events.length > 5 %>
             <%# posts#index has no date filter, so this cannot link to the day —
                 but it can link to the identity whose day is crowded. %>
-            <span class="eng block px-0.5 text-gray-500 dark:text-gray-400">+<%= events.length - 5 %> more</span>
+            <span class="eng block px-0.5 text-gray-500 dark:text-gray-400"><%= t(".more", count: events.length - 5) %></span>
           <% end %>
         </div>
       <% end %>

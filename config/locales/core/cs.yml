@@ -1,0 +1,286 @@
+cs:
+  # Formats used across the app with l(time, format: :app_*). Translators may
+  # reorder day and month here; the English values match the old strftime calls.
+  time:
+    formats:
+      app_time: "%H:%M"
+      app_date: "%-d. %-m. %Y"
+      app_short: "%-d. %-m. %H:%M"
+      app_datetime: "%-d. %-m. %Y %H:%M"
+      app_day_month: "%-d. %-m."
+
+  # Post / repost / action status names (ApplicationHelper#status_label).
+  status_labels:
+    draft: Koncept
+    pending: Čeká
+    pending_signature: Čeká na podpis
+    awaiting_signature: Čeká na schválení v podepisovači
+    processing: Zpracovává se
+    scheduled: Naplánováno
+    publishing: Zveřejňuje se
+    published: Zveřejněno
+    failed: Selhalo
+
+  # ConsoleHelper: lamps, poll strips, delivery sentences, status slugs.
+  console:
+    poll_strip:
+      accepted: přijato
+    delivery:
+      all:
+        one: Dosáhlo to na jediný relay, který měl.
+        few: Dosáhlo to na všechny %{count} relaye.
+        other: Dosáhlo to na všech %{count} relayů.
+      partial:
+        one: "Dosaženo %{ok} z %{count} relaye, což je normální zveřejnění."
+        few: "Dosaženo %{ok} z %{count} relayů, což je normální zveřejnění."
+        other: "Dosaženo %{ok} z %{count} relayů, což je normální zveřejnění."
+      thin:
+        one: "Dosaženo jen 1 z %{count} relaye, prakticky neviditelné."
+        few: "Dosaženo jen 1 z %{count} relayů, prakticky neviditelné."
+        other: "Dosaženo jen 1 z %{count} relayů, prakticky neviditelné."
+      none:
+        one: Nedosáhlo to na jediný relay, na který to bylo posláno.
+        few: "Nedosáhlo to na žádný z %{count} relayů, na které to bylo posláno."
+        other: "Nedosáhlo to na žádný z %{count} relayů, na které to bylo posláno."
+      not_published: Zatím nezveřejněno.
+    slug:
+      approve_on_phone: Schval v telefonu
+      barely_out: "Sotva venku %{tally}"
+      failed: Selhalo
+      sending: Odesílá se
+      held: Drženo
+
+  application:
+    sign_in_required: Pro pokračování se přihlas
+
+  activerecord:
+    attributes:
+      user:
+        custom_relays: Vlastní relaye
+    errors:
+      models:
+        user:
+          attributes:
+            custom_relays:
+              unsafe_relay: "%{relay} nelze použít: relaye musí být adresy wss:// na veřejných hostitelích"
+
+  layouts:
+    application:
+      skip_to_content: Přeskočit na obsah
+    navigation:
+      theme: Motiv
+      station_status: Stav stanice
+      readings:
+        identities:
+          one: "%{count} identita"
+          few: "%{count} identity"
+          other: "%{count} identit"
+        waiting:
+          one: "%{count} čeká na podpis"
+          few: "%{count} čekají na podpis"
+          other: "%{count} čeká na podpis"
+        short:
+          one: "%{count} sotva vyšlo"
+          few: "%{count} sotva vyšly"
+          other: "%{count} sotva vyšlo"
+        failed:
+          one: "%{count} nikdy nevyšel"
+          few: "%{count} nikdy nevyšly"
+          other: "%{count} nikdy nevyšlo"
+      signed_in: Přihlášen
+      sign_out_confirm: Odhlásit se z Emanatoru?
+      out: Pryč
+      sign_out: Odhlásit se
+      open_navigation: Otevřít navigaci
+      close_navigation: Zavřít navigaci
+      main: Hlavní
+    nav_items:
+      dashboard: Přehled
+      new_post: Nový příspěvek
+      accounts: Účty
+      posts: Příspěvky
+      interactions: Interakce
+      calendar: Kalendář
+    messages_nav_item:
+      messages: Zprávy
+      unread:
+        one: "%{count} nepřečtená zpráva"
+        few: "%{count} nepřečtené zprávy"
+        other: "%{count} nepřečtených zpráv"
+      requests: Máš nepřečtené žádosti o zprávy
+
+  pwa:
+    manifest:
+      description: Plánuj a zveřejňuj příspěvky na Nostru
+
+  sessions:
+    new:
+      tagline: Přihlas se svou identitou na Nostru
+      extension_heading: Rozšíření prohlížeče
+      extension_button: Pokračovat s rozšířením
+      signer_heading: Podepisovací aplikace
+      open_in_signer: Otevřít v podepisovací aplikaci
+      open_in_signer_hint: Amber, Amethyst nebo jiný podepisovač na tomto zařízení
+      scan_hint: Naskenuj podepisovačem na jiném zařízení
+      copy: Kopírovat
+      bunker_heading: Vlož bunker odkaz
+      bunker_help: Vytvoř spojení ve svém podepisovači a vlož odkaz, který ti dá.
+      bunker_label: Bunker odkaz
+      connect: Připojit
+      waiting: Čeká se na tvůj podepisovač…
+      stale: Nedorazilo schválení? Nech tento panel otevřený, dokud schvaluješ, nebo začni znovu s novým kódem.
+      new_code: Získat nový kód
+      auth_challenge: Tohle musíš schválit v okně svého podepisovače.
+      open_approval: Otevřít stránku schválení
+      expired: Tento kód vypršel kvůli tvé bezpečnosti.
+      no_account: Účet nepotřebuješ. Tvá identita je tvůj klíč na Nostru.
+      new_to_nostr: Nový na Nostru? Nejdřív si pořiď podepisovač.
+      desktop_label: "Na počítači:"
+      desktop_html: nainstaluj rozšíření prohlížeče podle NIP-07, např. %{alby} nebo %{nos2x}.
+      mobile_label: "V mobilu:"
+      mobile_html: 'nainstaluj %{amber} (Android), pak použij tlačítko „Otevřít v podepisovací aplikaci“ výše. Spojení předá rovnou Amberu na stejném telefonu.'
+      explainer: "Kterýkoli z nich vygeneruje klíč pro Nostr a umožní ti schvalovat žádosti o přihlášení a zveřejnění: Emanator nikdy nevidí tvůj soukromý klíč."
+    rate_limited:
+      try_again: Zkusit znovu
+    errors:
+      too_many_title: Příliš mnoho pokusů
+      too_many_message: Příliš mnoho pokusů o ověření. Zkus to za chvíli znovu.
+      capacity_title: Dočasně vytíženo
+      capacity_message: Ověřování je dočasně vytížené. Zkus to za chvíli znovu.
+    bunker:
+      invalid_link: "To nevypadá jako použitelný bunker odkaz. Měl by začínat bunker:// a obsahovat aspoň jeden relay."
+      failed: Spojení se nepodařilo zahájit. Zkus to znovu.
+    refresh_profile:
+      refreshing: Tvůj profil se na pozadí obnovuje z relayů, načti stránku znovu za pár vteřin, aby se projevily změny.
+      not_signed_in: Nejsi přihlášen.
+    callback:
+      no_pubkey: "Ověření selhalo: Nebyl poskytnut veřejný klíč"
+      invalid_pubkey: "Ověření selhalo: Neplatný formát veřejného klíče"
+      bad_signature: "Ověření selhalo: Ověření podpisu selhalo"
+      welcome: Vítej, %{name}!
+    destroy:
+      logged_out: Odhlášen
+
+  shared:
+    locale_switcher:
+      label: Jazyk
+    qr_phishing_warning:
+      login_html: Skenuj jen QR kód zobrazený na <strong>tvé vlastní obrazovce</strong>. Naskenováním kódu, který ti někdo poslal nebo ukázal, se přihlásí do Emanatoru jako ty.
+      pairing_html: Skenuj jen QR kód zobrazený na <strong>tvé vlastní obrazovce</strong>. Naskenováním kódu, který ti někdo poslal nebo ukázal, spáruješ svůj klíč na Nostru s cizím účtem v Emanatoru.
+    forme_row:
+      draft: Koncept
+      sent: Odesláno
+      today: Dnes
+      tomorrow: Zítra
+      repost_of_note: Repost tohoto příspěvku
+      reposts:
+        one: "%{count} repost"
+        few: "%{count} reposty"
+        other: "%{count} repostů"
+      never_reached: Nikdy to nedosáhlo žádného relaye. Nic nezveřejněno.
+      waiting_for_approval: Čeká na schválení
+      open: Otevřít
+      rebroadcast: Znovu odeslat
+      retry: Zkusit znovu
+
+  users:
+    edit:
+      title: Nastavení
+      profile:
+        title: Profil
+        picture_alt: Profil
+        fallback_name: Uživatel Nostru
+        refresh: Obnovit z relayů
+      language:
+        title: Jazyk
+        help: Jazyk rozhraní Emanatoru. Tvé příspěvky to neovlivní.
+        save: Uložit
+      event_viewer:
+        title: Prohlížeč událostí
+        help: Vyber, který klient Nostru se otevře, když klikneš na odkaz na profil nebo událost.
+        save: Uložit
+      custom_relays:
+        title: Vlastní relaye
+        help: Tyto relaye dostanou každý příspěvek, který zveřejníš, navíc k zápisovým relayům NIP-65 každého účtu.
+        label: Adresy URL relayů (jedna na řádek)
+        save: Uložit relaye
+    update:
+      language_updated: Jazyk aktualizován.
+      event_viewer_updated: Prohlížeč událostí aktualizován.
+      custom_relays_updated: Vlastní relaye aktualizovány.
+      settings_updated: Nastavení aktualizováno.
+    api_tokens:
+      title: API tokeny (MCP)
+      intro_html: "Připoj AI agenta k Emanatoru přes %{mcp_link}. Nasměruj svého MCP klienta na %{endpoint} a pošli token jako %{header}."
+      mcp_link: Model Context Protocol
+      warning_html: '<strong>Token může zveřejňovat jako ty.</strong> Čte tvé účty a příspěvky, vytváří koncepty a <strong>plánuje příspěvky, které se pak automaticky podepíší a zveřejní pod kteroukoli z tvých spárovaných identit, bez dalšího kroku schválení</strong>, protože tvůj podepisovač schvaluje kind-1 poznámky bez ptaní. Zacházej s tokenem jako s klíčem k publikování: dej ho jen agentovi, kterému bys dovolil mluvit za tyto účty, a jakmile mu přestaneš věřit, tady ho hned odvolej.'
+      created_html: "Token <strong>%{name}</strong> vytvořen. Zkopíruj si ho teď, znovu se už nezobrazí."
+      copy: Kopírovat
+      name_label: Název tokenu
+      name_placeholder: např. content-agent
+      expires_label: Platnost do
+      expiry:
+        days_30: 30 dní
+        days_90: 90 dní
+        days_180: 180 dní
+        year: 1 rok
+        never: Nikdy
+      generate: Vygenerovat token
+      columns:
+        name: Název
+        created: Vytvořen
+        expires: Platnost do
+        last_used: Naposledy použit
+      never: Nikdy
+      expired_on: Vypršel %{date}
+      ago: "před %{time}"
+      revoke: Odvolat
+      revoke_confirm: "Odvolat tento token? Cokoli, co ho používá, ztratí přístup."
+      empty: Zatím žádné tokeny.
+
+  api_tokens:
+    create:
+      name_required: Je potřeba název tokenu.
+    destroy:
+      revoked: Token odvolán.
+
+  # Kaminari pagination (same English as the gem's own defaults).
+  views:
+    pagination:
+      label: stránkování
+      first: "&laquo; První"
+      last: "Poslední &raquo;"
+      previous: "&lsaquo; Předchozí"
+      next: "Další &rsaquo;"
+      truncate: "&hellip;"
+
+  js:
+    nostr_login:
+      paste_first: Nejdřív vlož bunker odkaz ze svého podepisovače.
+      connecting: Připojování…
+      unusable_link: Tento bunker odkaz nelze použít.
+      waiting_approve: Čeká se, až tvůj podepisovač schválí…
+      unreachable: Server nedostupný. Zkontroluj připojení a zkus to znovu.
+      no_extension: Žádné rozšíření NIP-07 nenalezeno. Nainstaluj nos2x, Alby nebo jiné rozšíření pro Nostr.
+      extension_connecting: Připojování...
+      no_pubkey: Nepodařilo se získat veřejný klíč z rozšíření
+      extension_error: "Chyba rozšíření: %{message}"
+      unknown_error: Neznámá chyba
+      lost_connection: Spojení se serverem se přerušilo. Načti stránku znovu.
+      sign_in_extension: Přihlásit se přes rozšíření prohlížeče
+    theme:
+      names:
+        system: Podle systému
+        light: Světlý
+        dark: Tmavý
+      next_names:
+        system: podle systému
+        light: světlý
+        dark: tmavý
+      label: "Motiv: %{current}. Přepnout na %{next}."
+    clipboard:
+      copied: Zkopírováno!
+      copy_failed: Kopírování selhalo
+    expandable:
+      show_more: Zobrazit více
+      show_less: Zobrazit méně

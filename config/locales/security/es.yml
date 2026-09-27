@@ -1,0 +1,10 @@
+es:
+  security:
+    url_guard:
+      non_public: "%{host} resuelve a una dirección no pública (%{address}) y no se puede usar"
+      blank: La URL está vacía
+      scheme: "La URL debe usar %{schemes}"
+      no_host: La URL debe incluir un host
+      credentials: La URL no debe contener credenciales
+      invalid: La URL no es válida
+      unresolved: "%{host} no se pudo resolver"

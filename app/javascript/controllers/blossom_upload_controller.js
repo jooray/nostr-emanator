@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { t } from "../lib/i18n"
 
 // Uploads dropped/selected/pasted files to the account's Blossom server and
 // inserts the returned URL at the cursor in the post textarea.
@@ -105,7 +106,7 @@ export default class extends Controller {
 
   async uploadOne(file) {
     const key = this.nextKey++
-    this.track(key, file.name, "Uploading…")
+    this.track(key, file.name, t("js.blossom_upload.uploading"))
 
     try {
       const formData = new FormData()
@@ -118,7 +119,7 @@ export default class extends Controller {
       })
 
       const data = await response.json().catch(() => ({}))
-      if (!response.ok) throw new Error(data.error || `Upload failed (${response.status})`)
+      if (!response.ok) throw new Error(data.error || t("js.blossom_upload.failed_status", { status: response.status }))
 
       const url = await this.pollUntilDone(key, file.name, data.status_url || `/blossom_uploads/${data.id}`)
       this.insertAtCursor(url)
@@ -126,7 +127,7 @@ export default class extends Controller {
       return { name: file.name }
     } catch (error) {
       this.untrack(key)
-      return { name: file.name, error: error.message || "Upload failed" }
+      return { name: file.name, error: error.message || t("js.blossom_upload.failed") }
     }
   }
 
@@ -137,16 +138,16 @@ export default class extends Controller {
       await this.sleep(this.POLL_INTERVAL)
 
       const response = await fetch(statusUrl, { headers: { "Accept": "application/json" } })
-      if (!response.ok) throw new Error(`Could not read upload status (${response.status})`)
+      if (!response.ok) throw new Error(t("js.blossom_upload.status_unreadable", { status: response.status }))
       const data = await response.json()
 
       if (data.status === "completed") return data.url
-      if (data.status === "failed") throw new Error(data.error || "Upload failed")
+      if (data.status === "failed") throw new Error(data.error || t("js.blossom_upload.failed"))
 
-      this.track(key, name, data.step || "Uploading…")
+      this.track(key, name, data.step || t("js.blossom_upload.uploading"))
     }
 
-    throw new Error("Upload timed out")
+    throw new Error(t("js.blossom_upload.timed_out"))
   }
 
   sleep(ms) {
@@ -197,7 +198,7 @@ export default class extends Controller {
         if (!el.dataset.blossomOriginalLabel) {
           el.dataset.blossomOriginalLabel = el.tagName === "INPUT" ? el.value : el.textContent
         }
-        const label = "Waiting for upload…"
+        const label = t("js.blossom_upload.waiting")
         if (el.tagName === "INPUT") el.value = label
         else el.textContent = label
       } else if (el.dataset.blossomOriginalLabel) {

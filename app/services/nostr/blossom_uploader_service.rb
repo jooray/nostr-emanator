@@ -37,10 +37,10 @@ module Nostr
     # in memory (M5).
     # Returns the public Blossom URL for the uploaded blob.
     def upload(io:, filename:, content_type:)
-      raise UploadError, "Account has no paired signer" unless @account.has_signer?
+      raise UploadError, I18n.t("blossom_uploads.errors.account_no_signer") unless @account.has_signer?
 
       size, sha = digest_stream(io)
-      raise UploadError, "Empty file" if size.zero?
+      raise UploadError, I18n.t("blossom_uploads.errors.empty_file") if size.zero?
 
       server = safe_server
       content_type = content_type.presence || "application/octet-stream"
@@ -62,7 +62,7 @@ module Nostr
           # Cache per-server so future uploads skip the wasted /media attempt.
           Rails.logger.info("Blossom: /media unavailable on #{server} (#{e.message}); falling back to /upload")
           @account.mark_media_unsupported!
-          report(:fallback, "Media endpoint unavailable — retrying with the standard endpoint")
+          report(:fallback, I18n.t("blossom_uploads.steps.media_fallback"))
         end
       end
 
@@ -128,7 +128,7 @@ module Nostr
     def put_blob(url, verb:, io:, size:, sha:, content_type:, attempt: nil, attempts: nil)
       auth = build_auth_header(verb: verb, sha: sha, attempt: attempt, attempts: attempts)
 
-      report(:uploading, "Uploading to the media server…")
+      report(:uploading, I18n.t("blossom_uploads.steps.uploading"))
       io.rewind if io.respond_to?(:rewind)
 
       client = HTTPX.with(
@@ -142,20 +142,20 @@ module Nostr
       response = client.put(url, body: io)
 
       if response.is_a?(HTTPX::ErrorResponse)
-        raise UploadError, "Could not reach Blossom server: #{response.error&.message}"
+        raise UploadError, I18n.t("blossom_uploads.errors.unreachable", error: response.error&.message)
       end
 
       unless [ 200, 201 ].include?(response.status)
-        raise UploadError, "Blossom upload failed (HTTP #{response.status}): #{failure_reason(response)}"
+        raise UploadError, I18n.t("blossom_uploads.errors.http_failed", status: response.status, reason: failure_reason(response))
       end
 
       descriptor = JSON.parse(response.body.to_s)
       blob_url = descriptor["url"]
-      raise UploadError, "Blossom response missing url" if blob_url.blank?
+      raise UploadError, I18n.t("blossom_uploads.errors.missing_url") if blob_url.blank?
 
       blob_url
     rescue JSON::ParserError => e
-      raise UploadError, "Invalid Blossom response: #{e.message}"
+      raise UploadError, I18n.t("blossom_uploads.errors.invalid_response", error: e.message)
     end
 
     # H1: the media server is user-controlled, so re-check it here — the account
@@ -166,7 +166,7 @@ module Nostr
       Security::UrlGuard.validate!(server, schemes: Security::UrlGuard.http_schemes)
       server
     rescue Security::UrlGuard::UnsafeUrlError => e
-      raise UploadError, "Media server rejected: #{e.message}"
+      raise UploadError, I18n.t("blossom_uploads.errors.server_rejected", error: e.message)
     end
 
     # Blossom servers report rejection reasons in the X-Reason header (BUD-01).
@@ -178,7 +178,7 @@ module Nostr
       return reason.truncate(120) if reason.present?
 
       Rails.logger.info("Blossom: rejection body #{response.body.to_s.truncate(200).inspect}")
-      "the media server rejected the upload"
+      I18n.t("blossom_uploads.errors.generic_rejection")
     end
 
     def build_auth_header(verb:, sha:, attempt: nil, attempts: nil)
@@ -194,8 +194,11 @@ module Nostr
         ]
       )
 
-      counter = attempt && attempts ? " (#{attempt} of #{attempts})" : ""
-      report(:signing, "Approve the upload in your signer app#{counter}…")
+      report(:signing, if attempt && attempts
+                         I18n.t("blossom_uploads.steps.approve_attempt", attempt: attempt, count: attempts)
+                       else
+                         I18n.t("blossom_uploads.steps.approve")
+                       end)
 
       signed = @signer.request_signature(@account, unsigned)
       raise SigningError, "Signing timed out or was rejected" unless signed

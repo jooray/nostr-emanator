@@ -1,0 +1,240 @@
+cs:
+  conversations:
+    index:
+      title: Zprávy
+      subtitle: Soukromé, napříč všemi spárovanými identitami
+      not_authenticated:
+        one: "%{count} účet není ověřený u relaye"
+        few: "%{count} účty nejsou ověřené u relaye"
+        other: "%{count} účtů není ověřeno u relaye"
+      still_arrive:
+        one: Zprávy pořád chodí přes tvoje ostatní relaye. Cokoli je uložené jen na tomto, může chybět.
+        few: Zprávy pořád chodí přes tvoje ostatní relaye. Cokoli je uložené jen na těchto, může chybět.
+        other: Zprávy pořád chodí přes tvoje ostatní relaye. Cokoli je uložené jen na těchto, může chybět.
+      auth_explainer: Tyto relaye předávají tvoje zprávy jen ověřenému klientovi a tvůj podepisovač zatím tento handshake nedokončil.
+      auth_missed_prompt_html: "Pokud tě Amber vyzval a tys to přehlédl, stačí počkat, zkusí to znovu. Až se zeptá, <strong>„Authentication scope“ → „All relays“</strong> mu zabrání ptát se znovu."
+      auth_whitelist_html: "Pokud se nikdy nezeptá, zkontroluj v Amberu <strong>Settings → „Client auth whitelist“</strong>. Dokud tento seznam není prázdný, Amber bez zeptání odmítne žádosti o ověření relaye z každého hostitele, který na něm není. Buď do seznamu přidej %{hosts}, nebo ho vymaž, aby se tě Amber zeptal místo toho."
+      no_accounts: Spáruj účet a začni přijímat soukromé zprávy.
+      add_account: Přidat účet
+      tabs:
+        known: Doručené
+        requests: Žádosti
+      who: Kdo
+      select_all: Vybrat vše
+      filter: Filtrovat
+      unread_only: Jen nepřečtené
+      filter_by_unread: Filtrovat podle nepřečtených
+      mark_all_read: Označit vše jako přečtené
+      mark_all_read_confirm: Označit všechny nepřečtené konverzace v tomto zobrazení jako přečtené?
+      no_requests: Žádné žádosti o zprávy.
+      no_messages: Zatím žádné zprávy.
+      known_hint: Tady se zobrazují zprávy od lidí, které sleduješ. Všichni ostatní čekají v Žádostech.
+    show:
+      title: Konverzace
+      conversation_between: konverzace mezi
+      yourself: tebou
+      and_more:
+        one: "a %{count} další"
+        few: "a %{count} další"
+        other: "a %{count} dalších"
+      all_participants: Všichni účastníci
+      legacy_title: Konverzace přes starší NIP-04
+      legacy_body: Text zprávy je zašifrovaný, ale odesílatel, příjemce a čas jsou veřejné na každém relayi, kterého se toto vlákno dotklo.
+      request_body: Tuto osobu nesleduješ ty ani žádný z tvých dalších účtů.
+      accept: Přijmout
+      block: Blokovat
+      showing_recent: "Zobrazeno posledních %{count} zpráv."
+      empty: V této konverzaci zatím nejsou žádné zprávy.
+    accept:
+      moved: Přesunuto do doručených.
+    block:
+      blocked: Blokováno. Zprávy z této konverzace už neuvidíš.
+    mark_all_read:
+      marked:
+        one: "Označena %{count} konverzace jako přečtená."
+        few: "Označeny %{count} konverzace jako přečtené."
+        other: "Označeno %{count} konverzací jako přečtených."
+      nothing_unread: Nic nepřečteného.
+    composer_body:
+      unavailable: Podepisovač tohoto účtu zatím neudělil oprávnění ke zprávám.
+      enable_messaging: Povolit zprávy
+      checking: Zjišťuje se, kde tato osoba přijímá soukromé zprávy…
+      no_inbox_title: Tato osoba nemá zveřejněnou schránku pro soukromé zprávy
+      no_inbox_body: Tvoje zpráva je pořád plně zašifrovaná a tvoje identita zůstává skrytá, ale jde na relaye, které tahle osoba pro zprávy nikdy neurčila, takže nemusí dorazit. Klienti bez jakékoli podpory soukromých zpráv (Primal, Damus) ji tam nebudou ani hledat.
+      strong_best_effort: Silné šifrování, doručení bez záruky
+      legacy_summary: Nedochází to? Pošli místo toho starší zprávu
+      legacy_intro: "Starší zpráva se dostane ke každému klientovi, včetně těch bez podpory soukromých zpráv, a to je většina z nich. Je to ale skutečný krok zpět:"
+      legacy_placeholder: Zpráva (text je zašifrovaný, komu jsi ji poslal, ne)
+      send_public_metadata: Odeslat s veřejnými metadaty
+      legacy_separate: Tím se založí samostatné starší vlákno se stejnou osobou, oddělené od tvého soukromého.
+      basic_encryption: Základní šifrování, metadata jsou veřejná
+      legacy_reply_placeholder: Odpovědět v tomto starším vlákně…
+      strong_private: Silné šifrování, obsah i metadata jsou soukromá
+    conversation_row:
+      you: "Ty:"
+      no_preview: (bez náhledu)
+      legacy_title: "Starší vlákno NIP-04: odesílatel, příjemce a čas jsou veřejné"
+      legacy_badge: Starší · metadata veřejná
+      people:
+        one: "%{count} osoba"
+        few: "%{count} osoby"
+        other: "%{count} osob"
+    copyable_name:
+      click_to_copy: "%{npub}: klikni pro zkopírování"
+    failed_message_actions:
+      not_sent: Neodesláno
+      try_again: Zkusit znovu
+      legacy_summary: Poslat to místo toho jako starší zprávu?
+      legacy_intro: "Tahle osoba vůbec nemůže přijímat soukromé zprávy, takže tohle je jediný způsob, jak ji zpráva zastihne. Je to ale skutečný krok zpět:"
+      send_public_metadata: Odeslat s veřejnými metadaty
+      moves_to_legacy: Tím se přesune do samostatného staršího vlákna se stejnou osobou.
+    message_bubble:
+      encrypted_file: "[zašifrovaný soubor]"
+      encrypted_file_typed: "[zašifrovaný soubor: %{type}]"
+      downgrade_title: "Odesláno jako starší NIP-04 zpráva: odesílatel, příjemce a čas jsou veřejné"
+      downgrade_badge: Odesláno s nešifrovanými metadaty
+      legacy_title: "Starší zpráva NIP-04: odesílatel, příjemce a čas byly veřejné"
+      legacy_badge: Starší
+      best_effort: Bez záruky
+      repaired_title: Této zprávě chyběla pole, která NIP-17 vyžaduje; obnoveno z podepsané pečeti.
+      repaired: opraveno
+      sending: Odesílá se…
+    private_composer_form:
+      placeholder: Napiš soukromou zprávu…
+      approvals:
+        one: "Vyžaduje %{count} schválení ve tvé podepisovací aplikaci."
+        few: "Vyžaduje %{count} schválení ve tvé podepisovací aplikaci."
+        other: "Vyžaduje %{count} schválení ve tvé podepisovací aplikaci."
+      enter_hint: Enter pro odeslání, Shift+Enter pro nový řádek.
+      send: Odeslat
+
+  messages:
+    retry:
+      cannot_retry: Tuto zprávu nelze zkusit znovu odeslat.
+      no_inbox: Tahle osoba pořád nemá schránku pro soukromé zprávy, takže ji soukromá zpráva nemůže zastihnout. Můžeš ji místo toho poslat jako starší zprávu.
+    downgrade:
+      cannot_downgrade: Tuto zprávu nelze převést na starší formát.
+
+  messaging:
+    names:
+      unknown: Neznámý
+      note_to_self: Poznámka sobě
+      peer_and_more: "%{name} +%{count}"
+    classification_badge:
+      own_follow: Sleduješ je
+      sibling_follow: Sleduje je jiný z tvých účtů
+      wot: Sleduje je někdo, koho sleduješ
+      replied: Odpověděl jsi
+      self: Tvůj vlastní účet
+      manual: Přijal jsi
+    delivery_note:
+      nip65: Odesláno na jejich veřejné relaye, nemají schránku pro zprávy, takže to nemusí dorazit
+      fallback: Odesláno na oblíbené relaye, nemají vůbec žádný seznam relayů, takže to nemusí dorazit
+      observed: Odesláno na relaye, odkud nám chodí jejich vlastní zprávy, nemají schránku pro zprávy, ale jejich klient tam čte
+    legacy_downgrade_risks:
+      watchers: Kdokoli sledující relaye vidí, že jsi této osobě napsal, a kdy.
+      public_metadata: Zašifrovaný je jen text zprávy, odesílatel a příjemce jsou veřejní.
+      malleable: Šifrování NIP-04 není autentizované, takže se se zašifrovaným textem dá manipulovat.
+    errors:
+      legacy_unacknowledged: starší zprávu NIP-04 lze odeslat, jen když odesílatel potvrdí, že její metadata jsou veřejná
+      write_first: Nejdřív napiš zprávu.
+      legacy_needs_confirmation: Odeslání starší zprávy vyžaduje výslovné potvrzení.
+      no_recipient: Žádný příjemce.
+      no_signed_message: Tvůj podepisovač nevrátil podepsanou zprávu.
+      no_relay_accepted: Žádný relay zprávu nepřijal.
+    steps:
+      approve_message: "Schval zprávu ve své podepisovací aplikaci (%{index} z %{total})…"
+      approve_signature: "Schval podpis ve své podepisovací aplikaci (%{index} z %{total})…"
+      delivering_to: "Doručuje se pro %{recipient}…"
+      delivering: Doručuje se…
+      decrypting: "Dešifrování zpráv ve tvé podepisovací aplikaci… hotovo %{processed}, zbývá %{pending}."
+      importing_legacy:
+        one: "Importuje se %{count} starší zpráva…"
+        few: "Importují se %{count} starší zprávy…"
+        other: "Importuje se %{count} starších zpráv…"
+      no_inbox_relays: Pro tento účet zatím neznáme žádné relaye pro schránku zpráv.
+      found_new:
+        one: "Nalezena %{count} nová zpráva."
+        few: "Nalezeny %{count} nové zprávy."
+        other: "Nalezeno %{count} nových zpráv."
+
+  nostr_content:
+    referenced_note: "[odkazovaný příspěvek]"
+    unknown_author: Neznámý
+
+  interactions:
+    index:
+      title: Interakce
+      subtitle:
+        one: "Odpovědi, citace a zmínky napříč %{count} identitou"
+        few: "Odpovědi, citace a zmínky napříč %{count} identitami"
+        other: "Odpovědi, citace a zmínky napříč %{count} identitami"
+      unselect_all: Zrušit výběr
+    interaction_card:
+      your_post: Tvůj příspěvek
+      quoted_post: Citovaný příspěvek
+      in_reply_to: V odpovědi na
+      labelled: "%{label} (%{author})"
+      show_more: Zobrazit více
+      open_profile: Otevřít profil v %{viewer}
+      types:
+        reply: odpověď
+        quote: citace
+        mention: zmínka
+      to_account: pro @%{name}
+      time_ago: "před %{time}"
+      like: Líbí se
+      follow: Sledovat
+      mute_title: Skrýt všechny příspěvky od @%{name}
+      mute: Ztlumit @%{name}
+      retry: Zkusit znovu
+      reply: Odpovědět
+      replying_as_html: Odpovídáš jako %{name}
+      like_this_post: Líbí se mi tento příspěvek
+      follow_author: Sledovat @%{name}
+      reply_placeholder: Napiš svou odpověď...
+      cancel: Zrušit
+      sign_and_publish: Podepsat a zveřejnit
+    interactions_content:
+      empty_title: Zatím žádné interakce
+      empty_body: Tady se objeví interakce od ostatních, jakmile na tvoje účty odpoví, citují je nebo je zmíní.
+    loading_toast:
+      loading: Načítají se poslední interakce…
+
+  js:
+    dm_delivery:
+      gave_up: Nepodařilo se zjistit, kde tato osoba přijímá soukromé zprávy. Načti stránku znovu.
+    inline_reply:
+      creating: Vytváří se odpověď...
+      signing: Podepisování...
+      create_failed: Vytvoření odpovědi selhalo
+      network_error: Chyba sítě. Zkus to znovu.
+      retrying: Zkouší se znovu...
+      retry_failed_open_post: Nový pokus selhal. Zkus to znovu na stránce příspěvku.
+      retry_failed: Nový pokus selhal. Zkus to znovu.
+      signing_approve: Podepisování... (schval ve své podepisovací aplikaci)
+      publishing: Zveřejňování...
+      published: Odpověď zveřejněna!
+      signing_stalled: Podepisování se zaseklo. Zkus to znovu.
+      publishing_failed: Zveřejnění selhalo. Zkus to znovu ze stránky příspěvku.
+    interaction_actions:
+      signing: Podepisování...
+      failed: Selhalo
+      network_error: Chyba sítě
+      already_following: Už sleduješ
+      mute_confirm: "Ztlumit %{label}? Jejich příspěvky se skryjí napříč všemi tvými účty."
+      muting: Ztlumuje se...
+      processing: Zpracovává se...
+      approve: Schval v podepisovací aplikaci...
+      publishing: Zveřejňování...
+      liked: Líbí se!
+      followed: Sledováno!
+      retrying: Zkouší se znovu...
+      retry_failed: Nový pokus selhal
+      following: Sleduješ
+      follow: Sledovat
+    interactions_filter:
+      none_selected_title: Nejsou vybrané žádné účty
+      none_selected_body: Vyber účet výše a zobrazí se jeho interakce.
+      unselect_all: Zrušit výběr
+      select_all: Vybrat vše

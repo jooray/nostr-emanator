@@ -1,0 +1,6 @@
+<%# Strings the Stimulus controllers need, in the current language, read by
+    app/javascript/i18n.js. The tracked meta makes Turbo do a full reload when
+    the language changes, so nothing already on the page (this table, the date
+    picker, Intl formatting) keeps the old one. %>
+<meta name="i18n-locale" content="<%= I18n.locale %>" data-turbo-track="reload">
+<script type="application/json" id="i18n-js"><%= raw json_escape({ js: js_translations }.to_json) %></script>

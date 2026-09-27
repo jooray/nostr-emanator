@@ -5,20 +5,20 @@ class RepostsController < ApplicationController
     @repost = find_repost
 
     unless @repost.can_cancel?
-      redirect_to post_path(@repost.post), alert: "Cannot cancel this repost."
+      redirect_to post_path(@repost.post), alert: t("reposts.flash.cannot_cancel")
       return
     end
 
     post = @repost.post
     @repost.destroy
-    redirect_to post_path(post), notice: "Repost cancelled."
+    redirect_to post_path(post), notice: t("reposts.flash.cancelled")
   end
 
   def retry_sign
     @repost = find_repost
 
     unless (@repost.awaiting_signature? || (@repost.failed? && @repost.signed_event.blank?)) && @repost.unsigned_event.present?
-      redirect_to post_path(@repost.post), alert: "Repost is not awaiting signature."
+      redirect_to post_path(@repost.post), alert: t("reposts.flash.not_awaiting_signature")
       return
     end
 
@@ -26,10 +26,10 @@ class RepostsController < ApplicationController
 
     if @repost.post.published?
       PublishNowRepostJob.perform_later(@repost.id)
-      redirect_to post_path(@repost.post), notice: "Retrying repost signing and publish request..."
+      redirect_to post_path(@repost.post), notice: t("reposts.flash.retrying_sign_and_publish")
     else
       SignRepostJob.perform_later(@repost.id)
-      redirect_to post_path(@repost.post), notice: "Retrying repost signing request..."
+      redirect_to post_path(@repost.post), notice: t("reposts.flash.retrying_sign")
     end
   end
 
@@ -37,19 +37,19 @@ class RepostsController < ApplicationController
     @repost = find_repost
 
     unless @repost.can_rebroadcast?
-      redirect_to post_path(@repost.post), alert: "Cannot rebroadcast this repost."
+      redirect_to post_path(@repost.post), alert: t("reposts.flash.cannot_rebroadcast")
       return
     end
 
     RebroadcastRepostJob.perform_later(@repost.id)
-    redirect_to post_path(@repost.post), notice: "Rebroadcasting repost..."
+    redirect_to post_path(@repost.post), notice: t("reposts.flash.rebroadcasting")
   end
 
   def publish_now
     @repost = find_repost
 
     unless @repost.scheduled? && @repost.signed_event.present?
-      redirect_to post_path(@repost.post), alert: "Repost is not ready to publish now."
+      redirect_to post_path(@repost.post), alert: t("reposts.flash.not_ready")
       return
     end
 
@@ -58,7 +58,7 @@ class RepostsController < ApplicationController
     original_event = post.signed_event || post.unsigned_event
 
     unless original_event.present?
-      redirect_to post_path(post), alert: "Original post event not available."
+      redirect_to post_path(post), alert: t("reposts.flash.original_unavailable")
       return
     end
 
@@ -71,7 +71,7 @@ class RepostsController < ApplicationController
 
     @repost.update!(unsigned_event: unsigned, signed_event: nil, event_id: nil, status: :awaiting_signature)
     PublishNowRepostJob.perform_later(@repost.id)
-    redirect_to post_path(post), notice: "Re-signing and publishing repost now..."
+    redirect_to post_path(post), notice: t("reposts.flash.publishing_now")
   end
 
   private

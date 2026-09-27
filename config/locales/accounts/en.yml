@@ -1,0 +1,283 @@
+en:
+  activerecord:
+    attributes:
+      account:
+        personality: Personality
+        blossom_server: Blossom server
+      nostr_action:
+        target_pubkey: Target pubkey
+        target_event_id: Target event
+        target_event_kind: Target event kind
+    errors:
+      models:
+        nostr_action:
+          attributes:
+            target_pubkey:
+              invalid_hex_pubkey: must be a 64-character lowercase hex pubkey
+            target_event_id:
+              invalid_hex_event_id: must be a 64-character lowercase hex event id
+            target_event_kind:
+              unsupported_kind: is not a supported event kind
+
+  accounts:
+    # Shared across the accounts views.
+    unnamed_account: Unnamed Account
+    signer_connected: Signer connected
+    no_signer: No signer
+    posts_count:
+      one: "%{count} post"
+      other: "%{count} posts"
+    waiting_for_signer: Waiting for signer connection...
+
+    form:
+      errors_heading:
+        one: "%{count} error prevented this account from being saved:"
+        other: "%{count} errors prevented this account from being saved:"
+      markdown_supported: Markdown supported
+      personality_help: Define the writing style and personality for AI-generated posts on this account. This guides the tone, vocabulary, and structure of generated content.
+      personality_placeholder: Describe the writing personality for this account...
+      blossom_label: Blossom media server
+      blossom_help_html: Where attached images/files are uploaded for this account. Leave blank to use the default (%{server}).
+      cancel: Cancel
+      submit: Save Account
+
+    messaging_banner:
+      title: Messaging is not enabled for %{name}
+      denied_html: Your signer refused a message operation for this account. Re-pair and choose <strong>Always</strong> when it asks about decrypting messages.
+      not_granted: This account was paired before private messaging existed, so its signer has not granted permission to encrypt, seal or decrypt messages. Re-pairing keeps your posts and settings.
+      enable: Enable messaging
+
+    messaging_repair_list:
+      summary:
+        one: "%{count} account cannot message yet"
+        other: "%{count} accounts cannot message yet"
+      summary_hint: Paired before private messaging existed — re-pair to grant it. Posting is unaffected.
+      explanation: Their signers never granted permission to encrypt, seal or decrypt messages. Re-pairing keeps each account's posts, schedule and settings.
+      re_pair: Re-pair
+
+    profile_image_field:
+      upload: Upload
+
+    edit:
+      title: Edit Account
+      profile_info: Profile Info
+      profile_info_help: Profile data is fetched from Nostr relays and cannot be edited here. Use "Refresh Profile" on the account page to update.
+      display_name: Display Name
+      username: Username
+      npub: Npub
+      about: About
+      not_set: Not set
+      writing_personality: Writing Personality
+      writing_personality_help: Define how AI-generated posts should sound for this account.
+
+    index:
+      title: Accounts
+      subtitle: Manage your paired Nostr accounts
+      pair_account: Pair Account
+      new_post: New Post
+      copy_npub_title: Click to copy npub
+      copy_npub_aria: Copy npub to clipboard
+      view_profile: View profile
+      view: View
+      settings: Settings
+      empty_title: No accounts paired
+      empty_body: Pair your first Nostr account to get started with scheduling posts.
+
+    new:
+      title: Pair Account
+      heading: Connect via NIP-46
+      intro: Scan the QR code below with Amber or a compatible NIP-46 signer app to pair this Nostr account.
+      open_in_signer: Open in your signer app
+      scan_other_device: Or scan with a signer on another device
+      copy: Copy
+      no_account_summary: Don't have a Nostr account yet?
+      no_account_create_html: Create one in your signer app, then pair it here. In %{amber_link}, choose <span class="font-medium text-gray-700 dark:text-gray-300">Generate a new key</span> and back it up when it asks.
+      no_account_then_html: Then come back and use the button above. Once it is paired you can set its name, bio and pictures from <span class="font-medium text-gray-700 dark:text-gray-300">Nostr Profile</span> in the account's settings.
+      key_stays: The key stays in your signer. Emanator only ever receives events you have already approved.
+      how_to_pair: How to pair
+      steps:
+        open_signer: Open your NIP-46 signer app (e.g., Amber on Android)
+        scan: Scan the QR code or paste the connection URI
+        approve: Approve the connection request in your signer
+        automatic: The account will be paired automatically once confirmed
+
+    re_pair:
+      title: Re-pair Signer
+      heading_messaging: Enable Messaging
+      heading_reconnect: Re-connect Signer
+      intro_messaging: Private messages need permissions your signer has not granted yet — encrypting, sealing and decrypting messages. Re-pair to request them. Your posts and settings will be preserved.
+      intro_reconnect: Scan the QR code with Amber to re-pair the signer on a new relay. Your posts and settings will be preserved.
+      show_details: Show connection details
+      uri: "URI:"
+      relays: "Relays:"
+      how_to_re_pair: How to re-pair
+      steps:
+        open_amber: Open Amber (or your NIP-46 signer)
+        scan: Scan the QR code or paste the connection URI
+        approve_messaging: Approve the connection — it now also covers message encryption and sealing
+        decrypt_always_html: On the first “decrypt” prompt, choose <strong>Always</strong> and scope <strong>All</strong>. Otherwise every single message needs a tap on your phone.
+        relay_auth_html: When Amber asks about <strong>relay authentication</strong>, choose scope <strong>All relays</strong>. If you use Amber's <strong>Client auth whitelist</strong>, add your DM inbox relays to it — while that list is non-empty Amber rejects every other relay without asking.
+        approve_reconnect: Approve the connection — signer fields update, everything else stays
+
+    recent_events:
+      empty: No recent events found on relays.
+
+    recent_interactions:
+      your_post: Your post
+      your_post_linked_html: "%{link}:"
+      your_post_plain: "Your post:"
+      time_ago: "%{time} ago"
+      types:
+        reply: reply
+        quote: quote
+        mention: mention
+      reply: Reply
+      reply_placeholder: Write your reply...
+      cancel: Cancel
+      sign_and_publish: Sign & Publish
+      empty: No recent interactions found.
+
+    show:
+      title: Account
+      new_post: New Post
+      settings: Settings
+      scheduled_posts: Scheduled Posts
+      scheduled_posts_help: Upcoming posts queued for this account
+      reposts_count:
+        one: "%{count} repost"
+        other: "%{count} reposts"
+      no_scheduled_html: No scheduled posts. %{link}.
+      create_one: Create one
+      recent_events: Recent Events
+      recent_events_help: Latest notes fetched from relays
+      recent_interactions: Recent Interactions
+      recent_interactions_help: Replies, quotes, and mentions from others
+      view_all: View all
+
+    settings:
+      title: Account Settings
+      messaging_enabled: Messaging enabled
+      messaging_needs_re_pair: Messaging needs re-pair
+      edit: Edit
+      nostr_profile: Nostr Profile
+      refresh_profile: Refresh Profile
+      refresh_relays: Refresh Relays
+      re_pair_signer: Re-pair Signer
+      personality: Personality
+      write_relays: Write Relays
+      no_write_relays: No write relays found. Click "Refresh Relays" to fetch from the network.
+      danger_zone: Danger Zone
+      remove_title: Remove this account
+      remove_help: This will remove the account pairing and all associated posts.
+      remove_confirm: Are you sure? This will remove the account and all its posts.
+      remove_button: Remove Account
+
+    profile:
+      back_to_html: "&larr; Back to %{name}"
+      back_fallback: account
+      title: Nostr profile
+      intro_html: Published as kind&nbsp;0 and signed in your signer app. Emanator never sees your key.
+      needs_re_pair: This account was paired before profile editing existed, so its signer has not granted permission to publish a profile.
+      re_pair_link: Re-pair this account
+      identity: Identity
+      display_name: Display name
+      display_name_help: Shown in bold. Can contain spaces and emoji.
+      handle: Handle
+      handle_help: Short username, no spaces. Shown as @handle.
+      bio: Bio
+      images: Images
+      avatar: Avatar
+      avatar_help: Square. Shown as a circle in most clients.
+      banner: Banner
+      banner_help: Wide. Clients crop it to roughly 3:1, so keep anything important centred.
+      links: Links
+      website: Website
+      nip05: Nostr address (NIP-05)
+      nip05_help: Looks like an email. Verified by the domain, not by us.
+      lightning: Lightning address
+      unmodelled_fields_kept: Fields set by other clients that are not shown here are kept as they are.
+      publish: Publish profile
+      how_it_looks: How it looks
+      preview_note: Every client styles this differently. The crops and the two name fields are what matter.
+
+    # Controller flash messages and JSON errors.
+    create:
+      session_expired: Pairing session expired or not yet authenticated
+    paired_notice: Account paired! Fetching profile and relay list in the background.
+    pairing_rate_limited: Too many pairing attempts — please wait a minute and try again.
+    update:
+      updated: Account updated.
+    destroy:
+      removed: Account removed.
+    update_profile:
+      needs_re_pair: Re-pair this account to grant permission to edit its profile.
+    profile_status:
+      gone: That update is gone. Please try again.
+    refresh_profile:
+      notice: Refreshing profile from relays in the background — reload in a few seconds to see changes.
+    refresh_relays:
+      notice: Refreshing relay list in the background — reload in a few seconds to see changes.
+    no_pending_session: No pending session
+    re_pair_poll:
+      identity_mismatch: "Re-pair aborted: signer returned a different Nostr identity (%{signer}…) than this account (%{account}…)."
+      save_failed: "Could not save the signer: %{errors}"
+
+  nostr_actions:
+    duplicate: Duplicate action
+    not_retryable: Action is not waiting for a retry.
+    # Written by ProcessNostrActionJob onto the action row, shown later.
+    errors:
+      unreachable:
+        contact_list: Could not reach any relay to read your contact list. Follow aborted to prevent data loss.
+        mute_list: Could not reach any relay to read your mute list. Mute aborted to prevent data loss.
+      missing:
+        contact_list: Relays returned no contact list. Follow aborted to prevent data loss.
+        mute_list: Relays returned no mute list. Mute aborted to prevent data loss.
+      stale_contact_list: Relays returned an outdated contact list. Follow aborted to prevent data loss.
+      stale_mute_list: Relays returned an outdated mute list. Mute aborted to prevent data loss.
+      empty_contact_list: Contact list appears empty. Follow aborted to prevent data loss.
+      existing_mute_list_missing: Relays did not return your existing mute list. Mute aborted to prevent data loss.
+      signing_timed_out: Signing timed out. Approve in your signer app.
+      publish_failed: Publishing failed on all relays
+
+  profile_updates:
+    abandoned: This took too long and was abandoned. Please try again.
+    # Written by PublishProfileJob / Nostr::ProfilePublisherService, polled by the editor.
+    steps:
+      preparing: Preparing…
+      fetching: Reading your current profile…
+      signing: Approve the profile update in your signer app…
+      publishing: Publishing to relays…
+    errors:
+      no_signer: This account has no signer paired.
+      needs_re_pair: Re-pair this account to grant profile permission, then try again.
+      no_relay_accepted: No relay accepted the profile update.
+      signing_failed: Signing timed out or was rejected. Approve the request in your signer app and try again.
+      unexpected: Publishing failed unexpectedly. Please try again.
+      interrupted: Interrupted before it finished. Please try again.
+
+  js:
+    account_pairing:
+      server_error: Pairing failed (server error %{status}). Reload and try again.
+      qr_expired: QR expired —
+      generate_new: click to generate a new one
+      additional_auth: "Your signer requires additional authorization. "
+      continue_in_signer: Continue in signer
+      re_paired: Signer re-paired!
+      paired_creating: Account paired! Creating...
+    profile_editor:
+      unnamed: Unnamed
+      uploading: Uploading…
+      upload_failed: Upload failed.
+      server_unreachable: Could not reach the server.
+      uploaded: Uploaded.
+      working: Working…
+      lost_contact: Lost contact with the server.
+      publishing: Publishing…
+      preparing: Preparing…
+      could_not_start: Could not start publishing.
+      server_unreachable_publish: Could not reach the server. Check your connection and try again.
+      published: Published.
+      publish_profile: Publish profile
+      publish_failed: Publishing failed.
+      lost_contact_publish: Lost contact with the server while publishing.

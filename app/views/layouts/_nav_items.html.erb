@@ -12,12 +12,12 @@
     `mobile: true` adds the panel-closing action. %>
 <% mobile = local_assigns[:mobile] %>
 <% items = [
-     ["Dashboard", dashboard_path, request.path == dashboard_path],
-     ["New post",  new_post_path,  request.path == new_post_path],
-     ["Accounts",  accounts_path,  request.path.start_with?("/accounts")],
-     ["Posts",     posts_path,     request.path == posts_path || request.path.start_with?("/posts/")],
-     ["Interactions", interactions_path, request.path.start_with?("/interactions")],
-     ["Calendar",  calendar_path,  request.path.start_with?("/calendar")]
+     [t(".dashboard"), dashboard_path, request.path == dashboard_path],
+     [t(".new_post"),  new_post_path,  request.path == new_post_path],
+     [t(".accounts"),  accounts_path,  request.path.start_with?("/accounts")],
+     [t(".posts"),     posts_path,     request.path == posts_path || request.path.start_with?("/posts/")],
+     [t(".interactions"), interactions_path, request.path.start_with?("/interactions")],
+     [t(".calendar"),  calendar_path,  request.path.start_with?("/calendar")]
    ] %>
 
 <ul>

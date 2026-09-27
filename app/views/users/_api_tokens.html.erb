@@ -1,11 +1,11 @@
 <!-- API Tokens (MCP access) -->
 <div id="api-tokens" class="border rule p-6">
-  <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">API Tokens (MCP)</h2>
+  <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4"><%= t(".title") %></h2>
   <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
-    Connect an AI agent to Emanator over the
-    <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener" class="text-amber-600 dark:text-amber-400 hover:underline">Model Context Protocol</a>.
-    Point your MCP client at <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-xs"><%= request.base_url %>/mcp</code>
-    and send the token as <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-xs">Authorization: Bearer &lt;token&gt;</code>.
+    <%= t(".intro_html",
+          mcp_link: link_to(t(".mcp_link"), "https://modelcontextprotocol.io", target: "_blank", rel: "noopener", class: "text-amber-600 dark:text-amber-400 hover:underline"),
+          endpoint: tag.code("#{request.base_url}/mcp", class: "px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-xs"),
+          header: tag.code("Authorization: Bearer <token>", class: "px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-xs")) %>
   </p>
 
   <%# This used to say a token "can read your accounts and posts and create
@@ -17,19 +17,14 @@
   <div class="alarm is-stacked mb-4" role="note">
     <%= lamp(:alarm) %>
     <p class="text-sm text-red-800 dark:text-red-200">
-      <strong>A token can post as you.</strong> It reads your accounts and posts,
-      creates drafts, and <strong>schedules posts that are then signed and published
-      automatically under any of your paired identities, without a further approval
-      step</strong> — because your signer approves kind-1 notes without prompting.
-      Treat a token like a posting key: hand it only to an agent you would let
-      speak as these accounts, and revoke it here the moment you stop trusting it.
+      <%= t(".warning_html") %>
     </p>
   </div>
 
   <% if flash[:plain_token].present? %>
     <div class="mb-4 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-300 dark:border-amber-800 rounded-lg">
       <p class="text-sm font-medium text-amber-900 dark:text-amber-100 mb-2">
-        Token <strong><%= flash[:plain_token_name] %></strong> created. Copy it now — it will not be shown again.
+        <%= t(".created_html", name: flash[:plain_token_name]) %>
       </p>
       <div class="flex items-center gap-2">
         <input type="text" readonly value="<%= flash[:plain_token] %>"
@@ -42,7 +37,7 @@
                 data-clipboard-text-value="<%= flash[:plain_token] %>"
                 data-action="click->clipboard#copy"
                 class="px-3 py-1.5 text-xs font-medium rounded border border-amber-300 dark:border-amber-700 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 hover:bg-amber-100 dark:hover:bg-amber-900/40">
-          Copy
+          <%= t(".copy") %>
         </button>
       </div>
     </div>
@@ -51,19 +46,19 @@
   <div class="mb-6">
     <%= form_with url: api_tokens_path, method: :post, data: { turbo: false }, class: "flex items-end gap-3" do %>
       <div class="flex-1">
-        <label for="api_token_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Token name</label>
-        <%= text_field_tag :name, "", id: "api_token_name", placeholder: "e.g. content-agent",
+        <label for="api_token_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><%= t(".name_label") %></label>
+        <%= text_field_tag :name, "", id: "api_token_name", placeholder: t(".name_placeholder"),
             class: "block w-full rounded-lg border-gray-300 dark:border-[color:var(--color-rule-dark)] dark:bg-[color:var(--color-chassis)] dark:text-gray-100 shadow-sm focus:border-amber-500 text-sm" %>
       </div>
       <div>
-        <label for="api_token_expires_in_days" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Expires</label>
+        <label for="api_token_expires_in_days" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><%= t(".expires_label") %></label>
         <%= select_tag :expires_in_days,
-            options_for_select([["30 days", 30], ["90 days", 90], ["180 days", 180], ["1 year", 365], ["Never", 0]], 90),
+            options_for_select([[t(".expiry.days_30"), 30], [t(".expiry.days_90"), 90], [t(".expiry.days_180"), 180], [t(".expiry.year"), 365], [t(".expiry.never"), 0]], 90),
             id: "api_token_expires_in_days",
             class: "block rounded-lg border-gray-300 dark:border-[color:var(--color-rule-dark)] dark:bg-[color:var(--color-chassis)] dark:text-gray-100 shadow-sm focus:border-amber-500 text-sm" %>
       </div>
       <button type="submit" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors">
-        Generate token
+        <%= t(".generate") %>
       </button>
     <% end %>
   </div>
@@ -74,10 +69,10 @@
       <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
         <thead class="bg-gray-50 dark:bg-gray-800">
           <tr>
-            <th class="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-300">Name</th>
-            <th class="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-300">Created</th>
-            <th class="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-300">Expires</th>
-            <th class="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-300">Last used</th>
+            <th class="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-300"><%= t(".columns.name") %></th>
+            <th class="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-300"><%= t(".columns.created") %></th>
+            <th class="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-300"><%= t(".columns.expires") %></th>
+            <th class="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-300"><%= t(".columns.last_used") %></th>
             <th class="px-4 py-2"></th>
           </tr>
         </thead>
@@ -85,22 +80,22 @@
           <% tokens.each do |token| %>
             <tr>
               <td class="px-4 py-2 text-gray-900 dark:text-gray-100"><%= token.name %></td>
-              <td class="px-4 py-2 text-gray-500 dark:text-gray-400"><%= token.created_at.strftime("%b %d, %Y") %></td>
+              <td class="px-4 py-2 text-gray-500 dark:text-gray-400"><%= l(token.created_at, format: :app_date) %></td>
               <td class="px-4 py-2 <%= token.expired? ? 'text-red-600 dark:text-red-400' : 'text-gray-500 dark:text-gray-400' %>">
                 <% if token.expires_at.nil? %>
-                  Never
+                  <%= t(".never") %>
                 <% elsif token.expired? %>
-                  Expired <%= token.expires_at.strftime("%b %d, %Y") %>
+                  <%= t(".expired_on", date: l(token.expires_at, format: :app_date)) %>
                 <% else %>
-                  <%= token.expires_at.strftime("%b %d, %Y") %>
+                  <%= l(token.expires_at, format: :app_date) %>
                 <% end %>
               </td>
               <td class="px-4 py-2 text-gray-500 dark:text-gray-400">
-                <%= token.last_used_at ? "#{time_ago_in_words(token.last_used_at)} ago" : "Never" %>
+                <%= token.last_used_at ? t(".ago", time: time_ago_in_words(token.last_used_at)) : t(".never") %>
               </td>
               <td class="px-4 py-2 text-right">
-                <%= button_to "Revoke", api_token_path(token), method: :delete,
-                    data: { turbo_confirm: "Revoke this token? Anything using it will lose access." },
+                <%= button_to t(".revoke"), api_token_path(token), method: :delete,
+                    data: { turbo_confirm: t(".revoke_confirm") },
                     class: "text-sm text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300" %>
               </td>
             </tr>
@@ -109,6 +104,6 @@
       </table>
     </div>
   <% else %>
-    <p class="text-sm text-gray-400 dark:text-gray-500">No tokens yet.</p>
+    <p class="text-sm text-gray-400 dark:text-gray-500"><%= t(".empty") %></p>
   <% end %>
 </div>

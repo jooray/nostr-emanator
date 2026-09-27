@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { locale } from "../lib/i18n"
 
 export default class extends Controller {
   static values = { zone: String }
@@ -69,7 +70,7 @@ export default class extends Controller {
     const options = this.optionsForFormat(format)
 
     try {
-      el.textContent = new Intl.DateTimeFormat(undefined, options).format(date)
+      el.textContent = new Intl.DateTimeFormat(locale(), options).format(date)
     } catch {
       // Keep the server-rendered fallback
     }

@@ -84,10 +84,10 @@ module Nostr
                              parent_event_id:, parent_author_pubkey:,
                              root_event_id: nil, relay_hint: "", allow_fetch: false)
       # L2: reject anything that is not a 64-char lowercase hex id/pubkey.
-      validate_hex32!(parent_event_id, "parent event id")
-      validate_hex32!(parent_author_pubkey, "parent author pubkey")
-      validate_hex32!(root_event_id, "root event id") if root_event_id.present?
-      validate_hex32!(pubkey, "author pubkey")
+      validate_hex32!(parent_event_id, :parent_event_id)
+      validate_hex32!(parent_author_pubkey, :parent_author_pubkey)
+      validate_hex32!(root_event_id, :root_event_id) if root_event_id.present?
+      validate_hex32!(pubkey, :author_pubkey)
 
       tags = []
 
@@ -202,7 +202,7 @@ module Nostr
     def validate_hex32!(value, label)
       return if value.to_s.match?(HEX_32)
 
-      raise InvalidReferenceError, "Invalid #{label}"
+      raise InvalidReferenceError, I18n.t("posts.errors.invalid_reference.#{label}")
     end
 
     private

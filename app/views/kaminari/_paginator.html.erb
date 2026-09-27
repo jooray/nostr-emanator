@@ -7,7 +7,7 @@
     paginator:     the paginator that renders the pagination tags inside
 -%>
 <%= paginator.render do -%>
-  <nav class="flex items-center justify-center gap-1" role="navigation" aria-label="pager">
+  <nav class="flex items-center justify-center gap-1" role="navigation" aria-label="<%= t("views.pagination.label") %>">
     <%= first_page_tag unless current_page.first? %>
     <%= prev_page_tag unless current_page.first? %>
     <% each_page do |page| -%>

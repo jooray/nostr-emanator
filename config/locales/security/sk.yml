@@ -1,0 +1,10 @@
+sk:
+  security:
+    url_guard:
+      non_public: "%{host} sa prekladá na neverejnú adresu (%{address}) a nemožno ju použiť"
+      blank: URL je prázdna
+      scheme: "URL musí používať %{schemes}"
+      no_host: URL musí obsahovať hostiteľa
+      credentials: URL nesmie obsahovať prihlasovacie údaje
+      invalid: URL nie je platná
+      unresolved: "%{host} sa nepodarilo preložiť"

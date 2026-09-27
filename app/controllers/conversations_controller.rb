@@ -52,12 +52,12 @@ class ConversationsController < ApplicationController
 
   def accept
     @conversation.accept!
-    redirect_back fallback_location: conversation_path(@conversation), notice: "Moved to your inbox."
+    redirect_back fallback_location: conversation_path(@conversation), notice: t(".moved")
   end
 
   def block
     @conversation.block!
-    redirect_to messages_path, notice: "Blocked. You will not see messages from this conversation."
+    redirect_to messages_path, notice: t(".blocked")
   end
 
   def mark_read
@@ -84,7 +84,7 @@ class ConversationsController < ApplicationController
 
     Rails.cache.delete(MessagesHelper.unread_cache_key(current_user))
     redirect_to messages_path(tab: tab, accounts: @account_filter),
-                notice: cleared.positive? ? "Marked #{cleared} conversation#{"s" if cleared != 1} as read." : "Nothing unread."
+                notice: cleared.positive? ? t(".marked", count: cleared) : t(".nothing_unread")
   end
 
   private

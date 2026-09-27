@@ -54,13 +54,13 @@ class SendDirectMessageJob < ApplicationJob
       recipients.each_with_index do |recipient, index|
         message.update!(
           status: "sealing",
-          step: "Approve the message in your signer app (#{index + 1} of #{recipients.size})…"
+          step: localized(message, "messaging.steps.approve_message", index: index + 1, total: recipients.size)
         )
         broadcast(message)
 
         wrap = seal_and_wrap(rpc, account, rumor_json, recipient)
 
-        message.update!(status: "publishing", step: "Delivering to #{recipient.first(12)}…")
+        message.update!(status: "publishing", step: localized(message, "messaging.steps.delivering_to", recipient: recipient.first(12)))
         broadcast(message)
         targets = targets_for(message, recipient)
         outcome = publish(wrap, targets)
@@ -145,11 +145,17 @@ class SendDirectMessageJob < ApplicationJob
     else
       message.update!(
         status: "failed", step: nil, publish_results: flatten(results),
-        error: "No relay accepted the message."
+        error: localized(message, "messaging.errors.no_relay_accepted")
       )
     end
 
     broadcast(message)
+  end
+
+  # Step and error text is stored on the row and read later, so it is written in
+  # the owner's language rather than whatever locale this worker thread has.
+  def localized(message, key, **options)
+    message.user.with_locale { I18n.t(key, **options) }
   end
 
   def broadcast(message)

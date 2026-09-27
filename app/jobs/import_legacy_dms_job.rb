@@ -28,7 +28,7 @@ class ImportLegacyDmsJob < ApplicationJob
     return if events.empty?
 
     sync = DmSyncState.for_account(account)
-    sync.progress!(step: "Importing #{events.size} legacy message(s)…")
+    sync.progress!(step: account.user.with_locale { I18n.t("messaging.steps.importing_legacy", count: events.size) })
     import(account, events)
     sync.finish!
   rescue StandardError => e

@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { t } from "../lib/i18n"
 
 export default class extends Controller {
   static targets = ["toggleAllButton", "accountButton", "content"]
@@ -83,11 +84,11 @@ export default class extends Controller {
 
     const heading = document.createElement("h3")
     heading.className = "condensed text-[22px] font-bold uppercase tracking-[0.06em] text-gray-900 dark:text-gray-100"
-    heading.textContent = "No accounts selected"
+    heading.textContent = t("js.interactions_filter.none_selected_title")
 
     const body = document.createElement("p")
     body.className = "mt-2 text-sm text-gray-500 dark:text-gray-400"
-    body.textContent = "Select an account above to see its interactions."
+    body.textContent = t("js.interactions_filter.none_selected_body")
 
     message.append(heading, body)
     this.contentTarget.prepend(message)
@@ -97,7 +98,7 @@ export default class extends Controller {
     const allSelected = this.selectedIds.size === this.accountIdsValue.length
 
     if (this.hasToggleAllButtonTarget) {
-      this.toggleAllButtonTarget.textContent = allSelected ? "Unselect All" : "Select All"
+      this.toggleAllButtonTarget.textContent = allSelected ? t("js.interactions_filter.unselect_all") : t("js.interactions_filter.select_all")
     }
 
     this.accountButtonTargets.forEach(btn => {

@@ -22,10 +22,10 @@
   <%# hour %>
   <div class="row-start-1 sm:col-start-1">
     <%= link_to post_path(target), class: "hour block hover:text-amber-600 dark:hover:text-amber-400" do %>
-      <%= stamp ? l(stamp, format: "%H:%M") : "--:--" %>
+      <%= stamp ? l(stamp, format: :app_time) : "--:--" %>
     <% end %>
     <span class="eng mt-1.5 block">
-      <% if stamp.nil? %>Draft<% elsif sent %>Sent<% elsif stamp.to_date == Date.current %>Today<% elsif stamp.to_date == Date.tomorrow %>Tomorrow<% else %><%= l(stamp, format: "%d %b") %><% end %>
+      <% if stamp.nil? %><%= t(".draft") %><% elsif sent %><%= t(".sent") %><% elsif stamp.to_date == Date.current %><%= t(".today") %><% elsif stamp.to_date == Date.tomorrow %><%= t(".tomorrow") %><% else %><%= l(stamp, format: :app_day_month) %><% end %>
     </span>
   </div>
 
@@ -42,15 +42,15 @@
     <% if is_repost %>
       <%# Without this the row is indistinguishable from the note itself, and the
           operator cannot tell which of the two never went out. %>
-      <p class="eng mt-1.5">Repost of this note</p>
+      <p class="eng mt-1.5"><%= t(".repost_of_note") %></p>
     <% elsif post.reposts.loaded? && post.reposts.size.positive? %>
-      <p class="eng mt-1.5"><%= pluralize(post.reposts.size, "repost") %></p>
+      <p class="eng mt-1.5"><%= t(".reposts", count: post.reposts.size) %></p>
     <% end %>
     <% if failed && (why = delivery_failure_line(post)) %>
       <p class="mt-1.5 font-mono text-[13px] text-red-600 dark:text-red-400"><%= why %></p>
     <% elsif failed %>
       <p class="mt-1.5 text-[14px] text-gray-500 dark:text-gray-400">
-        Never reached a relay. Nothing was published.
+        <%= t(".never_reached") %>
       </p>
     <% end %>
   </div>
@@ -61,12 +61,12 @@
       <%# The elapsed counter belongs here, not only on the detail page: this row
           is where an operator finds out something is waiting on them at all. %>
       <span class="font-mono text-[15px] font-bold tabular text-amber-600 dark:text-amber-400"
-            data-elapsed-target="readout" aria-label="Waiting for approval">00:00</span>
-      <%= link_to "Open", post_path(target), class: "slug slug--wait no-underline" %>
+            data-elapsed-target="readout" aria-label="<%= t(".waiting_for_approval") %>">00:00</span>
+      <%= link_to t(".open"), post_path(target), class: "slug slug--wait no-underline" %>
     <% elsif short || sent %>
       <%= poll_strip(post) %>
       <% if short %>
-        <%= button_to "Rebroadcast",
+        <%= button_to t(".rebroadcast"),
               is_repost ? rebroadcast_post_repost_path(post.post, post) : rebroadcast_post_path(post),
               method: :post,
               class: "slug hover:text-amber-600 dark:hover:text-amber-400",
@@ -75,7 +75,7 @@
     <% elsif failed %>
       <%# A failed repost retries through its own signing path: it has its own
           signed event, and retrying the note would not resend it. %>
-      <%= button_to "Retry",
+      <%= button_to t(".retry"),
             is_repost ? retry_sign_post_repost_path(post.post, post) : retry_publish_post_path(post),
             method: :post,
             class: "slug slug--short", form_class: "inline" %>

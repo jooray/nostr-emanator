@@ -7,7 +7,7 @@ class ApiTokensController < ApplicationController
   def create
     name = params[:name].to_s.strip
     if name.blank?
-      redirect_to edit_user_path(anchor: "api-tokens"), alert: "Token name required."
+      redirect_to edit_user_path(anchor: "api-tokens"), alert: t(".name_required")
       return
     end
 
@@ -20,7 +20,7 @@ class ApiTokensController < ApplicationController
   def destroy
     token = current_user.api_tokens.find(params[:id])
     token.destroy
-    redirect_to edit_user_path(anchor: "api-tokens"), notice: "Token revoked."
+    redirect_to edit_user_path(anchor: "api-tokens"), notice: t(".revoked")
   end
 
   private

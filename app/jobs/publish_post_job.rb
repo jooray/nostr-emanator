@@ -16,7 +16,7 @@ class PublishPostJob < ApplicationJob
     return unless post.signed_event.present?
 
     # M4: re-verify the stored signature (see ApplicationJob).
-    return post.update!(status: :failed, publish_results: { "error" => "Stored signature failed verification. Re-sign this post." }) unless signed_event_verified?(post)
+    return post.update!(status: :failed, publish_results: { "error" => post.account.user.with_locale { I18n.t("posts.jobs.post_signature_invalid") } }) unless signed_event_verified?(post)
 
     # M8: atomically claim the post. A duplicate job (e.g. re-enqueued by the
     # recurring job while this one is still running) loses the race and
@@ -60,20 +60,22 @@ class PublishPostJob < ApplicationJob
 
   def broadcast_publish_progress(post)
     post.reload
-    Turbo::StreamsChannel.broadcast_replace_to(
-      "post_publishing_#{post.id}",
-      target: "publish-progress",
-      partial: "posts/publish_progress",
-      locals: { post: post }
-    )
-    Turbo::StreamsChannel.broadcast_replace_to(
-      "post_publishing_#{post.id}",
-      target: "reposts-list",
-      partial: "posts/reposts_list",
-      locals: { post: post }
-    )
-    # C4: a broadcast hiccup must never fail the job — the event may already be
-    # on the relays, and a retry would leave the post stuck in `publishing`.
+    post.account.user.with_locale do
+      Turbo::StreamsChannel.broadcast_replace_to(
+        "post_publishing_#{post.id}",
+        target: "publish-progress",
+        partial: "posts/publish_progress",
+        locals: { post: post }
+      )
+      Turbo::StreamsChannel.broadcast_replace_to(
+        "post_publishing_#{post.id}",
+        target: "reposts-list",
+        partial: "posts/reposts_list",
+        locals: { post: post }
+      )
+      # C4: a broadcast hiccup must never fail the job — the event may already be
+      # on the relays, and a retry would leave the post stuck in `publishing`.
+    end
   rescue => e
     Rails.logger.error("Failed to broadcast publish progress: #{e.message}")
   end

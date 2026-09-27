@@ -47,6 +47,7 @@ gem "dotenv-rails", groups: [:development, :test]
 
 # Pagination
 gem "kaminari"
+gem "rails-i18n", "~> 8.0"
 
 # QR Code generation
 gem "rqrcode"

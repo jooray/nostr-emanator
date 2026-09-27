@@ -1,0 +1,287 @@
+sk:
+  activerecord:
+    attributes:
+      account:
+        personality: Osobnosť
+        blossom_server: Blossom server
+      nostr_action:
+        target_pubkey: Cieľový pubkey
+        target_event_id: Cieľová udalosť
+        target_event_kind: Kind cieľovej udalosti
+    errors:
+      models:
+        nostr_action:
+          attributes:
+            target_pubkey:
+              invalid_hex_pubkey: musí byť 64-znakový hexadecimálny pubkey s malými písmenami
+            target_event_id:
+              invalid_hex_event_id: musí byť 64-znakové hexadecimálne ID udalosti s malými písmenami
+            target_event_kind:
+              unsupported_kind: nie je podporovaný kind udalosti
+
+  accounts:
+    unnamed_account: Nepomenovaný účet
+    signer_connected: Podpisovač pripojený
+    no_signer: Bez podpisovača
+    posts_count:
+      one: "%{count} príspevok"
+      few: "%{count} príspevky"
+      many: "%{count} príspevku"
+      other: "%{count} príspevkov"
+    waiting_for_signer: Čaká sa na pripojenie podpisovača...
+
+    form:
+      errors_heading:
+        one: "Uloženiu tohto účtu zabránila %{count} chyba:"
+        few: "Uloženiu tohto účtu zabránili %{count} chyby:"
+        many: "Uloženiu tohto účtu zabránilo %{count} chyby:"
+        other: "Uloženiu tohto účtu zabránilo %{count} chýb:"
+      markdown_supported: Podporuje Markdown
+      personality_help: Definuj štýl písania a osobnosť pre príspevky generované AI na tomto účte. Toto usmerňuje tón, slovník a štruktúru generovaného obsahu.
+      personality_placeholder: Opíš osobnosť písania pre tento účet...
+      blossom_label: Mediálny server Blossom
+      blossom_help_html: Kam sa pre tento účet nahrávajú priložené obrázky a súbory. Nechaj prázdne, ak chceš použiť predvolený server (%{server}).
+      cancel: Zrušiť
+      submit: Uložiť účet
+
+    messaging_banner:
+      title: Správy nie sú povolené pre %{name}
+      denied_html: Tvoj podpisovač odmietol operáciu so správou pre tento účet. Spáruj účet znova a pri otázke na dešifrovanie správ zvoľ <strong>Always</strong>.
+      not_granted: Tento účet bol spárovaný ešte predtým, než existovali súkromné správy, takže jeho podpisovač nemá povolenie na šifrovanie, zapečatenie ani dešifrovanie správ. Opätovné spárovanie zachová tvoje príspevky aj nastavenia.
+      enable: Povoliť správy
+
+    messaging_repair_list:
+      summary:
+        one: "%{count} účet ešte nemôže posielať správy"
+        few: "%{count} účty ešte nemôžu posielať správy"
+        many: "%{count} účtu ešte nemôže posielať správy"
+        other: "%{count} účtov ešte nemôže posielať správy"
+      summary_hint: Spárované ešte pred súkromnými správami. Spáruj znova, aby si im to povolil. Na zverejňovanie príspevkov to nemá vplyv.
+      explanation: Ich podpisovače nikdy neudelili povolenie na šifrovanie, zapečatenie ani dešifrovanie správ. Opätovné spárovanie zachová príspevky, plán aj nastavenia každého účtu.
+      re_pair: Spárovať znova
+
+    profile_image_field:
+      upload: Nahrať
+
+    edit:
+      title: Upraviť účet
+      profile_info: Informácie o profile
+      profile_info_help: Údaje profilu sa načítavajú z Nostr relayov a tu sa nedajú upravovať. Na ich aktualizáciu použi „Obnoviť profil“ na stránke účtu.
+      display_name: Zobrazované meno
+      username: Používateľské meno
+      npub: Npub
+      about: O mne
+      not_set: Nenastavené
+      writing_personality: Osobnosť písania
+      writing_personality_help: Definuj, ako majú znieť príspevky generované AI pre tento účet.
+
+    index:
+      title: Účty
+      subtitle: Spravuj svoje spárované Nostr účty
+      pair_account: Spárovať účet
+      new_post: Nový príspevok
+      copy_npub_title: Klikni na skopírovanie npub
+      copy_npub_aria: Skopírovať npub do schránky
+      view_profile: Zobraziť profil
+      view: Zobraziť
+      settings: Nastavenia
+      empty_title: Žiadne spárované účty
+      empty_body: Spáruj svoj prvý Nostr účet a začni plánovať príspevky.
+
+    new:
+      title: Spárovať účet
+      heading: Pripojenie cez NIP-46
+      intro: Naskenuj QR kód nižšie pomocou Amber alebo kompatibilnej NIP-46 podpisovej aplikácie a spáruj tento Nostr účet.
+      open_in_signer: Otvoriť v podpisovej aplikácii
+      scan_other_device: Alebo naskenuj podpisovačom na inom zariadení
+      copy: Kopírovať
+      no_account_summary: Ešte nemáš Nostr účet?
+      no_account_create_html: Vytvor si ho v podpisovej aplikácii a potom ho tu spáruj. V %{amber_link} zvoľ <span class="font-medium text-gray-700 dark:text-gray-300">Generate a new key</span> a keď sa opýta, zálohuj ho.
+      no_account_then_html: Potom sa vráť sem a použi tlačidlo vyššie. Po spárovaní mu môžeš nastaviť meno, bio a obrázky cez <span class="font-medium text-gray-700 dark:text-gray-300">Nostr profil</span> v nastaveniach účtu.
+      key_stays: Kľúč zostáva v tvojom podpisovači. Emanator dostáva iba udalosti, ktoré si už schválil.
+      how_to_pair: Ako spárovať
+      steps:
+        open_signer: Otvor svoju NIP-46 podpisovú aplikáciu (napr. Amber na Androide)
+        scan: Naskenuj QR kód alebo vlož URI pripojenia
+        approve: Schváľ žiadosť o pripojenie v podpisovači
+        automatic: Po potvrdení sa účet spáruje automaticky
+
+    re_pair:
+      title: Spárovať podpisovač znova
+      heading_messaging: Povoliť správy
+      heading_reconnect: Znova pripojiť podpisovač
+      intro_messaging: "Súkromné správy potrebujú povolenia, ktoré tvoj podpisovač ešte neudelil: šifrovanie, zapečatenie a dešifrovanie správ. Spáruj znova a vyžiadaj si ich. Tvoje príspevky a nastavenia zostanú zachované."
+      intro_reconnect: Naskenuj QR kód pomocou Amber a spáruj podpisovač znova na novom relayi. Tvoje príspevky a nastavenia zostanú zachované.
+      show_details: Zobraziť podrobnosti pripojenia
+      uri: "URI:"
+      relays: "Relaye:"
+      how_to_re_pair: Ako spárovať znova
+      steps:
+        open_amber: Otvor Amber (alebo svoj NIP-46 podpisovač)
+        scan: Naskenuj QR kód alebo vlož URI pripojenia
+        approve_messaging: "Schváľ pripojenie: teraz zahŕňa aj šifrovanie a zapečatenie správ."
+        decrypt_always_html: Pri prvej výzve „decrypt“ zvoľ <strong>Always</strong> a rozsah <strong>All</strong>. Inak si každá jedna správa vyžiada potvrdenie na telefóne.
+        relay_auth_html: Keď sa Amber opýta na <strong>relay authentication</strong>, zvoľ rozsah <strong>All relays</strong>. Ak používaš Amberov <strong>Client auth whitelist</strong>, pridaj doň relaye svojej DM schránky. Kým je tento zoznam neprázdny, Amber bez opýtania odmietne každý iný relay.
+        approve_reconnect: "Schváľ pripojenie: aktualizujú sa polia podpisovača, všetko ostatné zostáva."
+
+    recent_events:
+      empty: Na relayoch sa nenašli žiadne nedávne udalosti.
+
+    recent_interactions:
+      your_post: Tvoj príspevok
+      your_post_linked_html: "%{link}:"
+      your_post_plain: "Tvoj príspevok:"
+      time_ago: "pred %{time}"
+      types:
+        reply: odpoveď
+        quote: citácia
+        mention: zmienka
+      reply: Odpovedať
+      reply_placeholder: Napíš svoju odpoveď...
+      cancel: Zrušiť
+      sign_and_publish: Podpísať a zverejniť
+      empty: Nenašli sa žiadne nedávne interakcie.
+
+    show:
+      title: Účet
+      new_post: Nový príspevok
+      settings: Nastavenia
+      scheduled_posts: Naplánované príspevky
+      scheduled_posts_help: Nadchádzajúce príspevky naplánované pre tento účet
+      reposts_count:
+        one: "%{count} repost"
+        few: "%{count} reposty"
+        many: "%{count} repostu"
+        other: "%{count} repostov"
+      no_scheduled_html: Žiadne naplánované príspevky. %{link}.
+      create_one: Vytvoriť
+      recent_events: Nedávne udalosti
+      recent_events_help: Najnovšie poznámky načítané z relayov
+      recent_interactions: Nedávne interakcie
+      recent_interactions_help: Odpovede, citácie a zmienky od ostatných
+      view_all: Zobraziť všetko
+
+    settings:
+      title: Nastavenia účtu
+      messaging_enabled: Správy povolené
+      messaging_needs_re_pair: Správy potrebujú opätovné spárovanie
+      edit: Upraviť
+      nostr_profile: Nostr profil
+      refresh_profile: Obnoviť profil
+      refresh_relays: Obnoviť relaye
+      re_pair_signer: Spárovať podpisovač znova
+      personality: Osobnosť
+      write_relays: Zápisové relaye
+      no_write_relays: Nenašli sa žiadne zápisové relaye. Klikni na „Obnoviť relaye“ a načítaj ich zo siete.
+      danger_zone: Nebezpečná zóna
+      remove_title: Odstrániť tento účet
+      remove_help: Toto odstráni spárovanie účtu aj všetky súvisiace príspevky.
+      remove_confirm: Naozaj? Toto odstráni účet aj všetky jeho príspevky.
+      remove_button: Odstrániť účet
+
+    profile:
+      back_to_html: "&larr; Späť na %{name}"
+      back_fallback: účet
+      title: Nostr profil
+      intro_html: Zverejní sa ako kind&nbsp;0 a podpíše sa v tvojej podpisovej aplikácii. Emanator nikdy nevidí tvoj kľúč.
+      needs_re_pair: Tento účet bol spárovaný ešte pred úpravou profilu, takže jeho podpisovač nemá povolenie na zverejnenie profilu.
+      re_pair_link: Spáruj tento účet znova
+      identity: Identita
+      display_name: Zobrazované meno
+      display_name_help: Zobrazuje sa tučne. Môže obsahovať medzery aj emoji.
+      handle: Handle
+      handle_help: Krátke používateľské meno bez medzier. Zobrazuje sa ako @handle.
+      bio: Bio
+      images: Obrázky
+      avatar: Avatar
+      avatar_help: Štvorcový. Vo väčšine klientov sa zobrazuje ako kruh.
+      banner: Banner
+      banner_help: Široký. Klienti ho orezávajú približne na pomer 3:1, preto drž dôležité prvky v strede.
+      links: Odkazy
+      website: Webová stránka
+      nip05: Nostr adresa (NIP-05)
+      nip05_help: Vyzerá ako e-mail. Overuje ju doména, nie my.
+      lightning: Lightning adresa
+      unmodelled_fields_kept: Polia nastavené inými klientmi, ktoré tu nie sú zobrazené, zostávajú nezmenené.
+      publish: Zverejniť profil
+      how_it_looks: Ako to vyzerá
+      preview_note: Každý klient to štylizuje inak. Dôležité sú orezania a tie dve polia s menom.
+
+    create:
+      session_expired: Relácia párovania vypršala alebo ešte nebola overená
+    paired_notice: Účet spárovaný! Na pozadí sa načítava profil a zoznam relayov.
+    pairing_rate_limited: Príliš veľa pokusov o spárovanie. Počkaj minútu a skús to znova.
+    update:
+      updated: Účet aktualizovaný.
+    destroy:
+      removed: Účet odstránený.
+    update_profile:
+      needs_re_pair: Spáruj tento účet znova, aby si mu udelil povolenie na úpravu profilu.
+    profile_status:
+      gone: Táto aktualizácia je preč. Skús to znova.
+    refresh_profile:
+      notice: Na pozadí sa obnovuje profil z relayov. Obnov stránku o pár sekúnd, aby si videl zmeny.
+    refresh_relays:
+      notice: Na pozadí sa obnovuje zoznam relayov. Obnov stránku o pár sekúnd, aby si videl zmeny.
+    no_pending_session: Žiadna čakajúca relácia
+    re_pair_poll:
+      identity_mismatch: "Opätovné spárovanie prerušené: podpisovač vrátil inú Nostr identitu (%{signer}…) ako tento účet (%{account}…)."
+      save_failed: "Podpisovača sa nepodarilo uložiť: %{errors}"
+
+  nostr_actions:
+    duplicate: Duplicitná akcia
+    not_retryable: Akcia nečaká na opakovanie.
+    errors:
+      unreachable:
+        contact_list: Nepodarilo sa spojiť so žiadnym relayom na načítanie tvojho zoznamu kontaktov. Sledovanie sa prerušilo, aby nedošlo k strate dát.
+        mute_list: Nepodarilo sa spojiť so žiadnym relayom na načítanie tvojho zoznamu stíšených. Stíšenie sa prerušilo, aby nedošlo k strate dát.
+      missing:
+        contact_list: Relaye nevrátili žiadny zoznam kontaktov. Sledovanie sa prerušilo, aby nedošlo k strate dát.
+        mute_list: Relaye nevrátili žiadny zoznam stíšených. Stíšenie sa prerušilo, aby nedošlo k strate dát.
+      stale_contact_list: Relaye vrátili zastaraný zoznam kontaktov. Sledovanie sa prerušilo, aby nedošlo k strate dát.
+      stale_mute_list: Relaye vrátili zastaraný zoznam stíšených. Stíšenie sa prerušilo, aby nedošlo k strate dát.
+      empty_contact_list: Zoznam kontaktov sa zdá byť prázdny. Sledovanie sa prerušilo, aby nedošlo k strate dát.
+      existing_mute_list_missing: Relaye nevrátili tvoj existujúci zoznam stíšených. Stíšenie sa prerušilo, aby nedošlo k strate dát.
+      signing_timed_out: Podpisovaniu vypršal čas. Schváľ ho v podpisovej aplikácii.
+      publish_failed: Zverejnenie zlyhalo na všetkých relayoch
+
+  profile_updates:
+    abandoned: Trvalo to príliš dlho, preto sa to zrušilo. Skús to znova.
+    steps:
+      preparing: Pripravuje sa…
+      fetching: Načítava sa tvoj aktuálny profil…
+      signing: Schváľ aktualizáciu profilu v podpisovej aplikácii…
+      publishing: Zverejňuje sa na relayoch…
+    errors:
+      no_signer: Tento účet nemá spárovaný podpisovač.
+      needs_re_pair: Spáruj tento účet znova, aby si udelil povolenie pre profil, a skús to znova.
+      no_relay_accepted: Aktualizáciu profilu neprijal žiadny relay.
+      signing_failed: Podpisovaniu vypršal čas alebo bolo zamietnuté. Schváľ žiadosť v podpisovej aplikácii a skús to znova.
+      unexpected: Zverejnenie neočakávane zlyhalo. Skús to znova.
+      interrupted: Prerušené pred dokončením. Skús to znova.
+
+  js:
+    account_pairing:
+      server_error: Párovanie zlyhalo (chyba servera %{status}). Obnov stránku a skús to znova.
+      qr_expired: QR kód vypršal.
+      generate_new: klikni na vygenerovanie nového
+      additional_auth: "Tvoj podpisovač vyžaduje dodatočnú autorizáciu. "
+      continue_in_signer: Pokračovať v podpisovači
+      re_paired: Podpisovač znova spárovaný!
+      paired_creating: Účet spárovaný! Vytvára sa...
+    profile_editor:
+      unnamed: Bez mena
+      uploading: Nahráva sa…
+      upload_failed: Nahrávanie zlyhalo.
+      server_unreachable: Server je nedostupný.
+      uploaded: Nahrané.
+      working: Pracuje sa…
+      lost_contact: Stratené spojenie so serverom.
+      publishing: Zverejňuje sa…
+      preparing: Pripravuje sa…
+      could_not_start: Zverejňovanie sa nepodarilo spustiť.
+      server_unreachable_publish: Server je nedostupný. Skontroluj pripojenie a skús to znova.
+      published: Zverejnené.
+      publish_profile: Zverejniť profil
+      publish_failed: Zverejnenie zlyhalo.
+      lost_contact_publish: Počas zverejňovania sa stratilo spojenie so serverom.

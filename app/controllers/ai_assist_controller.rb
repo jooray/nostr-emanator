@@ -121,7 +121,7 @@ class AiAssistController < ApplicationController
   # response (the client is mid-fetch expecting `event:`/`data:` frames);
   # the plain JSON actions get a normal 429.
   def ai_rate_limited
-    message = "AI request limit reached — please wait a bit before trying again."
+    message = t("ai_assist.rate_limited")
 
     if action_name.end_with?("_stream")
       response.headers["Content-Type"] = "text/event-stream"

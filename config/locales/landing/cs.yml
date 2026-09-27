@@ -1,0 +1,79 @@
+cs:
+  home:
+    index:
+      meta_description: Emanator plánuje tvoje příspěvky na Nostru a koordinuje reposty napříč účty, které spravuješ.
+      title: Emanator - Dej každé identitě na Nostru náskok
+      skip_to_content: Přeskočit na obsah
+      main_navigation: Hlavní navigace
+      home_label: "Emanator – domů"
+      theme_toggle_title: Přepnout barevný motiv
+      switch_to_dark: Přepnout na tmavý režim
+      switch_to_light: Přepnout na světlý režim
+      launch_app: Spustit aplikaci
+      hero:
+        eyebrow: Plánování pro Nostr
+        title_html: Dej každé identitě <span class="accent-word">náskok.</span>
+        lead: "Nový účet na Nostru začíná bez publika. Emanator mu pomůže nastartovat pomocí účtů, které už provozuješ: příspěvek napíšeš jednou, naplánuješ čas zveřejnění a přidáš reposty z dalších účtů, které ho podpoří."
+        see_how: Jak to funguje
+        key_note: Tvoje klíče zůstávají v tvém Nostr podepisovači.
+        stage_label: Emanator na počítači i v mobilu
+        dashboard_alt: Přehled Emanatoru se stavem účtu, počty naplánovaných, zveřejněných a celkových příspěvků a seznamem nadcházejících příspěvků napříč spravovanými účty na Nostru
+      proof:
+        label: Principy produktu
+        intro: Vytvořeno pro účty, které potřebují dosah, ne další sociální přehled.
+        calendar: Jeden kalendář pro každý účet, který spravuješ.
+        signing: Vzdálené podepisování přes Amber. Emanator nikdy neukládá tvůj soukromý klíč.
+        always_on: Příspěvky a reposty vycházejí včas, i když jsou tvá zařízení offline.
+      workflow:
+        title: Od tiché identity ke koordinovanému spuštění.
+        lead: Účty, které už provozuješ, si navzájem pomůžou, takže nemusíš publikovat na každý ručně.
+        connect_label: 01 / Připojit
+        connect_title: Spáruj své účty
+        connect_body: Připoj účty, které spravuješ, přes Amber pomocí vzdáleného podepisování NIP-46.
+        compose_label: 02 / Napsat
+        compose_title: Napiš příspěvek
+        compose_body: Napiš text a přilož média. Každý účet má vlastní styl, takže ti AI asistent pomůže, aniž by ze všech udělal jeden hlas.
+        emanate_label: 03 / Emanuj
+        emanate_title: Naplánuj a podepiš
+        emanate_body: Vyber, kdy má příspěvek vyjít, nastav náhodné zpoždění repostů a podepiš jedním klikem. O zbytek se ve správný čas postará Emanator.
+      control:
+        title: Automatizace s jasnou kontrolou nad klíči.
+        lead: "Staví na tom, jak Nostr už funguje: tvoje identita je přenositelná, relaye jsou otevřené a podepisovací klíče máš ve svých rukou."
+        publishing_tag: Kontrola nad publikováním
+        publishing_title: Každý příspěvek a repost vidíš dřív, než vyjde.
+        publishing_body: Jeden kalendář ukazuje, co má každý účet naplánované na celý měsíc, takže nic nevyjde bez tvého vědomí.
+        calendar_alt: Kalendář Emanatoru pro září 2026 s naplánovanými příspěvky a reposty rozloženými den po dni napříč všemi spravovanými účty
+        identity_tag: Identita na prvním místě
+        identity_title: Klíče má tvůj podepisovač.
+        identity_body: Emanator žádá tvůj podepisovač o schválení každé události přes NIP-46. Tvůj soukromý klíč zůstává v Amberu, kam patří.
+        no_custody: Bez úschovy nsec
+        ai_tag: AI, která zná každý účet
+        ai_title: Ať každý účet zní jako on sám.
+        ai_body: Dej každému účtu vlastní styl. AI píše a upravuje v tomto tónu, místo aby ze všech udělala jeden obecný hlas.
+      tour:
+        title: Celý postup na webu i v mobilu.
+        lead: Piš, plánuj a sleduj odpovědi odkudkoliv. Rozhraní se řídí světlým nebo tmavým motivem tvého systému.
+        interactions_alt: Zobrazení interakcí v Emanatoru se zmínkami a odpověďmi na spravovaný účet a akcemi sledovat, ztlumit a odpovědět
+        interactions_title: Jedna schránka pro odpovědi a zmínky
+        interactions_body: Čti zmínky a odpovědi pro každý účet, který provozuješ, a odpovídej bez opuštění aplikace.
+        calendar_alt: Měsíční kalendář Emanatoru s naplánovanými příspěvky barevně a reposty kurzívou
+        calendar_title: Měsíc, podle kterého můžeš plánovat
+        calendar_body: Naplánované příspěvky a jejich reposty jsou vedle sebe, takže spouštěcí týden přečteš na první pohled.
+        mobile_label: Emanator v mobilu
+        compose_light_alt: Psaní nového příspěvku v Emanatoru na mobilu s promptem pro AI generování pod editorem
+        compose_dark_alt: Psaní nového příspěvku v Emanatoru na mobilu v tmavém motivu
+        compose_caption: Napsat
+        schedule_light_alt: Výběr data a času zveřejnění v Emanatoru na mobilu s účty pro repost uvedenými níže
+        schedule_dark_alt: Výběr data a času zveřejnění v Emanatoru na mobilu v tmavém motivu
+        schedule_caption: Naplánovat
+        review_light_alt: Kalendář Emanatoru na mobilu zobrazující měsíc s naplánovanými příspěvky
+        review_dark_alt: Kalendář Emanatoru na mobilu v tmavém motivu
+        review_caption: Zkontrolovat
+      cta:
+        title: Ať signál nesou správné účty.
+        body: Příští spuštění na Nostru řiď z jednoho kalendáře. Každý účet zůstává nezávisle tvůj.
+        button: Spustit Emanator
+      footer:
+        back_to_top: Nahoru
+        tagline: Plánování příspěvků pro otevřenou sociální síť.
+        github_label: Zobrazit zdrojový kód na GitHubu

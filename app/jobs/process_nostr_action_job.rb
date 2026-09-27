@@ -15,12 +15,15 @@ class ProcessNostrActionJob < ApplicationJob
     @signer = Nostr::EventSignerService.new
     @publisher = Nostr::EventPublisherService.new
 
-    if @action.reaction?
-      process_reaction
-    elsif @action.follow?
-      process_follow
-    elsif @action.mute?
-      process_mute
+    # error_message is shown to the user later, so write it in their language.
+    @action.account.user.with_locale do
+      if @action.reaction?
+        process_reaction
+      elsif @action.follow?
+        process_follow
+      elsif @action.mute?
+        process_mute
+      end
     end
   rescue => e
     @action&.update!(status: :failed, error_message: e.message.truncate(255))
@@ -61,7 +64,7 @@ class ProcessNostrActionJob < ApplicationJob
     # the entire social graph, and an account with no contact list at all is far
     # rarer than one whose list simply did not reach us.
     unless contact_list
-      @action.update!(status: :failed, error_message: unreachable_message(result, "contact list", "Follow"))
+      @action.update!(status: :failed, error_message: unreachable_message(result, :contact_list))
       return
     end
 
@@ -69,7 +72,7 @@ class ProcessNostrActionJob < ApplicationJob
     # a relay replaying a stale kind 3 would otherwise silently drop every
     # follow added since.
     if stale_list?(contact_list)
-      @action.update!(status: :failed, error_message: "Relays returned an outdated contact list. Follow aborted to prevent data loss.")
+      @action.update!(status: :failed, error_message: I18n.t("nostr_actions.errors.stale_contact_list"))
       return
     end
 
@@ -77,7 +80,7 @@ class ProcessNostrActionJob < ApplicationJob
 
     # Safety: abort if p-tags list is empty (likely a relay fetch issue, not a real empty list)
     if existing_follows.empty?
-      @action.update!(status: :failed, error_message: "Contact list appears empty. Follow aborted to prevent data loss.")
+      @action.update!(status: :failed, error_message: I18n.t("nostr_actions.errors.empty_contact_list"))
       return
     end
 
@@ -119,7 +122,7 @@ class ProcessNostrActionJob < ApplicationJob
     # reachability directly, so ask it.
     if mute_event.nil?
       if result[:reachable].zero?
-        @action.update!(status: :failed, error_message: unreachable_message(result, "mute list", "Mute"))
+        @action.update!(status: :failed, error_message: unreachable_message(result, :mute_list))
         return
       end
 
@@ -127,7 +130,7 @@ class ProcessNostrActionJob < ApplicationJob
       # so it exists somewhere we did not just read, and re-signing from nothing
       # would drop everyone on it.
       if cached_list_event
-        @action.update!(status: :failed, error_message: "Relays did not return your existing mute list. Mute aborted to prevent data loss.")
+        @action.update!(status: :failed, error_message: I18n.t("nostr_actions.errors.existing_mute_list_missing"))
         return
       end
     end
@@ -135,7 +138,7 @@ class ProcessNostrActionJob < ApplicationJob
     # H3: same replay guard as the follow path (a stale kind 10000 would
     # un-mute everyone muted since).
     if mute_event && stale_list?(mute_event)
-      @action.update!(status: :failed, error_message: "Relays returned an outdated mute list. Mute aborted to prevent data loss.")
+      @action.update!(status: :failed, error_message: I18n.t("nostr_actions.errors.stale_mute_list"))
       return
     end
 
@@ -183,11 +186,12 @@ class ProcessNostrActionJob < ApplicationJob
     @fetcher ||= Nostr::EventFetcher.new(additional_relays: account_relays)
   end
 
-  def unreachable_message(result, list_name, action_name)
+  # list is :contact_list or :mute_list.
+  def unreachable_message(result, list)
     if result[:reachable].zero?
-      "Could not reach any relay to read your #{list_name}. #{action_name} aborted to prevent data loss."
+      I18n.t("nostr_actions.errors.unreachable.#{list}")
     else
-      "Relays returned no #{list_name}. #{action_name} aborted to prevent data loss."
+      I18n.t("nostr_actions.errors.missing.#{list}")
     end
   end
 
@@ -230,7 +234,7 @@ class ProcessNostrActionJob < ApplicationJob
   def sign_and_publish
     signed = @signer.request_signature(@action.account, @action.unsigned_event)
     unless signed
-      @action.update!(status: :failed, error_message: "Signing timed out. Approve in your signer app.")
+      @action.update!(status: :failed, error_message: I18n.t("nostr_actions.errors.signing_timed_out"))
       return
     end
 
@@ -243,7 +247,7 @@ class ProcessNostrActionJob < ApplicationJob
     if success_count > 0
       @action.update!(status: :published, publish_results: results)
     else
-      @action.update!(status: :failed, publish_results: results, error_message: "Publishing failed on all relays")
+      @action.update!(status: :failed, publish_results: results, error_message: I18n.t("nostr_actions.errors.publish_failed"))
     end
   end
 end

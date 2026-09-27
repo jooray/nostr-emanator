@@ -1,0 +1,79 @@
+es:
+  home:
+    index:
+      meta_description: Emanator programa tus publicaciones de Nostr y coordina reposts entre las cuentas que gestionas.
+      title: Emanator - Dale ventaja a cada identidad de Nostr
+      skip_to_content: Saltar al contenido
+      main_navigation: Navegación principal
+      home_label: Inicio de Emanator
+      theme_toggle_title: Cambiar tema de color
+      switch_to_dark: Cambiar a modo oscuro
+      switch_to_light: Cambiar a modo claro
+      launch_app: Abrir la app
+      hero:
+        eyebrow: Programación para Nostr
+        title_html: Dale a cada identidad una <span class="accent-word">ventaja inicial.</span>
+        lead: "Una cuenta nueva en Nostr empieza sin audiencia. Emanator deja que las cuentas que ya gestionas le den un empujón: escribe una publicación una vez, programa cuándo sale y encadena reposts desde tus otras cuentas para que la sigan."
+        see_how: Ver cómo funciona
+        key_note: Tus claves se quedan en tu firmante de Nostr.
+        stage_label: Emanator funcionando en escritorio y móvil
+        dashboard_alt: Panel de Emanator con el número de cuentas, publicaciones programadas, publicadas y totales, y una lista de próximas publicaciones de las cuentas de Nostr gestionadas
+      proof:
+        label: Principios del producto
+        intro: Pensado para cuentas que necesitan alcance, no otro panel social más.
+        calendar: Un calendario para cada cuenta que gestionas.
+        signing: Firma remota mediante Amber. Emanator nunca guarda tu clave privada.
+        always_on: Las publicaciones y los reposts salen a su hora, aunque tus dispositivos estén desconectados.
+      workflow:
+        title: De una identidad silenciosa a un lanzamiento coordinado.
+        lead: Usa las cuentas que ya gestionas para que se respalden entre sí, en lugar de publicar en cada una a mano.
+        connect_label: 01 / Conectar
+        connect_title: Vincula tus cuentas
+        connect_body: Conecta las cuentas que gestionas a través de Amber, con firma remota NIP-46.
+        compose_label: 02 / Redactar
+        compose_title: Escribe la publicación
+        compose_body: Redacta la nota y adjunta contenido multimedia. Cada cuenta mantiene su propia guía de estilo, así que la ayuda de la IA puede colaborar sin que todo suene igual.
+        emanate_label: 03 / Emanar
+        emanate_title: Programa y firma
+        emanate_body: Elige cuándo se publica, define retrasos aleatorios para los reposts y firma una sola vez. Emanator envía todo a la hora exacta.
+      control:
+        title: Automatización con una cadena de custodia clara.
+        lead: "Construido sobre cómo ya funciona Nostr: tu identidad es portátil, los relays son abiertos y tú conservas las claves de firma."
+        publishing_tag: Control de publicación
+        publishing_title: Revisa cada publicación y repost antes de que salgan.
+        publishing_body: Un calendario muestra lo que cada cuenta tiene en cola durante el mes, así que nada se publica sin que lo hayas visto.
+        calendar_alt: Calendario de Emanator para septiembre de 2026, con publicaciones y reposts programados día a día en cada cuenta gestionada
+        identity_tag: La identidad primero
+        identity_title: Tu firmante conserva las claves.
+        identity_body: Emanator le pide a tu firmante que apruebe cada evento por NIP-46. Tu clave privada de Nostr se queda en Amber, donde debe estar.
+        no_custody: Sin custodia de la nsec
+        ai_tag: IA que conoce cada cuenta
+        ai_title: Que cada cuenta siga sonando a sí misma.
+        ai_body: Dale a cada cuenta su propia guía de estilo. La IA redacta y edita en esa voz, en lugar de aplanarlas todas a un mismo tono genérico.
+      tour:
+        title: Todo el flujo de trabajo, en la web y en tu móvil.
+        lead: Redacta, programa y sigue las respuestas desde donde estés. La interfaz sigue el tema claro u oscuro de tu sistema.
+        interactions_alt: Vista de interacciones de Emanator con menciones y respuestas a una cuenta gestionada, con acciones de seguir, silenciar y responder
+        interactions_title: Una bandeja para respuestas y menciones
+        interactions_body: Lee las menciones y respuestas de cada cuenta que gestionas, y responde sin salir de la app.
+        calendar_alt: Calendario mensual de Emanator con publicaciones programadas marcadas en color y reposts en cursiva
+        calendar_title: Un mes que puedes planear
+        calendar_body: Las publicaciones programadas y sus reposts aparecen uno junto al otro, así una semana de lanzamiento se lee de un vistazo.
+        mobile_label: Emanator en el móvil
+        compose_light_alt: Redactando una nueva publicación en Emanator móvil, con un aviso de generación por IA debajo del editor
+        compose_dark_alt: Redactando una nueva publicación en Emanator móvil en tema oscuro
+        compose_caption: Redactar
+        schedule_light_alt: Eligiendo fecha y hora de publicación en Emanator móvil, con las cuentas para repost listadas debajo
+        schedule_dark_alt: Eligiendo fecha y hora de publicación en Emanator móvil en tema oscuro
+        schedule_caption: Programar
+        review_light_alt: Calendario de Emanator en móvil mostrando el mes con publicaciones programadas
+        review_dark_alt: Calendario de Emanator en móvil en tema oscuro
+        review_caption: Revisar
+      cta:
+        title: Deja que las cuentas adecuadas lleven la señal.
+        body: Gestiona tu próximo lanzamiento en Nostr desde un solo calendario. Cada cuenta sigue siendo tuya de forma independiente.
+        button: Abrir Emanator
+      footer:
+        back_to_top: Volver arriba
+        tagline: Programación de publicaciones para la web social abierta.
+        github_label: Ver el código fuente en GitHub

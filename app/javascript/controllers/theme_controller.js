@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { t } from "../lib/i18n"
 
 export default class extends Controller {
   static values = {
@@ -47,9 +48,16 @@ export default class extends Controller {
     const button = this.element.querySelector("button")
     if (!button) return
 
-    const names = { system: "Follow system", light: "Light", dark: "Dark" }
+    const names = {
+      system: t("js.theme.names.system"),
+      light: t("js.theme.names.light"),
+      dark: t("js.theme.names.dark")
+    }
     const next = { system: "light", light: "dark", dark: "system" }
-    const label = `Theme: ${names[this.currentValue]}. Switch to ${names[next[this.currentValue]].toLowerCase()}.`
+    const label = t("js.theme.label", {
+      current: names[this.currentValue],
+      next: t(`js.theme.next_names.${next[this.currentValue]}`)
+    })
     button.setAttribute("aria-label", label)
     button.setAttribute("title", label)
 

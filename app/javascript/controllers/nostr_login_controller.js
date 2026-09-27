@@ -1,4 +1,12 @@
 import { Controller } from "@hotwired/stimulus"
+import { t } from "../lib/i18n"
+
+// Translated labels go into innerHTML next to a spinner, so escape them.
+function escapeHtml(text) {
+  const div = document.createElement("div")
+  div.textContent = text
+  return div.innerHTML
+}
 
 export default class extends Controller {
   static targets = [
@@ -68,14 +76,14 @@ export default class extends Controller {
 
     const uri = this.bunkerInputTarget.value.trim()
     if (!uri) {
-      this.showError("Paste the bunker link from your signer first.")
+      this.showError(t("js.nostr_login.paste_first"))
       return
     }
 
     this.hideError()
     this.bunkerButtonTarget.disabled = true
     const originalLabel = this.bunkerButtonTarget.textContent
-    this.bunkerButtonTarget.textContent = "Connecting…"
+    this.bunkerButtonTarget.textContent = t("js.nostr_login.connecting")
 
     try {
       const response = await fetch(this.configTarget.dataset.nostrLoginBunkerUrl, {
@@ -89,7 +97,7 @@ export default class extends Controller {
       const data = await response.json()
 
       if (!data.ok) {
-        this.showError(data.error || "Could not use that bunker link.")
+        this.showError(data.error || t("js.nostr_login.unusable_link"))
         return
       }
 
@@ -98,12 +106,12 @@ export default class extends Controller {
       if (this.hasStaleNoticeTarget) this.staleNoticeTarget.classList.add("hidden")
       if (this.hasExpiredNoticeTarget) this.expiredNoticeTarget.classList.add("hidden")
       if (this.hasPollingIndicatorTarget) this.pollingIndicatorTarget.classList.remove("hidden")
-      if (this.hasPollingLabelTarget) this.pollingLabelTarget.textContent = "Waiting for your signer to approve…"
+      if (this.hasPollingLabelTarget) this.pollingLabelTarget.textContent = t("js.nostr_login.waiting_approve")
       this.stopPolling()
       this.startPolling()
     } catch (error) {
       console.error("Bunker connect error:", error)
-      this.showError("Could not reach the server. Check your connection and try again.")
+      this.showError(t("js.nostr_login.unreachable"))
     } finally {
       this.bunkerButtonTarget.disabled = false
       this.bunkerButtonTarget.textContent = originalLabel
@@ -112,7 +120,7 @@ export default class extends Controller {
 
   async loginWithExtension() {
     if (typeof window.nostr === "undefined") {
-      this.showError("No NIP-07 extension found. Please install nos2x, Alby, or another Nostr extension.")
+      this.showError(t("js.nostr_login.no_extension"))
       return
     }
 
@@ -123,14 +131,14 @@ export default class extends Controller {
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/>
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
       </svg>
-      Connecting...
+      ${escapeHtml(t("js.nostr_login.extension_connecting"))}
     `
 
     try {
       const pubkey = await window.nostr.getPublicKey()
 
       if (!pubkey) {
-        this.showError("Failed to get public key from extension")
+        this.showError(t("js.nostr_login.no_pubkey"))
         this.resetButton()
         this.startPolling()
         return
@@ -168,7 +176,7 @@ export default class extends Controller {
       form.submit()
     } catch (error) {
       console.error("NIP-07 login error:", error)
-      this.showError(`Extension error: ${error.message || "Unknown error"}`)
+      this.showError(t("js.nostr_login.extension_error", { message: error.message || t("js.nostr_login.unknown_error") }))
       this.resetButton()
       this.startPolling()
     }
@@ -223,7 +231,7 @@ export default class extends Controller {
           console.error("Polling error:", error)
           if (++consecutiveErrors >= 5) {
             this.stopPolling()
-            this.showError("Lost connection to the server. Please reload the page to try again.")
+            this.showError(t("js.nostr_login.lost_connection"))
           }
         }
       } finally {
@@ -253,7 +261,7 @@ export default class extends Controller {
       <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
       </svg>
-      Sign in with Browser Extension
+      ${escapeHtml(t("js.nostr_login.sign_in_extension"))}
     `
   }
 

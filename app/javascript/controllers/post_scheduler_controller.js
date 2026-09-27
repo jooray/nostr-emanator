@@ -1,5 +1,16 @@
 import { Controller } from "@hotwired/stimulus"
 import flatpickr from "flatpickr"
+import { Slovak } from "flatpickr/dist/l10n/sk.js"
+import { Czech } from "flatpickr/dist/l10n/cs.js"
+import { Spanish } from "flatpickr/dist/l10n/es.js"
+import { locale } from "../lib/i18n"
+
+// Month/day names and the date order the picker shows, per interface language.
+const PICKER_LOCALES = {
+  sk: { l10n: Slovak, date: "j. F Y" },
+  cs: { l10n: Czech, date: "j. F Y" },
+  es: { l10n: Spanish, date: "j F Y" }
+}
 
 export default class extends Controller {
   static targets = ["datetimeInput", "delayInput", "timezoneInput"]
@@ -16,6 +27,7 @@ export default class extends Controller {
 
     // Detect 12h vs 24h from locale
     const is24h = this.is24h()
+    const picker = PICKER_LOCALES[locale()]
 
     // Initialize flatpickr
     if (this.hasDatetimeInputTarget) {
@@ -23,7 +35,10 @@ export default class extends Controller {
         enableTime: true,
         dateFormat: "Y-m-dTH:i",
         altInput: true,
-        altFormat: is24h ? "F j, Y H:i" : "F j, Y h:i K",
+        altFormat: picker
+          ? `${picker.date} ${is24h ? "H:i" : "h:i K"}`
+          : (is24h ? "F j, Y H:i" : "F j, Y h:i K"),
+        ...(picker ? { locale: picker.l10n } : {}),
         time_24hr: is24h,
         minDate: "today",
         defaultDate: this.suggestedTimeValue || null
@@ -63,7 +78,7 @@ export default class extends Controller {
 
   is24h() {
     try {
-      const formatted = new Intl.DateTimeFormat(undefined, { hour: "numeric" })
+      const formatted = new Intl.DateTimeFormat(locale(), { hour: "numeric" })
         .format(new Date(2000, 0, 1, 13))
       return !formatted.match(/[AP]M/i)
     } catch {

@@ -1,7 +1,7 @@
 <div class="space-y-6" data-controller="dm-filter">
   <header class="border-b rule pb-4">
-    <h1 class="condensed text-[33px] font-bold uppercase leading-none tracking-[0.06em]">Messages</h1>
-    <p class="eng mt-2.5">Private, across every paired identity</p>
+    <h1 class="condensed text-[33px] font-bold uppercase leading-none tracking-[0.06em]"><%= t(".title") %></h1>
+    <p class="eng mt-2.5"><%= t(".subtitle") %></p>
   </header>
 
   <%= render "accounts/messaging_repair_list", accounts: @messaging_accounts %>
@@ -27,10 +27,9 @@
     <details class="border rule">
       <summary class="flex cursor-pointer list-none items-center gap-2.5 px-3 py-2.5">
         <span class="lamp" aria-hidden="true"></span>
-        <span class="eng"><%= pluralize(blocked.size, "account") %> not relay-authenticated</span>
+        <span class="eng"><%= t(".not_authenticated", count: blocked.size) %></span>
         <span class="text-sm text-gray-500 dark:text-gray-400">
-          Messages still arrive through your other relays — anything stored only on
-          <%= hosts.size == 1 ? "this one" : "these" %> may be missing.
+          <%= t(".still_arrive", count: hosts.size) %>
         </span>
       </summary>
 
@@ -46,20 +45,14 @@
         </ul>
 
         <p class="mb-2">
-          These relays hand your messages only to an authenticated client, and your
-          signer has not completed that handshake yet.
+          <%= t(".auth_explainer") %>
         </p>
         <ul class="list-disc space-y-1 pl-5">
           <li>
-            If Amber prompted you and you missed it, just wait — it retries. When it
-            asks, <strong>Authentication scope → All relays</strong> stops it asking again.
+            <%= t(".auth_missed_prompt_html") %>
           </li>
           <li>
-            If it never prompts, check <strong>Settings → Client auth whitelist</strong>
-            in Amber. While that list is non-empty, Amber rejects relay-auth requests
-            from any host that is not on it, without asking. Either add
-            <%= safe_join(hosts.map { |h| tag.code(h) }, ", ") %>
-            to the list, or clear the list so Amber asks you instead.
+            <%= t(".auth_whitelist_html", hosts: safe_join(hosts.map { |h| tag.code(h) }, ", ")) %>
           </li>
         </ul>
       </div>
@@ -68,8 +61,8 @@
 
   <% if @accounts.empty? %>
     <div class="border rule p-8 text-center">
-      <p class="text-gray-600 dark:text-gray-400">Pair an account to start receiving private messages.</p>
-      <%= link_to "Add an account", new_account_path,
+      <p class="text-gray-600 dark:text-gray-400"><%= t(".no_accounts") %></p>
+      <%= link_to t(".add_account"), new_account_path,
             class: "condensed mt-4 inline-block border border-amber-500 bg-amber-500 px-4 py-2.5 text-[14px] font-semibold uppercase tracking-[0.16em] text-[#1a1714] hover:bg-amber-400" %>
     </div>
   <% else %>
@@ -77,7 +70,7 @@
         account's follow, the web of trust, or a reply of ours waits in Requests. %>
     <div class="border-b border-gray-200 dark:border-[color:var(--color-rule-dark)]">
       <nav class="-mb-px flex gap-6">
-        <% [["known", "Inbox"], ["requests", "Requests"]].each do |tab, label| %>
+        <% [["known", t(".tabs.known")], ["requests", t(".tabs.requests")]].each do |tab, label| %>
           <%= link_to messages_path(tab: tab, accounts: @account_filter),
                 class: "condensed flex items-center gap-2 border-b-2 px-1 py-3 text-[14px] font-semibold uppercase tracking-[0.14em] transition-colors #{@tab == tab ? 'border-amber-500 text-gray-900 dark:text-gray-100' : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}" do %>
             <%= label %>
@@ -93,7 +86,7 @@
       <%= form_with url: messages_path, method: :get, data: { dm_filter_target: "form" },
                     class: "flex flex-wrap items-center gap-2" do %>
         <%= hidden_field_tag :tab, @tab %>
-        <span class="eng mr-1">Who</span>
+        <span class="eng mr-1"><%= t(".who") %></span>
         <%# An empty filter means "every account" — this is a central inbox, so
             showing all of them is the default. Render the pills as selected to
             match, rather than leaving them all looking switched off. %>
@@ -119,10 +112,10 @@
             controller falls back to the stored subset, and the link does nothing
             at all. %>
         <% unless showing_all %>
-          <%= link_to "Select all", messages_path(tab: @tab, accounts: [ "" ]),
+          <%= link_to t(".select_all"), messages_path(tab: @tab, accounts: [ "" ]),
                 class: "text-sm font-medium text-amber-600 underline hover:text-amber-500 dark:text-amber-400" %>
         <% end %>
-        <noscript><%= submit_tag "Filter", class: "rounded bg-gray-200 px-2 py-1 text-sm dark:bg-gray-700" %></noscript>
+        <noscript><%= submit_tag t(".filter"), class: "rounded bg-gray-200 px-2 py-1 text-sm dark:bg-gray-700" %></noscript>
       <% end %>
     <% end %>
 
@@ -132,17 +125,17 @@
       <% if @unread_only %>
         <%= link_to messages_path(tab: @tab, accounts: @account_filter),
               class: "inline-flex items-center gap-1.5 rounded-full border border-amber-500 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" do %>
-          Unread only
+          <%= t(".unread_only") %>
           <span aria-hidden="true">&times;</span>
         <% end %>
       <% else %>
-        <%= link_to "Filter by unread", messages_path(tab: @tab, accounts: @account_filter, unread: "1"),
+        <%= link_to t(".filter_by_unread"), messages_path(tab: @tab, accounts: @account_filter, unread: "1"),
               class: "condensed border border-gray-300 px-3 py-1.5 text-[13px] font-semibold uppercase tracking-[0.14em] text-gray-600 transition-colors hover:border-amber-500 hover:text-amber-600 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400 dark:hover:text-amber-400" %>
       <% end %>
 
-      <%= button_to "Mark all as read",
+      <%= button_to t(".mark_all_read"),
             mark_all_read_messages_path(tab: @tab, accounts: @account_filter),
-            method: :post, form: { data: { turbo_confirm: "Mark every unread conversation in this view as read?" } },
+            method: :post, form: { data: { turbo_confirm: t(".mark_all_read_confirm") } },
             class: "condensed border border-gray-300 px-3 py-1.5 text-[13px] font-semibold uppercase tracking-[0.14em] text-gray-600 transition-colors hover:border-amber-500 hover:text-amber-600 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400 dark:hover:text-amber-400" %>
     </div>
 
@@ -161,11 +154,11 @@
       <% else %>
         <div class="p-10 text-center">
           <p class="text-gray-600 dark:text-gray-400">
-            <%= @tab == "requests" ? "No message requests." : "No messages yet." %>
+            <%= @tab == "requests" ? t(".no_requests") : t(".no_messages") %>
           </p>
           <% if @tab == "known" %>
             <p class="mt-2 text-sm text-gray-500 dark:text-gray-500">
-              Messages from people you follow appear here. Everyone else waits in Requests.
+              <%= t(".known_hint") %>
             </p>
           <% end %>
         </div>
