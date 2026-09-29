@@ -32,6 +32,9 @@ class CoreRendersTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match "Settings", response.body
     assert_match "Station status", response.body
+    # Both the desktop rail and the mobile panel link to Settings, after Messages.
+    assert_select "a[href=?]", edit_user_path, count: 2
+    assert_match(/Messages.*Settings/m, css_select("nav ul").first.text)
     assert_match "2 identities", response.body
     assert_match "1 never went out", response.body
     assert_match "API Tokens (MCP)", response.body

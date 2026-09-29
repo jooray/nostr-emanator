@@ -101,6 +101,7 @@ cs:
       posts: Příspěvky
       interactions: Interakce
       calendar: Kalendář
+      settings: Nastavení
     messages_nav_item:
       messages: Zprávy
       unread:

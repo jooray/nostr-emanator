@@ -93,6 +93,7 @@ en:
       posts: Posts
       interactions: Interactions
       calendar: Calendar
+      settings: Settings
     messages_nav_item:
       messages: Messages
       unread:
