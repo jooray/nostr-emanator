@@ -6,6 +6,22 @@ notes across them. Posts are written with AI assistance (personality-aware per
 account), signed with [Amber](https://github.com/greenart7c3/Amber) over NIP-46,
 and published at their scheduled time.
 
+<!-- jooray-links:start -->
+### More from me
+
+**Related projects**
+
+- [nostrautica](https://github.com/jooray/nostrautica): Nostr-native event organizer with end-to-end encrypted data
+- [nsite-clay](https://github.com/jooray/nsite-clay): a self-editable site on Nostr, all in one HTML file
+- [oracolo](https://github.com/jooray/oracolo): a Nostr blog in a single HTML file
+- [anonmicroblog](https://github.com/jooray/anonmicroblog): anonymous microblogs on Nostr
+- [lievik](https://github.com/jooray/lievik): Nostr-first content curation for creators with several audiences
+
+**Full project showcase:** [Emanator in my project showcase](https://juraj.bednar.io/showcase/#PUB-02), or [all my projects](https://juraj.bednar.io/showcase/).
+
+I write about building things on [my blog](https://juraj.bednar.io/en/blog-en/). I also wrote a cypherpunk novel, [Tamers of Entropy](https://tamersofentropy.net/), and there is a [trailer](https://tamersofentropy.net/#trailer).
+<!-- jooray-links:end -->
+
 ## Try it
 
 A live instance runs at [emanator.cypherpunk.today](https://emanator.cypherpunk.today) — no install
