@@ -13,6 +13,7 @@
     "@tailwindcss/cli": "^4.1.18",
     "easymde": "^2.20.0",
     "esbuild": "^0.27.3",
-    "flatpickr": "^4.6.13"
+    "flatpickr": "^4.6.13",
+    "mediabunny": "1.59.1"
   }
 }

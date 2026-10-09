@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compose_title_new">Nueva publicación</string>
+    <string name="compose_title_edit">Editar publicación</string>
+    <string name="compose_posting_as">Publicar como</string>
+    <string name="compose_choose_account">Elige una identidad</string>
+    <string name="compose_no_accounts">Primero empareja una cuenta. Las publicaciones salen con las identidades de Nostr que gestionas.</string>
+    <string name="compose_add_account">Añadir cuenta</string>
+    <string name="compose_no_signer">%1$s no tiene un firmante emparejado, así que esta publicación aún no se puede firmar.</string>
+    <string name="compose_pair_signer">Emparejar firmante</string>
+    <string name="compose_cannot_edit">No se puede editar esta publicación.</string>
+    <string name="compose_restored_draft">Se recuperó tu texto sin guardar.</string>
+    <string name="compose_placeholder">¿Qué estás pensando?</string>
+    <plurals name="compose_chars">
+        <item quantity="one">%d carácter</item>
+        <item quantity="many">%d caracteres</item>
+        <item quantity="other">%d caracteres</item>
+    </plurals>
+    <string name="compose_attach_photos">Fotos</string>
+    <string name="compose_attach_camera">Cámara</string>
+    <string name="compose_attach_files">Archivos</string>
+    <string name="compose_save_schedule">Guardar y programar</string>
+    <string name="compose_save_draft">Guardar borrador</string>
+    <string name="compose_waiting_upload">Esperando la subida…</string>
+
+    <string name="upload_shrinking">Reduciendo %1$s…</string>
+    <string name="upload_encoding">Recodificando %1$s… %2$d %%</string>
+    <string name="upload_shrunk">%1$s: %2$s → %3$s</string>
+    <string name="upload_uploading">Subiendo…</string>
+    <string name="upload_done">%1$s adjuntado.</string>
+    <string name="upload_done_shrunk">%1$s adjuntado (%2$s → %3$s).</string>
+    <string name="upload_too_large">%1$s es demasiado grande (%2$s). El límite es %3$s.</string>
+    <string name="upload_failed">Falló la subida</string>
+    <string name="upload_timed_out">Se agotó el tiempo de la subida</string>
+
+    <string name="ai_heading">Generación con IA</string>
+    <string name="ai_help">Describe lo que quieres publicar y deja que la IA genere el contenido por ti.</string>
+    <string name="ai_prompt_label">Prompt</string>
+    <string name="ai_prompt_placeholder">p. ej., Escribe una nota breve sobre la importancia de la privacidad…</string>
+    <string name="ai_generate">Generar</string>
+    <string name="ai_refine_label">Refinar</string>
+    <string name="ai_refine_placeholder">p. ej., Hazlo más corto y directo…</string>
+    <string name="ai_refine">Refinar</string>
+    <string name="ai_enter_prompt">Escribe un prompt para la IA</string>
+    <string name="ai_enter_instructions">Escribe instrucciones para la IA</string>
+    <string name="ai_nothing_to_refine">No hay contenido que refinar. Genera o escribe algo de contenido primero.</string>
+    <string name="ai_connecting">Conectando con la IA…</string>
+    <string name="ai_content_below">El contenido aparecerá abajo a medida que se genere.</string>
+    <string name="ai_generating">Generando contenido…</string>
+    <string name="ai_humanizing">Humanizando el contenido…</string>
+    <string name="ai_refining">Refinando el contenido…</string>
+    <string name="ai_generation_complete">¡Generación completada!</string>
+    <string name="ai_refinement_complete">¡Refinamiento completado!</string>
+    <string name="ai_connection_lost">Se perdió la conexión. Inténtalo de nuevo.</string>
+    <string name="ai_replaced">Se reemplazó tu texto anterior.</string>
+    <string name="ai_undo">Deshacer</string>
+
+    <string name="billing_note_none">La escritura con IA es de pago. Tu primer borrador inicia una prueba gratuita de 3 días.</string>
+    <string name="billing_note_trial">Tu prueba gratuita dura hasta el %1$s.</string>
+    <string name="billing_note_expired">Tu acceso a la IA terminó el %1$s.</string>
+    <string name="billing_note_link">Planes y pago</string>
+
+    <string name="schedule_title">Programar publicación</string>
+    <string name="schedule_subtitle">Configura cuándo se publica y organiza los reposts.</string>
+    <string name="schedule_preview">Vista previa</string>
+    <string name="schedule_time">Fecha y hora de publicación</string>
+    <string name="schedule_date">Fecha</string>
+    <string name="schedule_clock">Hora</string>
+    <string name="schedule_zone">Las horas están en %1$s.</string>
+    <string name="schedule_soon">Pronto</string>
+    <plurals name="schedule_soon_hint">
+        <item quantity="one">Pronto publica dentro de %d minuto, dejando tiempo para aprobar la firma.</item>
+        <item quantity="many">Pronto publica dentro de %d minutos, dejando tiempo para aprobar la firma.</item>
+        <item quantity="other">Pronto publica dentro de %d minutos, dejando tiempo para aprobar la firma.</item>
+    </plurals>
+    <string name="schedule_suggested">Sugerido: %1$s</string>
+    <string name="schedule_in_past">La hora ya pasó. Elige una hora futura.</string>
+    <string name="schedule_also_post_as">También publicar como</string>
+    <string name="schedule_select_all">Seleccionar todas las mostradas</string>
+    <string name="schedule_filter">Filtrar por nombre, npub o pubkey</string>
+    <string name="schedule_no_match">Ninguna identidad coincide.</string>
+    <string name="schedule_already">Ya programado</string>
+    <string name="schedule_reposts_none">Sin reposts: una aprobación, para la publicación en sí.</string>
+    <plurals name="schedule_reposts_selected">
+        <item quantity="one">%1$d repost: %2$d aprobaciones distintas en tu firmante, una tras otra.</item>
+        <item quantity="many">%1$d reposts: %2$d aprobaciones distintas en tu firmante, una tras otra.</item>
+        <item quantity="other">%1$d reposts: %2$d aprobaciones distintas en tu firmante, una tras otra.</item>
+    </plurals>
+    <string name="schedule_max_delay">Retraso máximo para los reposts (horas)</string>
+    <string name="schedule_max_delay_help">Los reposts se repartirán al azar dentro de esta ventana de tiempo después de que se publique la publicación original.</string>
+    <string name="schedule_approve_note">Después de tocar Firmar y programar, aprueba la firma en tu app de firma (Amber). La publicación saldrá a su hora sin que hagas nada más.</string>
+    <string name="schedule_sign">Firmar y programar</string>
+</resources>

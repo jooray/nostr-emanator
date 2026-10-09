@@ -45,6 +45,10 @@ gem "httpx"
 # Environment variables management
 gem "dotenv-rails", groups: [:development, :test]
 
+# Billing client for the hosted service (vendored from nostr-billing; inert
+# unless BILLING_API_URL is set)
+gem "nostr_billing", path: "vendor/gems/nostr_billing"
+
 # Pagination
 gem "kaminari"
 gem "rails-i18n", "~> 8.0"

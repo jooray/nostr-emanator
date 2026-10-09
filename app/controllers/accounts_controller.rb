@@ -35,6 +35,8 @@ class AccountsController < ApplicationController
   end
 
   def new
+    return redirect_to(accounts_path, alert: account_limit_message) unless Billing.can_add_account?(current_user)
+
     @account = current_user.accounts.build
 
     # Reuse an in-progress pairing session (e.g. a second tab, or a reload of
@@ -43,40 +45,30 @@ class AccountsController < ApplicationController
     # tab's poller forever (L28).
     existing_session = pending_pairing_session
     if existing_session
-      @connect_data = connect_data_from_session(existing_session)
+      Nip46SupervisorJob.ensure_running
+      @connect_data = Accounts::Pairing.connect_data(existing_session)
     else
-      @connect_data = Nostr::AuthService.new.generate_connect_uri
+      @connect_data = Accounts::Pairing.start
       session[:account_pairing_session_id] = @connect_data[:session_id]
     end
 
-    Nip46SupervisorJob.ensure_running
     @qr_code = RQRCode::QRCode.new(@connect_data[:uri])
   end
 
   def create
-    auth_session = NostrAuthSession.active.find_by(session_id: session[:account_pairing_session_id])
+    result = Accounts::Pairing.new(current_user, session[:account_pairing_session_id]).complete_new
 
-    unless auth_session&.authenticated?
-      redirect_to new_account_path, alert: t("accounts.create.session_expired")
-      return
-    end
-
-    user_pubkey = auth_session.authenticated_user_pubkey
-    @account = current_user.accounts.find_or_initialize_by(pubkey_hex: user_pubkey)
-    @account.assign_attributes(npub: Nostr::KeyConverter.hex_to_npub(user_pubkey))
-    @account.apply_signer(auth_session)
-
-    if @account.save
-      complete_pairing!(@account, auth_session)
+    case result.status
+    when :paired
+      session.delete(:account_pairing_session_id)
+      redirect_to result.account, notice: t("accounts.paired_notice")
+    when :over_limit
+      redirect_to accounts_path, alert: result.error
+    when :failed
+      redirect_to new_account_path, alert: result.error
     else
-      redirect_to new_account_path, alert: @account.errors.full_messages.join(", ")
+      redirect_to new_account_path, alert: t("accounts.create.session_expired")
     end
-  rescue ActiveRecord::RecordNotUnique
-    # L16: find_or_initialize_by + save races another request pairing the
-    # same key (double poll / second tab) — reload the row the other
-    # request created instead of 500ing, and finish pairing against it.
-    @account = current_user.accounts.find_by!(pubkey_hex: user_pubkey)
-    complete_pairing!(@account, auth_session)
   end
 
   def edit
@@ -151,9 +143,8 @@ class AccountsController < ApplicationController
     # needs two extra steps the normal re-pair does not (see the view).
     @messaging_repair = params[:reason] == "messaging"
     pending_pairing_session&.consume!
-    @connect_data = Nostr::AuthService.new.generate_connect_uri
+    @connect_data = Accounts::Pairing.start
     session[:account_pairing_session_id] = @connect_data[:session_id]
-    Nip46SupervisorJob.ensure_running
     @qr_code = RQRCode::QRCode.new(@connect_data[:uri])
   end
 
@@ -161,33 +152,22 @@ class AccountsController < ApplicationController
     session_id = session[:account_pairing_session_id]
     return render json: { paired: false, error: t("accounts.no_pending_session") } if session_id.blank?
 
-    auth_session = NostrAuthSession.active.find_by(session_id: session_id)
-    # No active session left under this id means it expired (or was consumed/
-    # never existed) — say so explicitly so the poller stops instead of
-    # spinning on {paired:false} forever (H9).
-    return render json: { paired: false, expired: true } if auth_session.nil?
-
-    if auth_session.authenticated?
-      if auth_session.authenticated_user_pubkey != @account.pubkey_hex
-        auth_session.consume!
-        session.delete(:account_pairing_session_id)
-        render json: { paired: false, error: t(".identity_mismatch", signer: auth_session.authenticated_user_pubkey[0..15], account: @account.pubkey_hex[0..15]) }
-        return
-      end
-
-      # A save failure here used to escape as an HTML 422, which the poller then
-      # tried to JSON.parse — so the real reason never reached the user and the
-      # poll just spun. Answer in JSON whatever happens.
-      unless @account.apply_signer(auth_session).save
-        render json: { paired: false, error: t(".save_failed", errors: @account.errors.full_messages.to_sentence) }
-        return
-      end
-
-      auth_session.consume!
+    result = Accounts::Pairing.new(current_user, session_id).complete_re_pair(@account)
+    # Every outcome answers in JSON: an HTML error page here used to reach the
+    # poller, which then tried to JSON.parse it — so the real reason never
+    # reached the user and the poll just spun. No active session left under
+    # this id means it expired — say so explicitly so the poller stops (H9).
+    case result.status
+    when :paired
       session.delete(:account_pairing_session_id)
       render json: { paired: true, redirect_url: account_path(@account) }
+    when :expired
+      render json: { paired: false, expired: true }
+    when :pending
+      render json: { paired: false, auth_url: result.auth_url }
     else
-      render json: { paired: false, auth_url: auth_session&.auth_url }
+      session.delete(:account_pairing_session_id) if Accounts::Pairing.active_session(session_id).nil?
+      render json: { paired: false, error: result.error }
     end
   end
 
@@ -209,6 +189,10 @@ class AccountsController < ApplicationController
   end
 
   private
+
+  def account_limit_message
+    t("billing.account_limit", limit: Billing::FREE_ACCOUNT_LIMIT)
+  end
 
   # Only the fields the editor offers. Everything else already in the published
   # profile is preserved by ProfilePublisherService#merge_content — this list
@@ -243,33 +227,6 @@ class AccountsController < ApplicationController
 
   def pending_pairing_session
     NostrAuthSession.active.find_by(session_id: session[:account_pairing_session_id])
-  end
-
-  # Rebuild the nostrconnect:// URI for an already-persisted pairing session
-  # (mirrors Nostr::AuthService#generate_connect_uri, minus creating new key
-  # material) so `new` can redisplay the same QR instead of issuing a new one.
-  def connect_data_from_session(auth_session)
-    relay_urls = auth_session.relay_urls
-    relay_params = relay_urls.map { |r| "relay=#{CGI.escape(r)}" }.join("&")
-    canonical_url = Nostr::AuthService.new.canonical_url
-    metadata = "secret=#{auth_session.secret}&name=#{CGI.escape('Emanator')}" \
-               "&perms=#{CGI.escape(Nostr::AuthService::PERMISSIONS)}&url=#{CGI.escape(canonical_url)}"
-
-    {
-      uri: "nostrconnect://#{auth_session.temp_pubkey}?#{relay_params}&#{metadata}",
-      session_id: auth_session.session_id,
-      relay_urls: relay_urls
-    }
-  end
-
-  # H11: profile + relay-list fetches are blocking relay round-trips (worst
-  # case ~40s combined) — never do them inline in the pairing request.
-  def complete_pairing!(account, auth_session)
-    auth_session.consume!
-    session.delete(:account_pairing_session_id)
-    FetchAccountProfileJob.perform_later(account.id)
-    FetchRelayListJob.perform_later(account.id)
-    redirect_to account, notice: t("accounts.paired_notice")
   end
 
   def pairing_rate_limited

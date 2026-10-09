@@ -1,0 +1,57 @@
+---
+en:
+  billing:
+    show:
+      title: AI writing
+      intro: Everything in Emanator is free except AI writing, which drafts and edits posts in each account's voice. It is prepaid in sats, so there is no subscription to cancel.
+      status:
+        title: Your access
+        active: Paid until %{date}.
+        trial: Free trial until %{date}.
+        expired: Your AI access ended on %{date}. Pay below to continue.
+        none: You haven't used AI writing yet. Your first draft starts a free 3-day trial.
+        unknown: Billing can't be reached right now. Try again in a minute.
+        other: "%{product} is also active until %{date}."
+        npub: 'Payments are tied to your login key: %{npub}'
+      products:
+        nalgorithm: nalgorithm
+        lievik: Lievik
+        emanator_ai: Emanator AI
+      plans:
+        price: "%{sats} sats / %{days} days"
+        pay: Pay %{sats} sats
+        unavailable: Prices can't be loaded because billing isn't answering. Try again in a minute.
+        emanator_ai:
+          name: Emanator AI
+          covers: AI drafts and edits in Emanator, and no limit on the number of accounts you manage.
+        all_access:
+          name: All-access
+          covers: Emanator AI, hosted nalgorithm (a ranked feed and voice digests) and Lievik (content curation for your audiences).
+      custom:
+        title: Pay any amount
+        help: Time is credited pro rata and added to what you already have. The minimum is %{min} sats, which buys %{days} days of Emanator AI.
+        plan: Plan
+        sats: Sats
+        pay: Create invoice
+      self_host_html: 'Emanator is open source. Run it yourself with your own AI key and none of this applies: %{link}'
+      terms: "Terms, refunds and support"
+      terms_url: "https://cypherpunk.today/terms/"
+    charge:
+      settled: Paid. AI writing is active until %{date}.
+    errors:
+      unknown_plan: That plan doesn't exist.
+      sats_range: Enter between %{min} and %{max} sats.
+      unavailable: Billing can't create an invoice right now. Try again in a minute.
+    note:
+      none: AI writing is paid. Your first draft starts a free 3-day trial.
+      trial: Your free trial runs until %{date}.
+      expired: Your AI access ended on %{date}.
+      link: Plans and payment
+    account_limit: The free plan manages up to %{limit} accounts. A trial or a paid plan removes the limit.
+  ai_assist:
+    paywall: AI writing needs a trial or paid time.
+    daily_cap: You've reached today's AI limit. It resets at midnight UTC.
+    billing_unavailable: Billing isn't answering, so AI writing is paused. Try again in a minute.
+  js:
+    content_builder:
+      open_billing: See plans

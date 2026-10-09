@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="msg_subtitle">Privados, en todas las identidades vinculadas</string>
+    <string name="msg_tab_known">Recibidos</string>
+    <string name="msg_tab_requests">Solicitudes</string>
+    <string name="msg_who">Quién</string>
+    <string name="msg_select_all">Seleccionar todo</string>
+    <string name="msg_unread_only">Solo no leídos</string>
+    <string name="msg_mark_all_read">Marcar todo como leído</string>
+    <string name="msg_mark_all_read_confirm">¿Marcar como leídas todas las conversaciones sin leer de esta vista?</string>
+    <plurals name="msg_marked">
+        <item quantity="one">Se marcó %d conversación como leída.</item>
+        <item quantity="many">Se marcaron %d conversaciones como leídas.</item>
+        <item quantity="other">Se marcaron %d conversaciones como leídas.</item>
+    </plurals>
+    <string name="msg_nothing_unread">No hay nada sin leer.</string>
+    <string name="msg_no_requests">No hay solicitudes de mensajes.</string>
+    <string name="msg_no_messages">Todavía no hay mensajes.</string>
+    <string name="msg_known_hint">Aquí aparecen los mensajes de las personas que sigues. El resto espera en Solicitudes.</string>
+    <string name="msg_no_accounts">Vincula una cuenta para empezar a recibir mensajes privados.</string>
+    <string name="msg_add_account">Añadir una cuenta</string>
+
+    <plurals name="msg_repair_summary">
+        <item quantity="one">%d cuenta todavía no puede enviar mensajes</item>
+        <item quantity="many">%d cuentas todavía no pueden enviar mensajes</item>
+        <item quantity="other">%d cuentas todavía no pueden enviar mensajes</item>
+    </plurals>
+    <string name="msg_repair_hint">Vinculada antes de que existiera la mensajería privada: vuelve a vincularla para concederla. Esto no afecta a la publicación.</string>
+    <string name="msg_repair_explanation">Sus firmantes nunca concedieron permiso para cifrar, sellar o descifrar mensajes. Volver a vincularlas conserva las publicaciones, la programación y los ajustes de cada cuenta.</string>
+    <string name="msg_re_pair">Volver a vincular</string>
+    <string name="msg_enable_messaging">Habilitar mensajería</string>
+
+    <plurals name="msg_not_authenticated">
+        <item quantity="one">%d cuenta sin autenticar en el relay</item>
+        <item quantity="many">%d cuentas sin autenticar en el relay</item>
+        <item quantity="other">%d cuentas sin autenticar en el relay</item>
+    </plurals>
+    <plurals name="msg_still_arrive">
+        <item quantity="one">Los mensajes siguen llegando por tus otros relays: lo que esté guardado solo en este podría faltar.</item>
+        <item quantity="many">Los mensajes siguen llegando por tus otros relays: lo que esté guardado solo en estos podría faltar.</item>
+        <item quantity="other">Los mensajes siguen llegando por tus otros relays: lo que esté guardado solo en estos podría faltar.</item>
+    </plurals>
+    <string name="msg_auth_explainer">Estos relays solo entregan tus mensajes a un cliente autenticado, y tu firmante todavía no ha completado ese proceso.</string>
+    <string name="msg_auth_missed_prompt">Si Amber te lo pidió y no lo viste, espera: lo reintenta. Cuando pregunte, Authentication scope → All relays hace que no vuelva a preguntar.</string>
+    <string name="msg_auth_whitelist">Si nunca pregunta, revisa Settings → Client auth whitelist en Amber. Mientras esa lista no esté vacía, Amber rechaza sin preguntar las solicitudes de autenticación de cualquier host que no esté en ella. Añade %1$s a la lista, o bórrala para que Amber te pregunte a ti.</string>
+
+    <string name="msg_row_you">Tú:</string>
+    <string name="msg_row_no_preview">(sin vista previa)</string>
+    <string name="msg_row_legacy_badge">Antiguo · metadatos públicos</string>
+    <plurals name="msg_row_people">
+        <item quantity="one">%d persona</item>
+        <item quantity="many">%d personas</item>
+        <item quantity="other">%d personas</item>
+    </plurals>
+
+    <string name="conv_title">Conversación</string>
+    <string name="conv_yourself">ti mismo</string>
+    <plurals name="conv_and_more">
+        <item quantity="one">y %d más</item>
+        <item quantity="many">y %d más</item>
+        <item quantity="other">y %d más</item>
+    </plurals>
+    <string name="conv_all_participants">Todos los participantes</string>
+    <string name="conv_legacy_title">Conversación NIP-04 antigua</string>
+    <string name="conv_legacy_body">El texto del mensaje está cifrado, pero el remitente, el destinatario y el momento de envío son públicos en cada relay por el que pasó este hilo.</string>
+    <string name="conv_request_body">No sigues a esta persona, y tampoco lo hace ninguna de tus otras cuentas.</string>
+    <string name="conv_accept">Aceptar</string>
+    <string name="conv_block">Bloquear</string>
+    <string name="conv_block_confirm">¿Bloquear esta conversación? No verás sus mensajes.</string>
+    <string name="conv_load_older">Cargar mensajes anteriores</string>
+    <string name="conv_empty">Todavía no hay mensajes en esta conversación.</string>
+    <string name="conv_note_to_self">Nota para ti mismo</string>
+    <string name="conv_reply">Responder</string>
+    <string name="conv_replying_to">Respondiendo a: %1$s</string>
+
+    <string name="comp_unavailable">El firmante de esta cuenta todavía no ha concedido permisos de mensajería.</string>
+    <string name="comp_checking">Comprobando dónde recibe esta persona mensajes privados…</string>
+    <string name="comp_no_inbox_title">Esta persona no ha publicado una bandeja de mensajes privados</string>
+    <string name="comp_no_inbox_body">Tu mensaje sigue totalmente cifrado y tu identidad se mantiene oculta, pero va a relays que esta persona nunca designó para mensajes, así que podría no llegar. Los clientes sin ningún soporte de mensajería privada (Primal, Damus) no lo buscarán ahí.</string>
+    <string name="comp_strong_best_effort">Cifrado fuerte: entrega sin garantías</string>
+    <string name="comp_legacy_summary">¿No llega? Envía un mensaje antiguo en su lugar</string>
+    <string name="comp_legacy_intro">Un mensaje antiguo llega a todos los clientes, incluidos los que no tienen soporte de mensajería privada, que son la mayoría. Pero es un retroceso real:</string>
+    <string name="comp_legacy_placeholder">Mensaje (el texto está cifrado; a quién se lo enviaste, no)</string>
+    <string name="comp_send_public_metadata">Enviar con metadatos públicos</string>
+    <string name="comp_legacy_separate">Esto inicia un hilo antiguo aparte con la misma persona, separado de tu hilo privado.</string>
+    <string name="comp_basic_encryption">Cifrado básico: los metadatos son públicos</string>
+    <string name="comp_legacy_reply_placeholder">Responde en este hilo antiguo…</string>
+    <string name="comp_strong_private">Cifrado fuerte: el contenido y los metadatos son privados</string>
+    <string name="comp_placeholder">Escribe un mensaje privado…</string>
+    <string name="comp_send">Enviar</string>
+
+    <string name="fail_not_sent">No se envió</string>
+    <string name="fail_try_again">Reintentar</string>
+    <string name="fail_legacy_summary">¿Enviarlo como mensaje antiguo en su lugar?</string>
+    <string name="fail_legacy_intro">No pueden recibir mensajes privados de ninguna forma, así que esta es la única manera de que les llegue. Pero es un retroceso real:</string>
+    <string name="fail_moves_to_legacy">Esto lo mueve a un hilo antiguo aparte con la misma persona.</string>
+
+    <string name="bub_encrypted_file">[archivo cifrado]</string>
+    <string name="bub_downgrade_badge">Enviado con metadatos sin cifrar</string>
+    <string name="bub_legacy_badge">Antiguo</string>
+    <string name="bub_best_effort">Sin garantías</string>
+    <string name="bub_sending">Enviando…</string>
+
+    <plurals name="int_subtitle">
+        <item quantity="one">Respuestas, citas y menciones en %d identidad</item>
+        <item quantity="many">Respuestas, citas y menciones en %d identidades</item>
+        <item quantity="other">Respuestas, citas y menciones en %d identidades</item>
+    </plurals>
+    <string name="int_unselect_all">Deseleccionar todo</string>
+    <string name="int_all">Todo</string>
+    <string name="int_your_post">Tu publicación</string>
+    <string name="int_quoted_post">Publicación citada</string>
+    <string name="int_in_reply_to">En respuesta a</string>
+    <string name="int_labelled">%1$s (%2$s)</string>
+    <string name="int_show_more">Mostrar más</string>
+    <string name="int_type_reply">respuesta</string>
+    <string name="int_type_quote">cita</string>
+    <string name="int_type_mention">mención</string>
+    <string name="int_to_account">a @%1$s</string>
+    <string name="int_like">Me gusta</string>
+    <string name="int_follow">Seguir</string>
+    <string name="int_mute">Silenciar a @%1$s</string>
+    <string name="int_mute_confirm">¿Silenciar a %1$s? Sus publicaciones se ocultarán en todas tus cuentas.</string>
+    <string name="int_reply">Responder</string>
+    <string name="int_replying_as">Respondiendo como %1$s</string>
+    <string name="int_like_this_post">Dar me gusta a esta publicación</string>
+    <string name="int_follow_author">Seguir a @%1$s</string>
+    <string name="int_reply_placeholder">Escribe tu respuesta…</string>
+    <string name="int_sign_and_publish">Firmar y publicar</string>
+    <string name="int_empty_title">Todavía no hay interacciones</string>
+    <string name="int_empty_body">Aquí aparecerán las interacciones de otras personas a medida que respondan, citen o mencionen a tus cuentas.</string>
+    <string name="int_loading">Cargando las últimas interacciones…</string>
+    <string name="int_none_selected_title">Ninguna cuenta seleccionada</string>
+    <string name="int_none_selected_body">Selecciona una cuenta arriba para ver sus interacciones.</string>
+
+    <string name="act_failed">Falló</string>
+    <string name="act_approve">Aprueba en tu app de firma…</string>
+    <string name="act_publishing">Publicando…</string>
+    <string name="act_processing">Procesando…</string>
+    <string name="act_liked">¡Te gusta!</string>
+    <string name="act_followed">¡Siguiendo!</string>
+    <string name="act_following">Siguiendo</string>
+    <string name="reply_creating">Creando la respuesta…</string>
+    <string name="reply_signing_approve">Firmando… (aprueba en tu app de firma)</string>
+    <string name="reply_published">¡Respuesta publicada!</string>
+    <string name="reply_signing_stalled">La firma se estancó. Abre la publicación para intentarlo de nuevo.</string>
+    <string name="reply_publishing_failed">La publicación falló. Inténtalo de nuevo desde la página de la publicación.</string>
+</resources>

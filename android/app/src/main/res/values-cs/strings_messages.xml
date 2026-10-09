@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="msg_subtitle">Soukromé, napříč všemi spárovanými identitami</string>
+    <string name="msg_tab_known">Doručené</string>
+    <string name="msg_tab_requests">Žádosti</string>
+    <string name="msg_who">Kdo</string>
+    <string name="msg_select_all">Vybrat vše</string>
+    <string name="msg_unread_only">Jen nepřečtené</string>
+    <string name="msg_mark_all_read">Označit vše jako přečtené</string>
+    <string name="msg_mark_all_read_confirm">Označit všechny nepřečtené konverzace v tomto zobrazení jako přečtené?</string>
+    <plurals name="msg_marked">
+        <item quantity="one">Označena %d konverzace jako přečtená.</item>
+        <item quantity="few">Označeny %d konverzace jako přečtené.</item>
+        <item quantity="many">Označeno %d konverzace jako přečtené.</item>
+        <item quantity="other">Označeno %d konverzací jako přečtených.</item>
+    </plurals>
+    <string name="msg_nothing_unread">Nic nepřečteného.</string>
+    <string name="msg_no_requests">Žádné žádosti o zprávy.</string>
+    <string name="msg_no_messages">Zatím žádné zprávy.</string>
+    <string name="msg_known_hint">Tady se zobrazují zprávy od lidí, které sleduješ. Všichni ostatní čekají v Žádostech.</string>
+    <string name="msg_no_accounts">Spáruj účet a začni přijímat soukromé zprávy.</string>
+    <string name="msg_add_account">Přidat účet</string>
+
+    <plurals name="msg_repair_summary">
+        <item quantity="one">%d účet zatím nemůže posílat zprávy</item>
+        <item quantity="few">%d účty zatím nemohou posílat zprávy</item>
+        <item quantity="many">%d účtu zatím nemůže posílat zprávy</item>
+        <item quantity="other">%d účtů zatím nemůže posílat zprávy</item>
+    </plurals>
+    <string name="msg_repair_hint">Spárováno předtím, než existovaly soukromé zprávy. Opětovným spárováním jim to povolíš. Zveřejňování příspěvků tím není dotčeno.</string>
+    <string name="msg_repair_explanation">Jejich podepisovače nikdy nedostaly oprávnění zprávy šifrovat, zapečeťovat ani dešifrovat. Opětovné spárování zachová příspěvky, plán i nastavení každého účtu.</string>
+    <string name="msg_re_pair">Spárovat znovu</string>
+    <string name="msg_enable_messaging">Povolit zprávy</string>
+
+    <plurals name="msg_not_authenticated">
+        <item quantity="one">%d účet není ověřený u relaye</item>
+        <item quantity="few">%d účty nejsou ověřené u relaye</item>
+        <item quantity="many">%d účtu není ověřeno u relaye</item>
+        <item quantity="other">%d účtů není ověřeno u relaye</item>
+    </plurals>
+    <plurals name="msg_still_arrive">
+        <item quantity="one">Zprávy pořád chodí přes tvoje ostatní relaye. Cokoli je uložené jen na tomto, může chybět.</item>
+        <item quantity="few">Zprávy pořád chodí přes tvoje ostatní relaye. Cokoli je uložené jen na těchto, může chybět.</item>
+        <item quantity="many">Zprávy pořád chodí přes tvoje ostatní relaye. Cokoli je uložené jen na těchto, může chybět.</item>
+        <item quantity="other">Zprávy pořád chodí přes tvoje ostatní relaye. Cokoli je uložené jen na těchto, může chybět.</item>
+    </plurals>
+    <string name="msg_auth_explainer">Tyto relaye předávají tvoje zprávy jen ověřenému klientovi a tvůj podepisovač zatím tento handshake nedokončil.</string>
+    <string name="msg_auth_missed_prompt">Pokud tě Amber vyzval a tys to přehlédl, stačí počkat, zkusí to znovu. Až se zeptá, „Authentication scope“ → „All relays“ mu zabrání ptát se znovu.</string>
+    <string name="msg_auth_whitelist">Pokud se nikdy nezeptá, zkontroluj v Amberu Settings → „Client auth whitelist“. Dokud tento seznam není prázdný, Amber bez zeptání odmítne žádosti o ověření relaye z každého hostitele, který na něm není. Buď do seznamu přidej %1$s, nebo ho vymaž, aby se tě Amber zeptal místo toho.</string>
+
+    <string name="msg_row_you">Ty:</string>
+    <string name="msg_row_no_preview">(bez náhledu)</string>
+    <string name="msg_row_legacy_badge">Starší · metadata veřejná</string>
+    <plurals name="msg_row_people">
+        <item quantity="one">%d osoba</item>
+        <item quantity="few">%d osoby</item>
+        <item quantity="many">%d osoby</item>
+        <item quantity="other">%d osob</item>
+    </plurals>
+
+    <string name="conv_title">Konverzace</string>
+    <string name="conv_yourself">tebou</string>
+    <plurals name="conv_and_more">
+        <item quantity="one">a %d další</item>
+        <item quantity="few">a %d další</item>
+        <item quantity="many">a %d dalšího</item>
+        <item quantity="other">a %d dalších</item>
+    </plurals>
+    <string name="conv_all_participants">Všichni účastníci</string>
+    <string name="conv_legacy_title">Konverzace přes starší NIP-04</string>
+    <string name="conv_legacy_body">Text zprávy je zašifrovaný, ale odesílatel, příjemce a čas jsou veřejné na každém relayi, kterého se toto vlákno dotklo.</string>
+    <string name="conv_request_body">Tuto osobu nesleduješ ty ani žádný z tvých dalších účtů.</string>
+    <string name="conv_accept">Přijmout</string>
+    <string name="conv_block">Blokovat</string>
+    <string name="conv_block_confirm">Zablokovat tuto konverzaci? Zprávy z ní už neuvidíš.</string>
+    <string name="conv_load_older">Načíst starší zprávy</string>
+    <string name="conv_empty">V této konverzaci zatím nejsou žádné zprávy.</string>
+    <string name="conv_note_to_self">Poznámka sobě</string>
+    <string name="conv_reply">Odpovědět</string>
+    <string name="conv_replying_to">Odpovídáš na: %1$s</string>
+
+    <string name="comp_unavailable">Podepisovač tohoto účtu zatím neudělil oprávnění ke zprávám.</string>
+    <string name="comp_checking">Zjišťuje se, kde tato osoba přijímá soukromé zprávy…</string>
+    <string name="comp_no_inbox_title">Tato osoba nemá zveřejněnou schránku pro soukromé zprávy</string>
+    <string name="comp_no_inbox_body">Tvoje zpráva je pořád plně zašifrovaná a tvoje identita zůstává skrytá, ale jde na relaye, které tahle osoba pro zprávy nikdy neurčila, takže nemusí dorazit. Klienti bez jakékoli podpory soukromých zpráv (Primal, Damus) ji tam nebudou ani hledat.</string>
+    <string name="comp_strong_best_effort">Silné šifrování, doručení bez záruky</string>
+    <string name="comp_legacy_summary">Nedochází to? Pošli místo toho starší zprávu</string>
+    <string name="comp_legacy_intro">Starší zpráva se dostane ke každému klientovi, včetně těch bez podpory soukromých zpráv, a to je většina z nich. Je to ale skutečný krok zpět:</string>
+    <string name="comp_legacy_placeholder">Zpráva (text je zašifrovaný, komu jsi ji poslal, ne)</string>
+    <string name="comp_send_public_metadata">Odeslat s veřejnými metadaty</string>
+    <string name="comp_legacy_separate">Tím se založí samostatné starší vlákno se stejnou osobou, oddělené od tvého soukromého.</string>
+    <string name="comp_basic_encryption">Základní šifrování, metadata jsou veřejná</string>
+    <string name="comp_legacy_reply_placeholder">Odpovědět v tomto starším vlákně…</string>
+    <string name="comp_strong_private">Silné šifrování, obsah i metadata jsou soukromá</string>
+    <string name="comp_placeholder">Napiš soukromou zprávu…</string>
+    <string name="comp_send">Odeslat</string>
+
+    <string name="fail_not_sent">Neodesláno</string>
+    <string name="fail_try_again">Zkusit znovu</string>
+    <string name="fail_legacy_summary">Poslat to místo toho jako starší zprávu?</string>
+    <string name="fail_legacy_intro">Tahle osoba vůbec nemůže přijímat soukromé zprávy, takže tohle je jediný způsob, jak ji zpráva zastihne. Je to ale skutečný krok zpět:</string>
+    <string name="fail_moves_to_legacy">Tím se přesune do samostatného staršího vlákna se stejnou osobou.</string>
+
+    <string name="bub_encrypted_file">[zašifrovaný soubor]</string>
+    <string name="bub_downgrade_badge">Odesláno s nešifrovanými metadaty</string>
+    <string name="bub_legacy_badge">Starší</string>
+    <string name="bub_best_effort">Bez záruky</string>
+    <string name="bub_sending">Odesílá se…</string>
+
+    <plurals name="int_subtitle">
+        <item quantity="one">Odpovědi, citace a zmínky napříč %d identitou</item>
+        <item quantity="few">Odpovědi, citace a zmínky napříč %d identitami</item>
+        <item quantity="many">Odpovědi, citace a zmínky napříč %d identitami</item>
+        <item quantity="other">Odpovědi, citace a zmínky napříč %d identitami</item>
+    </plurals>
+    <string name="int_unselect_all">Zrušit výběr</string>
+    <string name="int_all">Vše</string>
+    <string name="int_your_post">Tvůj příspěvek</string>
+    <string name="int_quoted_post">Citovaný příspěvek</string>
+    <string name="int_in_reply_to">V odpovědi na</string>
+    <string name="int_labelled">%1$s (%2$s)</string>
+    <string name="int_show_more">Zobrazit více</string>
+    <string name="int_type_reply">odpověď</string>
+    <string name="int_type_quote">citace</string>
+    <string name="int_type_mention">zmínka</string>
+    <string name="int_to_account">pro @%1$s</string>
+    <string name="int_like">Líbí se</string>
+    <string name="int_follow">Sledovat</string>
+    <string name="int_mute">Ztlumit @%1$s</string>
+    <string name="int_mute_confirm">Ztlumit %1$s? Jejich příspěvky se skryjí napříč všemi tvými účty.</string>
+    <string name="int_reply">Odpovědět</string>
+    <string name="int_replying_as">Odpovídáš jako %1$s</string>
+    <string name="int_like_this_post">Líbí se mi tento příspěvek</string>
+    <string name="int_follow_author">Sledovat @%1$s</string>
+    <string name="int_reply_placeholder">Napiš svou odpověď…</string>
+    <string name="int_sign_and_publish">Podepsat a zveřejnit</string>
+    <string name="int_empty_title">Zatím žádné interakce</string>
+    <string name="int_empty_body">Tady se objeví interakce od ostatních, jakmile na tvoje účty odpoví, citují je nebo je zmíní.</string>
+    <string name="int_loading">Načítají se poslední interakce…</string>
+    <string name="int_none_selected_title">Nejsou vybrané žádné účty</string>
+    <string name="int_none_selected_body">Vyber účet výše a zobrazí se jeho interakce.</string>
+
+    <string name="act_failed">Selhalo</string>
+    <string name="act_approve">Schval v podepisovací aplikaci…</string>
+    <string name="act_publishing">Zveřejňování…</string>
+    <string name="act_processing">Zpracovává se…</string>
+    <string name="act_liked">Líbí se!</string>
+    <string name="act_followed">Sledováno!</string>
+    <string name="act_following">Sleduješ</string>
+    <string name="reply_creating">Vytváří se odpověď…</string>
+    <string name="reply_signing_approve">Podepisování… (schval ve své podepisovací aplikaci)</string>
+    <string name="reply_published">Odpověď zveřejněna!</string>
+    <string name="reply_signing_stalled">Podepisování se zaseklo. Otevři příspěvek a zkus to znovu.</string>
+    <string name="reply_publishing_failed">Zveřejnění selhalo. Zkus to znovu ze stránky příspěvku.</string>
+</resources>

@@ -1,0 +1,79 @@
+es:
+  layouts:
+    android_app_banner:
+      text: "También hay una app nativa para Android, más rápida y que reduce las fotos en el propio teléfono."
+      link: "Descárgala"
+      dismiss: "Cerrar"
+
+  api:
+    errors:
+      unauthorized: Tu sesión en este dispositivo ha terminado. Vuelve a iniciar sesión.
+      not_found: No encontrado.
+      upgrade_required: Esta versión de la app es demasiado antigua para el servidor. Actualízala.
+
+  billing_returns:
+    show:
+      title: Pago recibido
+      body: Ya puedes volver a la app de Emanator. Confirmará el pago por sí sola en unos segundos.
+      open_app: Abrir la app de Emanator
+      web_hint: ¿Pagaste desde la web?
+      web_link: Volver a la suscripción
+
+  android_app:
+    show:
+      title: Emanator para Android
+      intro: El mismo Emanator, como app nativa. Lo que hagas en una aparece en la otra, porque ambas trabajan con este servidor.
+      features:
+        native_picker: Adjunta fotos y archivos con el selector del propio teléfono, o compártelos con Emanator desde cualquier app.
+        compression: Las fotos se reducen y pierden los datos de ubicación y de cámara en el teléfono, antes de subirse.
+        signer: Aprueba inicios de sesión y emparejamientos en Amber en el mismo teléfono, sin escanear ningún código QR.
+        local: Las listas se abren al instante desde la copia guardada en el teléfono y luego se actualizan.
+      version_html: Versión actual %{version}
+      zapstore: Descargar en Zapstore
+      download: Descargar el APK
+      obtainium: Añadir a Obtainium para actualizaciones automáticas
+      fingerprint: SHA-256 del certificado de firma
+      not_yet: La primera versión está en camino.
+
+  users:
+    devices:
+      title: Dispositivos con sesión iniciada
+      intro: Teléfonos con sesión iniciada en la app de Emanator. Si cierras la sesión de uno aquí, termina al momento.
+      empty: No hay ningún dispositivo con sesión iniciada.
+      last_used: Último uso hace %{time}
+      never_used: Aún sin usar
+      version: Compilación de la app %{version}
+      sign_out: Cerrar sesión
+      sign_out_confirm: ¿Cerrar la sesión de este dispositivo?
+      signed_out: Se ha cerrado la sesión del dispositivo.
+      get_app: Descargar la app para Android
+    media:
+      title: Subida de fotos
+      help: Los servidores de medios guardan exactamente los bytes que reciben, así que las fotos se reducen antes de salir de tu navegador o teléfono. Al recodificarlas también se eliminan los datos de ubicación y de cámara.
+      compress: Reducir las fotos antes de subirlas
+      max_edge: Lado más largo
+      original_size: Tamaño original
+      pixels: "%{count} px"
+      quality: Calidad
+      photo_format: Formato de foto
+      formats:
+        jpeg: JPEG (funciona en todas partes)
+        webp: WebP (más ligero)
+      lossless_note: Las capturas de pantalla y las imágenes con transparencia se quedan en PNG sin pérdida. Los GIF animados se suben tal cual.
+      video_title: Vídeos
+      video_compress: Recodificar los vídeos antes de subirlos
+      video_resolution: Resolución
+      video_quality: Calidad de vídeo
+      video_qualities:
+        small: Archivo pequeño
+        balanced: Equilibrada
+        high: Alta
+      video_note: Los vídeos pasan a MP4 (H.264) a 30 fotogramas por segundo como máximo, sin ubicación ni datos de la cámara. Si el navegador no puede recodificar vídeo, se sube el original.
+      save: Guardar
+      saved: Ajustes de subida de fotos guardados.
+
+  js:
+    media_compress:
+      video_compressing: "Recodificando %{name}… %{percent} %"
+      compressing: Reduciendo %{name}…
+      saved: "%{name}: %{from} → %{to}"

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="login_tagline">Inicia sesión con tu identidad de Nostr</string>
+    <string name="login_no_account">No necesitas cuenta. Tu identidad es tu clave de Nostr.</string>
+    <string name="login_signer_heading">App de firma</string>
+    <string name="login_bunker_heading">Pega un enlace bunker</string>
+    <string name="login_bunker_help">Crea una conexión en tu firmante y pega el enlace que te da.</string>
+    <string name="login_bunker_label">Enlace bunker</string>
+    <string name="login_connect">Conectar</string>
+    <string name="login_explainer">Una app de firma guarda tu clave de Nostr y te deja aprobar las solicitudes de inicio de sesión o publicación. Emanator nunca ve tu clave privada.</string>
+    <string name="login_get_amber">¿Nuevo en Nostr? Consigue Amber</string>
+    <string name="login_server_toggle">¿Servidor propio?</string>
+    <string name="login_server_help">Emanator es de código abierto. Si tienes tu propia instancia, escribe su dirección.</string>
+    <string name="login_server_label">Dirección del servidor</string>
+    <string name="login_server_insecure">Sin https, cualquiera en la red puede leer tu sesión.</string>
+
+    <string name="signer_open">Abrir en tu app de firma</string>
+    <string name="signer_open_hint">Amber, Amethyst o cualquier firmante en este teléfono</string>
+    <string name="signer_none_installed">Ninguna app de este teléfono abre el enlace. Instala Amber o escanea el código con un firmante en otro dispositivo.</string>
+    <string name="signer_scan_hint">Escanea con un firmante en otro dispositivo</string>
+    <string name="signer_hide_qr">Ocultar el código</string>
+    <string name="signer_waiting">Esperando a tu firmante…</string>
+    <string name="signer_stale">¿No te llegó la aprobación? Mantén Emanator abierto mientras apruebas, o empieza de nuevo con un código nuevo.</string>
+    <string name="signer_new_code">Obtener un código nuevo</string>
+    <string name="signer_auth_challenge">Tu firmante necesita que lo apruebes en su propia ventana.</string>
+    <string name="signer_open_approval">Abrir la página de aprobación</string>
+    <string name="signer_expired">Este código expiró por tu seguridad.</string>
+    <string name="signer_qr_warning_login">Escanea únicamente un código QR que se muestre en tu propia pantalla. Escanear un código que alguien te envió o te mostró lo conecta a Emanator como si fueras tú.</string>
+    <string name="signer_qr_warning_pairing">Escanea únicamente un código QR que se muestre en tu propia pantalla. Escanear un código que alguien te envió o te mostró vincula tu clave de Nostr a la cuenta de Emanator de otra persona.</string>
+</resources>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_dashboard">Přehled</string>
+    <string name="nav_posts">Příspěvky</string>
+    <string name="nav_calendar">Kalendář</string>
+    <string name="nav_messages">Zprávy</string>
+    <string name="nav_more">Více</string>
+    <string name="nav_accounts">Účty</string>
+    <string name="nav_interactions">Interakce</string>
+    <string name="nav_settings">Nastavení</string>
+    <string name="nav_billing">Předplatné AI psaní</string>
+    <string name="nav_new_post">Nový příspěvek</string>
+
+    <string name="status_draft">Koncept</string>
+    <string name="status_pending">Čeká</string>
+    <string name="status_pending_signature">Čeká na podpis</string>
+    <string name="status_awaiting_signature">Čeká na schválení v podepisovači</string>
+    <string name="status_processing">Zpracovává se</string>
+    <string name="status_scheduled">Naplánováno</string>
+    <string name="status_publishing">Zveřejňuje se</string>
+    <string name="status_published">Zveřejněno</string>
+    <string name="status_failed">Selhalo</string>
+
+    <string name="row_draft">Koncept</string>
+    <string name="row_sent">Odesláno</string>
+    <string name="row_today">Dnes</string>
+    <string name="row_tomorrow">Zítra</string>
+    <string name="row_repost_of_note">Repost tohoto příspěvku</string>
+    <plurals name="row_reposts">
+        <item quantity="one">%d repost</item>
+        <item quantity="few">%d reposty</item>
+        <item quantity="many">%d repostu</item>
+        <item quantity="other">%d repostů</item>
+    </plurals>
+    <string name="row_never_reached">Nikdy to nedosáhlo žádného relaye. Nic nezveřejněno.</string>
+    <string name="row_waiting_for_approval">Čeká na schválení</string>
+    <string name="row_open">Otevřít</string>
+    <string name="row_rebroadcast">Znovu odeslat</string>
+    <string name="row_retry">Zkusit znovu</string>
+    <string name="row_reply">Odpovědět</string>
+
+    <string name="action_save">Uložit</string>
+    <string name="action_cancel">Zrušit</string>
+    <string name="action_close">Zavřít</string>
+    <string name="action_delete">Smazat</string>
+    <string name="action_remove">Odebrat</string>
+    <string name="action_retry">Zkusit znovu</string>
+    <string name="action_refresh">Obnovit</string>
+    <string name="action_copy">Kopírovat</string>
+    <string name="action_copied">Zkopírováno</string>
+    <string name="action_share">Sdílet</string>
+    <string name="action_back">Zpět</string>
+    <string name="action_done">Hotovo</string>
+    <string name="action_continue">Pokračovat</string>
+    <string name="action_confirm">Potvrdit</string>
+    <string name="action_open_in_client">Otevřít v Nostr aplikaci</string>
+    <string name="action_open_in_browser">Otevřít v prohlížeči</string>
+    <string name="action_load_more">Načíst další</string>
+    <string name="action_edit">Upravit</string>
+
+    <string name="state_loading">Načítá se…</string>
+    <string name="state_saved_copy">Zobrazuje se kopie uložená v telefonu. %1$s</string>
+    <string name="state_nothing_here">Zatím tu nic není.</string>
+    <string name="error_network">Server je nedostupný. Zkontroluj připojení a zkus to znovu.</string>
+    <string name="error_unexpected_response">Server poslal neočekávanou odpověď. Zkus to za chvíli znovu.</string>
+    <string name="error_generic">Něco se pokazilo. Zkus to znovu.</string>
+    <string name="no_signer">Není spárován podepisovač</string>
+
+    <string name="delivery_tally">%1$d z %2$d relayů</string>
+    <string name="delivery_relay_ok">přijal</string>
+
+    <string name="update_required_title">Je nutná aktualizace</string>
+    <string name="update_required_body">Tato verze Emanatoru je pro server příliš stará. Pokud chceš pokračovat, nainstaluj nejnovější verzi.</string>
+    <string name="update_available">Je k dispozici verze %1$s.</string>
+    <string name="update_get">Stáhnout aktualizaci</string>
+    <string name="update_zapstore">Otevřít Zapstore</string>
+</resources>

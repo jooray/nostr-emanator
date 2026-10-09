@@ -28,6 +28,8 @@
     </div>
   </div>
 
+  <%= render "billing/settings_section" %>
+
   <!-- Language -->
   <div class="border rule p-6">
     <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4"><%= t(".language.title") %></h2>
@@ -44,6 +46,8 @@
       </button>
     <% end %>
   </div>
+
+  <%= render "media_settings" %>
 
   <!-- Event Viewer -->
   <div class="border rule p-6">
@@ -94,6 +98,8 @@
       </div>
     <% end %>
   </div>
+
+  <%= render "devices" %>
 
   <%= render "api_tokens" %>
 </div>

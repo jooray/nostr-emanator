@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="msg_subtitle">Súkromné, naprieč všetkými spárovanými identitami</string>
+    <string name="msg_tab_known">Doručené</string>
+    <string name="msg_tab_requests">Žiadosti</string>
+    <string name="msg_who">Kto</string>
+    <string name="msg_select_all">Vybrať všetko</string>
+    <string name="msg_unread_only">Len neprečítané</string>
+    <string name="msg_mark_all_read">Označiť všetko ako prečítané</string>
+    <string name="msg_mark_all_read_confirm">Označiť všetky neprečítané konverzácie v tomto zobrazení ako prečítané?</string>
+    <plurals name="msg_marked">
+        <item quantity="one">Označila sa %d konverzácia ako prečítaná.</item>
+        <item quantity="few">Označili sa %d konverzácie ako prečítané.</item>
+        <item quantity="many">Označilo sa %d konverzácií ako prečítaných.</item>
+        <item quantity="other">Označilo sa %d konverzácií ako prečítaných.</item>
+    </plurals>
+    <string name="msg_nothing_unread">Nič neprečítané.</string>
+    <string name="msg_no_requests">Žiadne žiadosti o správy.</string>
+    <string name="msg_no_messages">Zatiaľ žiadne správy.</string>
+    <string name="msg_known_hint">Tu sa zobrazujú správy od ľudí, ktorých sleduješ. Všetci ostatní čakajú v Žiadostiach.</string>
+    <string name="msg_no_accounts">Spáruj účet, aby si mohol začať prijímať súkromné správy.</string>
+    <string name="msg_add_account">Pridať účet</string>
+
+    <plurals name="msg_repair_summary">
+        <item quantity="one">%d účet ešte nemôže posielať správy</item>
+        <item quantity="few">%d účty ešte nemôžu posielať správy</item>
+        <item quantity="many">%d účtu ešte nemôže posielať správy</item>
+        <item quantity="other">%d účtov ešte nemôže posielať správy</item>
+    </plurals>
+    <string name="msg_repair_hint">Spárované ešte pred súkromnými správami. Spáruj znova, aby si im to povolil. Na zverejňovanie príspevkov to nemá vplyv.</string>
+    <string name="msg_repair_explanation">Ich podpisovače nikdy neudelili povolenie na šifrovanie, zapečatenie ani dešifrovanie správ. Opätovné spárovanie zachová príspevky, plán aj nastavenia každého účtu.</string>
+    <string name="msg_re_pair">Spárovať znova</string>
+    <string name="msg_enable_messaging">Povoliť správy</string>
+
+    <plurals name="msg_not_authenticated">
+        <item quantity="one">%d účet nie je overený na relayi</item>
+        <item quantity="few">%d účty nie sú overené na relayi</item>
+        <item quantity="many">%d účtu nie je overeného na relayi</item>
+        <item quantity="other">%d účtov nie je overených na relayi</item>
+    </plurals>
+    <plurals name="msg_still_arrive">
+        <item quantity="one">Správy naďalej chodia cez tvoje ostatné relaye. Čo je uložené iba na tomto relayi, môže chýbať.</item>
+        <item quantity="few">Správy naďalej chodia cez tvoje ostatné relaye. Čo je uložené iba na týchto relayoch, môže chýbať.</item>
+        <item quantity="many">Správy naďalej chodia cez tvoje ostatné relaye. Čo je uložené iba na týchto relayoch, môže chýbať.</item>
+        <item quantity="other">Správy naďalej chodia cez tvoje ostatné relaye. Čo je uložené iba na týchto relayoch, môže chýbať.</item>
+    </plurals>
+    <string name="msg_auth_explainer">Tieto relaye odovzdávajú tvoje správy iba overenému klientovi a tvoj podpisovač zatiaľ tento handshake nedokončil.</string>
+    <string name="msg_auth_missed_prompt">Ak sa ťa Amber spýtal a prehliadol si to, len počkaj, skúsi to znova. Keď sa opýta, Authentication scope → All relays zabráni ďalším otázkam.</string>
+    <string name="msg_auth_whitelist">Ak sa nikdy nespýta, skontroluj Settings → Client auth whitelist v Amberi. Kým je tento zoznam neprázdny, Amber bez opýtania odmietne žiadosti o overenie relaya od každého hostiteľa, ktorý v ňom nie je. Buď doň pridaj %1$s, alebo zoznam vyprázdni, aby sa ťa Amber pýtal namiesto toho.</string>
+
+    <string name="msg_row_you">Ty:</string>
+    <string name="msg_row_no_preview">(bez náhľadu)</string>
+    <string name="msg_row_legacy_badge">Staré NIP-04 · metadáta verejné</string>
+    <plurals name="msg_row_people">
+        <item quantity="one">%d osoba</item>
+        <item quantity="few">%d osoby</item>
+        <item quantity="many">%d osoby</item>
+        <item quantity="other">%d osôb</item>
+    </plurals>
+
+    <string name="conv_title">Konverzácia</string>
+    <string name="conv_yourself">tebou</string>
+    <plurals name="conv_and_more">
+        <item quantity="one">a %d ďalší</item>
+        <item quantity="few">a %d ďalší</item>
+        <item quantity="many">a %d ďalšieho</item>
+        <item quantity="other">a %d ďalších</item>
+    </plurals>
+    <string name="conv_all_participants">Všetci účastníci</string>
+    <string name="conv_legacy_title">Staršia NIP-04 konverzácia</string>
+    <string name="conv_legacy_body">Text správy je zašifrovaný, ale odosielateľ, príjemca a čas sú verejné na každom relayi, ktorého sa toto vlákno dotklo.</string>
+    <string name="conv_request_body">Nesleduješ túto osobu a nesleduje ju ani žiadny z tvojich ostatných účtov.</string>
+    <string name="conv_accept">Prijať</string>
+    <string name="conv_block">Blokovať</string>
+    <string name="conv_block_confirm">Zablokovať túto konverzáciu? Správy z nej už neuvidíš.</string>
+    <string name="conv_load_older">Načítať staršie správy</string>
+    <string name="conv_empty">V tejto konverzácii zatiaľ nie sú žiadne správy.</string>
+    <string name="conv_note_to_self">Poznámka pre seba</string>
+    <string name="conv_reply">Odpovedať</string>
+    <string name="conv_replying_to">Odpovedáš na: %1$s</string>
+
+    <string name="comp_unavailable">Podpisovač tohto účtu ešte neudelil povolenia na správy.</string>
+    <string name="comp_checking">Zisťuje sa, kde táto osoba prijíma súkromné správy…</string>
+    <string name="comp_no_inbox_title">Táto osoba nemá zverejnenú DM schránku</string>
+    <string name="comp_no_inbox_body">Tvoja správa je stále plne zašifrovaná a tvoja identita zostáva skrytá, ale ide na relaye, ktoré táto osoba nikdy neurčila pre správy, takže sa nemusí doručiť. Klienti bez akejkoľvek podpory súkromných správ (Primal, Damus) ju tam nebudú ani hľadať.</string>
+    <string name="comp_strong_best_effort">Silné šifrovanie: doručenie bez záruky</string>
+    <string name="comp_legacy_summary">Nedarí sa doručiť? Pošli staršiu NIP-04 správu</string>
+    <string name="comp_legacy_intro">Staršia NIP-04 správa sa dostane do každého klienta vrátane tých bez podpory súkromných správ (teda väčšiny z nich). Je to však skutočný krok späť:</string>
+    <string name="comp_legacy_placeholder">Správa (text je zašifrovaný, komu si ju poslal, nie je)</string>
+    <string name="comp_send_public_metadata">Odoslať s verejnými metadátami</string>
+    <string name="comp_legacy_separate">Tým sa s tou istou osobou začne samostatné staršie NIP-04 vlákno, oddelené od tvojho súkromného.</string>
+    <string name="comp_basic_encryption">Základné šifrovanie: metadáta sú verejné</string>
+    <string name="comp_legacy_reply_placeholder">Odpovedz v tomto staršom NIP-04 vlákne…</string>
+    <string name="comp_strong_private">Silné šifrovanie: obsah aj metadáta sú súkromné</string>
+    <string name="comp_placeholder">Napíš súkromnú správu…</string>
+    <string name="comp_send">Odoslať</string>
+
+    <string name="fail_not_sent">Neodoslané</string>
+    <string name="fail_try_again">Skúsiť znova</string>
+    <string name="fail_legacy_summary">Odoslať namiesto toho ako staršiu NIP-04 správu?</string>
+    <string name="fail_legacy_intro">Táto osoba vôbec nedokáže prijímať súkromné správy, takže toto je jediný spôsob, ako ju správa dosiahne, ale je to skutočný krok späť:</string>
+    <string name="fail_moves_to_legacy">Tým sa presunie do samostatného staršieho NIP-04 vlákna s tou istou osobou.</string>
+
+    <string name="bub_encrypted_file">[zašifrovaný súbor]</string>
+    <string name="bub_downgrade_badge">Odoslané s nezašifrovanými metadátami</string>
+    <string name="bub_legacy_badge">Staré NIP-04</string>
+    <string name="bub_best_effort">Bez záruky</string>
+    <string name="bub_sending">Odosiela sa…</string>
+
+    <plurals name="int_subtitle">
+        <item quantity="one">Odpovede, citácie a zmienky naprieč %d identitou</item>
+        <item quantity="few">Odpovede, citácie a zmienky naprieč %d identitami</item>
+        <item quantity="many">Odpovede, citácie a zmienky naprieč %d identitami</item>
+        <item quantity="other">Odpovede, citácie a zmienky naprieč %d identitami</item>
+    </plurals>
+    <string name="int_unselect_all">Zrušiť výber všetkých</string>
+    <string name="int_all">Všetko</string>
+    <string name="int_your_post">Tvoj príspevok</string>
+    <string name="int_quoted_post">Citovaný príspevok</string>
+    <string name="int_in_reply_to">Ako odpoveď na</string>
+    <string name="int_labelled">%1$s (%2$s)</string>
+    <string name="int_show_more">Zobraziť viac</string>
+    <string name="int_type_reply">odpoveď</string>
+    <string name="int_type_quote">citácia</string>
+    <string name="int_type_mention">zmienka</string>
+    <string name="int_to_account">pre @%1$s</string>
+    <string name="int_like">Páči sa</string>
+    <string name="int_follow">Sledovať</string>
+    <string name="int_mute">Stíšiť @%1$s</string>
+    <string name="int_mute_confirm">Stíšiť %1$s? Jeho príspevky sa skryjú vo všetkých tvojich účtoch.</string>
+    <string name="int_reply">Odpovedať</string>
+    <string name="int_replying_as">Odpovedáš ako %1$s</string>
+    <string name="int_like_this_post">Páči sa mi tento príspevok</string>
+    <string name="int_follow_author">Sledovať @%1$s</string>
+    <string name="int_reply_placeholder">Napíš svoju odpoveď…</string>
+    <string name="int_sign_and_publish">Podpísať a zverejniť</string>
+    <string name="int_empty_title">Zatiaľ žiadne interakcie</string>
+    <string name="int_empty_body">Tu sa zobrazia interakcie od ostatných, keď odpovedia na tvoje účty, citujú ich alebo ich spomenú.</string>
+    <string name="int_loading">Načítavajú sa najnovšie interakcie…</string>
+    <string name="int_none_selected_title">Nie sú vybrané žiadne účty</string>
+    <string name="int_none_selected_body">Vyber vyššie účet, aby si videl jeho interakcie.</string>
+
+    <string name="act_failed">Zlyhalo</string>
+    <string name="act_approve">Schváľ v podpisovej aplikácii…</string>
+    <string name="act_publishing">Zverejňuje sa…</string>
+    <string name="act_processing">Spracúva sa…</string>
+    <string name="act_liked">Páči sa mi!</string>
+    <string name="act_followed">Sledované!</string>
+    <string name="act_following">Sledujem</string>
+    <string name="reply_creating">Vytvára sa odpoveď…</string>
+    <string name="reply_signing_approve">Podpisuje sa… (schváľ v podpisovej aplikácii)</string>
+    <string name="reply_published">Odpoveď zverejnená!</string>
+    <string name="reply_signing_stalled">Podpisovanie sa zaseklo. Otvor príspevok a skús to znova.</string>
+    <string name="reply_publishing_failed">Zverejnenie zlyhalo. Skús to znova zo stránky príspevku.</string>
+</resources>

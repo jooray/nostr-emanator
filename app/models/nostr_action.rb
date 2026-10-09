@@ -33,4 +33,48 @@ class NostrAction < ApplicationRecord
   scope :mutes_for_pubkey, ->(account_id, pubkey) {
     where(account_id: account_id, action_type: :mute, target_pubkey: pubkey).where.not(status: :failed)
   }
+
+  # Like / follow / mute on behalf of an account, from the web or the app.
+  # Returns [action, error]. An identical action already under way is returned
+  # instead of a second one; a permanently failed one is revived for a retry.
+  def self.request!(account, attrs)
+    attrs = attrs.to_h.stringify_keys
+    existing = account.nostr_actions.where.not(status: :failed)
+    existing =
+      case attrs["action_type"]
+      when "reaction" then existing.reactions_for_event(account.id, attrs["target_event_id"]).first
+      when "follow" then existing.follows_for_pubkey(account.id, attrs["target_pubkey"]).first
+      when "mute" then existing.mutes_for_pubkey(account.id, attrs["target_pubkey"]).first
+      end
+    return [ existing, nil ] if existing
+
+    action = account.nostr_actions.build(attrs)
+    return [ nil, action.errors.full_messages.join(", ") ] unless action.save
+
+    ProcessNostrActionJob.perform_later(action.id)
+    [ action, nil ]
+  rescue ArgumentError => e
+    # An unknown action_type is an enum ArgumentError, not a validation error.
+    [ nil, e.message ]
+  rescue ActiveRecord::RecordNotUnique
+    # M13: lost a race against a concurrent create for the same natural key
+    # (account_id, action_type, target_event_id, target_pubkey) — reload the
+    # row that won instead of 500ing. If it had permanently failed, resurrect
+    # it for a retry rather than leaving the user stuck with no way to redo
+    # the action from the UI they just used.
+    winner = account.nostr_actions.find_by(attrs.slice("action_type", "target_event_id", "target_pubkey"))
+    return [ nil, I18n.t("nostr_actions.duplicate") ] unless winner
+
+    winner.retry! if winner.failed?
+    [ winner, nil ]
+  end
+
+  def retryable?
+    awaiting_signature? || (failed? && unsigned_event.present? && signed_event.blank?)
+  end
+
+  def retry!
+    update!(status: :pending, error_message: nil, publish_results: nil)
+    ProcessNostrActionJob.perform_later(id)
+  end
 end

@@ -32,9 +32,9 @@
     <%= render "layouts/i18n_head" %>
     <%= yield :head %>
 
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
+    <link rel="icon" href="/icon.png?v=2" type="image/png">
+    <link rel="icon" href="/icon.svg?v=2" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="manifest" href="/manifest">
 
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
@@ -73,6 +73,10 @@
         <%# Flashes announce themselves. They used to be plain divs that a screen
             reader never saw, and the alert variant deleted itself after 9s —
             destroying the only record of a failure the user may not have read. %>
+        <% if user_signed_in? && AndroidApp.released? && controller_name != "android_app" %>
+          <%= render "layouts/android_app_banner" %>
+        <% end %>
+
         <% if flash[:notice] %>
           <div class="mb-5 flex items-center gap-2.5 border rule px-3.5 py-2.5" role="status" data-controller="flash">
             <%= lamp(:on) %>

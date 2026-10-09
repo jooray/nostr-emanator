@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Core strings. Feature areas keep their own strings_<area>.xml; every file
+     exists in values-sk, values-cs and values-es with the same names (see
+     StringsParityTest). Wording follows the web's config/locales. -->
+<resources>
+    <string name="app_name" translatable="false">Emanator</string>
+
+    <!-- Navigation (web: layouts.nav_items) -->
+    <string name="nav_dashboard">Dashboard</string>
+    <string name="nav_posts">Posts</string>
+    <string name="nav_calendar">Calendar</string>
+    <string name="nav_messages">Messages</string>
+    <string name="nav_more">More</string>
+    <string name="nav_accounts">Accounts</string>
+    <string name="nav_interactions">Interactions</string>
+    <string name="nav_settings">Settings</string>
+    <string name="nav_billing">AI writing plan</string>
+    <string name="nav_new_post">New post</string>
+
+    <!-- Status names (web: status_labels) -->
+    <string name="status_draft">Draft</string>
+    <string name="status_pending">Pending</string>
+    <string name="status_pending_signature">Pending signature</string>
+    <string name="status_awaiting_signature">Waiting for approval in signer</string>
+    <string name="status_processing">Processing</string>
+    <string name="status_scheduled">Scheduled</string>
+    <string name="status_publishing">Publishing</string>
+    <string name="status_published">Published</string>
+    <string name="status_failed">Failed</string>
+
+    <!-- A post row (web: shared.forme_row) -->
+    <string name="row_draft">Draft</string>
+    <string name="row_sent">Sent</string>
+    <string name="row_today">Today</string>
+    <string name="row_tomorrow">Tomorrow</string>
+    <string name="row_repost_of_note">Repost of this note</string>
+    <plurals name="row_reposts">
+        <item quantity="one">%d repost</item>
+        <item quantity="other">%d reposts</item>
+    </plurals>
+    <string name="row_never_reached">Never reached a relay. Nothing was published.</string>
+    <string name="row_waiting_for_approval">Waiting for approval</string>
+    <string name="row_open">Open</string>
+    <string name="row_rebroadcast">Rebroadcast</string>
+    <string name="row_retry">Retry</string>
+    <string name="row_reply">Reply</string>
+
+    <!-- Common actions -->
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_close">Close</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_remove">Remove</string>
+    <string name="action_retry">Retry</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="action_copy">Copy</string>
+    <string name="action_copied">Copied</string>
+    <string name="action_share">Share</string>
+    <string name="action_back">Back</string>
+    <string name="action_done">Done</string>
+    <string name="action_continue">Continue</string>
+    <string name="action_confirm">Confirm</string>
+    <string name="action_open_in_client">Open in a Nostr app</string>
+    <string name="action_open_in_browser">Open in browser</string>
+    <string name="action_load_more">Load more</string>
+    <string name="action_edit">Edit</string>
+
+    <!-- States -->
+    <string name="state_loading">Loading…</string>
+    <string name="state_saved_copy">Showing the copy saved on this phone. %1$s</string>
+    <string name="state_nothing_here">Nothing here yet.</string>
+    <string name="error_network">Could not reach the server. Check the connection and try again.</string>
+    <string name="error_unexpected_response">The server sent an unexpected answer. Try again in a moment.</string>
+    <string name="error_generic">Something went wrong. Please try again.</string>
+    <string name="no_signer">No signer paired</string>
+
+    <!-- Delivery (web: console.delivery) -->
+    <string name="delivery_tally">%1$d of %2$d relays</string>
+    <string name="delivery_relay_ok">accepted</string>
+
+    <!-- Update gate -->
+    <string name="update_required_title">Update required</string>
+    <string name="update_required_body">This version of Emanator is too old for the server. Install the latest version to continue.</string>
+    <string name="update_available">Version %1$s is available.</string>
+    <string name="update_get">Get the update</string>
+    <string name="update_zapstore">Open Zapstore</string>
+</resources>

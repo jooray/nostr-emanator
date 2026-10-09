@@ -17,7 +17,7 @@ es:
         see_how: Ver cómo funciona
         key_note: Tus claves se quedan en tu firmante de Nostr.
         stage_label: Emanator funcionando en escritorio y móvil
-        dashboard_alt: Panel de Emanator con el número de cuentas, publicaciones programadas, publicadas y totales, y una lista de próximas publicaciones de las cuentas de Nostr gestionadas
+        dashboard_alt: "Panel de Emanator con una publicación esperando firma arriba y, debajo, la línea de tiempo de publicaciones programadas de cinco cuentas de Nostr gestionadas, cada una con su hora, cuenta y texto"
       proof:
         label: Principios del producto
         intro: Pensado para cuentas que necesitan alcance, no otro panel social más.
@@ -42,7 +42,7 @@ es:
         publishing_tag: Control de publicación
         publishing_title: Revisa cada publicación y repost antes de que salgan.
         publishing_body: Un calendario muestra lo que cada cuenta tiene en cola durante el mes, así que nada se publica sin que lo hayas visto.
-        calendar_alt: Calendario de Emanator para septiembre de 2026, con publicaciones y reposts programados día a día en cada cuenta gestionada
+        calendar_alt: "Calendario de Emanator de octubre de 2026, con publicaciones y reposts programados día a día y con el color de cada cuenta"
         identity_tag: La identidad primero
         identity_title: Tu firmante conserva las claves.
         identity_body: Emanator le pide a tu firmante que apruebe cada evento por NIP-46. Tu clave privada de Nostr se queda en Amber, donde debe estar.
@@ -53,14 +53,14 @@ es:
       tour:
         title: Todo el flujo de trabajo, en la web y en tu móvil.
         lead: Redacta, programa y sigue las respuestas desde donde estés. La interfaz sigue el tema claro u oscuro de tu sistema.
-        interactions_alt: Vista de interacciones de Emanator con menciones y respuestas a una cuenta gestionada, con acciones de seguir, silenciar y responder
+        interactions_alt: "Vista de interacciones de Emanator con menciones a varias cuentas gestionadas y acciones de me gusta, seguir, silenciar y responder"
         interactions_title: Una bandeja para respuestas y menciones
         interactions_body: Lee las menciones y respuestas de cada cuenta que gestionas, y responde sin salir de la app.
-        calendar_alt: Calendario mensual de Emanator con publicaciones programadas marcadas en color y reposts en cursiva
+        calendar_alt: "Calendario mensual de Emanator con cada publicación en el color de su cuenta y los reposts marcados como repost"
         calendar_title: Un mes que puedes planear
         calendar_body: Las publicaciones programadas y sus reposts aparecen uno junto al otro, así una semana de lanzamiento se lee de un vistazo.
         mobile_label: Emanator en el móvil
-        compose_light_alt: Redactando una nueva publicación en Emanator móvil, con un aviso de generación por IA debajo del editor
+        compose_light_alt: "Redactando una nueva publicación en Emanator móvil, con el botón de adjuntar y el de guardar y programar debajo del editor"
         compose_dark_alt: Redactando una nueva publicación en Emanator móvil en tema oscuro
         compose_caption: Redactar
         schedule_light_alt: Eligiendo fecha y hora de publicación en Emanator móvil, con las cuentas para repost listadas debajo
@@ -77,3 +77,28 @@ es:
         back_to_top: Volver arriba
         tagline: Programación de publicaciones para la web social abierta.
         github_label: Ver el código fuente en GitHub
+      nav_pricing: Precios
+      language_menu: "Idioma: %{language}"
+      pricing:
+        title: Programar es gratis. La escritura con IA se paga en sats.
+        lead: Tu clave de Nostr es tu cuenta. Sin correo, sin contraseña, sin tarjeta.
+        free_tag: Emanator
+        free_price: Gratis
+        free_note: todo menos la escritura con IA
+        free_scheduling: Programación, reposts desde tus otras cuentas, el calendario, respuestas y mensajes directos.
+        free_accounts: Conecta hasta 10 cuentas. La escritura con IA, o su prueba, quita el límite.
+        free_self_host_html: Código abierto. <a href="https://github.com/jooray/nostr-emanator">Instálalo tú mismo</a> con tu propia clave de IA y no pagas nada.
+        ai_tag: Escritura con IA
+        ai_price: 3 días gratis
+        ai_note: luego 10.000 sats cada 30 días
+        ai_trial: La prueba empieza la primera vez que le pides a la IA que escriba o edite una publicación, no al registrarte.
+        ai_pro_rata: Paga la cantidad que quieras por Lightning y se te abona en proporción. 5.000 sats son 15 días, mínimo 1.000.
+        ai_keep_days: Si pagas durante la prueba, conservas los días que te quedaban.
+        bundle_tag: Acceso total
+        bundle_price: 25.000 sats
+        bundle_note: cada 30 días
+        bundle_covers_html: Incluye la escritura con IA de aquí, <a href="https://nalgorithm.cypherpunk.today">nalgorithm</a> alojado (ordena lo que publica la gente que sigues y te lo lee cada mañana en un resumen de voz) y <a href="https://lievik.cypherpunk.today">Lievik</a> (elige qué vale la pena mandar a cada público para el que escribes).
+        bundle_keep_days: Conservas los días que ya hubieras pagado en cualquiera de las tres apps.
+        bundle_saving: Por separado, las tres cuestan 35.000 sats.
+        fine: Si el sistema de pagos dejara de responder, la programación y la publicación siguen funcionando.
+        terms_html: 'Prueba, reembolsos, privacidad y soporte: <a href="https://cypherpunk.today/es/terms/">las condiciones</a>.'

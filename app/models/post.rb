@@ -102,6 +102,85 @@ class Post < ApplicationRecord
     repost_account_ids
   end
 
+  # Edit content (and anything else permitted) the way every surface must:
+  # keep the version history, and — C5 — throw away a signature request that
+  # would otherwise publish the OLD text. Returns :updated, :invalidated or
+  # false (validation failed; errors are on the record).
+  def apply_edit!(attributes)
+    attributes = attributes.to_h.stringify_keys
+    content_changed = attributes.key?("content") && content != attributes["content"]
+
+    if content_changed
+      self.version_history = (version_history || []) + [ { content: content, changed_at: Time.current.iso8601 } ]
+    end
+
+    invalidated = content_changed && awaiting_signature?
+    assign_attributes(status: :draft, unsigned_event: nil, signed_event: nil, event_id: nil) if invalidated
+
+    return false unless update(attributes)
+
+    if invalidated
+      # Repost events embed the original event, so they are stale too.
+      reposts.update_all(
+        status: Repost.statuses[:pending_signature],
+        unsigned_event: nil, signed_event: nil, event_id: nil,
+        updated_at: Time.current
+      )
+    end
+    invalidated ? :invalidated : :updated
+  end
+
+  # Replies skip scheduling: build the event now and sign it immediately.
+  # The caller has checked the account has a signer.
+  def start_reply_signing!
+    unsigned = Nostr::EventSignerService.new.build_unsigned_reply(
+      content: content,
+      pubkey: account.pubkey_hex,
+      created_at: Time.current,
+      parent_event_id: reply_to_event_id,
+      parent_author_pubkey: reply_to_pubkey,
+      root_event_id: root_event_id
+    )
+    update!(unsigned_event: unsigned, scheduled_at: Time.current, status: :awaiting_signature)
+    SignPostJob.perform_later(id)
+  end
+
+  def can_retry_sign?
+    (awaiting_signature? || (failed? && signed_event.blank?)) && unsigned_event.present?
+  end
+
+  def retry_signing!
+    update!(status: :awaiting_signature, publish_results: nil) if failed?
+    SignPostJob.perform_later(id)
+  end
+
+  def retry_publishing!
+    update!(status: :scheduled, publish_results: nil)
+    PublishPostJob.perform_later(id)
+
+    reposts.failed.each do |repost|
+      repost.update!(status: :scheduled, publish_results: nil)
+      PublishRepostJob.perform_later(repost.id)
+    end
+  end
+
+  # Everything of this user's that never went out, posts and reposts alike —
+  # both are counted by the same "never went out" reading, so both are cleared
+  # by the same button. Returns how many records were removed.
+  def self.discard_failed_for!(user, account_id: nil)
+    posts = joins(:account).where(accounts: { user_id: user.id }, posts: { status: :failed })
+    reposts = Repost.joins(:account).where(accounts: { user_id: user.id }, reposts: { status: :failed })
+    if account_id.present?
+      posts = posts.where(account_id: account_id)
+      reposts = reposts.where(account_id: account_id)
+    end
+
+    count = posts.count + reposts.count
+    posts.destroy_all
+    reposts.destroy_all
+    count
+  end
+
   private
 
   def normalize_nostr_references

@@ -1,0 +1,26 @@
+# Zapstore listing for the Android app. The APK is served from the Emanator
+# server's download page, which marks the version with #version.
+release_source:
+  version:
+    url: https://emanator.cypherpunk.today/android
+    selector: "#version"
+    match: "([0-9.]+)"
+  asset_url: https://emanator.cypherpunk.today/android/emanator-{version}.apk
+name: Emanator
+summary: Schedule and write Nostr posts across all your accounts
+description: |
+  Emanator schedules posts and reposts for every Nostr account you manage. Write with AI help that knows each account's voice, attach photos, pick a time, and approve the signature in Amber. Emanator publishes at that time.
+
+  The app works with the same Emanator server as the website, so drafts, schedules, private messages and settings are shared between them.
+
+  Photos are resized and stripped of location and camera metadata on the phone before upload. Media servers keep exactly the bytes they receive, so this is the only point where it can be done.
+
+  Logins and account pairing go through Amber on the same phone, with no QR code to scan. Emanator never sees your private key.
+
+  Available in English, Slovak, Czech and Spanish. Open source: self-hosters can point the app at their own server.
+website: https://emanator.cypherpunk.today
+repository: https://github.com/jooray/nostr-emanator
+icon: ./icon-512.png
+tags: [nostr, scheduling, social, amber, blossom]
+license: MIT
+pubkey: npub1m2mvvpjugwdehtaskrcl7ksvdqnnhnjur9v6g9v266nss504q7mqvlr8p9

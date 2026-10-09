@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_dashboard">Prehľad</string>
+    <string name="nav_posts">Príspevky</string>
+    <string name="nav_calendar">Kalendár</string>
+    <string name="nav_messages">Správy</string>
+    <string name="nav_more">Viac</string>
+    <string name="nav_accounts">Účty</string>
+    <string name="nav_interactions">Interakcie</string>
+    <string name="nav_settings">Nastavenia</string>
+    <string name="nav_billing">Predplatné AI písania</string>
+    <string name="nav_new_post">Nový príspevok</string>
+
+    <string name="status_draft">Koncept</string>
+    <string name="status_pending">Čaká</string>
+    <string name="status_pending_signature">Čaká na podpis</string>
+    <string name="status_awaiting_signature">Čaká na schválenie v podpisovači</string>
+    <string name="status_processing">Spracúva sa</string>
+    <string name="status_scheduled">Naplánované</string>
+    <string name="status_publishing">Zverejňuje sa</string>
+    <string name="status_published">Zverejnené</string>
+    <string name="status_failed">Zlyhalo</string>
+
+    <string name="row_draft">Koncept</string>
+    <string name="row_sent">Odoslané</string>
+    <string name="row_today">Dnes</string>
+    <string name="row_tomorrow">Zajtra</string>
+    <string name="row_repost_of_note">Repost tejto poznámky</string>
+    <plurals name="row_reposts">
+        <item quantity="one">%d repost</item>
+        <item quantity="few">%d reposty</item>
+        <item quantity="many">%d repostu</item>
+        <item quantity="other">%d repostov</item>
+    </plurals>
+    <string name="row_never_reached">Nikdy sa nedostalo na žiadny relay. Nič sa nezverejnilo.</string>
+    <string name="row_waiting_for_approval">Čaká na schválenie</string>
+    <string name="row_open">Otvoriť</string>
+    <string name="row_rebroadcast">Odoslať znova</string>
+    <string name="row_retry">Skúsiť znova</string>
+    <string name="row_reply">Odpovedať</string>
+
+    <string name="action_save">Uložiť</string>
+    <string name="action_cancel">Zrušiť</string>
+    <string name="action_close">Zavrieť</string>
+    <string name="action_delete">Vymazať</string>
+    <string name="action_remove">Odstrániť</string>
+    <string name="action_retry">Skúsiť znova</string>
+    <string name="action_refresh">Obnoviť</string>
+    <string name="action_copy">Kopírovať</string>
+    <string name="action_copied">Skopírované</string>
+    <string name="action_share">Zdieľať</string>
+    <string name="action_back">Späť</string>
+    <string name="action_done">Hotovo</string>
+    <string name="action_continue">Pokračovať</string>
+    <string name="action_confirm">Potvrdiť</string>
+    <string name="action_open_in_client">Otvoriť v Nostr aplikácii</string>
+    <string name="action_open_in_browser">Otvoriť v prehliadači</string>
+    <string name="action_load_more">Načítať ďalšie</string>
+    <string name="action_edit">Upraviť</string>
+
+    <string name="state_loading">Načítava sa…</string>
+    <string name="state_saved_copy">Zobrazuje sa kópia uložená v telefóne. %1$s</string>
+    <string name="state_nothing_here">Zatiaľ tu nič nie je.</string>
+    <string name="error_network">Server je nedostupný. Skontroluj pripojenie a skús to znova.</string>
+    <string name="error_unexpected_response">Server poslal neočakávanú odpoveď. Skús to o chvíľu znova.</string>
+    <string name="error_generic">Niečo sa pokazilo. Skús to znova.</string>
+    <string name="no_signer">Nie je spárovaný podpisovač</string>
+
+    <string name="delivery_tally">%1$d z %2$d relayov</string>
+    <string name="delivery_relay_ok">prijal</string>
+
+    <string name="update_required_title">Je potrebná aktualizácia</string>
+    <string name="update_required_body">Táto verzia Emanatora je na server príliš stará. Ak chceš pokračovať, nainštaluj najnovšiu verziu.</string>
+    <string name="update_available">K dispozícii je verzia %1$s.</string>
+    <string name="update_get">Stiahnuť aktualizáciu</string>
+    <string name="update_zapstore">Otvoriť Zapstore</string>
+</resources>

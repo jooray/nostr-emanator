@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Messages inbox, conversation thread and interactions.
+     Wording follows the web's config/locales/messaging. Amber's own setting
+     names stay in English in every language: Amber is not localized. -->
+<resources>
+    <!-- Inbox (web: conversations.index) -->
+    <string name="msg_subtitle">Private, across every paired identity</string>
+    <string name="msg_tab_known">Inbox</string>
+    <string name="msg_tab_requests">Requests</string>
+    <string name="msg_who">Who</string>
+    <string name="msg_select_all">Select all</string>
+    <string name="msg_unread_only">Unread only</string>
+    <string name="msg_mark_all_read">Mark all as read</string>
+    <string name="msg_mark_all_read_confirm">Mark every unread conversation in this view as read?</string>
+    <plurals name="msg_marked">
+        <item quantity="one">Marked %d conversation as read.</item>
+        <item quantity="other">Marked %d conversations as read.</item>
+    </plurals>
+    <string name="msg_nothing_unread">Nothing unread.</string>
+    <string name="msg_no_requests">No message requests.</string>
+    <string name="msg_no_messages">No messages yet.</string>
+    <string name="msg_known_hint">Messages from people you follow appear here. Everyone else waits in Requests.</string>
+    <string name="msg_no_accounts">Pair an account to start receiving private messages.</string>
+    <string name="msg_add_account">Add an account</string>
+
+    <!-- Accounts that cannot message yet (web: accounts.messaging_repair_list / messaging_banner) -->
+    <plurals name="msg_repair_summary">
+        <item quantity="one">%d account cannot message yet</item>
+        <item quantity="other">%d accounts cannot message yet</item>
+    </plurals>
+    <string name="msg_repair_hint">Paired before private messaging existed — re-pair to grant it. Posting is unaffected.</string>
+    <string name="msg_repair_explanation">Their signers never granted permission to encrypt, seal or decrypt messages. Re-pairing keeps each account\'s posts, schedule and settings.</string>
+    <string name="msg_re_pair">Re-pair</string>
+    <string name="msg_enable_messaging">Enable messaging</string>
+
+    <!-- Relay authentication (NIP-42) -->
+    <plurals name="msg_not_authenticated">
+        <item quantity="one">%d account not relay-authenticated</item>
+        <item quantity="other">%d accounts not relay-authenticated</item>
+    </plurals>
+    <plurals name="msg_still_arrive">
+        <item quantity="one">Messages still arrive through your other relays — anything stored only on this one may be missing.</item>
+        <item quantity="other">Messages still arrive through your other relays — anything stored only on these may be missing.</item>
+    </plurals>
+    <string name="msg_auth_explainer">These relays hand your messages only to an authenticated client, and your signer has not completed that handshake yet.</string>
+    <string name="msg_auth_missed_prompt">If Amber prompted you and you missed it, just wait — it retries. When it asks, Authentication scope → All relays stops it asking again.</string>
+    <string name="msg_auth_whitelist">If it never prompts, check Settings → Client auth whitelist in Amber. While that list is non-empty, Amber rejects relay-auth requests from any host that is not on it, without asking. Either add %1$s to the list, or clear the list so Amber asks you instead.</string>
+
+    <!-- Inbox row (web: conversations.conversation_row) -->
+    <string name="msg_row_you">You:</string>
+    <string name="msg_row_no_preview">(no preview)</string>
+    <string name="msg_row_legacy_badge">Legacy · metadata public</string>
+    <plurals name="msg_row_people">
+        <item quantity="one">%d person</item>
+        <item quantity="other">%d people</item>
+    </plurals>
+
+    <!-- Thread (web: conversations.show) -->
+    <string name="conv_title">Conversation</string>
+    <string name="conv_yourself">yourself</string>
+    <plurals name="conv_and_more">
+        <item quantity="one">and %d more</item>
+        <item quantity="other">and %d more</item>
+    </plurals>
+    <string name="conv_all_participants">All participants</string>
+    <string name="conv_legacy_title">Legacy NIP-04 conversation</string>
+    <string name="conv_legacy_body">The message text is encrypted, but the sender, the recipient and the timing are public on every relay this thread touched.</string>
+    <string name="conv_request_body">You do not follow this person, and neither does any of your other accounts.</string>
+    <string name="conv_accept">Accept</string>
+    <string name="conv_block">Block</string>
+    <string name="conv_block_confirm">Block this conversation? You will not see messages from it.</string>
+    <string name="conv_load_older">Load older messages</string>
+    <string name="conv_empty">No messages in this conversation yet.</string>
+    <string name="conv_note_to_self">Note to self</string>
+    <string name="conv_reply">Reply</string>
+    <string name="conv_replying_to">Replying to: %1$s</string>
+
+    <!-- Composer (web: conversations.composer_body / private_composer_form) -->
+    <string name="comp_unavailable">This account\'s signer has not granted messaging permissions yet.</string>
+    <string name="comp_checking">Checking where this person receives private messages…</string>
+    <string name="comp_no_inbox_title">This person has not published a DM inbox</string>
+    <string name="comp_no_inbox_body">Your message is still fully encrypted and your identity stays hidden, but it goes to relays they never designated for messages — so it may not arrive. Clients with no private-messaging support at all (Primal, Damus) will not look for it.</string>
+    <string name="comp_strong_best_effort">Strong encryption — best-effort delivery</string>
+    <string name="comp_legacy_summary">Not getting through? Send a legacy message instead</string>
+    <string name="comp_legacy_intro">A legacy message reaches every client, including those with no private-messaging support — which is most of them. But it is a real downgrade:</string>
+    <string name="comp_legacy_placeholder">Message (the text is encrypted; who you sent it to is not)</string>
+    <string name="comp_send_public_metadata">Send with public metadata</string>
+    <string name="comp_legacy_separate">This starts a separate legacy thread with the same person, kept apart from your private one.</string>
+    <string name="comp_basic_encryption">Basic encryption — metadata is public</string>
+    <string name="comp_legacy_reply_placeholder">Reply in this legacy thread…</string>
+    <string name="comp_strong_private">Strong encryption — content and metadata are private</string>
+    <string name="comp_placeholder">Write a private message…</string>
+    <string name="comp_send">Send</string>
+
+    <!-- A failed message (web: conversations.failed_message_actions) -->
+    <string name="fail_not_sent">Not sent</string>
+    <string name="fail_try_again">Try again</string>
+    <string name="fail_legacy_summary">Send it as a legacy message instead?</string>
+    <string name="fail_legacy_intro">They cannot receive private messages at all, so this is the only way it will reach them — but it is a real downgrade:</string>
+    <string name="fail_moves_to_legacy">This moves it to a separate legacy thread with the same person.</string>
+
+    <!-- Bubble (web: conversations.message_bubble) -->
+    <string name="bub_encrypted_file">[encrypted file]</string>
+    <string name="bub_downgrade_badge">Sent unencrypted-metadata</string>
+    <string name="bub_legacy_badge">Legacy</string>
+    <string name="bub_best_effort">Best effort</string>
+    <string name="bub_sending">Sending…</string>
+
+    <!-- Interactions (web: interactions.*) -->
+    <plurals name="int_subtitle">
+        <item quantity="one">Replies, quotes and mentions across %d identity</item>
+        <item quantity="other">Replies, quotes and mentions across %d identities</item>
+    </plurals>
+    <string name="int_unselect_all">Unselect all</string>
+    <string name="int_all">All</string>
+    <string name="int_your_post">Your post</string>
+    <string name="int_quoted_post">Quoted post</string>
+    <string name="int_in_reply_to">In reply to</string>
+    <string name="int_labelled">%1$s (%2$s)</string>
+    <string name="int_show_more">Show more</string>
+    <string name="int_type_reply">reply</string>
+    <string name="int_type_quote">quote</string>
+    <string name="int_type_mention">mention</string>
+    <string name="int_to_account">to @%1$s</string>
+    <string name="int_like">Like</string>
+    <string name="int_follow">Follow</string>
+    <string name="int_mute">Mute @%1$s</string>
+    <string name="int_mute_confirm">Mute %1$s? Their posts will be hidden across all your accounts.</string>
+    <string name="int_reply">Reply</string>
+    <string name="int_replying_as">Replying as %1$s</string>
+    <string name="int_like_this_post">Like this post</string>
+    <string name="int_follow_author">Follow @%1$s</string>
+    <string name="int_reply_placeholder">Write your reply…</string>
+    <string name="int_sign_and_publish">Sign &amp; Publish</string>
+    <string name="int_empty_title">No interactions yet</string>
+    <string name="int_empty_body">Interactions from others will appear here as they reply to, quote, or mention your accounts.</string>
+    <string name="int_loading">Loading latest interactions…</string>
+    <string name="int_none_selected_title">No accounts selected</string>
+    <string name="int_none_selected_body">Select an account above to see its interactions.</string>
+
+    <!-- Action progress (web: js.interaction_actions / js.inline_reply) -->
+    <string name="act_failed">Failed</string>
+    <string name="act_approve">Approve in signer app…</string>
+    <string name="act_publishing">Publishing…</string>
+    <string name="act_processing">Processing…</string>
+    <string name="act_liked">Liked!</string>
+    <string name="act_followed">Followed!</string>
+    <string name="act_following">Following</string>
+    <string name="reply_creating">Creating reply…</string>
+    <string name="reply_signing_approve">Signing… (approve in your signer app)</string>
+    <string name="reply_published">Reply published!</string>
+    <string name="reply_signing_stalled">Signing stalled. Open the post to try again.</string>
+    <string name="reply_publishing_failed">Publishing failed. Please try again from the post page.</string>
+</resources>

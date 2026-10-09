@@ -152,7 +152,8 @@ export default class extends Controller {
       },
       onError: (data) => {
         const errorMsg = (data && data.message) || t("js.content_builder.connection_lost")
-        statusEl.textContent = t("js.content_builder.error", { message: errorMsg })
+        statusEl.textContent = data?.billingUrl ? errorMsg : t("js.content_builder.error", { message: errorMsg })
+        if (data?.billingUrl) this.appendBillingLink(statusEl, data.billingUrl)
         spinnerEl.classList.remove("animate-spin")
       }
     })
@@ -241,7 +242,8 @@ export default class extends Controller {
       },
       onError: (data) => {
         const errorMsg = (data && data.message) || t("js.content_builder.connection_lost")
-        statusEl.textContent = t("js.content_builder.error", { message: errorMsg })
+        statusEl.textContent = data?.billingUrl ? errorMsg : t("js.content_builder.error", { message: errorMsg })
+        if (data?.billingUrl) this.appendBillingLink(statusEl, data.billingUrl)
         spinnerEl.classList.remove("animate-spin")
       }
     })
@@ -254,6 +256,14 @@ export default class extends Controller {
   // `event: <name>\ndata: <payload>\n\n` frames the server already emits —
   // the phase/chunk/complete/error handling is unchanged from the EventSource
   // version, just invoked via callbacks instead of addEventListener.
+  appendBillingLink(el, url) {
+    const link = document.createElement("a")
+    link.href = url
+    link.className = "ml-1 underline font-medium"
+    link.textContent = t("js.content_builder.open_billing")
+    el.append(" ", link)
+  }
+
   async streamSSE(url, params, { onPhase, onChunk, onComplete, onError }) {
     this.streamAbortController?.abort()
     const controller = new AbortController()
@@ -279,8 +289,17 @@ export default class extends Controller {
     // A non-2xx here means the server never got as far as opening the SSE
     // stream (e.g. a 404/500 before ai_assist_controller's action body runs)
     // — there are no `event:`/`data:` frames to parse, just show the status.
+    // Billing denials (402 paywall, 429 daily cap, 503 billing down) carry a
+    // JSON message, and the paywall a link to the billing page.
     if (!response.ok || !response.body) {
-      onError?.({ message: t("js.content_builder.request_failed", { status: response.status }) })
+      let denial = null
+      if ((response.headers.get("Content-Type") || "").includes("application/json")) {
+        denial = await response.json().catch(() => null)
+      }
+      onError?.({
+        message: denial?.error || t("js.content_builder.request_failed", { status: response.status }),
+        billingUrl: denial?.billing_url
+      })
       return
     }
 

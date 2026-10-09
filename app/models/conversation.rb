@@ -55,6 +55,20 @@ class Conversation < ApplicationRecord
     update!(subject: new_subject, subject_updated_at: seen_at)
   end
 
+  # Clears the unread count. The local row is the source of truth for every
+  # screen; NIP-RS read state is best-effort sync, so a relay failure here must
+  # never break opening a thread.
+  def mark_read!(read_at = Time.current)
+    update!(unread_count: 0, last_read_at: read_at)
+    Rails.cache.delete(MessagesHelper.unread_cache_key(user))
+
+    begin
+      Messaging::ReadStateService.new(account).mark_read(self, read_at)
+    rescue StandardError => e
+      Rails.logger.warn("Could not record read state: #{e.message}")
+    end
+  end
+
   # A manual accept/block is sticky: automatic reclassification must never
   # silently revert what the user decided by hand.
   def classify!(classification, reason)

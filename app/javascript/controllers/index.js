@@ -71,3 +71,6 @@ application.register("repost-picker", RepostPickerController)
 
 import ElapsedController from "./elapsed_controller"
 application.register("elapsed", ElapsedController)
+
+import AndroidAppBannerController from "./android_app_banner_controller"
+application.register("android-app-banner", AndroidAppBannerController)

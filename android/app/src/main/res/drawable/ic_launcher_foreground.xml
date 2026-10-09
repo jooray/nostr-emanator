@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A forme on the stone: three engraved rules (posts going out) and one lit
+     amber lamp — the console's single invitation. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <path android:fillColor="#CFC7BB" android:pathData="M34,40h30v4h-30z" />
+    <path android:fillColor="#CFC7BB" android:pathData="M34,52h40v4h-40z" />
+    <path android:fillColor="#CFC7BB" android:pathData="M34,64h24v4h-24z" />
+    <path android:fillColor="#F0A017" android:pathData="M66,62h8v8h-8z" />
+</vector>

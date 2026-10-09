@@ -29,7 +29,7 @@ class MessagesController < ApplicationController
     # Retrying a private message to somebody with no kind 10050 is guaranteed to
     # fail the same way — there is nowhere to deliver it. Point at the downgrade
     # instead of spending another round of signer calls to learn that again.
-    if undeliverable_privately?(@message)
+    if Messaging::DeliveryMode.undeliverable_privately?(@message)
       return redirect_to conversation_path(conversation),
                          alert: t(".no_inbox")
     end
@@ -63,25 +63,7 @@ class MessagesController < ApplicationController
 
   private
 
-  # True when a private retry cannot possibly work: the peer has published no
-  # kind 10050, so there is no relay a gift wrap could be delivered to.
-  def undeliverable_privately?(message)
-    return false if message.kind == Message::LEGACY_KIND
-
-    peer = message.conversation.peer_pubkeys.first
-    return false if peer.blank?
-
-    list = Nostr::DmRelayListService.new.cached(peer)
-    list.present? && !list.deliverable?
-  end
-
-  def enqueue(message)
-    if message.legacy_downgrade?
-      SendLegacyDirectMessageJob.perform_later(message.id)
-    else
-      SendDirectMessageJob.perform_later(message.id)
-    end
-  end
+  def enqueue(message) = Messaging::DeliveryMode.enqueue(message)
 
   # Scoped through current_user, always.
   def set_conversation

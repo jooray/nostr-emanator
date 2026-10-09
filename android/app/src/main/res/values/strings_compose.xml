@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Composer, uploads, AI writing and scheduling (web: posts.new, posts.form,
+     posts.schedule, js.content_builder, js.blossom_upload, js.repost_picker,
+     billing.note). -->
+<resources>
+    <string name="compose_title_new">New post</string>
+    <string name="compose_title_edit">Edit post</string>
+    <string name="compose_posting_as">Posting as</string>
+    <string name="compose_choose_account">Choose an identity</string>
+    <string name="compose_no_accounts">Pair an account first. Posts are published under the Nostr identities you manage.</string>
+    <string name="compose_add_account">Add account</string>
+    <string name="compose_no_signer">%1$s has no paired signer, so this post cannot be signed yet.</string>
+    <string name="compose_pair_signer">Pair signer</string>
+    <string name="compose_cannot_edit">Cannot edit this post.</string>
+    <string name="compose_restored_draft">Your unsaved text was restored.</string>
+    <string name="compose_placeholder">What\'s on your mind?</string>
+    <plurals name="compose_chars">
+        <item quantity="one">%d character</item>
+        <item quantity="other">%d characters</item>
+    </plurals>
+    <string name="compose_attach_photos">Photos</string>
+    <string name="compose_attach_camera">Camera</string>
+    <string name="compose_attach_files">Files</string>
+    <string name="compose_save_schedule">Save &amp; schedule</string>
+    <string name="compose_save_draft">Save draft</string>
+    <string name="compose_waiting_upload">Waiting for upload…</string>
+
+    <string name="upload_shrinking">Shrinking %1$s…</string>
+    <string name="upload_encoding">Re-encoding %1$s… %2$d%%</string>
+    <string name="upload_shrunk">%1$s: %2$s → %3$s</string>
+    <string name="upload_uploading">Uploading…</string>
+    <string name="upload_done">%1$s attached.</string>
+    <string name="upload_done_shrunk">%1$s attached (%2$s → %3$s).</string>
+    <string name="upload_too_large">%1$s is too large (%2$s). The limit is %3$s.</string>
+    <string name="upload_failed">Upload failed</string>
+    <string name="upload_timed_out">Upload timed out</string>
+
+    <string name="ai_heading">AI generation</string>
+    <string name="ai_help">Describe what you want to post and let AI generate content for you.</string>
+    <string name="ai_prompt_label">Prompt</string>
+    <string name="ai_prompt_placeholder">e.g., Write a short note about the importance of privacy…</string>
+    <string name="ai_generate">Generate</string>
+    <string name="ai_refine_label">Refine</string>
+    <string name="ai_refine_placeholder">e.g., Make it shorter and more punchy…</string>
+    <string name="ai_refine">Refine</string>
+    <string name="ai_enter_prompt">Please enter a prompt for the AI</string>
+    <string name="ai_enter_instructions">Please enter instructions for the AI</string>
+    <string name="ai_nothing_to_refine">No content to refine. Please generate or write some content first.</string>
+    <string name="ai_connecting">Connecting to AI…</string>
+    <string name="ai_content_below">Content will appear below as it\'s generated.</string>
+    <string name="ai_generating">Generating content…</string>
+    <string name="ai_humanizing">Humanizing content…</string>
+    <string name="ai_refining">Refining content…</string>
+    <string name="ai_generation_complete">Generation complete!</string>
+    <string name="ai_refinement_complete">Refinement complete!</string>
+    <string name="ai_connection_lost">Connection lost. Please try again.</string>
+    <string name="ai_replaced">Your previous text was replaced.</string>
+    <string name="ai_undo">Undo</string>
+
+    <string name="billing_note_none">AI writing is paid. Your first draft starts a free 3-day trial.</string>
+    <string name="billing_note_trial">Your free trial runs until %1$s.</string>
+    <string name="billing_note_expired">Your AI access ended on %1$s.</string>
+    <string name="billing_note_link">Plans and payment</string>
+
+    <string name="schedule_title">Schedule post</string>
+    <string name="schedule_subtitle">Configure when to publish and set up reposts.</string>
+    <string name="schedule_preview">Post preview</string>
+    <string name="schedule_time">Publish date &amp; time</string>
+    <string name="schedule_date">Date</string>
+    <string name="schedule_clock">Time</string>
+    <string name="schedule_zone">Times are in %1$s.</string>
+    <string name="schedule_soon">Soon</string>
+    <plurals name="schedule_soon_hint">
+        <item quantity="one">Soon publishes %d minute from now, leaving time to approve the signature.</item>
+        <item quantity="other">Soon publishes %d minutes from now, leaving time to approve the signature.</item>
+    </plurals>
+    <string name="schedule_suggested">Suggested: %1$s</string>
+    <string name="schedule_in_past">The time is in the past. Please pick a future time.</string>
+    <string name="schedule_also_post_as">Also post as</string>
+    <string name="schedule_select_all">Select all shown</string>
+    <string name="schedule_filter">Filter by name, npub or pubkey</string>
+    <string name="schedule_no_match">No identity matches that.</string>
+    <string name="schedule_already">Already scheduled</string>
+    <string name="schedule_reposts_none">No reposts — one approval, for the post itself.</string>
+    <plurals name="schedule_reposts_selected">
+        <item quantity="one">%1$d repost — %2$d separate approvals in your signer, one after another.</item>
+        <item quantity="other">%1$d reposts — %2$d separate approvals in your signer, one after another.</item>
+    </plurals>
+    <string name="schedule_max_delay">Maximum delay for reposts (hours)</string>
+    <string name="schedule_max_delay_help">Reposts will be randomly spread out within this time window after the original post is published.</string>
+    <string name="schedule_approve_note">After you tap Sign &amp; schedule, approve the signature in your signer app (Amber). The post publishes at its time without you.</string>
+    <string name="schedule_sign">Sign &amp; schedule</string>
+</resources>

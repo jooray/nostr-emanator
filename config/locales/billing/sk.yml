@@ -1,0 +1,57 @@
+---
+sk:
+  billing:
+    show:
+      title: Písanie s AI
+      intro: V Emanatore je všetko zadarmo okrem písania s AI, ktoré navrhuje a upravuje príspevky hlasom každého účtu. Platí sa vopred v satoch, takže nie je čo rušiť.
+      status:
+        title: Váš prístup
+        active: Zaplatené do %{date}.
+        trial: Skúška zadarmo do %{date}.
+        expired: Prístup k AI skončil %{date}. Pokračovať môžete platbou nižšie.
+        none: Písanie s AI ste ešte nepoužili. Prvý návrh spustí trojdňovú skúšku zadarmo.
+        unknown: Platobný systém je teraz nedostupný. Skúste to o minútu.
+        other: "%{product} máte aktívny do %{date}."
+        npub: 'Platby sú viazané na váš prihlasovací kľúč: %{npub}'
+      products:
+        nalgorithm: nalgorithm
+        lievik: Lievik
+        emanator_ai: Emanator AI
+      plans:
+        price: "%{sats} satov / %{days} dní"
+        pay: Zaplatiť %{sats} satov
+        unavailable: Ceny sa teraz nedajú načítať, platobný systém neodpovedá. Skúste to o minútu.
+        emanator_ai:
+          name: Emanator AI
+          covers: Návrhy a úpravy príspevkov s AI v Emanatore a žiadny limit na počet spravovaných účtov.
+        all_access:
+          name: Všetky aplikácie
+          covers: Emanator AI, hostovaný nalgorithm (zoradený feed a hlasové prehľady) a Lievik (výber obsahu pre vaše publiká).
+      custom:
+        title: Ľubovoľná suma
+        help: Čas sa pripíše pomerne a pridá k tomu, čo už máte. Minimum je %{min} satov, to stačí na %{days} dní Emanator AI.
+        plan: Plán
+        sats: Saty
+        pay: Vytvoriť faktúru
+      self_host_html: 'Emanator je open source. Keď si ho spustíte sami s vlastným kľúčom k AI, nič z tohto sa vás netýka: %{link}'
+      terms: "Podmienky, vrátenie peňazí a podpora"
+      terms_url: "https://cypherpunk.today/sk/terms/"
+    charge:
+      settled: Zaplatené. Písanie s AI máte aktívne do %{date}.
+    errors:
+      unknown_plan: Taký plán neexistuje.
+      sats_range: Zadajte %{min} až %{max} satov.
+      unavailable: Faktúru sa teraz nepodarilo vytvoriť. Skúste to o minútu.
+    note:
+      none: Písanie s AI je platené. Prvý návrh spustí trojdňovú skúšku zadarmo.
+      trial: Skúška zadarmo vám beží do %{date}.
+      expired: Prístup k AI skončil %{date}.
+      link: Plány a platba
+    account_limit: Bezplatný plán spravuje najviac %{limit} účtov. Skúška alebo platený plán limit ruší.
+  ai_assist:
+    paywall: Písanie s AI potrebuje skúšku alebo zaplatený čas.
+    daily_cap: Dosiahli ste dnešný limit pre AI. Obnoví sa o polnoci UTC.
+    billing_unavailable: Platobný systém neodpovedá, preto je písanie s AI pozastavené. Skúste to o minútu.
+  js:
+    content_builder:
+      open_billing: Pozrieť plány

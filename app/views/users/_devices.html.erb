@@ -1,0 +1,30 @@
+<%# Phones signed in to the Android app (device tokens). Revoking one goes
+    through the same route as an MCP token. %>
+<% devices = @user.api_tokens.device.order(Arel.sql("last_used_at IS NULL, last_used_at DESC"), created_at: :desc) %>
+<div id="devices" class="border rule p-6">
+  <div class="flex flex-wrap items-baseline justify-between gap-2 mb-2">
+    <h2 class="text-lg font-medium text-gray-900 dark:text-white"><%= t("users.devices.title") %></h2>
+    <%= link_to t("users.devices.get_app"), android_app_path, class: "text-sm text-amber-600 dark:text-amber-400 hover:underline" %>
+  </div>
+  <p class="text-sm text-gray-500 dark:text-gray-400 mb-4"><%= t("users.devices.intro") %></p>
+  <% if devices.any? %>
+    <ul class="divide-y divide-gray-200 dark:divide-gray-800">
+      <% devices.each do |device| %>
+        <li class="py-3 flex items-center justify-between gap-4" data-device-id="<%= device.id %>">
+          <div class="min-w-0">
+            <p class="text-sm text-gray-900 dark:text-gray-100 truncate"><%= device.name %></p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              <%= device.last_used_at ? t("users.devices.last_used", time: time_ago_in_words(device.last_used_at)) : t("users.devices.never_used") %>
+              <% if device.client_version.present? %> · <%= t("users.devices.version", version: device.client_version) %><% end %>
+            </p>
+          </div>
+          <%= button_to t("users.devices.sign_out"), api_token_path(device), method: :delete,
+                data: { turbo_confirm: t("users.devices.sign_out_confirm") },
+                class: "text-sm text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300" %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="text-sm text-gray-400 dark:text-gray-500"><%= t("users.devices.empty") %></p>
+  <% end %>
+</div>

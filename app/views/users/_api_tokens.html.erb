@@ -63,7 +63,7 @@
     <% end %>
   </div>
 
-  <% tokens = current_user.api_tokens.order(created_at: :desc) %>
+  <% tokens = current_user.api_tokens.mcp.order(created_at: :desc) %>
   <% if tokens.any? %>
     <div class="overflow-x-auto border border-gray-200 dark:border-[color:var(--color-rule-dark)] rounded-lg">
       <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">

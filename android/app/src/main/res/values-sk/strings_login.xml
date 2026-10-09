@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="login_tagline">Prihlás sa svojou Nostr identitou</string>
+    <string name="login_no_account">Účet netreba. Tvoja identita je tvoj Nostr kľúč.</string>
+    <string name="login_signer_heading">Podpisová aplikácia</string>
+    <string name="login_bunker_heading">Vlož bunker odkaz</string>
+    <string name="login_bunker_help">Vytvor pripojenie vo svojom podpisovači a vlož odkaz, ktorý ti dá.</string>
+    <string name="login_bunker_label">Bunker odkaz</string>
+    <string name="login_connect">Pripojiť</string>
+    <string name="login_explainer">Podpisová aplikácia uchováva tvoj Nostr kľúč a umožní ti schvaľovať žiadosti o prihlásenie a zverejnenie. Emanator nikdy nevidí tvoj súkromný kľúč.</string>
+    <string name="login_get_amber">Nový na Nostri? Stiahni si Amber</string>
+    <string name="login_server_toggle">Vlastný server?</string>
+    <string name="login_server_help">Emanator je open source. Ak prevádzkuješ vlastnú inštanciu, zadaj jej adresu.</string>
+    <string name="login_server_label">Adresa servera</string>
+    <string name="login_server_insecure">Bez https môže tvoje prihlásenie prečítať ktokoľvek v sieti.</string>
+
+    <string name="signer_open">Otvoriť v podpisovej aplikácii</string>
+    <string name="signer_open_hint">Amber, Amethyst alebo ktorýkoľvek podpisovač v tomto telefóne</string>
+    <string name="signer_none_installed">Žiadna aplikácia v tomto telefóne odkaz neotvorí. Nainštaluj Amber alebo naskenuj kód podpisovačom na inom zariadení.</string>
+    <string name="signer_scan_hint">Naskenuj podpisovačom na inom zariadení</string>
+    <string name="signer_hide_qr">Skryť kód</string>
+    <string name="signer_waiting">Čaká sa na tvoj podpisovač…</string>
+    <string name="signer_stale">Neprišlo schválenie? Nechaj Emanator otvorený, kým schvaľuješ, alebo začni znova s novým kódom.</string>
+    <string name="signer_new_code">Získať nový kód</string>
+    <string name="signer_auth_challenge">Tvoj podpisovač potrebuje, aby si to schválil v jeho vlastnom okne.</string>
+    <string name="signer_open_approval">Otvoriť stránku schválenia</string>
+    <string name="signer_expired">Tento kód vypršal kvôli tvojej bezpečnosti.</string>
+    <string name="signer_qr_warning_login">Skenuj iba QR kód zobrazený na tvojej vlastnej obrazovke. Naskenovaním kódu, ktorý ti niekto poslal alebo ukázal, sa táto osoba prihlási do Emanatora ako ty.</string>
+    <string name="signer_qr_warning_pairing">Skenuj iba QR kód zobrazený na tvojej vlastnej obrazovke. Naskenovaním kódu, ktorý ti niekto poslal alebo ukázal, sa tvoj Nostr kľúč spáruje s cudzím účtom Emanator.</string>
+</resources>

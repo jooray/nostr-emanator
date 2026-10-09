@@ -1,0 +1,82 @@
+<div class="max-w-2xl mx-auto space-y-6">
+  <h1 class="text-2xl font-bold text-gray-900 dark:text-white"><%= t(".title") %></h1>
+  <p class="text-sm text-gray-500 dark:text-gray-400"><%= t(".intro") %></p>
+
+  <!-- Where the user stands -->
+  <div class="border rule p-6" data-billing-state="<%= @snapshot.state %>">
+    <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-2"><%= t(".status.title") %></h2>
+    <p class="text-sm text-gray-700 dark:text-gray-300">
+      <% case @snapshot.state %>
+      <% when "active" %>
+        <%= t(".status.active", date: billing_date(@snapshot.until_time)) %>
+      <% when "trial" %>
+        <%= t(".status.trial", date: billing_date(@snapshot.until_time)) %>
+      <% when "expired" %>
+        <%= t(".status.expired", date: billing_date(@snapshot.until_time)) %>
+      <% when "none" %>
+        <%= t(".status.none") %>
+      <% else %>
+        <%= t(".status.unknown") %>
+      <% end %>
+    </p>
+    <% others = NostrBilling::PRODUCTS.excluding(Billing::PRODUCT).select { |p| @snapshot.active?(p) || @snapshot.trial?(p) } %>
+    <% others.each do |product| %>
+      <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+        <%= t(".status.other", product: t(".products.#{product.tr('-', '_')}"), date: billing_date(@snapshot.until_time(product))) %>
+      </p>
+    <% end %>
+    <p class="mt-3 text-xs text-gray-500 dark:text-gray-400 break-all"><%= t(".status.npub", npub: current_user.npub) %></p>
+  </div>
+
+  <% if @plans.present? %>
+    <!-- Plans -->
+    <div class="grid gap-4 sm:grid-cols-2">
+      <% Billing::PLANS.each do |plan| %>
+        <% next unless (details = @plans[plan]) %>
+        <div class="border rule p-6 flex flex-col" data-plan="<%= plan %>">
+          <h2 class="text-lg font-medium text-gray-900 dark:text-white"><%= t(".plans.#{plan.tr('-', '_')}.name") %></h2>
+          <p class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
+            <%= t(".plans.price", sats: billing_sats(details["sats"]), days: details["days"]) %>
+          </p>
+          <p class="mt-2 mb-4 flex-1 text-sm text-gray-500 dark:text-gray-400"><%= t(".plans.#{plan.tr('-', '_')}.covers") %></p>
+          <%= form_with url: billing_charges_path, method: :post, data: { turbo: false } do %>
+            <input type="hidden" name="plan" value="<%= plan %>">
+            <button type="submit" class="w-full inline-flex justify-center items-center px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors">
+              <%= t(".plans.pay", sats: billing_sats(details["sats"])) %>
+            </button>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Any amount, pro rata -->
+    <div class="border rule p-6">
+      <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-2"><%= t(".custom.title") %></h2>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+        <%= t(".custom.help", min: billing_sats(BillingController::MIN_SATS), days: (BillingController::MIN_SATS * @plans.dig(Billing::PRODUCT, "days").to_i / @plans.dig(Billing::PRODUCT, "sats").to_f).round(1).to_s.delete_suffix(".0")) %>
+      </p>
+      <%= form_with url: billing_charges_path, method: :post, class: "flex flex-wrap items-center gap-3", data: { turbo: false } do %>
+        <select name="plan" aria-label="<%= t(".custom.plan") %>"
+                class="rounded-lg border-gray-300 dark:border-[color:var(--color-rule-dark)] dark:bg-[color:var(--color-chassis)] dark:text-gray-100 text-sm">
+          <% Billing::PLANS.each do |plan| %>
+            <option value="<%= plan %>"><%= t(".plans.#{plan.tr('-', '_')}.name") %></option>
+          <% end %>
+        </select>
+        <input type="number" name="sats" required inputmode="numeric"
+               min="<%= BillingController::MIN_SATS %>" max="<%= BillingController::MAX_SATS %>" step="1"
+               aria-label="<%= t(".custom.sats") %>" placeholder="<%= t(".custom.sats") %>"
+               class="w-36 rounded-lg border border-gray-200 dark:border-[color:var(--color-rule-dark)] bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-3 py-2 text-sm">
+        <button type="submit" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors">
+          <%= t(".custom.pay") %>
+        </button>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="alarm" role="alert">
+      <p class="text-sm text-red-800 dark:text-red-200"><%= t(".plans.unavailable") %></p>
+    </div>
+  <% end %>
+
+  <p class="text-xs text-gray-500 dark:text-gray-400"><%= t(".self_host_html", link: link_to("github.com/jooray/nostr-emanator", "https://github.com/jooray/nostr-emanator", class: "underline")) %></p>
+  <p class="text-xs text-gray-500 dark:text-gray-400"><%= link_to t(".terms"), t(".terms_url"), class: "underline" %></p>
+</div>

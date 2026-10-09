@@ -49,22 +49,12 @@ module Mcp
           raise AppError, "account '#{account.display_name_or_npub}' has no paired Amber signer; cannot sign automatically"
         end
 
-        scheduled_at = resolve_scheduled_at(account)
-        post.update!(scheduled_at: scheduled_at)
-
-        signer = Nostr::EventSignerService.new
-        unsigned = signer.build_unsigned_note(
-          content: post.content,
-          kind: post.event_kind,
-          pubkey: account.pubkey_hex,
-          created_at: post.scheduled_at,
-          allow_fetch: true
+        result = Posts::Scheduler.new(post).schedule(
+          scheduled_at: resolve_scheduled_at(account),
+          repost_account_ids: args[:repost_account_ids],
+          max_delay_hours: fetch_int(:max_delay_hours, default: DEFAULT_MAX_DELAY_HOURS, min: 1, max: 8_760)
         )
-        post.update!(unsigned_event: unsigned, status: :awaiting_signature)
-
-        schedule_reposts(post, signer, unsigned)
-
-        SignPostJob.perform_later(post.id)
+        raise AppError, result.error unless result.ok?
 
         {
           ok: true,
@@ -83,25 +73,6 @@ module Mcp
         end
 
         Scheduling::SchedulerService.new(timezone: user.timezone).suggest_next_slot(account)
-      end
-
-      def schedule_reposts(post, signer, unsigned)
-        repost_account_ids = Array(args[:repost_account_ids]).map(&:to_i).reject(&:zero?)
-        return if repost_account_ids.empty?
-
-        max_delay_hours = fetch_int(:max_delay_hours, default: DEFAULT_MAX_DELAY_HOURS, min: 1, max: 8_760)
-        Scheduling::RepostSchedulerService.new.schedule_reposts(post, repost_account_ids, max_delay_hours: max_delay_hours)
-
-        post.reposts.pending_signature.each do |repost|
-          next unless repost.account.has_signer?
-
-          unsigned_repost = signer.build_unsigned_repost(
-            original_event: unsigned,
-            pubkey: repost.account.pubkey_hex,
-            created_at: repost.scheduled_at || Time.current
-          )
-          repost.update!(unsigned_event: unsigned_repost, status: :awaiting_signature)
-        end
       end
     end
   end

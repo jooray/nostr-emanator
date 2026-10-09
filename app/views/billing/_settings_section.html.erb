@@ -1,0 +1,22 @@
+<%# Settings entry for paid AI assist. Nothing on a self-hosted install. %>
+<% if (snapshot = ai_billing_snapshot) %>
+  <div class="border rule p-6" id="ai-writing">
+    <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-2"><%= t("billing.show.title") %></h2>
+    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+      <% case snapshot.state %>
+      <% when "active" %>
+        <%= t("billing.show.status.active", date: billing_date(snapshot.until_time)) %>
+      <% when "trial" %>
+        <%= t("billing.show.status.trial", date: billing_date(snapshot.until_time)) %>
+      <% when "expired" %>
+        <%= t("billing.note.expired", date: billing_date(snapshot.until_time)) %>
+      <% when "none" %>
+        <%= t("billing.note.none") %>
+      <% else %>
+        <%= t("billing.show.status.unknown") %>
+      <% end %>
+    </p>
+    <%= link_to t("billing.note.link"), billing_path,
+          class: "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors" %>
+  </div>
+<% end %>

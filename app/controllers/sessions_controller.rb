@@ -1,11 +1,6 @@
 # frozen_string_literal: true
 
 class SessionsController < ApplicationController
-  # One multiplexed supervisor (Nostr::Nip46Supervisor) serves every pending login
-  # at once with O(1) DB/WebSocket connections, so admission is no longer bound to
-  # one worker per login. The cap just guards memory / relay subscription fan-out.
-  MAX_ACTIVE_AUTH_SESSIONS = ENV.fetch("MAX_ACTIVE_NOSTR_AUTH_SESSIONS", 50).to_i
-
   skip_before_action :authenticate_user!
   rate_limit to: 5, within: 1.minute, only: :new, name: "nostr-login-ip", with: :rate_limit_exceeded
   rate_limit to: 60, within: 1.minute, only: :new, name: "nostr-login-global", by: -> { "global" }, with: :rate_limit_exceeded
@@ -16,34 +11,16 @@ class SessionsController < ApplicationController
   def new
     consume_pending_sessions!
 
-    # Serialize session creation so a burst can't slip past the capacity check.
-    admission_token = SecureRandom.hex(16)
-    admitted = Rails.cache.write("nostr-auth-session-admission", admission_token, expires_in: 10.seconds, unless_exist: true)
-    unless admitted
-      render_capacity_error
-      return
-    end
-
-    begin
-      NostrAuthSession.cleanup_expired!
-      if NostrAuthSession.active.where(authenticated_pubkey: nil).count >= MAX_ACTIVE_AUTH_SESSIONS
-        render_capacity_error
-        return
-      end
-
+    @connect_data = Sessions::Admission.admit do
       session[:nip07_challenge] = SecureRandom.hex(32)
-      @connect_data = Nostr::AuthService.new.generate_connect_uri
-      session[:nostr_connect_session_id] = @connect_data[:session_id]
-
-      # Ensure the multiplexed listener is running — it will pick up this session
-      # from the DB within ~1s. Polls just check the DB for the persisted result.
+      data = Nostr::AuthService.new.generate_connect_uri
+      session[:nostr_connect_session_id] = data[:session_id]
+      # Ensure the multiplexed listener is running — it will pick up this
+      # session from the DB within ~1s. Polls just check the DB for the result.
       Nip46SupervisorJob.ensure_running
-    rescue StandardError
-      NostrAuthSession.find_by(session_id: @connect_data&.dig(:session_id))&.destroy!
-      raise
-    ensure
-      Rails.cache.delete("nostr-auth-session-admission") if Rails.cache.read("nostr-auth-session-admission") == admission_token
+      data
     end
+    return render_capacity_error unless @connect_data
 
     @qr_code = RQRCode::QRCode.new(@connect_data[:uri])
   end
@@ -99,8 +76,7 @@ class SessionsController < ApplicationController
         return render json: { authenticated: false, error: "Authentication session mismatch" }
       end
 
-      user = Nostr::AuthService.new.find_or_create_user(auth_session.authenticated_user_pubkey)
-      import_primary_account(user, auth_session)
+      user = Sessions::Login.complete!(auth_session.authenticated_user_pubkey, auth_session: auth_session)
       complete_authentication!(user)
       render json: { authenticated: true, redirect_url: dashboard_path }
       return
@@ -141,10 +117,7 @@ class SessionsController < ApplicationController
       return
     end
 
-    user = Nostr::AuthService.new.find_or_create_user(pubkey_hex)
-
-    # Auto-import primary account with NIP-46 connection details from login
-    import_primary_account(user)
+    user = Sessions::Login.complete!(pubkey_hex)
     complete_authentication!(user)
 
     redirect_to dashboard_path, notice: t(".welcome", name: user.display_name_or_npub)
@@ -172,31 +145,6 @@ class SessionsController < ApplicationController
     render "sessions/rate_limited",
       locals: { title: I18n.t("sessions.errors.capacity_title"), message: I18n.t("sessions.errors.capacity_message") },
       status: :service_unavailable
-  end
-
-  def import_primary_account(user, auth_session = nil)
-    account = user.accounts.find_or_initialize_by(pubkey_hex: user.pubkey_hex)
-
-    if account.new_record?
-      account.display_name = user.display_name
-      account.username = user.username
-      account.about = user.about
-      account.picture_url = user.picture_url
-    end
-
-    # Store NIP-46 connection details if login was via NIP-46
-    account.apply_signer(auth_session) if auth_session&.authenticated_pubkey.present?
-
-    account.save!
-
-    # Fetch write relays in background
-    FetchRelayListJob.perform_later(account.id) if account.write_relays.blank?
-  rescue ActiveRecord::RecordNotUnique
-    # L16: find_or_initialize_by + save! races another request importing the
-    # same (user_id, pubkey_hex) account — e.g. an overlapping login poll.
-    # Reload the row the other request created instead of 500ing.
-    account = user.accounts.find_by!(pubkey_hex: user.pubkey_hex)
-    FetchRelayListJob.perform_later(account.id) if account.write_relays.blank?
   end
 
   def pending_nip46_session

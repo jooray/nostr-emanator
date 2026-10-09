@@ -27,7 +27,9 @@
   <% end %>
 
   <div data-controller="media-preview blossom-upload"
-       data-blossom-upload-upload-url-value="<%= account_blossom_uploads_path(@account) %>">
+       data-blossom-upload-upload-url-value="<%= account_blossom_uploads_path(@account) %>"
+       data-blossom-upload-media-value="<%= MediaPreferences.for(current_user).to_json %>"
+       data-blossom-upload-video-compress-url-value="<%= asset_path("video_compress.js") %>">
     <div class="flex items-center justify-between mb-2">
       <label for="post_content" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
         <%= t(".content") %>

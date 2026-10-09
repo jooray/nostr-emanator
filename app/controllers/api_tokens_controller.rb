@@ -20,7 +20,11 @@ class ApiTokensController < ApplicationController
   def destroy
     token = current_user.api_tokens.find(params[:id])
     token.destroy
-    redirect_to edit_user_path(anchor: "api-tokens"), notice: t(".revoked")
+    if token.device?
+      redirect_to edit_user_path(anchor: "devices"), notice: t("users.devices.signed_out")
+    else
+      redirect_to edit_user_path(anchor: "api-tokens"), notice: t(".revoked")
+    end
   end
 
   private

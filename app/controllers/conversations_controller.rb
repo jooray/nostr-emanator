@@ -36,7 +36,7 @@ class ConversationsController < ApplicationController
     # Newest THREAD_LIMIT, then re-ordered oldest-first for display.
     @messages = @conversation.messages.newest_first.limit(THREAD_LIMIT).to_a.reverse
     @has_more = @conversation.messages.count > THREAD_LIMIT
-    @delivery = delivery_mode
+    @delivery = Messaging::DeliveryMode.for(@conversation)
     mark_conversation_read
   end
 
@@ -46,7 +46,7 @@ class ConversationsController < ApplicationController
     # The body only, not the frame wrapper — the caller swaps this into the frame
     # it already has, and a nested frame would break the swap.
     render partial: "conversations/composer_body",
-           locals: { conversation: @conversation, delivery: delivery_mode },
+           locals: { conversation: @conversation, delivery: Messaging::DeliveryMode.for(@conversation) },
            layout: false
   end
 
@@ -77,47 +77,12 @@ class ConversationsController < ApplicationController
     cleared = scope.count
     now = Time.current
 
-    scope.find_each do |conversation|
-      conversation.update!(unread_count: 0, last_read_at: now)
-      record_read_state(conversation, now)
-    end
-
-    Rails.cache.delete(MessagesHelper.unread_cache_key(current_user))
+    scope.find_each { |conversation| conversation.mark_read!(now) }
     redirect_to messages_path(tab: tab, accounts: @account_filter),
                 notice: cleared.positive? ? t(".marked", count: cleared) : t(".nothing_unread")
   end
 
   private
-
-  # How (and whether) a reply in this thread can be delivered. Cache reads only —
-  # never relay I/O in a request.
-  #
-  #   :self          note-to-self, nothing to resolve
-  #   :legacy        already a kind-4 thread; replies stay legacy
-  #   :nip17         the peer published a DM inbox, so private messaging works
-  #   :unavailable   the peer has no signer permissions on our side
-  #   :best_effort   no kind 10050. We still send — to their NIP-65 read relays,
-  #                  or popular relays — but say so, and keep the legacy option
-  #                  visible for recipients whose client has no NIP-17 at all.
-  #   :checking      we have not resolved their 10050 yet; refreshing in the
-  #                  background. Deliberately distinct, so a cold cache never
-  #                  makes a normal conversation look degraded.
-  def delivery_mode
-    return :unavailable unless @conversation.account.messaging_capable?
-
-    peer = @conversation.peer_pubkeys.first
-    return :self if peer.blank?
-    return :legacy if @conversation.legacy?
-
-    list = Nostr::DmRelayListService.new.cached(peer)
-
-    if list.nil? || list.stale?
-      RefreshDmRelayListJob.perform_later(peer)
-      return list&.deliverable? ? :nip17 : :checking
-    end
-
-    list.deliverable? ? :nip17 : :best_effort
-  end
 
   def base_scope
     current_user.conversations.active.includes(:account)
@@ -127,48 +92,13 @@ class ConversationsController < ApplicationController
     @account_filter.any? ? scope.where(account_id: @account_filter) : scope
   end
 
-  # Server-side, not the client-side pill filter the interactions page uses:
-  # hiding rows in the DOM interacts badly with pagination (short and empty
-  # pages). Persisted so the choice survives navigation.
   def resolve_account_filter
-    if params.key?(:accounts)
-      ids = normalize_filter(Array(params[:accounts]).map(&:to_i))
-      persist_account_filter(ids)
-      return ids
-    end
-
-    normalize_filter(Array(current_user.settings&.dig("dm_account_filter")).map(&:to_i))
-  end
-
-  # Empty is the canonical "every account". Selecting all of them by hand must
-  # collapse to the same thing, or the UI would show a "Select all" link next to
-  # a set that is already all of them.
-  def normalize_filter(ids)
-    ids &= @accounts.map(&:id)
-    ids.sort == @accounts.map(&:id).sort ? [] : ids
-  end
-
-  def persist_account_filter(ids)
-    settings = (current_user.settings || {}).merge("dm_account_filter" => ids)
-    current_user.update_column(:settings, settings)
+    requested = params.key?(:accounts) ? Array(params[:accounts]) : nil
+    Messaging::AccountFilter.new(current_user, @accounts).resolve(requested)
   end
 
   def mark_conversation_read
-    return unless @conversation.unread?
-
-    read_at = Time.current
-    @conversation.update!(unread_count: 0, last_read_at: read_at)
-    Rails.cache.delete(MessagesHelper.unread_cache_key(current_user))
-
-    record_read_state(@conversation, read_at)
-  end
-
-  # Local DB is the source of truth for the UI; NIP-RS is best-effort sync, so a
-  # failure here must never break opening a thread.
-  def record_read_state(conversation, read_at)
-    Messaging::ReadStateService.new(conversation.account).mark_read(conversation, read_at)
-  rescue StandardError => e
-    Rails.logger.warn("Could not record read state: #{e.message}")
+    @conversation.mark_read! if @conversation.unread?
   end
 
   # Scoped through current_user, always. A leaked DM is worse than a leaked post.

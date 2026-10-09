@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Accounts, pairing and the Nostr profile editor (web: config/locales/accounts). -->
+<resources>
+    <string name="acc_title">Accounts</string>
+    <string name="acc_pair">Pair account</string>
+    <string name="acc_empty_title">No accounts paired</string>
+    <string name="acc_empty_body">Pair your first Nostr account to get started with scheduling posts.</string>
+    <string name="acc_signer_connected">Signer connected</string>
+    <string name="acc_no_signer">No signer</string>
+    <plurals name="acc_posts_count">
+        <item quantity="one">%d post</item>
+        <item quantity="other">%d posts</item>
+    </plurals>
+    <plurals name="acc_upcoming_count">
+        <item quantity="one">%d upcoming</item>
+        <item quantity="other">%d upcoming</item>
+    </plurals>
+    <plurals name="acc_repair_summary">
+        <item quantity="one">%d account cannot message yet</item>
+        <item quantity="other">%d accounts cannot message yet</item>
+    </plurals>
+    <string name="acc_repair_hint">Paired before private messaging existed — re-pair to grant it. Posting is unaffected.</string>
+    <string name="acc_repair_action">Re-pair</string>
+    <string name="acc_see_plans">See plans</string>
+
+    <string name="acc_account">Account</string>
+    <string name="acc_new_post">New post</string>
+    <string name="acc_scheduled">Scheduled posts</string>
+    <string name="acc_no_scheduled">No scheduled posts.</string>
+    <string name="acc_create_one">Create one</string>
+    <string name="acc_recent_events">Recent events</string>
+    <string name="acc_recent_events_help">Latest notes fetched from relays</string>
+    <string name="acc_recent_events_empty">No recent events found on relays.</string>
+    <string name="acc_recent_interactions">Recent interactions</string>
+    <string name="acc_recent_interactions_help">Replies, quotes, and mentions from others</string>
+    <string name="acc_recent_interactions_empty">No recent interactions found.</string>
+    <string name="acc_settings">Account settings</string>
+    <string name="acc_edit">Edit</string>
+    <string name="acc_nostr_profile">Nostr profile</string>
+    <string name="acc_profile_needs_repair">This account was paired before profile editing existed, so its signer has not granted permission to publish a profile.</string>
+    <string name="acc_refresh_profile">Refresh profile</string>
+    <string name="acc_refresh_relays">Refresh relays</string>
+    <string name="acc_re_pair_signer">Re-pair signer</string>
+    <string name="acc_messaging_enabled">Messaging enabled</string>
+    <string name="acc_messaging_needs_repair">Messaging needs re-pair</string>
+    <string name="acc_messaging_enable">Enable messaging</string>
+    <string name="acc_messaging_not_granted">This account was paired before private messaging existed, so its signer has not granted permission to encrypt, seal or decrypt messages. Re-pairing keeps your posts and settings.</string>
+    <string name="acc_messaging_denied">Your signer refused a message operation for this account. Re-pair and choose Always when it asks about decrypting messages.</string>
+    <string name="acc_relay_auth_blocked">The relay %1$s asked this account to authenticate and the signer did not answer. If you use Amber\'s Client auth whitelist, add the relay to it.</string>
+    <string name="acc_write_relays">Write relays</string>
+    <string name="acc_read_relays">Read relays</string>
+    <string name="acc_no_write_relays">No write relays found. Tap \"Refresh relays\" to fetch them from the network.</string>
+    <string name="acc_signer_relay">Signer relay</string>
+    <string name="acc_blossom_server">Media server</string>
+    <string name="acc_danger_zone">Danger zone</string>
+    <string name="acc_remove_help">This will remove the account pairing and all associated posts.</string>
+    <string name="acc_remove_confirm">Are you sure? This will remove the account and all its posts.</string>
+    <string name="acc_remove_button">Remove account</string>
+
+    <string name="acc_edit_title">Edit account</string>
+    <string name="acc_profile_info">Profile info</string>
+    <string name="acc_profile_info_help">Profile data is fetched from Nostr relays. Change it with \"Nostr profile\" on the account page, or use \"Refresh profile\" to update it here.</string>
+    <string name="acc_display_name">Display name</string>
+    <string name="acc_username">Username</string>
+    <string name="acc_about">About</string>
+    <string name="acc_not_set">Not set</string>
+    <string name="acc_personality">Writing personality</string>
+    <string name="acc_personality_help">Define the writing style and personality for AI-generated posts on this account. This guides the tone, vocabulary, and structure of generated content.</string>
+    <string name="acc_personality_placeholder">Describe the writing personality for this account…</string>
+    <string name="acc_markdown">Markdown supported</string>
+    <string name="acc_char_count">%1$d / %2$d</string>
+    <string name="acc_blossom_label">Blossom media server</string>
+    <string name="acc_blossom_help">Where attached images and files are uploaded for this account. Leave blank to use the default (%1$s).</string>
+    <string name="acc_save">Save account</string>
+
+    <string name="acc_profile_title">Nostr profile</string>
+    <string name="acc_profile_intro">Published as kind 0 and signed in your signer app. Emanator never sees your key.</string>
+    <string name="acc_profile_re_pair">Re-pair this account</string>
+    <string name="acc_profile_identity">Identity</string>
+    <string name="acc_profile_display_name">Display name</string>
+    <string name="acc_profile_display_name_help">Shown in bold. Can contain spaces and emoji.</string>
+    <string name="acc_profile_handle">Handle</string>
+    <string name="acc_profile_handle_help">Short username, no spaces. Shown as @handle.</string>
+    <string name="acc_profile_bio">Bio</string>
+    <string name="acc_profile_images">Images</string>
+    <string name="acc_profile_avatar">Avatar</string>
+    <string name="acc_profile_avatar_help">Square. Shown as a circle in most clients.</string>
+    <string name="acc_profile_banner">Banner</string>
+    <string name="acc_profile_banner_help">Wide. Clients crop it to roughly 3:1, so keep anything important centred.</string>
+    <string name="acc_profile_links">Links</string>
+    <string name="acc_profile_website">Website</string>
+    <string name="acc_profile_nip05">Nostr address (NIP-05)</string>
+    <string name="acc_profile_nip05_help">Looks like an email. Verified by the domain, not by us.</string>
+    <string name="acc_profile_lightning">Lightning address</string>
+    <string name="acc_profile_unmodelled">Fields set by other clients that are not shown here are kept as they are.</string>
+    <string name="acc_profile_publish">Publish profile</string>
+    <string name="acc_profile_published">Published.</string>
+    <string name="acc_profile_working">Working…</string>
+
+    <string name="acc_pair_title">Pair account</string>
+    <string name="acc_pair_intro">Approve the connection in Amber or another NIP-46 signer to pair this Nostr account.</string>
+    <string name="acc_key_stays">The key stays in your signer. Emanator only ever receives events you have already approved.</string>
+    <string name="acc_no_account_summary">Don\'t have a Nostr account yet?</string>
+    <string name="acc_no_account_body">Create one in your signer app, then pair it here. In Amber, choose \"Generate a new key\" and back it up when it asks. Once it is paired you can set its name, bio and pictures from Nostr profile in the account\'s settings.</string>
+    <string name="acc_repair_title_messaging">Enable messaging</string>
+    <string name="acc_repair_title_reconnect">Re-connect signer</string>
+    <string name="acc_repair_intro_messaging">Private messages need permissions your signer has not granted yet — encrypting, sealing and decrypting messages. Re-pair to request them. Your posts and settings will be preserved.</string>
+    <string name="acc_repair_intro_reconnect">Re-pair the signer, for example on a new relay. Your posts and settings will be preserved.</string>
+    <string name="acc_repair_step_decrypt">On the first \"decrypt\" prompt, choose Always and scope All. Otherwise every single message needs a tap on your phone.</string>
+    <string name="acc_repair_step_relay_auth">When Amber asks about relay authentication, choose scope All relays. If you use Amber\'s Client auth whitelist, add your DM inbox relays to it — while that list is non-empty Amber rejects every other relay without asking.</string>
+    <string name="acc_paired">Account paired! Fetching profile and relay list in the background.</string>
+    <string name="acc_re_paired">Signer re-paired!</string>
+</resources>

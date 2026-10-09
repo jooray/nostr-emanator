@@ -17,7 +17,7 @@ en:
         see_how: See how it works
         key_note: Your keys stay with your Nostr signer.
         stage_label: Emanator running on desktop and mobile
-        dashboard_alt: Emanator dashboard showing account, scheduled, published and total post counts, with a list of upcoming posts across managed Nostr accounts
+        dashboard_alt: "Emanator dashboard with one post waiting for a signature at the top, then a timeline of scheduled posts across five managed Nostr accounts, each with its time, account and text"
       proof:
         label: Product principles
         intro: Built for accounts that need reach, not another social dashboard.
@@ -42,7 +42,7 @@ en:
         publishing_tag: Publishing control
         publishing_title: See every post and repost before it goes out.
         publishing_body: One calendar shows what each account has queued across the month, so nothing publishes that you have not looked at.
-        calendar_alt: Emanator calendar for September 2026, with scheduled posts and reposts laid out day by day across every managed account
+        calendar_alt: "Emanator calendar for October 2026, with scheduled posts and reposts laid out day by day and color-coded by account"
         identity_tag: Identity first
         identity_title: Your signer holds the keys.
         identity_body: Emanator asks your signer to approve each event over NIP-46. Your Nostr private key stays in Amber, where it belongs.
@@ -53,14 +53,14 @@ en:
       tour:
         title: The whole workflow, on the web and your phone.
         lead: Draft, schedule, and keep an eye on replies from wherever you are. The interface follows your system light or dark theme.
-        interactions_alt: Emanator interactions view showing mentions and replies to a managed account, with follow, mute and reply actions
+        interactions_alt: "Emanator interactions view showing mentions of several managed accounts, with like, follow, mute and reply actions"
         interactions_title: One inbox for replies and mentions
         interactions_body: Read the mentions and replies for each account you run, then reply without leaving the app.
-        calendar_alt: Emanator month calendar with scheduled posts marked in color and reposts shown in italics
+        calendar_alt: "Emanator month calendar with each post marked in its account's color and reposts labeled as reposts"
         calendar_title: A month you can plan against
         calendar_body: Scheduled posts and their reposts sit side by side, so a launch week is easy to read at a glance.
         mobile_label: Emanator on mobile
-        compose_light_alt: Composing a new post on Emanator mobile, with an AI generation prompt below the editor
+        compose_light_alt: "Composing a new post on Emanator mobile, with an attach button and Save & Schedule below the editor"
         compose_dark_alt: Composing a new post on Emanator mobile in dark theme
         compose_caption: Compose
         schedule_light_alt: Picking a publish date and time on Emanator mobile, with accounts to repost from listed below
@@ -77,3 +77,28 @@ en:
         back_to_top: Back to top
         tagline: Post scheduling for the open social web.
         github_label: View source on GitHub
+      nav_pricing: Pricing
+      language_menu: "Language: %{language}"
+      pricing:
+        title: Scheduling is free. AI writing costs sats.
+        lead: Your Nostr key is your account. No email, no password, no card.
+        free_tag: Emanator
+        free_price: Free
+        free_note: everything except AI writing
+        free_scheduling: Scheduling, reposts from your other accounts, the calendar, replies and DMs.
+        free_accounts: Pair up to 10 accounts. AI writing, or its trial, lifts the limit.
+        free_self_host_html: Open source. <a href="https://github.com/jooray/nostr-emanator">Run it yourself</a> with your own AI key and nothing is paid.
+        ai_tag: AI writing
+        ai_price: 3 days free
+        ai_note: then 10,000 sats per 30 days
+        ai_trial: The trial starts the first time you ask the AI to write or edit a post, not when you sign up.
+        ai_pro_rata: Pay any amount over Lightning, credited pro rata. 5,000 sats is 15 days, minimum 1,000.
+        ai_keep_days: Pay during your trial and the unused days are kept.
+        bundle_tag: All-access
+        bundle_price: 25,000 sats
+        bundle_note: per 30 days
+        bundle_covers_html: Covers AI writing here, hosted <a href="https://nalgorithm.cypherpunk.today">nalgorithm</a> (your Nostr follows ranked, read to you as a morning voice digest) and <a href="https://lievik.cypherpunk.today">Lievik</a> (picks what is worth sending to each audience you write for).
+        bundle_keep_days: Days you already paid for on any of the three are kept.
+        bundle_saving: Separately the three cost 35,000 sats.
+        fine: If billing is ever unreachable, scheduling and publishing keep working.
+        terms_html: 'Trial, refunds, privacy and support: <a href="https://cypherpunk.today/terms/">the terms page</a>.'

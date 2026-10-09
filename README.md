@@ -27,6 +27,10 @@ I write about building things on [my blog](https://juraj.bednar.io/en/blog-en/).
 A live instance runs at [emanator.cypherpunk.today](https://emanator.cypherpunk.today) — no install
 needed. Sign in with any Nostr identity (NIP-07 extension or Amber/NIP-46 QR) to get an account.
 
+Scheduling, reposts and messages are free there. AI writing costs 10,000 sats per 30 days
+after a 3-day free trial (or 25,000 sats for the all-access bundle). A self-hosted install
+with your own AI key has no billing at all.
+
 ## Tech stack
 
 - **Rails 8.1** with Hotwire (Turbo + Stimulus)
@@ -59,6 +63,8 @@ Emanator runs on port **3001** (3000 is reserved for lievik). Override with
   settings (provider, endpoint, model), and the default `blossom.server` for
   media uploads (per-account override in account settings).
 - `.env` — API keys (see `.env.example`).
+- Billing is off unless `BILLING_API_URL` and `BILLING_API_TOKEN` are set; only the
+  hosted instance sets them. See `AGENTS.md`.
 
 ## How it works
 

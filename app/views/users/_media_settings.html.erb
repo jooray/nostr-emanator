@@ -1,0 +1,82 @@
+<%# Shared with the Android app: both read MediaPreferences from the user. %>
+<% media = MediaPreferences.for(@user) %>
+<div id="media-settings" class="border rule p-6">
+  <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-2"><%= t("users.media.title") %></h2>
+  <p class="text-sm text-gray-500 dark:text-gray-400 mb-4"><%= t("users.media.help") %></p>
+  <%= form_with url: user_path, method: :patch, class: "space-y-4", data: { turbo: false } do %>
+    <input type="hidden" name="media[compress]" value="0">
+    <label class="inline-flex items-center gap-2 cursor-pointer">
+      <input type="checkbox" name="media[compress]" value="1" <%= "checked" if media["compress"] %>
+             class="rounded text-amber-600 dark:bg-gray-700 dark:border-[color:var(--color-rule-dark)]">
+      <span class="text-sm text-gray-700 dark:text-gray-300"><%= t("users.media.compress") %></span>
+    </label>
+
+    <div class="flex flex-wrap gap-4">
+      <label class="block">
+        <span class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><%= t("users.media.max_edge") %></span>
+        <select name="media[max_edge]" class="rounded-lg border-gray-300 dark:border-[color:var(--color-rule-dark)] dark:bg-[color:var(--color-chassis)] dark:text-gray-100 text-sm">
+          <% MediaPreferences::MAX_EDGES.each do |edge| %>
+            <option value="<%= edge %>" <%= "selected" if media["max_edge"] == edge %>>
+              <%= edge.zero? ? t("users.media.original_size") : t("users.media.pixels", count: edge) %>
+            </option>
+          <% end %>
+        </select>
+      </label>
+
+      <label class="block">
+        <span class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><%= t("users.media.quality") %></span>
+        <select name="media[quality]" class="rounded-lg border-gray-300 dark:border-[color:var(--color-rule-dark)] dark:bg-[color:var(--color-chassis)] dark:text-gray-100 text-sm">
+          <% [ 60, 70, 75, 80, 85, 90, 95 ].each do |quality| %>
+            <option value="<%= quality %>" <%= "selected" if media["quality"] == quality %>><%= quality %></option>
+          <% end %>
+        </select>
+      </label>
+
+      <label class="block">
+        <span class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><%= t("users.media.photo_format") %></span>
+        <select name="media[photo_format]" class="rounded-lg border-gray-300 dark:border-[color:var(--color-rule-dark)] dark:bg-[color:var(--color-chassis)] dark:text-gray-100 text-sm">
+          <% MediaPreferences::PHOTO_FORMATS.each do |format| %>
+            <option value="<%= format %>" <%= "selected" if media["photo_format"] == format %>><%= t("users.media.formats.#{format}") %></option>
+          <% end %>
+        </select>
+      </label>
+    </div>
+
+    <p class="text-xs text-gray-500 dark:text-gray-400"><%= t("users.media.lossless_note") %></p>
+
+    <h3 class="pt-2 text-sm font-medium text-gray-900 dark:text-white"><%= t("users.media.video_title") %></h3>
+    <input type="hidden" name="media[video_compress]" value="0">
+    <label class="inline-flex items-center gap-2 cursor-pointer">
+      <input type="checkbox" name="media[video_compress]" value="1" <%= "checked" if media["video_compress"] %>
+             class="rounded text-amber-600 dark:bg-gray-700 dark:border-[color:var(--color-rule-dark)]">
+      <span class="text-sm text-gray-700 dark:text-gray-300"><%= t("users.media.video_compress") %></span>
+    </label>
+
+    <div class="flex flex-wrap gap-4">
+      <label class="block">
+        <span class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><%= t("users.media.video_resolution") %></span>
+        <select name="media[video_resolution]" class="rounded-lg border-gray-300 dark:border-[color:var(--color-rule-dark)] dark:bg-[color:var(--color-chassis)] dark:text-gray-100 text-sm">
+          <% MediaPreferences::VIDEO_RESOLUTIONS.each do |resolution| %>
+            <option value="<%= resolution %>" <%= "selected" if media["video_resolution"] == resolution %>>
+              <%= resolution.zero? ? t("users.media.original_size") : "#{resolution}p" %>
+            </option>
+          <% end %>
+        </select>
+      </label>
+
+      <label class="block">
+        <span class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><%= t("users.media.video_quality") %></span>
+        <select name="media[video_quality]" class="rounded-lg border-gray-300 dark:border-[color:var(--color-rule-dark)] dark:bg-[color:var(--color-chassis)] dark:text-gray-100 text-sm">
+          <% MediaPreferences::VIDEO_QUALITIES.each do |quality| %>
+            <option value="<%= quality %>" <%= "selected" if media["video_quality"] == quality %>><%= t("users.media.video_qualities.#{quality}") %></option>
+          <% end %>
+        </select>
+      </label>
+    </div>
+
+    <p class="text-xs text-gray-500 dark:text-gray-400"><%= t("users.media.video_note") %></p>
+    <button type="submit" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors">
+      <%= t("users.media.save") %>
+    </button>
+  <% end %>
+</div>

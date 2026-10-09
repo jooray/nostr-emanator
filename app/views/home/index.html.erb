@@ -388,24 +388,29 @@
       }
 
       /* Real screenshot frames — scoped + specific enough to beat `.device img` */
-      .device img.shot-dark {
+      .device img.shot-dark,
+      .browser-frame img.shot-dark {
         display: none;
       }
 
-      :root[data-theme="dark"] .device img.shot-light {
+      :root[data-theme="dark"] .device img.shot-light,
+      :root[data-theme="dark"] .browser-frame img.shot-light {
         display: none;
       }
 
-      :root[data-theme="dark"] .device img.shot-dark {
+      :root[data-theme="dark"] .device img.shot-dark,
+      :root[data-theme="dark"] .browser-frame img.shot-dark {
         display: block;
       }
 
       @media (prefers-color-scheme: dark) {
-        :root:not([data-theme="light"]) .device img.shot-light {
+        :root:not([data-theme="light"]) .device img.shot-light,
+        :root:not([data-theme="light"]) .browser-frame img.shot-light {
           display: none;
         }
 
-        :root:not([data-theme="light"]) .device img.shot-dark {
+        :root:not([data-theme="light"]) .device img.shot-dark,
+        :root:not([data-theme="light"]) .browser-frame img.shot-dark {
           display: block;
         }
       }
@@ -951,6 +956,160 @@
         font-weight: 750;
       }
 
+      .nav-link {
+        padding: 0.5rem 0.6rem;
+        border-radius: 0.6rem;
+        color: var(--muted);
+        font-size: 0.88rem;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .nav-link:hover {
+        background: var(--bg-soft);
+        color: var(--ink);
+      }
+
+      .lang-menu {
+        position: relative;
+      }
+
+      .lang-menu summary {
+        display: flex;
+        height: 2.7rem;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0 0.55rem;
+        border: 1px solid transparent;
+        border-radius: 0.75rem;
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        list-style: none;
+      }
+
+      .lang-menu summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .lang-menu summary:hover,
+      .lang-menu[open] summary {
+        border-color: var(--line);
+        background: var(--bg-soft);
+        color: var(--ink);
+      }
+
+      .lang-menu summary svg {
+        width: 1.1rem;
+        height: 1.1rem;
+      }
+
+      .lang-switch-menu {
+        position: absolute;
+        top: calc(100% + 0.4rem);
+        right: 0;
+        z-index: 20;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        min-width: 9.5rem;
+        padding: 0.35rem;
+        border: 1px solid var(--line);
+        border-radius: 0.8rem;
+        background: var(--surface-raised);
+        box-shadow: var(--shadow-small);
+      }
+
+      .lang-switch-menu .lang-item,
+      .lang-switch-menu .lang-active {
+        display: block;
+        width: 100%;
+        padding: 0.55rem 0.7rem;
+        border-radius: 0.5rem;
+        font-size: 0.88rem;
+        text-align: left;
+      }
+
+      .lang-switch-menu .lang-item:hover {
+        background: var(--bg-soft);
+        text-decoration: none;
+      }
+
+      .lang-switch-menu .lang-active {
+        color: var(--amber-deep);
+      }
+
+      /* Pricing */
+      .pricing-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+      }
+
+      .price-card {
+        padding: 2rem;
+        border: 1px solid var(--line);
+        border-radius: 1.2rem;
+        background: var(--surface-solid);
+      }
+
+      .price-card-paid {
+        border-color: var(--amber);
+        background:
+          linear-gradient(155deg, transparent 55%, var(--amber-soft)),
+          var(--surface-solid);
+      }
+
+      .price-card-bundle {
+        border-style: dashed;
+        border-color: var(--line-strong);
+      }
+
+      .price-big {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(2.2rem, 3.6vw, 3rem);
+        font-weight: 500;
+        letter-spacing: -0.045em;
+        line-height: 1.05;
+      }
+
+      .price-note {
+        margin: 0.4rem 0 0;
+        color: var(--muted);
+        font-size: 0.9rem;
+        font-weight: 700;
+      }
+
+      .price-card ul {
+        margin: 1.3rem 0 0;
+        padding-left: 1.1rem;
+        color: var(--muted);
+        font-size: 0.9rem;
+        line-height: 1.6;
+      }
+
+      .price-card li + li {
+        margin-top: 0.45rem;
+      }
+
+      .price-card a {
+        color: var(--amber-deep);
+        text-underline-offset: 0.2em;
+      }
+
+      .price-fine {
+        margin: 1.4rem 0 0;
+        color: var(--faint);
+        font-size: 0.82rem;
+      }
+      .price-fine a {
+        color: inherit;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+
       :focus-visible {
         outline: 3px solid color-mix(in srgb, var(--amber) 72%, transparent);
         outline-offset: 3px;
@@ -986,6 +1145,10 @@
           padding-left: 0;
           border-left: 0;
         }
+
+        .pricing-grid {
+          grid-template-columns: 1fr;
+        }
       }
 
       @media (max-width: 760px) {
@@ -1013,6 +1176,11 @@
 
         h1 {
           font-size: clamp(3rem, 14vw, 5rem);
+        }
+
+        .orbit {
+          width: min(560px, calc(100vw - 28px));
+          height: min(560px, calc(100vw - 28px));
         }
 
         .hero-phone {
@@ -1071,6 +1239,27 @@
           gap: 0.25rem;
         }
 
+        .nav .button {
+          padding-inline: 0.7rem;
+        }
+
+        .lang-menu summary {
+          padding: 0 0.4rem;
+        }
+
+        .nav .button {
+          white-space: nowrap;
+        }
+
+        .lang-switch-menu {
+          right: auto;
+          left: 0;
+        }
+
+        .price-card {
+          padding: 1.5rem;
+        }
+
         .theme-toggle {
           width: 2.5rem;
         }
@@ -1111,6 +1300,12 @@
         footer {
           align-items: flex-start;
           gap: 1rem;
+        }
+      }
+
+      @media (max-width: 420px) {
+        .nav-link {
+          display: none;
         }
       }
 
@@ -1155,6 +1350,17 @@
           <span class="brand-word">Emanator</span>
         </a>
         <div class="nav-actions">
+          <a class="nav-link" href="#pricing"><%= t(".nav_pricing") %></a>
+          <details class="lang-menu">
+            <summary aria-label="<%= t(".language_menu", language: ApplicationHelper::LOCALE_NAMES[I18n.locale.to_s]) %>">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"></path>
+              </svg>
+              <span class="lang-code" aria-hidden="true"><%= I18n.locale.to_s.upcase %></span>
+            </summary>
+            <%= render "shared/locale_switcher", css: "lang-switch lang-switch-menu", item_css: "lang-item", active_css: "lang-active" %>
+          </details>
           <button class="theme-toggle" type="button" aria-label="<%= t(".switch_to_dark") %>" title="<%= t(".theme_toggle_title") %>"
                   data-label-dark="<%= t(".switch_to_dark") %>" data-label-light="<%= t(".switch_to_light") %>">
             <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -1213,12 +1419,13 @@
               <i></i><i></i><i></i>
               <span class="browser-url">emanator.cypherpunk.today</span>
             </div>
-            <img src="/landing/shots/dashboard-desktop.png" width="1261" height="836" alt="<%= t(".hero.dashboard_alt") %>">
+            <img class="shot-light" src="/landing/shots/dashboard-desktop-light.png" width="1262" height="840" alt="<%= t(".hero.dashboard_alt") %>">
+            <img class="shot-dark" src="/landing/shots/dashboard-desktop-dark.png" width="1262" height="840" alt="<%= t(".hero.dashboard_alt") %>">
           </div>
 
           <div class="device hero-phone" aria-hidden="true">
-            <img class="shot-light" src="/landing/shots/dashboard-mobile-light.png" width="472" height="782" alt="">
-            <img class="shot-dark" src="/landing/shots/dashboard-mobile-dark.png" width="472" height="782" alt="">
+            <img class="shot-light" src="/landing/shots/dashboard-mobile-light.png" width="472" height="780" alt="">
+            <img class="shot-dark" src="/landing/shots/dashboard-mobile-dark.png" width="472" height="780" alt="">
           </div>
         </div>
       </section>
@@ -1278,7 +1485,8 @@
                 <i></i><i></i><i></i>
                 <span class="browser-url">emanator.cypherpunk.today/calendar</span>
               </div>
-              <img src="/landing/shots/calendar-desktop.png" width="1276" height="829" alt="<%= t(".control.calendar_alt") %>">
+              <img class="shot-light" src="/landing/shots/calendar-desktop-light.png" width="1262" height="830" alt="<%= t(".control.calendar_alt") %>">
+              <img class="shot-dark" src="/landing/shots/calendar-desktop-dark.png" width="1262" height="830" alt="<%= t(".control.calendar_alt") %>">
             </div>
           </article>
           <article class="feature-card">
@@ -1310,7 +1518,8 @@
                 <i></i><i></i><i></i>
                 <span class="browser-url">emanator.cypherpunk.today/interactions</span>
               </div>
-              <img src="/landing/shots/interactions-desktop.png" width="1258" height="830" alt="<%= t(".tour.interactions_alt") %>">
+              <img class="shot-light" src="/landing/shots/interactions-desktop-light.png" width="1262" height="830" alt="<%= t(".tour.interactions_alt") %>">
+              <img class="shot-dark" src="/landing/shots/interactions-desktop-dark.png" width="1262" height="830" alt="<%= t(".tour.interactions_alt") %>">
             </div>
             <figcaption>
               <strong><%= t(".tour.interactions_title") %></strong>
@@ -1323,7 +1532,8 @@
                 <i></i><i></i><i></i>
                 <span class="browser-url">emanator.cypherpunk.today/calendar</span>
               </div>
-              <img src="/landing/shots/calendar-desktop.png" width="1276" height="829" alt="<%= t(".tour.calendar_alt") %>">
+              <img class="shot-light" src="/landing/shots/calendar-desktop-light.png" width="1262" height="830" alt="<%= t(".tour.calendar_alt") %>">
+              <img class="shot-dark" src="/landing/shots/calendar-desktop-dark.png" width="1262" height="830" alt="<%= t(".tour.calendar_alt") %>">
             </div>
             <figcaption>
               <strong><%= t(".tour.calendar_title") %></strong>
@@ -1334,26 +1544,66 @@
         <div class="tour-phones" aria-label="<%= t(".tour.mobile_label") %>">
           <figure>
             <div class="device">
-              <img class="shot-light" src="/landing/shots/newpost-mobile-light.png" width="487" height="773" alt="<%= t(".tour.compose_light_alt") %>">
-              <img class="shot-dark" src="/landing/shots/newpost-mobile-dark.png" width="487" height="773" alt="<%= t(".tour.compose_dark_alt") %>">
+              <img class="shot-light" src="/landing/shots/newpost-mobile-light.png" width="472" height="565" alt="<%= t(".tour.compose_light_alt") %>">
+              <img class="shot-dark" src="/landing/shots/newpost-mobile-dark.png" width="472" height="565" alt="<%= t(".tour.compose_dark_alt") %>">
             </div>
             <figcaption><%= t(".tour.compose_caption") %></figcaption>
           </figure>
           <figure>
             <div class="device">
-              <img class="shot-light" src="/landing/shots/schedule-mobile-light.png" width="476" height="811" alt="<%= t(".tour.schedule_light_alt") %>">
-              <img class="shot-dark" src="/landing/shots/schedule-mobile-dark.png" width="476" height="811" alt="<%= t(".tour.schedule_dark_alt") %>">
+              <img class="shot-light" src="/landing/shots/schedule-mobile-light.png" width="472" height="810" alt="<%= t(".tour.schedule_light_alt") %>">
+              <img class="shot-dark" src="/landing/shots/schedule-mobile-dark.png" width="472" height="810" alt="<%= t(".tour.schedule_dark_alt") %>">
             </div>
             <figcaption><%= t(".tour.schedule_caption") %></figcaption>
           </figure>
           <figure>
             <div class="device">
-              <img class="shot-light" src="/landing/shots/calendar-mobile-light.png" width="485" height="797" alt="<%= t(".tour.review_light_alt") %>">
-              <img class="shot-dark" src="/landing/shots/calendar-mobile-dark.png" width="485" height="797" alt="<%= t(".tour.review_dark_alt") %>">
+              <img class="shot-light" src="/landing/shots/calendar-mobile-light.png" width="472" height="800" alt="<%= t(".tour.review_light_alt") %>">
+              <img class="shot-dark" src="/landing/shots/calendar-mobile-dark.png" width="472" height="800" alt="<%= t(".tour.review_dark_alt") %>">
             </div>
             <figcaption><%= t(".tour.review_caption") %></figcaption>
           </figure>
         </div>
+      </section>
+
+      <section class="section shell" id="pricing" aria-labelledby="pricing-title">
+        <div class="section-heading">
+          <h2 id="pricing-title"><%= t(".pricing.title") %></h2>
+          <p><%= t(".pricing.lead") %></p>
+        </div>
+        <div class="pricing-grid">
+          <article class="price-card">
+            <span class="feature-tag"><%= t(".pricing.free_tag") %></span>
+            <div class="price-big"><%= t(".pricing.free_price") %></div>
+            <p class="price-note"><%= t(".pricing.free_note") %></p>
+            <ul>
+              <li><%= t(".pricing.free_scheduling") %></li>
+              <li><%= t(".pricing.free_accounts") %></li>
+              <li><%= t(".pricing.free_self_host_html") %></li>
+            </ul>
+          </article>
+          <article class="price-card price-card-paid">
+            <span class="feature-tag"><%= t(".pricing.ai_tag") %></span>
+            <div class="price-big"><%= t(".pricing.ai_price") %></div>
+            <p class="price-note"><%= t(".pricing.ai_note") %></p>
+            <ul>
+              <li><%= t(".pricing.ai_trial") %></li>
+              <li><%= t(".pricing.ai_pro_rata") %></li>
+              <li><%= t(".pricing.ai_keep_days") %></li>
+            </ul>
+          </article>
+          <article class="price-card price-card-bundle">
+            <span class="feature-tag"><%= t(".pricing.bundle_tag") %></span>
+            <div class="price-big"><%= t(".pricing.bundle_price") %></div>
+            <p class="price-note"><%= t(".pricing.bundle_note") %></p>
+            <ul>
+              <li><%= t(".pricing.bundle_covers_html") %></li>
+              <li><%= t(".pricing.bundle_keep_days") %></li>
+              <li><%= t(".pricing.bundle_saving") %></li>
+            </ul>
+          </article>
+        </div>
+        <p class="price-fine"><%= t(".pricing.fine") %> <%= t(".pricing.terms_html") %></p>
       </section>
 
       <section class="cta shell" aria-labelledby="cta-title">
@@ -1410,6 +1660,19 @@
           systemDark.addEventListener("change", updateLabel)
         }
         updateLabel()
+
+        var langMenu = document.querySelector(".lang-menu")
+        if (langMenu) {
+          document.addEventListener("click", function (event) {
+            if (langMenu.open && !langMenu.contains(event.target)) langMenu.open = false
+          })
+          document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape" && langMenu.open) {
+              langMenu.open = false
+              langMenu.querySelector("summary").focus()
+            }
+          })
+        }
       })()
     <% end %>
   </body>

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Posts screens (web: config/locales/posts). Generated once from the web's wording; edit freely. -->
+<resources>
+    <string name="dash_title">V tisku</string>
+    <string name="dash_new_post">Nový příspěvek</string>
+    <string name="dash_no_identities">Žádné spárované identity</string>
+    <string name="dash_no_identities_help">Emanator zveřejňuje jako účty, které už máš pod kontrolou. Spáruj jeden se svým podepisovačem a jeho naplánované příspěvky se objeví tady.</string>
+    <string name="dash_pair_account">Spárovat účet</string>
+    <string name="dash_waiting_on_you">Čeká se na tebe</string>
+    <string name="dash_barely_reached_heading">Sotva dosáhlo sítě</string>
+    <string name="dash_barely_reached_help">Přijal je jeden relay nebo žádný, takže je skoro nikdo nevidí. Znovu odeslat pošle tutéž podepsanou událost, nepodepisuje se nanovo.</string>
+    <string name="dash_never_went_out">Nikdy nevyšlo</string>
+    <string name="dash_scheduled">Naplánováno</string>
+    <string name="dash_all_posts">Všechny příspěvky</string>
+    <string name="dash_nothing_scheduled">Nic není naplánováno. Kámen je prázdný.</string>
+    <string name="dash_write_one">Napsat příspěvek</string>
+    <string name="dash_last_pulled">Naposledy staženo</string>
+    <string name="posts_title">Všechny příspěvky</string>
+    <string name="posts_state">Stav</string>
+    <string name="posts_who">Kdo</string>
+    <string name="posts_filter_all">Vše</string>
+    <string name="posts_filter_short">Sotva vyšlo</string>
+    <string name="posts_filter_failed">Nikdy nevyšlo</string>
+    <string name="posts_filter_awaiting_signature">Čeká</string>
+    <string name="posts_filter_scheduled">Naplánováno</string>
+    <string name="posts_filter_published">Zveřejněno</string>
+    <string name="posts_filter_draft">Koncepty</string>
+    <string name="posts_empty_short">Všechno zveřejněné se dostalo do sítě. Občasné odmítnutí od některého relaye je normální a nepočítá se.</string>
+    <string name="posts_empty_filtered">Žádné příspěvky neodpovídají tomuto filtru.</string>
+    <string name="posts_empty_none">Zatím nic nenapsáno.</string>
+    <string name="posts_clear_filters">Zrušit filtry</string>
+    <string name="post_title">Forma</string>
+    <string name="post_due">Termín</string>
+    <string name="post_edit">Upravit</string>
+    <string name="post_schedule">Naplánovat</string>
+    <string name="post_reschedule">Přeplánovat</string>
+    <string name="post_reschedule_confirm">Přeplánovat tento příspěvek? Vrátí se do konceptu kvůli novému podpisu.</string>
+    <string name="post_cancel_schedule">Zrušit naplánování</string>
+    <string name="post_cancel_confirm">Zrušit tento příspěvek? Všechny reposty se odstraní a příspěvek se vrátí do konceptu.</string>
+    <string name="post_delete">Smazat</string>
+    <string name="post_delete_confirm">Opravdu chceš tento příspěvek smazat?</string>
+    <string name="post_actions">Akce</string>
+    <string name="signing_signed_and_held">Podepsáno a připraveno. Nic dalšího není potřeba, zveřejní se samo v naplánovaný čas.</string>
+    <string name="signing_not_signed">Nepodepsáno</string>
+    <string name="signing_no_signature">Tvůj podepisovač nevrátil podpis.</string>
+    <string name="signing_ask_again">Zeptat se znovu</string>
+    <string name="signing_time_elapsed">Uplynulý čas</string>
+    <string name="signing_past_two_minutes">Uplynuly dvě minuty. Amber už pravděpodobně přestal čekat, zkontroluj telefon a zkus to znovu.</string>
+    <string name="signing_one_approval_queued">Ve frontě je jedno schválení, pro samotný příspěvek.</string>
+    <string name="publish_rebroadcast">Znovu odeslat</string>
+    <string name="publish_partial_explanation">Událost je aktivní na relayích, které ji přijaly, ale kdokoli čte jen z %1$s, ji neuvidí. Znovu odeslat pošle tutéž podepsanou událost, nepodepisuje se nanovo.</string>
+    <string name="publish_accepted">Přijato</string>
+    <string name="publish_never_went_out">Nikdy nevyšlo</string>
+    <string name="publish_try_again">Zkusit znovu</string>
+    <string name="publish_never_reached">Nikdy to nedosáhlo žádného relaye. Nic nezveřejněno.</string>
+    <string name="publish_running_the_press">Tiskne se</string>
+    <string name="publish_sending">Podepsaná událost se odesílá na relaye účtu %1$s. Oslovujeme je postupně, jeden po druhém; výsledky se objevují tady, jak přicházejí.</string>
+    <string name="publish_retry_publishing">Zkusit zveřejnit znovu</string>
+    <string name="publish_due_now">Na řadě</string>
+    <string name="publish_due_now_explanation">Naplánovaný čas už uplynul. Plánovač si ho vyzvedne během minuty.</string>
+    <string name="reposts_title">Reposty</string>
+    <string name="reposts_retry_signing">Zkusit podepsat znovu</string>
+    <string name="reposts_rebroadcast">Znovu odeslat</string>
+    <string name="reposts_repost_now">Repostovat teď</string>
+    <string name="reposts_repost_now_confirm">Tohle repost znovu podepíše a hned zveřejní. Pokračovat?</string>
+    <string name="reposts_cancel_confirm">Zrušit tento repost?</string>
+    <string name="reposts_relay_details">Podrobnosti o relayích</string>
+    <string name="calendar_title">Kalendář</string>
+    <string name="calendar_previous_month">Předchozí měsíc</string>
+    <string name="calendar_next_month">Další měsíc</string>
+    <string name="calendar_today">Dnes</string>
+    <string name="calendar_who">Kdo</string>
+    <plurals name="dash_held">
+        <item quantity="one">%d podržený</item>
+        <item quantity="few">%d podržené</item>
+        <item quantity="many">%d podržených</item>
+        <item quantity="other">%d podržených</item>
+    </plurals>
+    <plurals name="dash_discard_all">
+        <item quantity="one">Zahodit vše (%d)</item>
+        <item quantity="few">Zahodit vše (%d)</item>
+        <item quantity="many">Zahodit vše (%d)</item>
+        <item quantity="other">Zahodit vše (%d)</item>
+    </plurals>
+    <plurals name="dash_discard_confirm">
+        <item quantity="one">Zahodit %d příspěvek, který nikdy nevyšel? Zahození znamená smazání, ne jen zrušení plánu. Tohle nejde vzít zpět.</item>
+        <item quantity="few">Zahodit %d příspěvky, které nikdy nevyšly? Zahození znamená smazání, ne jen zrušení plánu. Tohle nejde vzít zpět.</item>
+        <item quantity="many">Zahodit %d příspěvků, které nikdy nevyšly? Zahození znamená smazání, ne jen zrušení plánu. Tohle nejde vzít zpět.</item>
+        <item quantity="other">Zahodit %d příspěvků, které nikdy nevyšly? Zahození znamená smazání, ne jen zrušení plánu. Tohle nejde vzít zpět.</item>
+    </plurals>
+    <plurals name="dash_never_went_out_total">
+        <item quantity="one">Nikdy nevyšlo &amp;middot; %d</item>
+        <item quantity="few">Nikdy nevyšlo &amp;middot; %d</item>
+        <item quantity="many">Nikdy nevyšlo &amp;middot; %d</item>
+        <item quantity="other">Nikdy nevyšlo &amp;middot; %d</item>
+    </plurals>
+    <plurals name="publish_none_accepted">
+        <item quantity="one">Jediný relay to nepřijal. Nic nezveřejněno.</item>
+        <item quantity="few">Ani jeden z %d relayů to nepřijal. Nic nezveřejněno.</item>
+        <item quantity="many">Ani jeden z %d relayů to nepřijal. Nic nezveřejněno.</item>
+        <item quantity="other">Ani jeden z %d relayů to nepřijal. Nic nezveřejněno.</item>
+    </plurals>
+    <plurals name="calendar_post_count">
+        <item quantity="one">%d příspěvek</item>
+        <item quantity="few">%d příspěvky</item>
+        <item quantity="many">%d příspěvků</item>
+        <item quantity="other">%d příspěvků</item>
+    </plurals>
+    <plurals name="calendar_repost_count">
+        <item quantity="one">%d repost</item>
+        <item quantity="few">%d reposty</item>
+        <item quantity="many">%d repostů</item>
+        <item quantity="other">%d repostů</item>
+    </plurals>
+    <string name="post_scheduled_for">Naplánováno na %1$s</string>
+    <string name="post_published_at">Zveřejněno %1$s</string>
+    <string name="post_version_history">Starší verze</string>
+    <string name="post_copy_text">Kopírovat text</string>
+    <string name="post_approve_in_signer">Schval žádost v podepisovací aplikaci. Podepisování běží na pozadí, tuto obrazovku můžeš zavřít.</string>
+    <string name="post_relays">Relaye</string>
+    <string name="posts_all_accounts">Všechny účty</string>
+    <string name="posts_discard_failed">Zahodit</string>
+    <string name="calendar_nothing_on_day">Na tento den není nic naplánováno.</string>
+    <plurals name="dash_reading_waiting">
+        <item quantity="one">%d čeká na podpis</item>
+        <item quantity="few">%d čekají na podpis</item>
+        <item quantity="many">%d čeká na podpis</item>
+        <item quantity="other">%d čeká na podpis</item>
+    </plurals>
+    <plurals name="dash_reading_short">
+        <item quantity="one">%d sotva vyšlo</item>
+        <item quantity="few">%d sotva vyšly</item>
+        <item quantity="many">%d sotva vyšlo</item>
+        <item quantity="other">%d sotva vyšlo</item>
+    </plurals>
+    <plurals name="dash_reading_failed">
+        <item quantity="one">%d nikdy nevyšel</item>
+        <item quantity="few">%d nikdy nevyšly</item>
+        <item quantity="many">%d nikdy nevyšlo</item>
+        <item quantity="other">%d nikdy nevyšlo</item>
+    </plurals>
+</resources>

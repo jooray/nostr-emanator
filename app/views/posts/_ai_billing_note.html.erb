@@ -1,0 +1,17 @@
+<%# Where the user stands with paid AI assist, above the prompt. Renders nothing
+    on a self-hosted install (billing disabled) or for a paying user. %>
+<% snapshot = ai_billing_snapshot %>
+<% if snapshot && !snapshot.active? && !snapshot.unknown? %>
+  <div class="mb-4 border rule px-4 py-3 text-sm text-gray-700 dark:text-gray-300" data-ai-billing-note="<%= snapshot.state %>">
+    <% case snapshot.state %>
+    <% when "none" %>
+      <%= t("billing.note.none") %>
+    <% when "trial" %>
+      <%= t("billing.note.trial", date: billing_date(snapshot.until_time)) %>
+    <% when "expired" %>
+      <%= t("billing.note.expired", date: billing_date(snapshot.until_time)) %>
+    <% end %>
+    <%= link_to t("billing.note.link"), billing_path,
+          class: "font-medium text-amber-600 dark:text-amber-400 hover:underline whitespace-nowrap" %>
+  </div>
+<% end %>

@@ -39,6 +39,44 @@ class Repost < ApplicationRecord
     !published?
   end
 
+  def can_retry_sign?
+    (awaiting_signature? || (failed? && signed_event.blank?)) && unsigned_event.present?
+  end
+
+  # Returns :sign_and_publish when the note is already out (so the repost goes
+  # out the moment it is signed), :sign otherwise.
+  def retry_signing!
+    update!(status: :awaiting_signature, publish_results: nil) if failed?
+
+    if post.published?
+      PublishNowRepostJob.perform_later(id)
+      :sign_and_publish
+    else
+      SignRepostJob.perform_later(id)
+      :sign
+    end
+  end
+
+  def can_publish_now?
+    scheduled? && signed_event.present?
+  end
+
+  # Re-sign with the current time and publish at once. False when the original
+  # note's event is gone, so there is nothing to repost.
+  def publish_now!
+    original_event = post.signed_event || post.unsigned_event
+    return false if original_event.blank?
+
+    unsigned = Nostr::EventSignerService.new.build_unsigned_repost(
+      original_event: original_event,
+      pubkey: account.pubkey_hex,
+      created_at: Time.current
+    )
+    update!(unsigned_event: unsigned, signed_event: nil, event_id: nil, status: :awaiting_signature)
+    PublishNowRepostJob.perform_later(id)
+    true
+  end
+
   def can_rebroadcast?
     (published? || failed? || publishing?) && signed_event.present?
   end

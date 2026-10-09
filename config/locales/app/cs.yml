@@ -1,0 +1,79 @@
+cs:
+  layouts:
+    android_app_banner:
+      text: "Emanator má i nativní aplikaci pro Android, rychlejší a se zmenšováním fotek přímo v telefonu."
+      link: "Stáhni si ji"
+      dismiss: "Zavřít"
+
+  api:
+    errors:
+      unauthorized: Přihlášení na tomto zařízení skončilo. Přihlas se znovu.
+      not_found: Nenalezeno.
+      upgrade_required: Tato verze aplikace je pro server příliš stará. Aktualizuj ji.
+
+  billing_returns:
+    show:
+      title: Platba přijata
+      body: Můžeš se vrátit do aplikace Emanator. Platbu si během několika sekund ověří sama.
+      open_app: Otevřít aplikaci Emanator
+      web_hint: Platil jsi z webu?
+      web_link: Zpět na předplatné
+
+  android_app:
+    show:
+      title: Emanator pro Android
+      intro: Tentýž Emanator jako nativní aplikace. Co uděláš v jedné, uvidíš i ve druhé, protože obě pracují s tímto serverem.
+      features:
+        native_picker: Fotky a soubory připojuješ přes výběr souborů v telefonu, nebo je do Emanatoru sdílíš z libovolné aplikace.
+        compression: Fotky se ještě v telefonu zmenší a zbaví údajů o poloze a fotoaparátu, teprve pak se nahrají.
+        signer: Přihlášení a párování potvrdíš v Amberu na stejném telefonu, bez skenování QR kódu.
+        local: Seznamy se otevřou hned z kopie v telefonu a pak se obnoví.
+      version_html: Aktuální verze %{version}
+      zapstore: Stáhnout ze Zapstore
+      download: Stáhnout APK
+      obtainium: Přidat do Obtainium pro automatické aktualizace
+      fingerprint: SHA-256 podpisového certifikátu
+      not_yet: První verze je na cestě.
+
+  users:
+    devices:
+      title: Přihlášená zařízení
+      intro: Telefony přihlášené do aplikace Emanator. Když tu některý odhlásíš, jeho přihlášení okamžitě skončí.
+      empty: Není přihlášeno žádné zařízení.
+      last_used: Naposledy před %{time}
+      never_used: Zatím nepoužito
+      version: Sestavení aplikace %{version}
+      sign_out: Odhlásit
+      sign_out_confirm: Odhlásit toto zařízení?
+      signed_out: Zařízení je odhlášeno.
+      get_app: Stáhnout aplikaci pro Android
+    media:
+      title: Nahrávání fotek
+      help: Mediální servery uchovávají přesně ty bajty, které dostanou, proto se fotky zmenšují ještě předtím, než opustí prohlížeč nebo telefon. Při překódování zmizí i údaje o poloze a fotoaparátu.
+      compress: Před nahráním fotky zmenšit
+      max_edge: Delší strana
+      original_size: Původní velikost
+      pixels: "%{count} px"
+      quality: Kvalita
+      photo_format: Formát fotek
+      formats:
+        jpeg: JPEG (funguje všude)
+        webp: WebP (menší)
+      lossless_note: Snímky obrazovky a obrázky s průhledností zůstávají v bezeztrátovém PNG. Animované GIFy se nahrají beze změny.
+      video_title: Videa
+      video_compress: Před nahráním videa překóduj
+      video_resolution: Rozlišení
+      video_quality: Kvalita videa
+      video_qualities:
+        small: Malý soubor
+        balanced: Vyvážená
+        high: Vysoká
+      video_note: Z videí se stane MP4 (H.264) s nejvýše 30 snímky za sekundu, bez polohy a údajů o fotoaparátu. Pokud prohlížeč video překódovat neumí, nahraje se originál.
+      save: Uložit
+      saved: Nastavení nahrávání fotek je uloženo.
+
+  js:
+    media_compress:
+      video_compressing: "Překódovávám %{name}… %{percent} %"
+      compressing: Zmenšuji %{name}…
+      saved: "%{name}: %{from} → %{to}"

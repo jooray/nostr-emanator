@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Posts screens (web: config/locales/posts). Generated once from the web's wording; edit freely. -->
+<resources>
+    <string name="dash_title">Tirada</string>
+    <string name="dash_new_post">Nueva publicación</string>
+    <string name="dash_no_identities">Ninguna identidad vinculada</string>
+    <string name="dash_no_identities_help">Emanator publica como cuentas que ya controlas. Vincula una con tu firmante y sus notas programadas aparecerán aquí.</string>
+    <string name="dash_pair_account">Vincula una cuenta</string>
+    <string name="dash_waiting_on_you">Esperando tu aprobación</string>
+    <string name="dash_barely_reached_heading">Apenas llegó a la red</string>
+    <string name="dash_barely_reached_help">Uno o ningún relay aceptó estas publicaciones, así que casi nadie puede verlas. Retransmitir envía otra vez el mismo evento firmado: no se vuelve a firmar.</string>
+    <string name="dash_never_went_out">Nunca salió</string>
+    <string name="dash_scheduled">Programadas</string>
+    <string name="dash_all_posts">Todas las publicaciones</string>
+    <string name="dash_nothing_scheduled">Nada programado. La piedra está despejada.</string>
+    <string name="dash_write_one">Escribe una</string>
+    <string name="dash_last_pulled">Última consulta</string>
+    <string name="posts_title">Todas las publicaciones</string>
+    <string name="posts_state">Estado</string>
+    <string name="posts_who">Quién</string>
+    <string name="posts_filter_all">Todas</string>
+    <string name="posts_filter_short">Apenas salió</string>
+    <string name="posts_filter_failed">Nunca salió</string>
+    <string name="posts_filter_awaiting_signature">Pendiente</string>
+    <string name="posts_filter_scheduled">Programadas</string>
+    <string name="posts_filter_published">Publicadas</string>
+    <string name="posts_filter_draft">Borradores</string>
+    <string name="posts_empty_short">Todo lo publicado llegó a la red. Que algún relay lo rechace de vez en cuando es normal y no se cuenta.</string>
+    <string name="posts_empty_filtered">Ninguna publicación coincide con este filtro.</string>
+    <string name="posts_empty_none">Todavía no se ha escrito nada.</string>
+    <string name="posts_clear_filters">Borrar filtros</string>
+    <string name="post_title">La forma</string>
+    <string name="post_due">Sale</string>
+    <string name="post_edit">Editar</string>
+    <string name="post_schedule">Programar</string>
+    <string name="post_reschedule">Reprogramar</string>
+    <string name="post_reschedule_confirm">¿Reprogramar esta publicación? Volverá a borrador para firmarla de nuevo.</string>
+    <string name="post_cancel_schedule">Cancelar programación</string>
+    <string name="post_cancel_confirm">¿Cancelar esta publicación? Se eliminarán todos los reposts y volverá a borrador.</string>
+    <string name="post_delete">Eliminar</string>
+    <string name="post_delete_confirm">¿Seguro que quieres eliminar esta publicación?</string>
+    <string name="post_actions">Acciones</string>
+    <string name="signing_signed_and_held">Firmado y en espera. No necesitas hacer nada más: se publicará solo a la hora programada.</string>
+    <string name="signing_not_signed">Sin firmar</string>
+    <string name="signing_no_signature">Tu firmante no devolvió ninguna firma.</string>
+    <string name="signing_ask_again">Pedir de nuevo</string>
+    <string name="signing_time_elapsed">Tiempo transcurrido</string>
+    <string name="signing_past_two_minutes">Pasaron más de dos minutos. Amber probablemente dejó de esperar: revisa el teléfono y vuelve a pedirlo.</string>
+    <string name="signing_one_approval_queued">Hay una aprobación en cola, para la publicación en sí.</string>
+    <string name="publish_rebroadcast">Retransmitir</string>
+    <string name="publish_partial_explanation">El evento ya está en los relays que lo aceptaron, pero quien solo lea %1$s no lo verá. Retransmitir envía otra vez el mismo evento firmado: no se vuelve a firmar.</string>
+    <string name="publish_accepted">Aceptado</string>
+    <string name="publish_never_went_out">Nunca salió</string>
+    <string name="publish_try_again">Reintentar</string>
+    <string name="publish_never_reached">Nunca llegó a un relay. No se publicó nada.</string>
+    <string name="publish_running_the_press">En prensa</string>
+    <string name="publish_sending">Enviando el evento firmado a los relays de %1$s. Se les pregunta uno a uno; los resultados aparecen aquí a medida que responden.</string>
+    <string name="publish_retry_publishing">Reintentar publicación</string>
+    <string name="publish_due_now">Sale ahora</string>
+    <string name="publish_due_now_explanation">Su hora programada ya pasó. El planificador lo recogerá en menos de un minuto.</string>
+    <string name="reposts_title">Reposts</string>
+    <string name="reposts_retry_signing">Reintentar firma</string>
+    <string name="reposts_rebroadcast">Retransmitir</string>
+    <string name="reposts_repost_now">Republicar ahora</string>
+    <string name="reposts_repost_now_confirm">Esto volverá a firmar y republicará este repost ahora. ¿Continuar?</string>
+    <string name="reposts_cancel_confirm">¿Cancelar este repost?</string>
+    <string name="reposts_relay_details">Detalles del relay</string>
+    <string name="calendar_title">Calendario</string>
+    <string name="calendar_previous_month">Mes anterior</string>
+    <string name="calendar_next_month">Mes siguiente</string>
+    <string name="calendar_today">Hoy</string>
+    <string name="calendar_who">Quién</string>
+    <plurals name="dash_held">
+        <item quantity="one">%d en espera</item>
+        <item quantity="many">%d en espera</item>
+        <item quantity="other">%d en espera</item>
+    </plurals>
+    <plurals name="dash_discard_all">
+        <item quantity="one">Descartar las %d</item>
+        <item quantity="many">Descartar las %d</item>
+        <item quantity="other">Descartar las %d</item>
+    </plurals>
+    <plurals name="dash_discard_confirm">
+        <item quantity="one">¿Descartar %d publicación que nunca salió? Se eliminan, no se desprograman. Esto no se puede deshacer.</item>
+        <item quantity="many">¿Descartar %d publicaciones que nunca salieron? Se eliminan, no se desprograman. Esto no se puede deshacer.</item>
+        <item quantity="other">¿Descartar %d publicaciones que nunca salieron? Se eliminan, no se desprograman. Esto no se puede deshacer.</item>
+    </plurals>
+    <plurals name="dash_never_went_out_total">
+        <item quantity="one">Nunca salió · %d</item>
+        <item quantity="many">Nunca salió · %d</item>
+        <item quantity="other">Nunca salió · %d</item>
+    </plurals>
+    <plurals name="publish_none_accepted">
+        <item quantity="one">Ninguno de los %d relays lo aceptó. No se publicó nada.</item>
+        <item quantity="many">Ninguno de los %d relays lo aceptó. No se publicó nada.</item>
+        <item quantity="other">Ninguno de los %d relays lo aceptó. No se publicó nada.</item>
+    </plurals>
+    <plurals name="calendar_post_count">
+        <item quantity="one">%d publicación</item>
+        <item quantity="many">%d publicaciones</item>
+        <item quantity="other">%d publicaciones</item>
+    </plurals>
+    <plurals name="calendar_repost_count">
+        <item quantity="one">%d repost</item>
+        <item quantity="many">%d reposts</item>
+        <item quantity="other">%d reposts</item>
+    </plurals>
+    <string name="post_scheduled_for">Programado para %1$s</string>
+    <string name="post_published_at">Publicado %1$s</string>
+    <string name="post_version_history">Versiones anteriores</string>
+    <string name="post_copy_text">Copiar texto</string>
+    <string name="post_approve_in_signer">Aprueba la solicitud en tu app de firma. La firma continúa en segundo plano, puedes salir de esta pantalla.</string>
+    <string name="post_relays">Relays</string>
+    <string name="posts_all_accounts">Todas las cuentas</string>
+    <string name="posts_discard_failed">Descartar</string>
+    <string name="calendar_nothing_on_day">No hay nada programado este día.</string>
+    <plurals name="dash_reading_waiting">
+        <item quantity="one">%d esperando firma</item>
+        <item quantity="other">%d esperando firma</item>
+    </plurals>
+    <plurals name="dash_reading_short">
+        <item quantity="one">%d con entrega corta</item>
+        <item quantity="other">%d con entrega corta</item>
+    </plurals>
+    <plurals name="dash_reading_failed">
+        <item quantity="one">%d sin salir</item>
+        <item quantity="other">%d sin salir</item>
+    </plurals>
+</resources>

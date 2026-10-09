@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_dashboard">Panel</string>
+    <string name="nav_posts">Publicaciones</string>
+    <string name="nav_calendar">Calendario</string>
+    <string name="nav_messages">Mensajes</string>
+    <string name="nav_more">Más</string>
+    <string name="nav_accounts">Cuentas</string>
+    <string name="nav_interactions">Interacciones</string>
+    <string name="nav_settings">Ajustes</string>
+    <string name="nav_billing">Plan de escritura con IA</string>
+    <string name="nav_new_post">Nueva publicación</string>
+
+    <string name="status_draft">Borrador</string>
+    <string name="status_pending">Pendiente</string>
+    <string name="status_pending_signature">Firma pendiente</string>
+    <string name="status_awaiting_signature">Esperando aprobación en el firmante</string>
+    <string name="status_processing">Procesando</string>
+    <string name="status_scheduled">Programado</string>
+    <string name="status_publishing">Publicando</string>
+    <string name="status_published">Publicado</string>
+    <string name="status_failed">Fallido</string>
+
+    <string name="row_draft">Borrador</string>
+    <string name="row_sent">Enviado</string>
+    <string name="row_today">Hoy</string>
+    <string name="row_tomorrow">Mañana</string>
+    <string name="row_repost_of_note">Repost de esta nota</string>
+    <plurals name="row_reposts">
+        <item quantity="one">%d repost</item>
+        <item quantity="many">%d reposts</item>
+        <item quantity="other">%d reposts</item>
+    </plurals>
+    <string name="row_never_reached">Nunca llegó a un relay. No se publicó nada.</string>
+    <string name="row_waiting_for_approval">Esperando aprobación</string>
+    <string name="row_open">Abrir</string>
+    <string name="row_rebroadcast">Retransmitir</string>
+    <string name="row_retry">Reintentar</string>
+    <string name="row_reply">Responder</string>
+
+    <string name="action_save">Guardar</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_close">Cerrar</string>
+    <string name="action_delete">Eliminar</string>
+    <string name="action_remove">Quitar</string>
+    <string name="action_retry">Reintentar</string>
+    <string name="action_refresh">Actualizar</string>
+    <string name="action_copy">Copiar</string>
+    <string name="action_copied">Copiado</string>
+    <string name="action_share">Compartir</string>
+    <string name="action_back">Atrás</string>
+    <string name="action_done">Hecho</string>
+    <string name="action_continue">Continuar</string>
+    <string name="action_confirm">Confirmar</string>
+    <string name="action_open_in_client">Abrir en una app de Nostr</string>
+    <string name="action_open_in_browser">Abrir en el navegador</string>
+    <string name="action_load_more">Cargar más</string>
+    <string name="action_edit">Editar</string>
+
+    <string name="state_loading">Cargando…</string>
+    <string name="state_saved_copy">Mostrando la copia guardada en este teléfono. %1$s</string>
+    <string name="state_nothing_here">Aún no hay nada aquí.</string>
+    <string name="error_network">No se pudo conectar con el servidor. Comprueba la conexión e inténtalo de nuevo.</string>
+    <string name="error_unexpected_response">El servidor envió una respuesta inesperada. Inténtalo de nuevo en un momento.</string>
+    <string name="error_generic">Algo salió mal. Inténtalo de nuevo.</string>
+    <string name="no_signer">Sin firmante emparejado</string>
+
+    <string name="delivery_tally">%1$d de %2$d relays</string>
+    <string name="delivery_relay_ok">aceptado</string>
+
+    <string name="update_required_title">Actualización necesaria</string>
+    <string name="update_required_body">Esta versión de Emanator es demasiado antigua para el servidor. Instala la última versión para continuar.</string>
+    <string name="update_available">La versión %1$s está disponible.</string>
+    <string name="update_get">Obtener la actualización</string>
+    <string name="update_zapstore">Abrir Zapstore</string>
+</resources>

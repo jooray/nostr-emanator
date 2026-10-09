@@ -17,7 +17,7 @@ sk:
         see_how: Pozri, ako to funguje
         key_note: Tvoje kľúče zostávajú v tvojom Nostr podpisovači.
         stage_label: Emanator na počítači a v mobile
-        dashboard_alt: Prehľad Emanatora s počtom účtov, naplánovaných, zverejnených a celkových príspevkov a zoznamom nadchádzajúcich príspevkov naprieč spravovanými Nostr účtami
+        dashboard_alt: "Prehľad Emanatora: hore jeden príspevok čakajúci na podpis, pod ním časová os naplánovaných príspevkov z piatich spravovaných Nostr účtov, každý s časom, účtom a textom"
       proof:
         label: Princípy produktu
         intro: Vytvorené pre účty, ktoré potrebujú dosah, nie ďalší sociálny prehľad.
@@ -42,7 +42,7 @@ sk:
         publishing_tag: Kontrola nad zverejňovaním
         publishing_title: Uvidíš každý príspevok aj repost skôr, než vyjde.
         publishing_body: Jeden kalendár ukazuje, čo má každý účet naplánované na celý mesiac, takže sa nezverejní nič, čo si nevidel.
-        calendar_alt: Kalendár Emanatora za september 2026 s naplánovanými príspevkami a repostami usporiadanými deň po dni pre všetky spravované účty
+        calendar_alt: "Kalendár Emanatora za október 2026 s naplánovanými príspevkami a repostami deň po dni, farebne odlíšenými podľa účtu"
         identity_tag: Identita na prvom mieste
         identity_title: Kľúče drží tvoj podpisovač.
         identity_body: Emanator žiada tvoj podpisovač o schválenie každej udalosti cez NIP-46. Tvoj súkromný kľúč na Nostri zostáva v Amber, kam patrí.
@@ -53,14 +53,14 @@ sk:
       tour:
         title: Celý pracovný postup, na webe aj v mobile.
         lead: Píš, plánuj a sleduj odpovede odkiaľkoľvek. Rozhranie sa riadi svetlým alebo tmavým motívom tvojho systému.
-        interactions_alt: Zobrazenie interakcií v Emanatore so zmienkami a odpoveďami na spravovaný účet a akciami sledovať, stíšiť a odpovedať
+        interactions_alt: "Zobrazenie interakcií v Emanatore so zmienkami viacerých spravovaných účtov a akciami páči sa mi, sledovať, stíšiť a odpovedať"
         interactions_title: Jedna schránka pre odpovede a zmienky
         interactions_body: Čítaj zmienky a odpovede pre každý účet, ktorý spravuješ, a odpovedaj bez toho, aby si opustil aplikáciu.
-        calendar_alt: Mesačný kalendár Emanatora s naplánovanými príspevkami vyznačenými farbou a repostami kurzívou
+        calendar_alt: "Mesačný kalendár Emanatora, kde má každý príspevok farbu svojho účtu a reposty sú označené ako repost"
         calendar_title: Mesiac, podľa ktorého môžeš plánovať
         calendar_body: Naplánované príspevky a ich reposty sú vedľa seba, takže týždeň spustenia prečítaš na prvý pohľad.
         mobile_label: Emanator v mobile
-        compose_light_alt: Písanie nového príspevku v mobilnej verzii Emanatora, s promptom pre AI generovanie pod editorom
+        compose_light_alt: "Písanie nového príspevku v mobilnej verzii Emanatora, s tlačidlom na prílohu a tlačidlom Uložiť a naplánovať pod editorom"
         compose_dark_alt: Písanie nového príspevku v mobilnej verzii Emanatora v tmavom motíve
         compose_caption: Písanie
         schedule_light_alt: Výber dátumu a času zverejnenia v mobilnej verzii Emanatora, s účtami na repostovanie vypísanými nižšie
@@ -77,3 +77,28 @@ sk:
         back_to_top: Späť hore
         tagline: Plánovanie príspevkov pre otvorený sociálny web.
         github_label: Zobraziť zdrojový kód na GitHube
+      nav_pricing: Cenník
+      language_menu: "Jazyk: %{language}"
+      pricing:
+        title: Plánovanie je zadarmo. Za AI písanie sa platí v satoch.
+        lead: Účtom je tvoj Nostr kľúč. Žiadny e-mail, heslo ani karta.
+        free_tag: Emanator
+        free_price: Zadarmo
+        free_note: všetko okrem AI písania
+        free_scheduling: Plánovanie, reposty z tvojich ďalších účtov, kalendár, odpovede aj súkromné správy.
+        free_accounts: Pripoj až 10 účtov. Písanie s AI alebo jeho skúška limit ruší.
+        free_self_host_html: Otvorený zdrojový kód. <a href="https://github.com/jooray/nostr-emanator">Spusti si ho sám</a> s vlastným AI kľúčom a neplatíš nič.
+        ai_tag: AI písanie
+        ai_price: 3 dni zadarmo
+        ai_note: potom 10 000 satov na 30 dní
+        ai_trial: Skúšobná doba začne, až keď prvýkrát necháš AI napísať alebo upraviť príspevok, nie pri registrácii.
+        ai_pro_rata: Zaplať cez Lightning ľubovoľnú sumu a dostaneš pomerný počet dní. 5 000 satov je 15 dní, minimum je 1 000.
+        ai_keep_days: Ak zaplatíš počas skúšobnej doby, nevyčerpané dni ti zostanú.
+        bundle_tag: Všetko v jednom
+        bundle_price: 25 000 satov
+        bundle_note: na 30 dní
+        bundle_covers_html: Pokrýva AI písanie tu, hostovaný <a href="https://nalgorithm.cypherpunk.today">nalgorithm</a> (zoradí príspevky ľudí, ktorých sleduješ, a ráno ti ich prečíta ako hlasový prehľad) a <a href="https://lievik.cypherpunk.today">Lievik</a> (vyberie, čo stojí za to poslať ktorému publiku).
+        bundle_keep_days: Dni, ktoré už máš zaplatené v ktorejkoľvek z troch aplikácií, ti zostanú.
+        bundle_saving: Samostatne stoja všetky tri 35 000 satov.
+        fine: Keby platobný systém nebol dostupný, plánovanie a publikovanie fungujú ďalej.
+        terms_html: 'Skúšobná doba, vrátenie peňazí, súkromie a podpora: <a href="https://cypherpunk.today/sk/terms/">podmienky</a>.'

@@ -113,6 +113,10 @@ Rails.application.routes.draw do
   post "ai/refine", to: "ai_assist#refine"
   post "ai/refine_stream", to: "ai_assist#refine_stream"
 
+  # Paid AI assist on the hosted instance (404 when billing is not configured)
+  get "billing", to: "billing#show", as: :billing
+  post "billing/charges", to: "billing#create_charge", as: :billing_charges
+
   # User settings
   get "user/edit", to: "users#edit", as: :edit_user
   patch "user", to: "users#update", as: :user
@@ -123,6 +127,99 @@ Rails.application.routes.draw do
 
   # MCP (Model Context Protocol) endpoint — auth via Authorization: Bearer <api token>
   post "/mcp", to: "mcp/server#handle"
+
+  # Where BTCPay sends a payer who paid from the Android app. Public: the phone's
+  # browser holds no Emanator session; the page only hands them back to the app.
+  get "billing/return", to: "billing_returns#show", as: :billing_return
+
+  # The Android app's download page (also what Obtainium and update prompts link to).
+  get "android", to: "android_app#show", as: :android_app
+
+  # Native app API (Android). Device-token auth; see Api::V1::BaseController.
+  namespace :api do
+    namespace :v1, defaults: { format: :json } do
+      get "meta", to: "meta#show"
+
+      post "auth/nostrconnect", to: "auth#nostrconnect"
+      post "auth/bunker", to: "auth#bunker"
+      post "auth/poll", to: "auth#poll"
+      delete "session", to: "auth#destroy"
+
+      get "me", to: "me#show"
+      patch "me", to: "me#update"
+      get "me/summary", to: "me#summary"
+      post "me/refresh_profile", to: "me#refresh_profile"
+      resources :devices, only: %i[index destroy]
+      resources :mcp_tokens, only: %i[index create destroy]
+
+      get "dashboard", to: "dashboard#show"
+      get "calendar", to: "calendar#index"
+      get "interactions", to: "interactions#index"
+
+      resources :accounts, only: %i[index show update destroy] do
+        member do
+          post :refresh_profile
+          post :refresh_relays
+          get :recent_events
+          get :recent_interactions
+          get :profile
+          post :profile, action: :update_profile
+          get :profile_status
+        end
+        resources :uploads, only: :create
+        resources :nostr_actions, only: :create
+      end
+      resources :pairings, only: %i[create show]
+      resources :uploads, only: :show
+      resources :nostr_actions, only: :show do
+        post :retry, on: :member
+      end
+
+      delete "failed_posts", to: "posts#discard_failed"
+      resources :posts, only: %i[index show create update destroy] do
+        member do
+          get :schedule_options
+          post :schedule
+          post :retry_sign
+          post :retry_publish
+          post :rebroadcast
+          post :cancel
+          post :reschedule
+        end
+        resources :reposts, only: :destroy do
+          member do
+            post :retry_sign
+            post :rebroadcast
+            post :publish_now
+          end
+        end
+      end
+
+      post "messages/mark_all_read", to: "conversations#mark_all_read"
+      resources :conversations, only: %i[index show] do
+        member do
+          post :accept
+          post :block
+          post :mark_read
+        end
+        resources :messages, only: :create
+      end
+      resources :messages, only: :show do
+        member do
+          post :retry
+          post :downgrade
+        end
+      end
+
+      post "ai/generate", to: "ai_assist#generate"
+      post "ai/generate_stream", to: "ai_assist#generate_stream"
+      post "ai/refine", to: "ai_assist#refine"
+      post "ai/refine_stream", to: "ai_assist#refine_stream"
+
+      get "billing", to: "billing#show"
+      post "billing/charges", to: "billing#create_charge"
+    end
+  end
 
   # PWA
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest

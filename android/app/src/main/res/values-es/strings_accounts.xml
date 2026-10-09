@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="acc_title">Cuentas</string>
+    <string name="acc_pair">Vincular cuenta</string>
+    <string name="acc_empty_title">Ninguna cuenta vinculada</string>
+    <string name="acc_empty_body">Vincula tu primera cuenta de Nostr para empezar a programar publicaciones.</string>
+    <string name="acc_signer_connected">Firmante conectado</string>
+    <string name="acc_no_signer">Sin firmante</string>
+    <plurals name="acc_posts_count">
+        <item quantity="one">%d publicación</item>
+        <item quantity="many">%d publicaciones</item>
+        <item quantity="other">%d publicaciones</item>
+    </plurals>
+    <plurals name="acc_upcoming_count">
+        <item quantity="one">%d programada</item>
+        <item quantity="many">%d programadas</item>
+        <item quantity="other">%d programadas</item>
+    </plurals>
+    <plurals name="acc_repair_summary">
+        <item quantity="one">%d cuenta todavía no puede enviar mensajes</item>
+        <item quantity="many">%d cuentas todavía no pueden enviar mensajes</item>
+        <item quantity="other">%d cuentas todavía no pueden enviar mensajes</item>
+    </plurals>
+    <string name="acc_repair_hint">Vinculada antes de que existiera la mensajería privada: vuelve a vincularla para concederla. Esto no afecta a la publicación.</string>
+    <string name="acc_repair_action">Volver a vincular</string>
+    <string name="acc_see_plans">Ver planes</string>
+
+    <string name="acc_account">Cuenta</string>
+    <string name="acc_new_post">Nueva publicación</string>
+    <string name="acc_scheduled">Publicaciones programadas</string>
+    <string name="acc_no_scheduled">No hay publicaciones programadas.</string>
+    <string name="acc_create_one">Crear una</string>
+    <string name="acc_recent_events">Eventos recientes</string>
+    <string name="acc_recent_events_help">Últimas notas obtenidas de los relays</string>
+    <string name="acc_recent_events_empty">No se encontraron eventos recientes en los relays.</string>
+    <string name="acc_recent_interactions">Interacciones recientes</string>
+    <string name="acc_recent_interactions_help">Respuestas, citas y menciones de otras personas</string>
+    <string name="acc_recent_interactions_empty">No se encontraron interacciones recientes.</string>
+    <string name="acc_settings">Ajustes de la cuenta</string>
+    <string name="acc_edit">Editar</string>
+    <string name="acc_nostr_profile">Perfil de Nostr</string>
+    <string name="acc_profile_needs_repair">Esta cuenta se vinculó antes de que existiera la edición de perfil, así que su firmante no ha concedido permiso para publicar un perfil.</string>
+    <string name="acc_refresh_profile">Actualizar perfil</string>
+    <string name="acc_refresh_relays">Actualizar relays</string>
+    <string name="acc_re_pair_signer">Volver a vincular el firmante</string>
+    <string name="acc_messaging_enabled">Mensajería habilitada</string>
+    <string name="acc_messaging_needs_repair">La mensajería necesita volver a vincularse</string>
+    <string name="acc_messaging_enable">Habilitar mensajería</string>
+    <string name="acc_messaging_not_granted">Esta cuenta se vinculó antes de que existiera la mensajería privada, así que su firmante no ha concedido permiso para cifrar, sellar o descifrar mensajes. Volver a vincularla conserva tus publicaciones y ajustes.</string>
+    <string name="acc_messaging_denied">Tu firmante rechazó una operación de mensajes para esta cuenta. Vuelve a vincularla y elige Always cuando te pregunte por descifrar mensajes.</string>
+    <string name="acc_relay_auth_blocked">El relay %1$s pidió autenticar esta cuenta y el firmante no respondió. Si usas la Client auth whitelist de Amber, añade el relay a ella.</string>
+    <string name="acc_write_relays">Relays de escritura</string>
+    <string name="acc_read_relays">Relays de lectura</string>
+    <string name="acc_no_write_relays">No se encontraron relays de escritura. Toca «Actualizar relays» para obtenerlos de la red.</string>
+    <string name="acc_signer_relay">Relay del firmante</string>
+    <string name="acc_blossom_server">Servidor multimedia</string>
+    <string name="acc_danger_zone">Zona de peligro</string>
+    <string name="acc_remove_help">Esto eliminará la vinculación de la cuenta y todas sus publicaciones asociadas.</string>
+    <string name="acc_remove_confirm">¿Seguro? Esto eliminará la cuenta y todas sus publicaciones.</string>
+    <string name="acc_remove_button">Eliminar cuenta</string>
+
+    <string name="acc_edit_title">Editar cuenta</string>
+    <string name="acc_profile_info">Datos del perfil</string>
+    <string name="acc_profile_info_help">Los datos del perfil se obtienen de los relays de Nostr. Cámbialos con «Perfil de Nostr» en la página de la cuenta, o actualízalos aquí con «Actualizar perfil».</string>
+    <string name="acc_display_name">Nombre visible</string>
+    <string name="acc_username">Nombre de usuario</string>
+    <string name="acc_about">Acerca de</string>
+    <string name="acc_not_set">Sin definir</string>
+    <string name="acc_personality">Personalidad de escritura</string>
+    <string name="acc_personality_help">Define el estilo de escritura y la personalidad de las publicaciones generadas por IA en esta cuenta. Esto guía el tono, el vocabulario y la estructura del contenido generado.</string>
+    <string name="acc_personality_placeholder">Describe la personalidad de escritura de esta cuenta…</string>
+    <string name="acc_markdown">Admite Markdown</string>
+    <string name="acc_char_count">%1$d / %2$d</string>
+    <string name="acc_blossom_label">Servidor multimedia Blossom</string>
+    <string name="acc_blossom_help">Dónde se suben las imágenes y archivos adjuntos de esta cuenta. Déjalo en blanco para usar el predeterminado (%1$s).</string>
+    <string name="acc_save">Guardar cuenta</string>
+
+    <string name="acc_profile_title">Perfil de Nostr</string>
+    <string name="acc_profile_intro">Se publica como kind 0 y se firma en tu app de firma. Emanator nunca ve tu clave.</string>
+    <string name="acc_profile_re_pair">Vuelve a vincular esta cuenta</string>
+    <string name="acc_profile_identity">Identidad</string>
+    <string name="acc_profile_display_name">Nombre visible</string>
+    <string name="acc_profile_display_name_help">Se muestra en negrita. Puede contener espacios y emojis.</string>
+    <string name="acc_profile_handle">Alias</string>
+    <string name="acc_profile_handle_help">Nombre de usuario corto, sin espacios. Se muestra como @alias.</string>
+    <string name="acc_profile_bio">Biografía</string>
+    <string name="acc_profile_images">Imágenes</string>
+    <string name="acc_profile_avatar">Avatar</string>
+    <string name="acc_profile_avatar_help">Cuadrado. La mayoría de los clientes lo muestran en círculo.</string>
+    <string name="acc_profile_banner">Banner</string>
+    <string name="acc_profile_banner_help">Ancho. Los clientes lo recortan aproximadamente a 3:1, así que mantén lo importante centrado.</string>
+    <string name="acc_profile_links">Enlaces</string>
+    <string name="acc_profile_website">Sitio web</string>
+    <string name="acc_profile_nip05">Dirección de Nostr (NIP-05)</string>
+    <string name="acc_profile_nip05_help">Tiene forma de correo electrónico. La verifica el dominio, no nosotros.</string>
+    <string name="acc_profile_lightning">Dirección Lightning</string>
+    <string name="acc_profile_unmodelled">Los campos definidos por otros clientes que no se muestran aquí se conservan tal cual.</string>
+    <string name="acc_profile_publish">Publicar perfil</string>
+    <string name="acc_profile_published">Publicado.</string>
+    <string name="acc_profile_working">Trabajando…</string>
+
+    <string name="acc_pair_title">Vincular cuenta</string>
+    <string name="acc_pair_intro">Aprueba la conexión en Amber o en otro firmante NIP-46 para vincular esta cuenta de Nostr.</string>
+    <string name="acc_key_stays">La clave se queda en tu firmante. Emanator solo recibe eventos que tú ya has aprobado.</string>
+    <string name="acc_no_account_summary">¿Todavía no tienes cuenta de Nostr?</string>
+    <string name="acc_no_account_body">Créala en tu app de firma y luego vincúlala aquí. En Amber, elige «Generate a new key» y haz la copia de seguridad cuando te lo pida. Una vez vinculada, puedes ponerle nombre, biografía e imágenes desde Perfil de Nostr en los ajustes de la cuenta.</string>
+    <string name="acc_repair_title_messaging">Habilitar mensajería</string>
+    <string name="acc_repair_title_reconnect">Reconectar firmante</string>
+    <string name="acc_repair_intro_messaging">Los mensajes privados necesitan permisos que tu firmante todavía no ha concedido: cifrar, sellar y descifrar mensajes. Vuelve a vincularla para solicitarlos. Tus publicaciones y ajustes se conservarán.</string>
+    <string name="acc_repair_intro_reconnect">Vuelve a vincular el firmante, por ejemplo en un nuevo relay. Tus publicaciones y ajustes se conservarán.</string>
+    <string name="acc_repair_step_decrypt">En el primer aviso de «decrypt», elige Always con alcance All. De lo contrario, cada mensaje necesitará que lo apruebes en el teléfono.</string>
+    <string name="acc_repair_step_relay_auth">Cuando Amber pregunte por la relay authentication, elige el alcance All relays. Si usas la Client auth whitelist de Amber, añade a ella tus relays de bandeja de mensajes privados: mientras esa lista no esté vacía, Amber rechaza sin preguntar cualquier otro relay.</string>
+    <string name="acc_paired">¡Cuenta vinculada! Obteniendo el perfil y la lista de relays en segundo plano.</string>
+    <string name="acc_re_paired">¡Firmante vinculado de nuevo!</string>
+</resources>

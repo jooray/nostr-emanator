@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="chassis">#EFEBE4</color>
+    <color name="amber">#F0A017</color>
+    <color name="contact_black">#1A1714</color>
+</resources>

@@ -1,0 +1,81 @@
+en:
+  layouts:
+    android_app_banner:
+      text: "There is also a native Android app, faster and with photo shrinking on the phone."
+      link: "Get the app"
+      dismiss: "Dismiss"
+
+  # The native Android app: its API's error messages and the web pages that
+  # exist for it (download page, the page BTCPay returns a phone payer to).
+  api:
+    errors:
+      unauthorized: Your session on this device has ended. Please sign in again.
+      not_found: Not found.
+      upgrade_required: This version of the app is too old for the server. Please update it.
+
+  billing_returns:
+    show:
+      title: Payment received
+      body: You can go back to the Emanator app now. It confirms the payment by itself within a few seconds.
+      open_app: Open the Emanator app
+      web_hint: Paid from the website instead?
+      web_link: Back to billing
+
+  android_app:
+    show:
+      title: Emanator for Android
+      intro: The same Emanator, as a native app. Everything you do in one shows up in the other, because both talk to this server.
+      features:
+        native_picker: Attach photos and files with the phone's own picker, or share them into Emanator from any app.
+        compression: Photos are resized and stripped of location and camera metadata on the phone, before they are uploaded.
+        signer: Approve logins and pairings in Amber on the same phone, no QR code scanning.
+        local: Lists open instantly from the copy kept on the phone, then refresh.
+      version_html: Current version %{version}
+      zapstore: Get it on Zapstore
+      download: Download the APK
+      obtainium: Add to Obtainium for automatic updates
+      fingerprint: Signing certificate SHA-256
+      not_yet: The first release is on its way.
+
+  users:
+    devices:
+      title: Signed-in devices
+      intro: Phones signed in to the Emanator app. Signing one out here ends its session immediately.
+      empty: No devices are signed in.
+      last_used: Last used %{time} ago
+      never_used: Not used yet
+      version: App build %{version}
+      sign_out: Sign out
+      sign_out_confirm: Sign this device out?
+      signed_out: The device has been signed out.
+      get_app: Get the Android app
+    media:
+      title: Photo uploads
+      help: Media servers keep exactly the bytes they receive, so photos are shrunk before they leave your browser or phone. Re-encoding also removes location and camera metadata.
+      compress: Shrink photos before uploading
+      max_edge: Longest side
+      original_size: Original size
+      pixels: "%{count} px"
+      quality: Quality
+      photo_format: Photo format
+      formats:
+        jpeg: JPEG (works everywhere)
+        webp: WebP (smaller)
+      lossless_note: Screenshots and images with transparency stay lossless PNG. Animated GIFs are uploaded as they are.
+      video_title: Videos
+      video_compress: Re-encode videos before uploading
+      video_resolution: Resolution
+      video_quality: Video quality
+      video_qualities:
+        small: Small file
+        balanced: Balanced
+        high: High
+      video_note: Videos become MP4 (H.264) at no more than 30 frames per second, without location or camera metadata. Where a browser cannot re-encode video, the original is uploaded.
+      save: Save
+      saved: Photo upload settings saved.
+
+  js:
+    media_compress:
+      video_compressing: "Re-encoding %{name}… %{percent}%"
+      compressing: Shrinking %{name}…
+      saved: "%{name}: %{from} → %{to}"

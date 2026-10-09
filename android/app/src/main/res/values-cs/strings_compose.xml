@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compose_title_new">Nový příspěvek</string>
+    <string name="compose_title_edit">Upravit příspěvek</string>
+    <string name="compose_posting_as">Zveřejnit jako</string>
+    <string name="compose_choose_account">Vyber identitu</string>
+    <string name="compose_no_accounts">Nejdřív spáruj účet. Příspěvky se zveřejňují pod identitami na Nostru, které spravuješ.</string>
+    <string name="compose_add_account">Přidat účet</string>
+    <string name="compose_no_signer">%1$s nemá spárovaný podepisovač, takže tento příspěvek zatím nejde podepsat.</string>
+    <string name="compose_pair_signer">Spárovat podepisovač</string>
+    <string name="compose_cannot_edit">Tento příspěvek nelze upravit.</string>
+    <string name="compose_restored_draft">Tvůj neuložený text byl obnoven.</string>
+    <string name="compose_placeholder">Co máš na mysli?</string>
+    <plurals name="compose_chars">
+        <item quantity="one">%d znak</item>
+        <item quantity="few">%d znaky</item>
+        <item quantity="many">%d znaku</item>
+        <item quantity="other">%d znaků</item>
+    </plurals>
+    <string name="compose_attach_photos">Fotky</string>
+    <string name="compose_attach_camera">Fotoaparát</string>
+    <string name="compose_attach_files">Soubory</string>
+    <string name="compose_save_schedule">Uložit a naplánovat</string>
+    <string name="compose_save_draft">Uložit koncept</string>
+    <string name="compose_waiting_upload">Čeká se na nahrání…</string>
+
+    <string name="upload_shrinking">Zmenšuji %1$s…</string>
+    <string name="upload_encoding">Překódovávám %1$s… %2$d %%</string>
+    <string name="upload_shrunk">%1$s: %2$s → %3$s</string>
+    <string name="upload_uploading">Nahrává se…</string>
+    <string name="upload_done">%1$s je přiložen.</string>
+    <string name="upload_done_shrunk">%1$s je přiložen (%2$s → %3$s).</string>
+    <string name="upload_too_large">%1$s je příliš velký (%2$s). Limit je %3$s.</string>
+    <string name="upload_failed">Nahrání selhalo</string>
+    <string name="upload_timed_out">Nahrávání vypršelo</string>
+
+    <string name="ai_heading">Generování pomocí AI</string>
+    <string name="ai_help">Popiš, co chceš napsat, a nech AI vygenerovat obsah.</string>
+    <string name="ai_prompt_label">Prompt</string>
+    <string name="ai_prompt_placeholder">např. Napiš krátkou poznámku o důležitosti soukromí…</string>
+    <string name="ai_generate">Vygenerovat</string>
+    <string name="ai_refine_label">Vylepšit</string>
+    <string name="ai_refine_placeholder">např. Udělej to kratší a úderné…</string>
+    <string name="ai_refine">Vylepšit</string>
+    <string name="ai_enter_prompt">Zadej prompt pro AI</string>
+    <string name="ai_enter_instructions">Zadej pokyny pro AI</string>
+    <string name="ai_nothing_to_refine">Není co vylepšovat. Nejdřív obsah vygeneruj nebo napiš.</string>
+    <string name="ai_connecting">Připojování k AI…</string>
+    <string name="ai_content_below">Obsah se bude zobrazovat níže, jak bude vznikat.</string>
+    <string name="ai_generating">Generuje se obsah…</string>
+    <string name="ai_humanizing">Zlidšťuje se obsah…</string>
+    <string name="ai_refining">Vylepšuje se obsah…</string>
+    <string name="ai_generation_complete">Generování dokončeno!</string>
+    <string name="ai_refinement_complete">Vylepšení dokončeno!</string>
+    <string name="ai_connection_lost">Spojení ztraceno. Zkus to znovu.</string>
+    <string name="ai_replaced">Tvůj předchozí text nahrazen.</string>
+    <string name="ai_undo">Zpět</string>
+
+    <string name="billing_note_none">Psaní s AI je placené. První návrh spustí třídenní zkušební období zdarma.</string>
+    <string name="billing_note_trial">Zkušební období ti běží do %1$s.</string>
+    <string name="billing_note_expired">Přístup k AI skončil %1$s.</string>
+    <string name="billing_note_link">Plány a platba</string>
+
+    <string name="schedule_title">Naplánovat příspěvek</string>
+    <string name="schedule_subtitle">Nastav, kdy se má zveřejnit, a připrav reposty.</string>
+    <string name="schedule_preview">Náhled příspěvku</string>
+    <string name="schedule_time">Datum a čas zveřejnění</string>
+    <string name="schedule_date">Datum</string>
+    <string name="schedule_clock">Čas</string>
+    <string name="schedule_zone">Časy jsou v pásmu %1$s.</string>
+    <string name="schedule_soon">Brzy</string>
+    <plurals name="schedule_soon_hint">
+        <item quantity="one">Brzy zveřejní za %d minutu, ať zbude čas schválit podpis.</item>
+        <item quantity="few">Brzy zveřejní za %d minuty, ať zbude čas schválit podpis.</item>
+        <item quantity="many">Brzy zveřejní za %d minuty, ať zbude čas schválit podpis.</item>
+        <item quantity="other">Brzy zveřejní za %d minut, ať zbude čas schválit podpis.</item>
+    </plurals>
+    <string name="schedule_suggested">Navrhováno: %1$s</string>
+    <string name="schedule_in_past">Čas je v minulosti. Vyber čas v budoucnosti.</string>
+    <string name="schedule_also_post_as">Zveřejnit i jako</string>
+    <string name="schedule_select_all">Vybrat všechny zobrazené</string>
+    <string name="schedule_filter">Filtrovat podle jména, npub nebo pubkey</string>
+    <string name="schedule_no_match">Tomu neodpovídá žádná identita.</string>
+    <string name="schedule_already">Už naplánováno</string>
+    <string name="schedule_reposts_none">Žádné reposty: jedno schválení, pro samotný příspěvek.</string>
+    <plurals name="schedule_reposts_selected">
+        <item quantity="one">%1$d repost: %2$d samostatných schválení v tvém podepisovači, jedno po druhém.</item>
+        <item quantity="few">%1$d reposty: %2$d samostatných schválení v tvém podepisovači, jedno po druhém.</item>
+        <item quantity="many">%1$d repostu: %2$d samostatných schválení v tvém podepisovači, jedno po druhém.</item>
+        <item quantity="other">%1$d repostů: %2$d samostatných schválení v tvém podepisovači, jedno po druhém.</item>
+    </plurals>
+    <string name="schedule_max_delay">Maximální zpoždění repostů (v hodinách)</string>
+    <string name="schedule_max_delay_help">Reposty se náhodně rozprostřou v tomto časovém okně po zveřejnění původního příspěvku.</string>
+    <string name="schedule_approve_note">Po klepnutí na Podepsat a naplánovat schval podpis ve svém podepisovači (Amber). Příspěvek se pak v daný čas zveřejní bez tebe.</string>
+    <string name="schedule_sign">Podepsat a naplánovat</string>
+</resources>

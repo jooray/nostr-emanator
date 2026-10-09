@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Posts screens (web: config/locales/posts). Generated once from the web's wording; edit freely. -->
+<resources>
+    <string name="dash_title">Press run</string>
+    <string name="dash_new_post">New post</string>
+    <string name="dash_no_identities">No identities paired</string>
+    <string name="dash_no_identities_help">Emanator posts as accounts you already control. Pair one with your signer and its scheduled notes appear here.</string>
+    <string name="dash_pair_account">Pair an account</string>
+    <string name="dash_waiting_on_you">Waiting on you</string>
+    <string name="dash_barely_reached_heading">Barely reached the network</string>
+    <string name="dash_barely_reached_help">One relay or none accepted these, so almost nobody can see them. Rebroadcast sends the same signed event again — it is not re-signed.</string>
+    <string name="dash_never_went_out">Never went out</string>
+    <string name="dash_scheduled">Scheduled</string>
+    <string name="dash_all_posts">All posts</string>
+    <string name="dash_nothing_scheduled">Nothing scheduled. The stone is clear.</string>
+    <string name="dash_write_one">Write one</string>
+    <string name="dash_last_pulled">Last pulled</string>
+    <string name="posts_title">All posts</string>
+    <string name="posts_state">State</string>
+    <string name="posts_who">Who</string>
+    <string name="posts_filter_all">All</string>
+    <string name="posts_filter_short">Barely out</string>
+    <string name="posts_filter_failed">Never went out</string>
+    <string name="posts_filter_awaiting_signature">Awaiting</string>
+    <string name="posts_filter_scheduled">Scheduled</string>
+    <string name="posts_filter_published">Published</string>
+    <string name="posts_filter_draft">Drafts</string>
+    <string name="posts_empty_short">Everything published has reached the network. A relay declining here and there is normal and is not counted.</string>
+    <string name="posts_empty_filtered">No posts match this filter.</string>
+    <string name="posts_empty_none">Nothing written yet.</string>
+    <string name="posts_clear_filters">Clear filters</string>
+    <string name="post_title">The forme</string>
+    <string name="post_due">Due</string>
+    <string name="post_edit">Edit</string>
+    <string name="post_schedule">Schedule</string>
+    <string name="post_reschedule">Reschedule</string>
+    <string name="post_reschedule_confirm">Reschedule this post? It will return to draft for re-signing.</string>
+    <string name="post_cancel_schedule">Cancel Schedule</string>
+    <string name="post_cancel_confirm">Cancel this post? All reposts will be removed and the post will return to draft.</string>
+    <string name="post_delete">Delete</string>
+    <string name="post_delete_confirm">Are you sure you want to delete this post?</string>
+    <string name="post_actions">Actions</string>
+    <string name="signing_signed_and_held">Signed and held. Nothing else is needed from you — it publishes at its scheduled time on its own.</string>
+    <string name="signing_not_signed">Not signed</string>
+    <string name="signing_no_signature">Your signer did not return a signature.</string>
+    <string name="signing_ask_again">Ask again</string>
+    <string name="signing_time_elapsed">Time elapsed</string>
+    <string name="signing_past_two_minutes">Past two minutes. Amber has probably stopped waiting — check your phone, then ask again.</string>
+    <string name="signing_one_approval_queued">One approval is queued, for the post itself.</string>
+    <string name="publish_rebroadcast">Rebroadcast</string>
+    <string name="publish_partial_explanation">The event is live on the relays that accepted it, but anyone reading only %1$s will not see it. Rebroadcast sends the same signed event again — it is not re-signed.</string>
+    <string name="publish_accepted">Accepted</string>
+    <string name="publish_never_went_out">Never went out</string>
+    <string name="publish_try_again">Try again</string>
+    <string name="publish_never_reached">It never reached a relay. Nothing was published.</string>
+    <string name="publish_running_the_press">Running the press</string>
+    <string name="publish_sending">Sending the signed event to %1$s\'s relays. Each one is asked in turn; results appear here as they answer.</string>
+    <string name="publish_retry_publishing">Retry publishing</string>
+    <string name="publish_due_now">Due now</string>
+    <string name="publish_due_now_explanation">Its scheduled time has passed. The scheduler picks it up within a minute.</string>
+    <string name="reposts_title">Reposts</string>
+    <string name="reposts_retry_signing">Retry signing</string>
+    <string name="reposts_rebroadcast">Rebroadcast</string>
+    <string name="reposts_repost_now">Repost now</string>
+    <string name="reposts_repost_now_confirm">This will re-sign and publish this repost now. Continue?</string>
+    <string name="reposts_cancel_confirm">Cancel this repost?</string>
+    <string name="reposts_relay_details">Relay details</string>
+    <string name="calendar_title">Calendar</string>
+    <string name="calendar_previous_month">Previous month</string>
+    <string name="calendar_next_month">Next month</string>
+    <string name="calendar_today">Today</string>
+    <string name="calendar_who">Who</string>
+    <plurals name="dash_held">
+        <item quantity="one">%d held</item>
+        <item quantity="other">%d held</item>
+    </plurals>
+    <plurals name="dash_discard_all">
+        <item quantity="one">Discard all %d</item>
+        <item quantity="other">Discard all %d</item>
+    </plurals>
+    <plurals name="dash_discard_confirm">
+        <item quantity="one">Discard %d post that never went out? They are deleted, not unscheduled. This cannot be undone.</item>
+        <item quantity="other">Discard %d posts that never went out? They are deleted, not unscheduled. This cannot be undone.</item>
+    </plurals>
+    <plurals name="dash_never_went_out_total">
+        <item quantity="one">Never went out · %d</item>
+        <item quantity="other">Never went out · %d</item>
+    </plurals>
+    <plurals name="publish_none_accepted">
+        <item quantity="one">None of the %d relays accepted it. Nothing was published.</item>
+        <item quantity="other">None of the %d relays accepted it. Nothing was published.</item>
+    </plurals>
+    <plurals name="calendar_post_count">
+        <item quantity="one">%d post</item>
+        <item quantity="other">%d posts</item>
+    </plurals>
+    <plurals name="calendar_repost_count">
+        <item quantity="one">%d repost</item>
+        <item quantity="other">%d reposts</item>
+    </plurals>
+    <string name="post_scheduled_for">Scheduled for %1$s</string>
+    <string name="post_published_at">Published %1$s</string>
+    <string name="post_version_history">Earlier versions</string>
+    <string name="post_copy_text">Copy text</string>
+    <string name="post_approve_in_signer">Approve the request in your signer app. Signing continues in the background, you can leave this screen.</string>
+    <string name="post_relays">Relays</string>
+    <string name="posts_all_accounts">All accounts</string>
+    <string name="posts_discard_failed">Discard</string>
+    <string name="calendar_nothing_on_day">Nothing scheduled on this day.</string>
+    <plurals name="dash_reading_waiting">
+        <item quantity="one">%d awaiting signature</item>
+        <item quantity="other">%d awaiting signature</item>
+    </plurals>
+    <plurals name="dash_reading_short">
+        <item quantity="one">%d barely out</item>
+        <item quantity="other">%d barely out</item>
+    </plurals>
+    <plurals name="dash_reading_failed">
+        <item quantity="one">%d never went out</item>
+        <item quantity="other">%d never went out</item>
+    </plurals>
+</resources>

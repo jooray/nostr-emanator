@@ -24,6 +24,12 @@ class UsersController < ApplicationController
       return
     end
 
+    if params[:media].present?
+      MediaPreferences.update!(@user, params.require(:media).permit(:compress, :max_edge, :quality, :photo_format, :video_compress, :video_resolution, :video_quality))
+      redirect_to edit_user_path(anchor: "media-settings"), notice: t("users.media.saved")
+      return
+    end
+
     if params[:timezone].present?
       @user.timezone = params[:timezone]
       @user.save!

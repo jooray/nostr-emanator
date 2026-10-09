@@ -1,0 +1,57 @@
+---
+es:
+  billing:
+    show:
+      title: Escritura con IA
+      intro: En Emanator todo es gratis salvo la escritura con IA, que redacta y edita publicaciones con la voz de cada cuenta. Se paga por adelantado en sats, así que no hay suscripción que cancelar.
+      status:
+        title: Tu acceso
+        active: Pagado hasta el %{date}.
+        trial: Prueba gratuita hasta el %{date}.
+        expired: Tu acceso a la IA terminó el %{date}. Paga abajo para seguir.
+        none: Aún no has usado la escritura con IA. Tu primer borrador inicia una prueba gratuita de 3 días.
+        unknown: No se puede contactar con el sistema de pagos. Inténtalo en un minuto.
+        other: "%{product} también está activo hasta el %{date}."
+        npub: 'Los pagos van ligados a tu clave de inicio de sesión: %{npub}'
+      products:
+        nalgorithm: nalgorithm
+        lievik: Lievik
+        emanator_ai: Emanator AI
+      plans:
+        price: "%{sats} sats / %{days} días"
+        pay: Pagar %{sats} sats
+        unavailable: Ahora no se pueden cargar los precios porque el sistema de pagos no responde. Inténtalo en un minuto.
+        emanator_ai:
+          name: Emanator AI
+          covers: Borradores y ediciones con IA en Emanator, y sin límite de cuentas gestionadas.
+        all_access:
+          name: Acceso total
+          covers: Emanator AI, nalgorithm alojado (un feed ordenado y resúmenes de voz) y Lievik (selección de contenido para tus públicos).
+      custom:
+        title: Paga lo que quieras
+        help: El tiempo se acredita en proporción y se suma al que ya tienes. El mínimo es %{min} sats, que dan %{days} días de Emanator AI.
+        plan: Plan
+        sats: Sats
+        pay: Crear factura
+      self_host_html: 'Emanator es de código abierto. Si lo ejecutas tú con tu propia clave de IA, nada de esto te afecta: %{link}'
+      terms: "Condiciones, reembolsos y soporte"
+      terms_url: "https://cypherpunk.today/es/terms/"
+    charge:
+      settled: Pagado. La escritura con IA está activa hasta el %{date}.
+    errors:
+      unknown_plan: Ese plan no existe.
+      sats_range: Introduce entre %{min} y %{max} sats.
+      unavailable: Ahora no se puede crear la factura. Inténtalo en un minuto.
+    note:
+      none: La escritura con IA es de pago. Tu primer borrador inicia una prueba gratuita de 3 días.
+      trial: Tu prueba gratuita dura hasta el %{date}.
+      expired: Tu acceso a la IA terminó el %{date}.
+      link: Planes y pago
+    account_limit: El plan gratuito gestiona hasta %{limit} cuentas. Una prueba o un plan de pago quita el límite.
+  ai_assist:
+    paywall: La escritura con IA necesita una prueba o tiempo pagado.
+    daily_cap: Has llegado al límite diario de IA. Se reinicia a medianoche UTC.
+    billing_unavailable: El sistema de pagos no responde, así que la escritura con IA está en pausa. Inténtalo en un minuto.
+  js:
+    content_builder:
+      open_billing: Ver planes
