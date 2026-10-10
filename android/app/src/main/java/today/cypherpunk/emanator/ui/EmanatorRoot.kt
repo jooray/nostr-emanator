@@ -2,12 +2,27 @@ package today.cypherpunk.emanator.ui
 
 import android.app.Activity
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Mail
+import androidx.compose.material.icons.filled.CurrencyBitcoin
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Forum
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -15,6 +30,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.NavigationRailItemDefaults
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,12 +41,17 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.activity.compose.LocalActivity
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -42,6 +66,7 @@ import today.cypherpunk.emanator.AppContainer
 import today.cypherpunk.emanator.BuildConfig
 import today.cypherpunk.emanator.R
 import today.cypherpunk.emanator.data.ApiException
+import today.cypherpunk.emanator.ui.components.NostrChooser
 import today.cypherpunk.emanator.ui.screens.LoginScreen
 import today.cypherpunk.emanator.ui.screens.UpdateRequiredScreen
 import today.cypherpunk.emanator.ui.screens.accounts.AccountEditScreen
@@ -131,6 +156,7 @@ private fun SignedIn(container: AppContainer) {
     }
 
     MainNav(nav, container)
+    NostrChooser()
 }
 
 /**
@@ -167,40 +193,47 @@ private val Tabs = listOf(
     Tab(Routes.MORE, R.string.nav_more, Icons.Filled.Menu),
 )
 
+/** What More holds, listed in the side rail directly when the window is tall enough. */
+private fun moreTabs(billing: Boolean) = listOfNotNull(
+    Tab(Routes.COMPOSE, R.string.nav_new_post, Icons.Filled.Edit),
+    Tab(Routes.ACCOUNTS, R.string.nav_accounts, Icons.Filled.People),
+    Tab(Routes.INTERACTIONS, R.string.nav_interactions, Icons.Filled.Forum),
+    Tab(Routes.SETTINGS, R.string.nav_settings, Icons.Filled.Settings),
+    if (billing) Tab(Routes.BILLING, R.string.nav_billing, Icons.Filled.CurrencyBitcoin) else null,
+)
+
+/** A rail item with its label is about 56 dp tall, plus the rail's gaps. */
+private val RailItemHeight = 64.dp
+
 @Composable
 private fun MainNav(nav: NavHostController, container: AppContainer) {
     val entry by nav.currentBackStackEntryAsState()
     val current = entry?.destination?.route
     val me by container.me.collectAsState()
     val c = LocalConsole.current
+    val density = LocalDensity.current
+    val window = LocalWindowInfo.current.containerSize
+    val wide = with(density) { window.width.toDp() } >= 600.dp
+    // A phone keeps the bottom bar with More (five is the bar's maximum). A
+    // tablet gets a side rail listing every destination when they fit; a
+    // landscape phone's rail does not have the height, so it keeps More.
+    val billing = me?.billingEnabled == true
+    val railTabs = remember(billing) { Tabs.dropLast(1) + moreTabs(billing) }
+    val fullRail = wide && with(density) { window.height.toDp() } >= RailItemHeight * railTabs.size + 96.dp
+    val selected = if (fullRail) Routes.railItemOf(current) else Routes.tabOf(current)
+    val badge: @Composable (Tab) -> Unit = { tab -> TabBadge(tab, me?.summary) }
+    val go: (Tab) -> Unit = { tab -> nav.switchTo(tab.route) }
 
     Scaffold(
         containerColor = c.chassis,
         bottomBar = {
-            if (Tabs.any { it.route == current }) {
+            if (!wide && Tabs.any { it.route == current }) {
                 NavigationBar(containerColor = c.panel, tonalElevation = androidx.compose.ui.unit.Dp(0f)) {
                     Tabs.forEach { tab ->
                         NavigationBarItem(
                             selected = current == tab.route,
-                            onClick = {
-                                nav.navigate(if (tab.route == Routes.POSTS) Routes.posts() else tab.route) {
-                                    popUpTo(nav.graph.findStartDestination().id) { saveState = true }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            },
-                            icon = {
-                                val summary = me?.summary
-                                BadgedBox(badge = {
-                                    when {
-                                        tab.route == Routes.MESSAGES && (summary?.unreadMessages ?: 0) > 0 ->
-                                            Badge(containerColor = Palette.amber, contentColor = Palette.contactBlack) { Text("${summary!!.unreadMessages}") }
-                                        tab.route == Routes.MESSAGES && summary?.hasRequests == true -> Badge(containerColor = c.legend)
-                                        tab.route == Routes.DASHBOARD && (summary?.failed ?: 0) + (summary?.short ?: 0) > 0 -> Badge(containerColor = Palette.red)
-                                        tab.route == Routes.DASHBOARD && (summary?.waiting ?: 0) > 0 -> Badge(containerColor = Palette.amber)
-                                    }
-                                }) { Icon(tab.icon, contentDescription = null) }
-                            },
+                            onClick = { go(tab) },
+                            icon = { BadgedBox(badge = { badge(tab) }) { Icon(tab.icon, contentDescription = null) } },
                             label = { Text(stringResource(tab.label).uppercase(), style = Type.slug, maxLines = 1) },
                             colors = NavigationBarItemDefaults.colors(
                                 selectedIconColor = c.text, selectedTextColor = c.text,
@@ -213,78 +246,142 @@ private fun MainNav(nav: NavHostController, container: AppContainer) {
             }
         },
     ) { padding ->
-        Box(Modifier.padding(bottom = padding.calculateBottomPadding())) {
-            NavHost(nav, startDestination = Routes.DASHBOARD) {
-                composable(Routes.DASHBOARD) { DashboardScreen(nav) }
-                composable(
-                    Routes.POSTS,
-                    arguments = listOf(
-                        navArgument("status") { type = NavType.StringType; defaultValue = "" },
-                        navArgument("account") { type = NavType.LongType; defaultValue = 0L },
-                    ),
-                ) { e ->
-                    PostsScreen(nav, e.arguments?.getString("status")?.ifBlank { null }, e.arguments?.getLong("account")?.takeIf { it > 0 })
+        Row {
+            if (wide) {
+                // The rail's own insets pad inside its panel, so the panel runs edge to edge.
+                NavigationRail(
+                    Modifier.fillMaxHeight(),
+                    containerColor = c.panel,
+                    windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Start + WindowInsetsSides.Vertical),
+                ) {
+                    Spacer(Modifier.height(8.dp))
+                    (if (fullRail) railTabs else Tabs).forEach { tab ->
+                        NavigationRailItem(
+                            selected = selected == tab.route,
+                            onClick = { go(tab) },
+                            icon = { BadgedBox(badge = { badge(tab) }) { Icon(tab.icon, contentDescription = null) } },
+                            label = {
+                                // A long label (sk "Predplatné AI písania") wraps rather than widening the rail.
+                                Text(
+                                    stringResource(tab.label).uppercase(), style = Type.slug, maxLines = 2,
+                                    textAlign = TextAlign.Center, modifier = Modifier.widthIn(max = 100.dp),
+                                )
+                            },
+                            colors = NavigationRailItemDefaults.colors(
+                                selectedIconColor = c.text, selectedTextColor = c.text,
+                                unselectedIconColor = c.muted, unselectedTextColor = c.muted,
+                                indicatorColor = c.activeFill,
+                            ),
+                        )
+                    }
                 }
-                composable(Routes.CALENDAR) { CalendarScreen(nav) }
-                composable(Routes.MESSAGES) { MessagesScreen(nav) }
-                composable(Routes.MORE) { MoreScreen(nav) }
+                VerticalDivider(color = c.rule)
+            }
+            Box(
+                Modifier.weight(1f).fillMaxHeight().padding(bottom = padding.calculateBottomPadding())
+                    .then(if (wide) Modifier.consumeWindowInsets(WindowInsets.safeDrawing.only(WindowInsetsSides.Start)) else Modifier),
+            ) {
+                NavHost(nav, startDestination = Routes.DASHBOARD) {
+                    composable(Routes.DASHBOARD) { DashboardScreen(nav) }
+                    composable(
+                        Routes.POSTS,
+                        arguments = listOf(
+                            navArgument("status") { type = NavType.StringType; defaultValue = "" },
+                            navArgument("account") { type = NavType.LongType; defaultValue = 0L },
+                        ),
+                    ) { e ->
+                        PostsScreen(nav, e.arguments?.getString("status")?.ifBlank { null }, e.arguments?.getLong("account")?.takeIf { it > 0 })
+                    }
+                    composable(Routes.CALENDAR) { CalendarScreen(nav) }
+                    composable(Routes.MESSAGES) { MessagesScreen(nav) }
+                    composable(Routes.MORE) { MoreScreen(nav) }
 
-                composable(Routes.POST, arguments = listOf(navArgument("id") { type = NavType.LongType })) { e ->
-                    PostScreen(nav, e.arguments!!.getLong("id"))
+                    composable(Routes.POST, arguments = listOf(navArgument("id") { type = NavType.LongType })) { e ->
+                        PostScreen(nav, e.arguments!!.getLong("id"))
+                    }
+                    composable(
+                        Routes.COMPOSE,
+                        arguments = listOf(
+                            navArgument("account") { type = NavType.LongType; defaultValue = 0L },
+                            navArgument("post") { type = NavType.LongType; defaultValue = 0L },
+                            navArgument("shared") { type = NavType.BoolType; defaultValue = false },
+                        ),
+                    ) { e ->
+                        ComposeScreen(
+                            nav,
+                            accountId = e.arguments?.getLong("account")?.takeIf { it > 0 },
+                            postId = e.arguments?.getLong("post")?.takeIf { it > 0 },
+                            fromShare = e.arguments?.getBoolean("shared") ?: false,
+                        )
+                    }
+                    composable(
+                        Routes.SCHEDULE,
+                        arguments = listOf(
+                            navArgument("id") { type = NavType.LongType },
+                            navArgument("reposts") { type = NavType.StringType; defaultValue = "" },
+                        ),
+                    ) { e ->
+                        val reposts = e.arguments?.getString("reposts").orEmpty().split(",").mapNotNull { it.toLongOrNull() }
+                        ScheduleScreen(nav, e.arguments!!.getLong("id"), reposts)
+                    }
+                    composable(Routes.CONVERSATION, arguments = listOf(navArgument("id") { type = NavType.LongType })) { e ->
+                        ConversationScreen(nav, e.arguments!!.getLong("id"))
+                    }
+                    composable(Routes.INTERACTIONS) { InteractionsScreen(nav) }
+                    composable(Routes.ACCOUNTS) { AccountsScreen(nav) }
+                    composable(Routes.ACCOUNT, arguments = listOf(navArgument("id") { type = NavType.LongType })) { e ->
+                        AccountScreen(nav, e.arguments!!.getLong("id"))
+                    }
+                    composable(Routes.ACCOUNT_EDIT, arguments = listOf(navArgument("id") { type = NavType.LongType })) { e ->
+                        AccountEditScreen(nav, e.arguments!!.getLong("id"))
+                    }
+                    composable(Routes.ACCOUNT_PROFILE, arguments = listOf(navArgument("id") { type = NavType.LongType })) { e ->
+                        ProfileEditScreen(nav, e.arguments!!.getLong("id"))
+                    }
+                    composable(
+                        Routes.PAIR,
+                        arguments = listOf(
+                            navArgument("account") { type = NavType.LongType; defaultValue = 0L },
+                            navArgument("reason") { type = NavType.StringType; defaultValue = "" },
+                        ),
+                    ) { e ->
+                        PairScreen(nav, e.arguments?.getLong("account")?.takeIf { it > 0 }, e.arguments?.getString("reason")?.ifBlank { null })
+                    }
+                    composable(Routes.SETTINGS) { SettingsScreen(nav) }
+                    composable(Routes.BILLING) { BillingScreen(nav) }
+                    composable(Routes.DEVICES) { DevicesScreen(nav) }
+                    composable(Routes.MCP_TOKENS) { McpTokensScreen(nav) }
                 }
-                composable(
-                    Routes.COMPOSE,
-                    arguments = listOf(
-                        navArgument("account") { type = NavType.LongType; defaultValue = 0L },
-                        navArgument("post") { type = NavType.LongType; defaultValue = 0L },
-                        navArgument("shared") { type = NavType.BoolType; defaultValue = false },
-                    ),
-                ) { e ->
-                    ComposeScreen(
-                        nav,
-                        accountId = e.arguments?.getLong("account")?.takeIf { it > 0 },
-                        postId = e.arguments?.getLong("post")?.takeIf { it > 0 },
-                        fromShare = e.arguments?.getBoolean("shared") ?: false,
-                    )
-                }
-                composable(
-                    Routes.SCHEDULE,
-                    arguments = listOf(
-                        navArgument("id") { type = NavType.LongType },
-                        navArgument("reposts") { type = NavType.StringType; defaultValue = "" },
-                    ),
-                ) { e ->
-                    val reposts = e.arguments?.getString("reposts").orEmpty().split(",").mapNotNull { it.toLongOrNull() }
-                    ScheduleScreen(nav, e.arguments!!.getLong("id"), reposts)
-                }
-                composable(Routes.CONVERSATION, arguments = listOf(navArgument("id") { type = NavType.LongType })) { e ->
-                    ConversationScreen(nav, e.arguments!!.getLong("id"))
-                }
-                composable(Routes.INTERACTIONS) { InteractionsScreen(nav) }
-                composable(Routes.ACCOUNTS) { AccountsScreen(nav) }
-                composable(Routes.ACCOUNT, arguments = listOf(navArgument("id") { type = NavType.LongType })) { e ->
-                    AccountScreen(nav, e.arguments!!.getLong("id"))
-                }
-                composable(Routes.ACCOUNT_EDIT, arguments = listOf(navArgument("id") { type = NavType.LongType })) { e ->
-                    AccountEditScreen(nav, e.arguments!!.getLong("id"))
-                }
-                composable(Routes.ACCOUNT_PROFILE, arguments = listOf(navArgument("id") { type = NavType.LongType })) { e ->
-                    ProfileEditScreen(nav, e.arguments!!.getLong("id"))
-                }
-                composable(
-                    Routes.PAIR,
-                    arguments = listOf(
-                        navArgument("account") { type = NavType.LongType; defaultValue = 0L },
-                        navArgument("reason") { type = NavType.StringType; defaultValue = "" },
-                    ),
-                ) { e ->
-                    PairScreen(nav, e.arguments?.getLong("account")?.takeIf { it > 0 }, e.arguments?.getString("reason")?.ifBlank { null })
-                }
-                composable(Routes.SETTINGS) { SettingsScreen(nav) }
-                composable(Routes.BILLING) { BillingScreen(nav) }
-                composable(Routes.DEVICES) { DevicesScreen(nav) }
-                composable(Routes.MCP_TOKENS) { McpTokensScreen(nav) }
             }
         }
+    }
+}
+
+private fun NavHostController.switchTo(route: String) {
+    // New post always opens an empty composer; the other tabs come back as they were left.
+    val fresh = route == Routes.COMPOSE
+    navigate(
+        when (route) {
+            Routes.POSTS -> Routes.posts()
+            Routes.COMPOSE -> Routes.compose()
+            else -> route
+        },
+    ) {
+        popUpTo(graph.findStartDestination().id) { saveState = !fresh }
+        launchSingleTop = true
+        restoreState = !fresh
+    }
+}
+
+/** Dashboard and Messages carry the same counts as the web's nav. */
+@Composable
+private fun TabBadge(tab: Tab, summary: today.cypherpunk.emanator.data.Summary?) {
+    val c = LocalConsole.current
+    when {
+        tab.route == Routes.MESSAGES && (summary?.unreadMessages ?: 0) > 0 ->
+            Badge(containerColor = Palette.amber, contentColor = Palette.contactBlack) { Text("${summary!!.unreadMessages}") }
+        tab.route == Routes.MESSAGES && summary?.hasRequests == true -> Badge(containerColor = c.legend)
+        tab.route == Routes.DASHBOARD && (summary?.failed ?: 0) + (summary?.short ?: 0) > 0 -> Badge(containerColor = Palette.red)
+        tab.route == Routes.DASHBOARD && (summary?.waiting ?: 0) > 0 -> Badge(containerColor = Palette.amber)
     }
 }

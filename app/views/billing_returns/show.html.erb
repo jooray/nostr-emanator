@@ -2,7 +2,8 @@
   <h1 class="text-2xl font-bold text-gray-900 dark:text-white"><%= t(".title") %></h1>
   <p class="text-sm text-gray-600 dark:text-gray-300"><%= t(".body") %></p>
   <%# The app registers the emanator:// scheme; a browser without the app just
-      does nothing on tap, which is why the web link sits underneath. %>
+      does nothing, which is why the web link sits underneath. The button stays
+      because Chrome may block a hand-off that no tap started. %>
   <a href="emanator://billing" class="inline-flex justify-center items-center px-5 py-2.5 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors">
     <%= t(".open_app") %>
   </a>
@@ -10,3 +11,8 @@
     <%= t(".web_hint") %> <%= link_to t(".web_link"), billing_path, class: "underline" %>
   </p>
 </div>
+<%# BTCPay redirects here by itself, so open the app at once. MainActivity is
+    singleTask: coming back to it finishes the Custom Tab above it. %>
+<%= javascript_tag nonce: true do %>
+  window.location.replace("emanator://billing");
+<% end %>

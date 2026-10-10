@@ -38,14 +38,19 @@ data class Limits(
 @Serializable
 data class ConnectSession(
     @SerialName("session_id") val sessionId: String,
+    @SerialName("poll_token") val pollToken: String? = null,
     val uri: String? = null,
     val relays: List<String> = emptyList(),
     @SerialName("expires_in") val expiresIn: Int = 300,
 )
 
 @Serializable
+data class LoginChallenge(val challenge: String, val domain: String, @SerialName("token_url") val tokenUrl: String? = null)
+
+/** A poll answer, and also what /auth/token answers (without a status). */
+@Serializable
 data class LoginPoll(
-    val status: String,
+    val status: String = "authenticated",
     @SerialName("auth_url") val authUrl: String? = null,
     val token: String? = null,
     val user: User? = null,

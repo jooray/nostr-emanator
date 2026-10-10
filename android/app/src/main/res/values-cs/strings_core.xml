@@ -54,6 +54,9 @@
     <string name="action_continue">Pokračovat</string>
     <string name="action_confirm">Potvrdit</string>
     <string name="action_open_in_client">Otevřít v Nostr aplikaci</string>
+    <string name="nostr_open_with">Otevřít pomocí</string>
+    <string name="nostr_open_in_app">Otevřít v aplikaci %1$s</string>
+    <string name="nostr_open_on_web">%1$s (web)</string>
     <string name="action_open_in_browser">Otevřít v prohlížeči</string>
     <string name="action_load_more">Načíst další</string>
     <string name="action_edit">Upravit</string>

@@ -23,6 +23,26 @@ object Routes {
     const val DEVICES = "devices"
     const val MCP_TOKENS = "mcp_tokens"
 
+    /** Which bottom-bar (or short rail) tab a route belongs to. */
+    fun tabOf(route: String?): String = when {
+        route == null || route == DASHBOARD -> DASHBOARD
+        route.startsWith("posts") || route.startsWith("post/") || route.startsWith("compose") || route.startsWith("schedule") -> POSTS
+        route == CALENDAR -> CALENDAR
+        route == MESSAGES || route.startsWith("conversation") -> MESSAGES
+        else -> MORE
+    }
+
+    /** Which side-rail entry a route belongs to when the rail lists every destination (no More). */
+    fun railItemOf(route: String?): String = when {
+        route == null -> DASHBOARD
+        route.startsWith("compose") -> COMPOSE
+        route.startsWith("account") || route.startsWith("pair") -> ACCOUNTS
+        route == INTERACTIONS -> INTERACTIONS
+        route == SETTINGS || route == DEVICES || route == MCP_TOKENS -> SETTINGS
+        route == BILLING -> BILLING
+        else -> tabOf(route)
+    }
+
     fun posts(status: String? = null, account: Long? = null) = "posts?status=${status.orEmpty()}&account=${account ?: 0}"
     fun post(id: Long) = "post/$id"
     fun compose(account: Long? = null, post: Long? = null, shared: Boolean = false) =

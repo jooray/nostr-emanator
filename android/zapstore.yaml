@@ -1,11 +1,5 @@
-# Zapstore listing for the Android app. The APK is served from the Emanator
-# server's download page, which marks the version with #version.
-release_source:
-  version:
-    url: https://emanator.cypherpunk.today/android
-    selector: "#version"
-    match: "([0-9.]+)"
-  asset_url: https://emanator.cypherpunk.today/android/emanator-{version}.apk
+# Zapstore listing for the Android app. Releases come from GitHub: each one
+# carries the signed emanator-<version>.apk (see AGENTS.md, "Releasing the app").
 name: Emanator
 summary: Schedule and write Nostr posts across all your accounts
 description: |
@@ -15,7 +9,9 @@ description: |
 
   Photos are resized and stripped of location and camera metadata on the phone before upload. Media servers keep exactly the bytes they receive, so this is the only point where it can be done.
 
-  Logins and account pairing go through Amber on the same phone, with no QR code to scan. Emanator never sees your private key.
+  Logins and account pairing go through Amber on the same phone, with no QR code to scan. Without a signer on the phone, the QR code for one on another device shows up right away. Emanator never sees your private key.
+
+  Videos are re-encoded on the phone too (H.264, at most 30 frames per second, without location metadata), and on a tablet a side rail replaces the bottom bar.
 
   Available in English, Slovak, Czech and Spanish. Open source: self-hosters can point the app at their own server.
 website: https://emanator.cypherpunk.today

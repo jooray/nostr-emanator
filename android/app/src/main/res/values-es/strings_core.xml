@@ -53,6 +53,9 @@
     <string name="action_continue">Continuar</string>
     <string name="action_confirm">Confirmar</string>
     <string name="action_open_in_client">Abrir en una app de Nostr</string>
+    <string name="nostr_open_with">Abrir con</string>
+    <string name="nostr_open_in_app">Abrir en %1$s</string>
+    <string name="nostr_open_on_web">%1$s (web)</string>
     <string name="action_open_in_browser">Abrir en el navegador</string>
     <string name="action_load_more">Cargar más</string>
     <string name="action_edit">Editar</string>

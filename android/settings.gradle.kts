@@ -14,3 +14,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Emanator"
 include(":app")
+include(":nostr-signin")

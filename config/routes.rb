@@ -140,6 +140,8 @@ Rails.application.routes.draw do
     namespace :v1, defaults: { format: :json } do
       get "meta", to: "meta#show"
 
+      post "auth/challenge", to: "auth#challenge"
+      post "auth/token", to: "auth#token"
       post "auth/nostrconnect", to: "auth#nostrconnect"
       post "auth/bunker", to: "auth#bunker"
       post "auth/poll", to: "auth#poll"

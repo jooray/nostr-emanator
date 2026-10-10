@@ -5,8 +5,10 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
+import kotlinx.coroutines.flow.MutableStateFlow
 
 object Links {
     /** A web page, in a Custom Tab (falls back to any browser). */
@@ -19,18 +21,44 @@ object Links {
         }
     }
 
+    data class App(val packageName: String, val label: String)
+
+    /** One `nostr:` link with more than one way to open it, waiting for the user to pick. */
+    data class NostrChoice(val uri: String, val apps: List<App>, val webUrl: String?)
+
+    /** Shown by [today.cypherpunk.emanator.ui.components.NostrChooser] at the root. */
+    val nostrChoice = MutableStateFlow<NostrChoice?>(null)
+
+    /** Installed apps that open a NIP-21 `nostr:` link (Amethyst, Primal, YakiHonne…), by name. */
+    fun nostrApps(context: Context, uri: String): List<App> {
+        val pm = context.packageManager
+        return pm.queryIntentActivities(Intent(Intent.ACTION_VIEW, Uri.parse(uri)), PackageManager.MATCH_DEFAULT_ONLY)
+            .map { App(it.activityInfo.packageName, it.loadLabel(pm).toString()) }
+            .filter { it.packageName != context.packageName }
+            .distinctBy { it.packageName }
+            .sortedBy { it.label.lowercase() }
+    }
+
+    fun openInApp(context: Context, uri: String, packageName: String): Boolean = try {
+        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(uri)).setPackage(packageName).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        true
+    } catch (e: ActivityNotFoundException) {
+        false
+    }
+
     /**
-     * A note or profile: handed to whichever Nostr app is installed as a
-     * `nostr:` URI (NIP-21), else opened in the user's event viewer.
+     * A note or profile, as a `nostr:` URI (NIP-21) in an installed Nostr app or
+     * in the user's event viewer on the web. One way to open it opens it at
+     * once; several ask which (the same as Lievik's "View original").
      */
     fun openNostr(context: Context, identifier: String?, fallbackUrl: String?) {
-        if (identifier != null) {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("nostr:$identifier")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            if (intent.resolveActivity(context.packageManager) != null) {
-                runCatching { context.startActivity(intent); return }
-            }
+        val uri = identifier?.let { "nostr:$it" }
+        val apps = uri?.let { nostrApps(context, it) }.orEmpty()
+        when {
+            apps.isEmpty() -> fallbackUrl?.let { openUrl(context, it) }
+            apps.size == 1 && fallbackUrl == null -> openInApp(context, uri!!, apps.single().packageName)
+            else -> nostrChoice.value = NostrChoice(uri!!, apps, fallbackUrl)
         }
-        fallbackUrl?.let { openUrl(context, it) }
     }
 
     /** True when some installed app (Amber) handles nostrconnect:// URIs. */

@@ -10,10 +10,16 @@ import java.io.File
 class EmanatorApi(val client: ApiClient) {
     // --- public ---------------------------------------------------------------
     suspend fun meta(): Meta = client.get("/api/v1/meta")
+    suspend fun loginChallenge(): LoginChallenge = client.post("/api/v1/auth/challenge")
+    suspend fun loginWithSignedEvent(signedEventJson: String, deviceName: String, clientVersion: String): LoginPoll =
+        client.post("/api/v1/auth/token", mapOf("signed_event" to signedEventJson, "device_name" to deviceName, "client_version" to clientVersion))
     suspend fun startLogin(): ConnectSession = client.post("/api/v1/auth/nostrconnect")
     suspend fun startBunkerLogin(uri: String): ConnectSession = client.post("/api/v1/auth/bunker", mapOf("bunker_uri" to uri))
-    suspend fun pollLogin(sessionId: String, deviceName: String, clientVersion: String): LoginPoll =
-        client.post("/api/v1/auth/poll", mapOf("session_id" to sessionId, "device_name" to deviceName, "client_version" to clientVersion))
+    suspend fun pollLogin(sessionId: String, pollToken: String?, deviceName: String, clientVersion: String): LoginPoll =
+        client.post(
+            "/api/v1/auth/poll",
+            mapOf("session_id" to sessionId, "poll_token" to pollToken, "device_name" to deviceName, "client_version" to clientVersion),
+        )
     suspend fun logout() = client.delete("/api/v1/session")
 
     // --- me -----------------------------------------------------------------------

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +42,8 @@ sealed interface ConnectState {
 /**
  * Hands a nostrconnect:// URI to the signer. With Amber on this phone that is
  * one tap — no QR involved; a signer on another device scans the QR instead.
+ * With no signer on this phone the code is created and its QR shown at once:
+ * there is nothing to tap through to.
  * The QR carries the same phishing warning as the web: scanning a code someone
  * else shows you hands them your session.
  */
@@ -53,7 +56,12 @@ fun SignerConnect(
 ) {
     val context = LocalContext.current
     val c = LocalConsole.current
-    var showQr by rememberSaveable { mutableStateOf(false) }
+    val noSigner = remember { !Links.canOpenSigner(context, "nostrconnect://") }
+    var showQr by rememberSaveable { mutableStateOf(noSigner) }
+    var autoStarted by rememberSaveable { mutableStateOf(false) }
+    if (noSigner && state == ConnectState.Idle && !autoStarted) {
+        LaunchedEffect(Unit) { autoStarted = true; onStart() }
+    }
 
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         when (state) {

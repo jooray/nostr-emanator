@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_09_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_09_140000) do
   create_table "accounts", force: :cascade do |t|
     t.text "about"
     t.text "app_privkey"
@@ -216,6 +216,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_09_120000) do
     t.datetime "listener_started_at"
     t.string "listener_token"
     t.string "pending_rpc_id"
+    t.string "poll_token_digest"
     t.string "relay_url", null: false
     t.text "secret", null: false
     t.string "session_id", null: false

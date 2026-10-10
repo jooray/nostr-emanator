@@ -3,6 +3,14 @@
     <string name="login_tagline">Přihlas se svou identitou na Nostru</string>
     <string name="login_no_account">Účet nepotřebuješ. Tvá identita je tvůj klíč na Nostru.</string>
     <string name="login_signer_heading">Podepisovací aplikace</string>
+    <string name="login_signer_app_heading">Podepisovač v tomto telefonu</string>
+    <string name="login_sign_in_with">Přihlas se přes %1$s</string>
+    <string name="login_signer_app_hint">Nejrychlejší, bez relé. Před prvním příspěvkem si účet jednou spáruješ v sekci Účty, aby mohl Emanator podepisovat naplánované příspěvky.</string>
+    <string name="login_connect_hint">Přihlásí tě a zároveň propojí podepisování příspěvků, přes relé.</string>
+    <string name="login_failed_rejected">Žádost byla v podepisovači odmítnuta.</string>
+    <string name="login_failed_empty">Podepisovač nevrátil podpis. Zkus to znovu.</string>
+    <string name="login_failed_missing">Žádná podepisovací aplikace v tomto telefonu žádost nepřevzala.</string>
+    <string name="login_failed_bunker">Tohle není odkaz bunker://.</string>
     <string name="login_bunker_heading">Vlož bunker odkaz</string>
     <string name="login_bunker_help">Vytvoř spojení ve svém podepisovači a vlož odkaz, který ti dá.</string>
     <string name="login_bunker_label">Bunker odkaz</string>

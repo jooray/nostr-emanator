@@ -4,6 +4,14 @@
     <string name="login_tagline">Sign in with your Nostr identity</string>
     <string name="login_no_account">No account needed. Your identity is your Nostr key.</string>
     <string name="login_signer_heading">Signer app</string>
+    <string name="login_signer_app_heading">Signer on this phone</string>
+    <string name="login_sign_in_with">Sign in with %1$s</string>
+    <string name="login_signer_app_hint">The quickest way: no relays involved. Before your first post you pair the account once in Accounts, so Emanator can sign scheduled posts.</string>
+    <string name="login_connect_hint">Signs you in and connects posting in one step, through relays.</string>
+    <string name="login_failed_rejected">You declined the request in your signer.</string>
+    <string name="login_failed_empty">The signer didn\'t return a signature. Try again.</string>
+    <string name="login_failed_missing">No signer app on this phone could take the request.</string>
+    <string name="login_failed_bunker">That isn\'t a bunker:// link.</string>
     <string name="login_bunker_heading">Paste a bunker link</string>
     <string name="login_bunker_help">Create a connection in your signer and paste the link it gives you.</string>
     <string name="login_bunker_label">Bunker link</string>

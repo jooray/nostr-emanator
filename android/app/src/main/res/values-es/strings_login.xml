@@ -3,6 +3,14 @@
     <string name="login_tagline">Inicia sesión con tu identidad de Nostr</string>
     <string name="login_no_account">No necesitas cuenta. Tu identidad es tu clave de Nostr.</string>
     <string name="login_signer_heading">App de firma</string>
+    <string name="login_signer_app_heading">Firmante en este teléfono</string>
+    <string name="login_sign_in_with">Iniciar sesión con %1$s</string>
+    <string name="login_signer_app_hint">La forma más rápida, sin relés. Antes de tu primera publicación vinculas la cuenta una vez en Cuentas, para que Emanator pueda firmar las publicaciones programadas.</string>
+    <string name="login_connect_hint">Inicia sesión y conecta la firma de publicaciones en un solo paso, a través de relés.</string>
+    <string name="login_failed_rejected">Rechazaste la solicitud en tu firmante.</string>
+    <string name="login_failed_empty">El firmante no devolvió una firma. Inténtalo de nuevo.</string>
+    <string name="login_failed_missing">Ninguna app firmante de este teléfono pudo atender la solicitud.</string>
+    <string name="login_failed_bunker">Eso no es un enlace bunker://.</string>
     <string name="login_bunker_heading">Pega un enlace bunker</string>
     <string name="login_bunker_help">Crea una conexión en tu firmante y pega el enlace que te da.</string>
     <string name="login_bunker_label">Enlace bunker</string>

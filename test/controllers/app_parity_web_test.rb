@@ -13,6 +13,9 @@ class AppParityWebTest < ActionDispatch::IntegrationTest
     get billing_return_path
     assert_response :success
     assert_select "a[href='emanator://billing']"
+    # BTCPay lands here by itself: the page hands over to the app at once, under the CSP nonce.
+    nonce = response.headers["Content-Security-Policy"][/'nonce-([^']+)'/, 1]
+    assert_select "script[nonce='#{nonce}']", text: /location\.replace\("emanator:\/\/billing"\)/
 
     get android_app_path
     assert_response :success

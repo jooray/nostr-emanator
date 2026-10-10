@@ -6,6 +6,8 @@ require_relative "../../test_helper"
 # the boundary between device tokens and MCP tokens.
 class AuthApiTest < ActionDispatch::IntegrationTest
   include ApiTestHelper
+  include NostrTestHelper
+  include CacheHelper
 
   def without_supervisor(&block) = override(Nip46SupervisorJob, :ensure_running, nil, &block)
 
@@ -23,9 +25,11 @@ class AuthApiTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match %r{\Anostrconnect://}, json["uri"]
     session_id = json["session_id"]
+    poll_token = json["poll_token"]
     refute_includes json["uri"], session_id, "the poll credential must not be in the QR/URI"
+    refute_includes json["uri"], poll_token
 
-    post "/api/v1/auth/poll", params: { session_id: session_id }, as: :json
+    post "/api/v1/auth/poll", params: { session_id: session_id, poll_token: poll_token }, as: :json
     assert_equal "pending", json["status"]
 
     signer = SecureRandom.hex(32)
@@ -33,7 +37,7 @@ class AuthApiTest < ActionDispatch::IntegrationTest
     NostrAuthSession.find_by!(session_id: session_id)
                     .update!(authenticated_pubkey: signer, authenticated_user_pubkey: user_pubkey)
 
-    post "/api/v1/auth/poll", params: { session_id: session_id, device_name: "Pixel", client_version: "3" }, as: :json
+    post "/api/v1/auth/poll", params: { session_id: session_id, poll_token: poll_token, device_name: "Pixel", client_version: "3" }, as: :json
     assert_equal "authenticated", json["status"]
     assert_match(/\Aemd_/, json["token"])
 
@@ -48,6 +52,99 @@ class AuthApiTest < ActionDispatch::IntegrationTest
 
     post "/api/v1/auth/poll", params: { session_id: session_id }, as: :json
     assert_equal "expired", json["status"], "a session logs in once"
+  end
+
+  def test_poll_needs_the_poll_token_except_from_builds_that_predate_it
+    without_supervisor { post "/api/v1/auth/nostrconnect", as: :json }
+    session_id = json["session_id"]
+
+    post "/api/v1/auth/poll", params: { session_id: session_id }, as: :json
+    assert_response :not_found
+
+    post "/api/v1/auth/poll", params: { session_id: session_id, poll_token: "0" * 64 }, as: :json
+    assert_response :not_found
+
+    post "/api/v1/auth/poll", params: { session_id: session_id }, headers: { "X-Emanator-Client" => "android/1" }, as: :json
+    assert_equal "pending", json["status"]
+
+    post "/api/v1/auth/poll", params: { session_id: session_id }, headers: { "X-Emanator-Client" => "android/2" }, as: :json
+    assert_response :not_found
+  end
+
+  def test_a_signer_on_the_phone_signs_the_challenge_for_a_token
+    pubkey, privkey = keypair
+    post "/api/v1/auth/challenge", as: :json
+    assert_response :success
+    challenge = json["challenge"]
+    assert_equal "emanator.cypherpunk.today", json["domain"]
+
+    event = signed_event(privkey: privkey, pubkey: pubkey, kind: 22_242, content: "",
+                         tags: [ [ "relay", "" ], [ "challenge", challenge ], [ "domain", json["domain"] ] ])
+    post "/api/v1/auth/token", params: { signed_event: event, device_name: "Fold" }, as: :json
+
+    assert_response :success
+    assert_match(/\Aemd_/, json["token"])
+    user = User.find_by!(pubkey_hex: pubkey)
+    assert user.accounts.exists?(pubkey_hex: pubkey), "the login identity becomes the first account"
+    assert_equal "Fold", user.api_tokens.device.last.name
+
+    post "/api/v1/auth/token", params: { signed_event: event }, as: :json
+    assert_response :unauthorized, "a challenge works once"
+  end
+
+  def test_a_proof_for_another_domain_or_challenge_is_refused
+    pubkey, privkey = keypair
+    post "/api/v1/auth/challenge", as: :json
+    challenge = json["challenge"]
+    wrong_domain = signed_event(privkey: privkey, pubkey: pubkey, kind: 22_242, content: "",
+                                tags: [ [ "challenge", challenge ], [ "domain", "evil.example" ] ])
+    post "/api/v1/auth/token", params: { signed_event: wrong_domain }, as: :json
+    assert_response :unauthorized
+    assert_equal "auth_failed", json["code"]
+
+    post "/api/v1/auth/token", params: { signed_event: wrong_domain.merge("tags" => [ [ "challenge", challenge ], [ "domain", "emanator.cypherpunk.today" ] ]) }, as: :json
+    assert_response :unauthorized, "the challenge was spent by the failed attempt, and the id no longer matches"
+
+    unknown = signed_event(privkey: privkey, pubkey: pubkey, kind: 22_242, content: "",
+                           tags: [ [ "challenge", SecureRandom.hex(32) ], [ "domain", "emanator.cypherpunk.today" ] ])
+    post "/api/v1/auth/token", params: { signed_event: unknown }, as: :json
+    assert_response :unauthorized
+    refute User.exists?(pubkey_hex: pubkey)
+  end
+
+  def nip98_proof(privkey, pubkey, challenge, url:, method: "POST")
+    signed_event(privkey: privkey, pubkey: pubkey, kind: 27_235, content: "",
+                 tags: [ [ "u", url ], [ "method", method ], [ "challenge", challenge ] ])
+  end
+
+  def test_a_nip98_proof_for_the_token_endpoint_signs_the_app_in
+    pubkey, privkey = keypair
+    post "/api/v1/auth/challenge", as: :json
+    token_url = json["token_url"]
+    assert_equal "http://www.example.com/api/v1/auth/token", token_url
+
+    # Scheme differences are ignored (TLS ends at nginx); host and path are not.
+    proof = nip98_proof(privkey, pubkey, json["challenge"], url: token_url.sub("http://", "https://"), method: "post")
+    post "/api/v1/auth/token", params: { signed_event: proof.to_json, device_name: "Fold" }, as: :json
+
+    assert_response :success
+    assert_match(/\Aemd_/, json["token"])
+    assert User.exists?(pubkey_hex: pubkey)
+  end
+
+  def test_a_nip98_proof_naming_anything_else_is_refused
+    pubkey, privkey = keypair
+    {
+      "another endpoint" => { url: "http://www.example.com/api/v1/auth/poll" },
+      "another host" => { url: "http://evil.example/api/v1/auth/token" },
+      "a query string" => { url: "http://www.example.com/api/v1/auth/token?x=1" },
+      "another method" => { url: "http://www.example.com/api/v1/auth/token", method: "GET" }
+    }.each do |what, options|
+      post "/api/v1/auth/challenge", as: :json
+      post "/api/v1/auth/token", params: { signed_event: nip98_proof(privkey, pubkey, json["challenge"], **options) }, as: :json
+      assert_response :unauthorized, what
+    end
+    refute User.exists?(pubkey_hex: pubkey)
   end
 
   def test_unknown_session_is_expired

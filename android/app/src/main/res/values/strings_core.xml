@@ -61,6 +61,9 @@
     <string name="action_continue">Continue</string>
     <string name="action_confirm">Confirm</string>
     <string name="action_open_in_client">Open in a Nostr app</string>
+    <string name="nostr_open_with">Open with</string>
+    <string name="nostr_open_in_app">Open in %1$s</string>
+    <string name="nostr_open_on_web">%1$s (web)</string>
     <string name="action_open_in_browser">Open in browser</string>
     <string name="action_load_more">Load more</string>
     <string name="action_edit">Edit</string>

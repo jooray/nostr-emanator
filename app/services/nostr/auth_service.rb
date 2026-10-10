@@ -9,6 +9,10 @@ module Nostr
     # than pinning them for the old 30-minute TTL.
     SESSION_EXPIRY = ENV.fetch("NOSTR_AUTH_WINDOW_MINUTES", 5).to_i.minutes
     NIP07_MAX_AGE = 5.minutes
+    # NIP-98 HTTP auth: the app's sign-in proof. Amber treats kind 22242 as
+    # NIP-42 relay auth (keyed on a relay tag, rejected in the background under
+    # a relay whitelist), so the app signs a proof naming the token endpoint.
+    HTTP_AUTH_KIND = 27_235
 
     # Bumped whenever PERMISSIONS grows. Stamped onto Account#dm_perms_version at
     # pair time, because a signer cannot be asked what it actually granted — the
@@ -210,7 +214,7 @@ module Nostr
         return false unless EventValidator.valid?(event_data, kind: 22_242, author: pubkey_hex)
         return false unless event_data["created_at"].between?(NIP07_MAX_AGE.ago.to_i, 1.minute.from_now.to_i)
         return false unless event_data["tags"].include?(["challenge", challenge])
-        return false unless event_data["tags"].include?(["domain", URI(canonical_url).host])
+        return false unless event_data["tags"].include?(["domain", domain])
 
         true
       rescue JSON::ParserError, StandardError => e
@@ -223,8 +227,40 @@ module Nostr
       NostrAuthSession.cleanup_expired!
     end
 
+    # A NIP-98 proof for POST `url` carrying `challenge`. Returns the pubkey or false.
+    def verify_http_auth(signed_event, challenge, url:)
+      return false if signed_event.blank? || challenge.blank? || url.blank?
+
+      event_data = JSON.parse(signed_event)
+      return false unless EventValidator.valid?(event_data, kind: HTTP_AUTH_KIND)
+      return false unless event_data["created_at"].between?(NIP07_MAX_AGE.ago.to_i, 1.minute.from_now.to_i)
+      return false unless event_data["tags"].include?([ "challenge", challenge ])
+
+      tag = ->(name) { Array(event_data["tags"]).find { |t| t.is_a?(Array) && t.first == name }&.second.to_s }
+      return false unless tag.call("method").casecmp?("POST")
+      return false unless same_endpoint?(tag.call("u"), url)
+
+      event_data["pubkey"].downcase
+    rescue JSON::ParserError, TypeError, URI::InvalidURIError => e
+      Rails.logger.error("HTTP auth verification failed: #{e.message}")
+      false
+    end
+
+    # The host a login proof's "domain" tag must name.
+    def domain = URI(canonical_url).host
+
     def canonical_url
       @config.dig(:app, :canonical_url) || "https://emanator.cypherpunk.today"
+    end
+
+    private
+
+    # Host and path (host case-insensitive); scheme and port are left out
+    # because TLS ends at the reverse proxy. No query string.
+    def same_endpoint?(signed, expected)
+      a = URI.parse(signed)
+      b = URI.parse(expected)
+      a.host.present? && a.host.casecmp?(b.host.to_s) && a.path.chomp("/") == b.path.chomp("/") && a.query.blank?
     end
   end
 end

@@ -88,6 +88,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.browser)
     implementation(libs.androidx.exifinterface)
+    implementation(project(":nostr-signin"))
     implementation(libs.media3.transformer)
     implementation(libs.media3.effect)
     implementation(libs.media3.common)
