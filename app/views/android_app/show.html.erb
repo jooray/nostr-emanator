@@ -1,6 +1,7 @@
 <div class="max-w-2xl mx-auto px-4 py-10 space-y-6">
   <h1 class="text-2xl font-bold text-gray-900 dark:text-white"><%= t(".title") %></h1>
   <p class="text-sm text-gray-600 dark:text-gray-300"><%= t(".intro") %></p>
+  <p class="text-sm text-gray-600 dark:text-gray-300"><%= t(".web_app") %></p>
 
   <ul class="space-y-2 text-sm text-gray-700 dark:text-gray-300 list-disc pl-5">
     <% %w[native_picker compression signer local].each do |feature| %>
@@ -9,22 +10,28 @@
   </ul>
 
   <div class="border rule p-6 space-y-4">
-    <% if AndroidApp.released? %>
-      <%# #version is what Zapstore (zsp) and Obtainium read to find new releases. %>
+    <% if AndroidApp.published? %>
+      <%# #version is what Zapstore (zsp) reads to find new releases. %>
       <p class="text-sm text-gray-500 dark:text-gray-400"><%= t(".version_html", version: tag.span(AndroidApp.latest_version_name, id: "version")) %></p>
       <div class="flex flex-wrap gap-3">
-        <% if AndroidApp.zapstore_url && AndroidApp.config[:zapstore_published] %>
+        <% if AndroidApp.zapstore_published? %>
           <%= link_to t(".zapstore"), AndroidApp.zapstore_url, rel: "noopener",
                 class: "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors" %>
+        <% end %>
+        <% if AndroidApp.github_releases_url %>
+          <%= link_to t(".github"), AndroidApp.github_releases_url, rel: "noopener",
+                class: "inline-flex items-center px-4 py-2 text-sm font-medium border rule text-gray-800 dark:text-gray-100 rounded-lg" %>
         <% end %>
         <% if AndroidApp.apk_url %>
           <%= link_to t(".download"), AndroidApp.apk_url, rel: "noopener",
                 class: "inline-flex items-center px-4 py-2 text-sm font-medium border rule text-gray-800 dark:text-gray-100 rounded-lg" %>
         <% end %>
       </div>
-      <p class="text-xs text-gray-500 dark:text-gray-400">
-        <%= link_to t(".obtainium"), "obtainium://add/#{android_app_url}", class: "underline" %>
-      </p>
+      <% if AndroidApp.obtainium_url %>
+        <p class="text-xs text-gray-500 dark:text-gray-400">
+          <%= link_to t(".obtainium"), AndroidApp.obtainium_url, class: "underline" %>
+        </p>
+      <% end %>
       <% if AndroidApp.certificate_sha256 %>
         <p class="text-xs text-gray-500 dark:text-gray-400"><%= t(".fingerprint") %></p>
         <p class="font-mono text-xs break-all text-gray-700 dark:text-gray-300"><%= AndroidApp.certificate_sha256 %></p>

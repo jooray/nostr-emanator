@@ -102,3 +102,23 @@ es:
         bundle_saving: Por separado, las tres cuestan 35.000 sats.
         fine: Si el sistema de pagos dejara de responder, la programación y la publicación siguen funcionando.
         terms_html: 'Prueba, reembolsos, privacidad y soporte: <a href="https://cypherpunk.today/es/terms/">las condiciones</a>.'
+      install:
+        title: "Ponlo en tu pantalla de inicio."
+        lead: "Emanator es una app web que puedes instalar. Se abre en su propia ventana y tiene todas las funciones, en iPhone, iPad, Android y ordenador. No hace falta ninguna tienda de apps."
+        web_tag: "App web"
+        web_title: "Una app para todos tus dispositivos."
+        web_body: "La app web instalada es Emanator completo: programación, reposts, el calendario, respuestas, mensajes directos, subida de archivos y escritura con IA. Se actualiza sola cuando sale una versión nueva."
+        ios_label: "iPhone y iPad"
+        ios_steps: "Abre Emanator en Safari, toca Compartir y luego Añadir a pantalla de inicio."
+        android_label: "Android"
+        android_steps: "En Chrome, abre el menú y toca Añadir a pantalla de inicio o Instalar aplicación."
+        desktop_label: "Ordenador"
+        desktop_steps: "En Chrome o Edge, haz clic en el icono de instalar de la barra de direcciones. En Safari en un Mac, elige Archivo y luego Añadir al Dock."
+        signer_note: "Amber, el firmante, solo funciona en Android. En iPhone o iPad, usa cualquier firmante compatible con la firma remota NIP-46."
+        native_tag: "Opcional"
+        native_title: "¿Prefieres una app nativa para Android?"
+        native_body: "También existe. Hace lo mismo y usa el mismo servidor, así que puedes pasar de ella a la web cuando quieras."
+        zapstore: "Descargar en Zapstore"
+        obtainium: "Añadir a Obtainium"
+        github: "Descargar en GitHub"
+        more: "Más sobre la app para Android"

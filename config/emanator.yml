@@ -190,16 +190,19 @@ default: &default
   # release that is already downloadable.
   android:
     min_version_code: 1
-    latest_version_code: 1
-    latest_version_name: "1.0.0"
+    latest_version_code: 2
+    latest_version_name: "1.1.0"
     download_url: https://emanator.cypherpunk.today/android
     zapstore_url: https://zapstore.dev/apps/today.cypherpunk.emanator
+    # Releases are also published on GitHub; Obtainium tracks them from there.
+    github_releases_url: https://github.com/jooray/nostr-emanator/releases/latest
+    obtainium_url: obtainium://add/https://github.com/jooray/nostr-emanator
     # Direct APK link and the signing certificate's SHA-256, shown on /android
     # so a sideloaded APK can be checked. Blank until the first release.
     apk_url:
     certificate_sha256: 79750fb49349ec3729be5a3e825507a15e47c6d987e854ae91d5d50a20b3a24d
     # Set true once the app is live on Zapstore, to show the Zapstore button.
-    zapstore_published: false
+    zapstore_published: true
 
 development:
   <<: *default

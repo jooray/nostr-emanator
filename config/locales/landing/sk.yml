@@ -102,3 +102,23 @@ sk:
         bundle_saving: Samostatne stoja všetky tri 35 000 satov.
         fine: Keby platobný systém nebol dostupný, plánovanie a publikovanie fungujú ďalej.
         terms_html: 'Skúšobná doba, vrátenie peňazí, súkromie a podpora: <a href="https://cypherpunk.today/sk/terms/">podmienky</a>.'
+      install:
+        title: "Daj si ho na plochu."
+        lead: "Emanator je webová aplikácia, ktorú si môžeš nainštalovať. Otvorí sa vo vlastnom okne a má všetky funkcie, na iPhone, iPade, Androide aj počítači. Obchod s aplikáciami netreba."
+        web_tag: "Webová aplikácia"
+        web_title: "Jedna aplikácia pre všetky zariadenia."
+        web_body: "Nainštalovaná webová aplikácia je celý Emanator: plánovanie, reposty, kalendár, odpovede, správy, nahrávanie médií aj písanie s AI. Keď vyjde nová verzia, aktualizuje sa sama."
+        ios_label: "iPhone a iPad"
+        ios_steps: "Otvor Emanator v Safari, ťukni na Zdieľať a potom na Pridať na plochu."
+        android_label: "Android"
+        android_steps: "V Chrome otvor menu a ťukni na Pridať na plochu alebo Inštalovať aplikáciu."
+        desktop_label: "Počítač"
+        desktop_steps: "V Chrome alebo Edge klikni na ikonu inštalácie v paneli s adresou. V Safari na Macu zvoľ Súbor a potom Pridať do Docku."
+        signer_note: "Podpisovač Amber beží len na Androide. Na iPhone alebo iPade použi hocijaký podpisovač, ktorý podporuje vzdialené podpisovanie cez NIP-46."
+        native_tag: "Voliteľné"
+        native_title: "Chceš radšej natívnu aplikáciu pre Android?"
+        native_body: "Aj tá existuje. Robí to isté a pracuje s tým istým serverom, takže medzi ňou a webom môžeš kedykoľvek prepínať."
+        zapstore: "Stiahnuť zo Zapstore"
+        obtainium: "Pridať do Obtainium"
+        github: "Stiahnuť z GitHubu"
+        more: "Viac o aplikácii pre Android"

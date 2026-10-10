@@ -102,3 +102,23 @@ cs:
         bundle_saving: Samostatně stojí všechny tři 35 000 satů.
         fine: Kdyby platební systém nebyl dostupný, plánování a publikování fungují dál.
         terms_html: 'Zkušební doba, vracení peněz, soukromí a podpora: <a href="https://cypherpunk.today/cs/terms/">podmínky</a>.'
+      install:
+        title: "Dej si ho na plochu."
+        lead: "Emanator je webová aplikace, kterou si můžeš nainstalovat. Otevře se ve vlastním okně a má všechny funkce, na iPhonu, iPadu, Androidu i počítači. Obchod s aplikacemi nepotřebuješ."
+        web_tag: "Webová aplikace"
+        web_title: "Jedna aplikace pro všechna zařízení."
+        web_body: "Nainstalovaná webová aplikace je celý Emanator: plánování, reposty, kalendář, odpovědi, zprávy, nahrávání médií i psaní s AI. Když vyjde nová verze, aktualizuje se sama."
+        ios_label: "iPhone a iPad"
+        ios_steps: "Otevři Emanator v Safari, klepni na Sdílet a pak na Přidat na plochu."
+        android_label: "Android"
+        android_steps: "V Chromu otevři menu a klepni na Přidat na plochu nebo Nainstalovat aplikaci."
+        desktop_label: "Počítač"
+        desktop_steps: "V Chromu nebo Edge klikni na ikonu instalace v adresním řádku. V Safari na Macu zvol Soubor a pak Přidat do Docku."
+        signer_note: "Podepisovač Amber běží jen na Androidu. Na iPhonu nebo iPadu použij jakýkoli podepisovač, který podporuje vzdálené podepisování přes NIP-46."
+        native_tag: "Volitelné"
+        native_title: "Chceš raději nativní aplikaci pro Android?"
+        native_body: "I ta existuje. Umí totéž a pracuje se stejným serverem, takže mezi ní a webem můžeš kdykoli přepínat."
+        zapstore: "Stáhnout ze Zapstore"
+        obtainium: "Přidat do Obtainium"
+        github: "Stáhnout z GitHubu"
+        more: "Víc o aplikaci pro Android"

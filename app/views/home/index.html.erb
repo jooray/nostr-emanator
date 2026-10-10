@@ -1110,6 +1110,66 @@
         text-underline-offset: 2px;
       }
 
+      /* Install: the PWA first, the Android app as an extra */
+      .install-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 1rem;
+      }
+
+      .install-grid .feature-card {
+        min-height: 0;
+      }
+
+      .install-card {
+        background:
+          linear-gradient(155deg, transparent 55%, var(--amber-soft)),
+          var(--surface-solid);
+      }
+
+      .install-steps {
+        display: grid;
+        gap: 0.9rem;
+        margin: 1.5rem 0 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .install-steps li {
+        padding-top: 0.9rem;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 0.9rem;
+        line-height: 1.6;
+      }
+
+      .install-steps strong {
+        display: block;
+        color: var(--ink);
+        font-size: 0.95rem;
+      }
+
+      .install-note {
+        margin: 1.5rem 0 0;
+        color: var(--faint);
+        font-size: 0.82rem;
+        line-height: 1.6;
+      }
+
+      .install-links {
+        display: grid;
+        gap: 0.6rem;
+        margin-top: 1.5rem;
+      }
+
+      .install-more {
+        display: inline-block;
+        margin-top: 1.2rem;
+        color: var(--amber-deep);
+        font-size: 0.85rem;
+        text-underline-offset: 0.2em;
+      }
+
       :focus-visible {
         outline: 3px solid color-mix(in srgb, var(--amber) 72%, transparent);
         outline-offset: 3px;
@@ -1146,7 +1206,8 @@
           border-left: 0;
         }
 
-        .pricing-grid {
+        .pricing-grid,
+        .install-grid {
           grid-template-columns: 1fr;
         }
       }
@@ -1563,6 +1624,39 @@
             </div>
             <figcaption><%= t(".tour.review_caption") %></figcaption>
           </figure>
+        </div>
+      </section>
+
+      <section class="section shell" id="install" aria-labelledby="install-title">
+        <div class="section-heading">
+          <h2 id="install-title"><%= t(".install.title") %></h2>
+          <p><%= t(".install.lead") %></p>
+        </div>
+        <div class="install-grid">
+          <article class="feature-card install-card">
+            <span class="feature-tag"><%= t(".install.web_tag") %></span>
+            <h3><%= t(".install.web_title") %></h3>
+            <p><%= t(".install.web_body") %></p>
+            <ul class="install-steps">
+              <li><strong><%= t(".install.ios_label") %></strong><%= t(".install.ios_steps") %></li>
+              <li><strong><%= t(".install.android_label") %></strong><%= t(".install.android_steps") %></li>
+              <li><strong><%= t(".install.desktop_label") %></strong><%= t(".install.desktop_steps") %></li>
+            </ul>
+            <p class="install-note"><%= t(".install.signer_note") %></p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-tag"><%= t(".install.native_tag") %></span>
+            <h3><%= t(".install.native_title") %></h3>
+            <p><%= t(".install.native_body") %></p>
+            <div class="install-links">
+              <% if AndroidApp.zapstore_published? %>
+                <a class="button button-primary" href="<%= AndroidApp.zapstore_url %>" rel="noopener"><%= t(".install.zapstore") %></a>
+              <% end %>
+              <a class="button" href="<%= AndroidApp.obtainium_url %>"><%= t(".install.obtainium") %></a>
+              <a class="button" href="<%= AndroidApp.github_releases_url %>" rel="noopener"><%= t(".install.github") %></a>
+            </div>
+            <a class="install-more" href="<%= android_app_path %>"><%= t(".install.more") %></a>
+          </article>
         </div>
       </section>
 

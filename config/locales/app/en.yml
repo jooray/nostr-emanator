@@ -25,13 +25,15 @@ en:
     show:
       title: Emanator for Android
       intro: The same Emanator, as a native app. Everything you do in one shows up in the other, because both talk to this server.
+      web_app: You do not need it, though. The web app added to your home screen works just as well, on iPhone and iPad too.
       features:
         native_picker: Attach photos and files with the phone's own picker, or share them into Emanator from any app.
-        compression: Photos are resized and stripped of location and camera metadata on the phone, before they are uploaded.
+        compression: Photos and videos are shrunk on the phone before they are uploaded. Photos lose location and camera metadata. Videos become H.264 at no more than 30 frames per second, without location metadata.
         signer: Approve logins and pairings in Amber on the same phone, no QR code scanning.
         local: Lists open instantly from the copy kept on the phone, then refresh.
       version_html: Current version %{version}
       zapstore: Get it on Zapstore
+      github: Download on GitHub
       download: Download the APK
       obtainium: Add to Obtainium for automatic updates
       fingerprint: Signing certificate SHA-256

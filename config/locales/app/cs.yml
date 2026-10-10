@@ -23,13 +23,15 @@ cs:
     show:
       title: Emanator pro Android
       intro: Tentýž Emanator jako nativní aplikace. Co uděláš v jedné, uvidíš i ve druhé, protože obě pracují s tímto serverem.
+      web_app: Nepotřebuješ ji. Webová aplikace přidaná na plochu funguje stejně dobře, i na iPhonu a iPadu.
       features:
         native_picker: Fotky a soubory připojuješ přes výběr souborů v telefonu, nebo je do Emanatoru sdílíš z libovolné aplikace.
-        compression: Fotky se ještě v telefonu zmenší a zbaví údajů o poloze a fotoaparátu, teprve pak se nahrají.
+        compression: Fotky a videa se zmenší ještě v telefonu, teprve pak se nahrají. Fotky přijdou o údaje o poloze a fotoaparátu. Videa se překódují do H.264 s nejvýše 30 snímky za sekundu a bez údajů o poloze.
         signer: Přihlášení a párování potvrdíš v Amberu na stejném telefonu, bez skenování QR kódu.
         local: Seznamy se otevřou hned z kopie v telefonu a pak se obnoví.
       version_html: Aktuální verze %{version}
       zapstore: Stáhnout ze Zapstore
+      github: Stáhnout z GitHubu
       download: Stáhnout APK
       obtainium: Přidat do Obtainium pro automatické aktualizace
       fingerprint: SHA-256 podpisového certifikátu

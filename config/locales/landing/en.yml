@@ -102,3 +102,23 @@ en:
         bundle_saving: Separately the three cost 35,000 sats.
         fine: If billing is ever unreachable, scheduling and publishing keep working.
         terms_html: 'Trial, refunds, privacy and support: <a href="https://cypherpunk.today/terms/">the terms page</a>.'
+      install:
+        title: "Put it on your home screen."
+        lead: "Emanator is a web app you can install. It opens in its own window and has every feature, on iPhone, iPad, Android and desktop. No app store needed."
+        web_tag: "Web app"
+        web_title: "One app for every device."
+        web_body: "The installed web app is the full Emanator: scheduling, reposts, the calendar, replies, DMs, media uploads and AI writing. It updates itself when a new version comes out."
+        ios_label: "iPhone and iPad"
+        ios_steps: "Open Emanator in Safari, tap Share, then Add to Home Screen."
+        android_label: "Android"
+        android_steps: "In Chrome, open the menu and tap Add to Home screen or Install app."
+        desktop_label: "Desktop"
+        desktop_steps: "In Chrome or Edge, click the install icon in the address bar. In Safari on a Mac, choose File, then Add to Dock."
+        signer_note: "Amber, the signer, runs only on Android. On an iPhone or iPad, use any signer that supports NIP-46 remote signing."
+        native_tag: "Optional"
+        native_title: "Prefer a native Android app?"
+        native_body: "There is one. It does the same things and uses the same server, so you can switch between it and the web at any time."
+        zapstore: "Get it on Zapstore"
+        obtainium: "Add to Obtainium"
+        github: "Download on GitHub"
+        more: "More about the Android app"

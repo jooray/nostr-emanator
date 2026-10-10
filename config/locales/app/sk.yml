@@ -23,13 +23,15 @@ sk:
     show:
       title: Emanator pre Android
       intro: Ten istý Emanator ako natívna aplikácia. Čo urobíš v jednej, uvidíš aj v druhej, pretože obe pracujú s týmto serverom.
+      web_app: Nepotrebuješ ju. Webová aplikácia pridaná na plochu funguje rovnako dobre, aj na iPhone a iPade.
       features:
         native_picker: Fotky a súbory pripájaš cez výber súborov v telefóne alebo ich do Emanatora zdieľaš z hocijakej aplikácie.
-        compression: Fotky sa ešte v telefóne zmenšia a zbavia údajov o polohe a fotoaparáte, až potom sa nahrajú.
+        compression: Fotky a videá sa zmenšia ešte v telefóne, až potom sa nahrajú. Fotky prídu o údaje o polohe a fotoaparáte. Videá sa prekódujú do H.264 s najviac 30 snímkami za sekundu a bez údajov o polohe.
         signer: Prihlásenie a párovanie potvrdíš v Amberi na tom istom telefóne, bez skenovania QR kódu.
         local: Zoznamy sa otvoria hneď z kópie v telefóne a potom sa obnovia.
       version_html: Aktuálna verzia %{version}
       zapstore: Stiahnuť zo Zapstore
+      github: Stiahnuť z GitHubu
       download: Stiahnuť APK
       obtainium: Pridať do Obtainium pre automatické aktualizácie
       fingerprint: SHA-256 podpisového certifikátu

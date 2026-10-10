@@ -19,6 +19,14 @@ class AppParityWebTest < ActionDispatch::IntegrationTest
 
     get android_app_path
     assert_response :success
+    # Published on Zapstore and GitHub even when this server hosts no APK.
+    assert_select "a[href='#{AndroidApp.github_releases_url}']"
+    assert_select "a[href='#{AndroidApp.obtainium_url}']"
+    assert_select "a[href='#{AndroidApp.zapstore_url}']"
+
+    get root_path
+    assert_select "#install a[href='#{AndroidApp.obtainium_url}']"
+    assert_select "#install a[href='#{android_app_path}']"
   end
 
   def test_signed_in_pages_carry_the_android_app_banner_once_released
