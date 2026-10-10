@@ -1127,6 +1127,10 @@
           var(--surface-solid);
       }
 
+      .install-card-primary {
+        border-color: var(--amber);
+      }
+
       .install-steps {
         display: grid;
         gap: 0.9rem;
@@ -1627,13 +1631,13 @@
         </div>
       </section>
 
-      <section class="section shell" id="install" aria-labelledby="install-title">
+      <section class="section shell" id="install" aria-labelledby="install-title"<%= ' data-android' if @android_visitor %>>
         <div class="section-heading">
-          <h2 id="install-title"><%= t(".install.title") %></h2>
-          <p><%= t(".install.lead") %></p>
+          <h2 id="install-title"><%= @android_visitor ? t(".install.android_title") : t(".install.title") %></h2>
+          <p><%= @android_visitor ? t(".install.android_lead") : t(".install.lead") %></p>
         </div>
-        <div class="install-grid">
-          <article class="feature-card install-card">
+        <% web_card = capture do %>
+          <article class="feature-card<%= ' install-card' unless @android_visitor %>" id="install-web">
             <span class="feature-tag"><%= t(".install.web_tag") %></span>
             <h3><%= t(".install.web_title") %></h3>
             <p><%= t(".install.web_body") %></p>
@@ -1644,10 +1648,18 @@
             </ul>
             <p class="install-note"><%= t(".install.signer_note") %></p>
           </article>
-          <article class="feature-card">
-            <span class="feature-tag"><%= t(".install.native_tag") %></span>
-            <h3><%= t(".install.native_title") %></h3>
-            <p><%= t(".install.native_body") %></p>
+        <% end %>
+        <% native_card = capture do %>
+          <article class="feature-card<%= ' install-card install-card-primary' if @android_visitor %>" id="install-native">
+            <% if @android_visitor %>
+              <span class="feature-tag"><%= t(".install.native_android_tag") %></span>
+              <h3><%= t(".install.native_android_title") %></h3>
+              <p><%= t(".install.native_android_body") %></p>
+            <% else %>
+              <span class="feature-tag"><%= t(".install.native_tag") %></span>
+              <h3><%= t(".install.native_title") %></h3>
+              <p><%= t(".install.native_body") %></p>
+            <% end %>
             <div class="install-links">
               <% if AndroidApp.zapstore_published? %>
                 <a class="button button-primary" href="<%= AndroidApp.zapstore_url %>" rel="noopener"><%= t(".install.zapstore") %></a>
@@ -1655,8 +1667,20 @@
               <a class="button" href="<%= AndroidApp.obtainium_url %>"><%= t(".install.obtainium") %></a>
               <a class="button" href="<%= AndroidApp.github_releases_url %>" rel="noopener"><%= t(".install.github") %></a>
             </div>
+            <% if @android_visitor %>
+              <p class="install-note"><%= t(".install.web_too") %></p>
+            <% end %>
             <a class="install-more" href="<%= android_app_path %>"><%= t(".install.more") %></a>
           </article>
+        <% end %>
+        <div class="install-grid">
+          <% if @android_visitor %>
+            <%= native_card %>
+            <%= web_card %>
+          <% else %>
+            <%= web_card %>
+            <%= native_card %>
+          <% end %>
         </div>
       </section>
 

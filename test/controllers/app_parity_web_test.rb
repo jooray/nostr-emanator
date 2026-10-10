@@ -29,6 +29,25 @@ class AppParityWebTest < ActionDispatch::IntegrationTest
     assert_select "#install a[href='#{android_app_path}']"
   end
 
+  def test_the_landing_install_section_leads_with_the_native_app_on_android
+    get root_path, headers: { "User-Agent" => "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Safari/604.1" }
+    assert_includes response.headers["Vary"], "User-Agent"
+    assert_select "#install:not([data-android])"
+    assert_select "#install .install-grid > article:first-child#install-web"
+    assert_select "#install-native", text: /#{Regexp.escape(I18n.t("home.index.install.native_title"))}/
+
+    get root_path, headers: { "User-Agent" => "Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36" }
+    assert_includes response.headers["Vary"], "User-Agent"
+    assert_select "#install[data-android]"
+    assert_select "#install .install-grid > article:first-child#install-native" do
+      assert_select ".install-links a.button-primary:first-child[href='#{AndroidApp.zapstore_url}']"
+      assert_select ".install-links a[href='#{AndroidApp.obtainium_url}']"
+      assert_select ".install-links a[href='#{AndroidApp.github_releases_url}']"
+      assert_select "p", text: I18n.t("home.index.install.web_too")
+    end
+    assert_select "#install-web"
+  end
+
   def test_signed_in_pages_carry_the_android_app_banner_once_released
     create_signed_in_user
 

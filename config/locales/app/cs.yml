@@ -23,7 +23,7 @@ cs:
     show:
       title: Emanator pro Android
       intro: Tentýž Emanator jako nativní aplikace. Co uděláš v jedné, uvidíš i ve druhé, protože obě pracují s tímto serverem.
-      web_app: Nepotřebuješ ji. Webová aplikace přidaná na plochu funguje stejně dobře, i na iPhonu a iPadu.
+      web_app: "Nechceš nic instalovat? Funguje i webová aplikace přidaná na plochu. Tak běží Emanator i na iPhonu a iPadu."
       features:
         native_picker: Fotky a soubory připojuješ přes výběr souborů v telefonu, nebo je do Emanatoru sdílíš z libovolné aplikace.
         compression: Fotky a videa se zmenší ještě v telefonu, teprve pak se nahrají. Fotky přijdou o údaje o poloze a fotoaparátu. Videa se překódují do H.264 s nejvýše 30 snímky za sekundu a bez údajů o poloze.

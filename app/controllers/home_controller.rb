@@ -7,8 +7,14 @@ class HomeController < ApplicationController
   skip_before_action :authenticate_user!, only: :index
 
   def index
-    redirect_to dashboard_path if user_signed_in?
-    # Otherwise render app/views/home/index.html.erb (no app chrome).
+    return redirect_to dashboard_path if user_signed_in?
+
+    # The #install section leads with the native app for Android visitors and
+    # with the installable web app for everyone else. The page varies by user
+    # agent, so no shared cache may hand one variant to the other.
+    @android_visitor = request.user_agent.to_s.match?(/Android/i)
+    response.headers["Vary"] = [response.headers["Vary"], "User-Agent"].compact_blank.join(", ")
+    # Render app/views/home/index.html.erb (no app chrome).
   end
 
   layout false
