@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_09_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_10_220000) do
   create_table "accounts", force: :cascade do |t|
     t.text "about"
     t.text "app_privkey"
@@ -227,6 +227,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_09_140000) do
     t.index ["expires_at"], name: "index_nostr_auth_sessions_on_expires_at"
     t.index ["flow", "expires_at"], name: "index_nostr_auth_sessions_on_flow_and_expires_at"
     t.index ["session_id"], name: "index_nostr_auth_sessions_on_session_id", unique: true
+  end
+
+  create_table "nostr_profiles", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "display_name"
+    t.datetime "fetched_at", null: false
+    t.string "name"
+    t.string "nip05"
+    t.text "picture_url"
+    t.string "pubkey_hex", limit: 64, null: false
+    t.datetime "updated_at", null: false
+    t.index ["pubkey_hex"], name: "index_nostr_profiles_on_pubkey_hex", unique: true
   end
 
   create_table "posts", force: :cascade do |t|

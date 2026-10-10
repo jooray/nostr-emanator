@@ -75,6 +75,8 @@ sk:
       saved: Nastavenia nahrávania fotiek sú uložené.
 
   js:
+    mention:
+      own: Tvoj účet
     media_compress:
       video_compressing: "Prekódovávam %{name}… %{percent} %"
       compressing: Zmenšujem %{name}…

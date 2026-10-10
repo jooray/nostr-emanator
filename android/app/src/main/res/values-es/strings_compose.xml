@@ -90,4 +90,5 @@
     <string name="schedule_max_delay_help">Los reposts se repartirán al azar dentro de esta ventana de tiempo después de que se publique la publicación original.</string>
     <string name="schedule_approve_note">Después de tocar Firmar y programar, aprueba la firma en tu app de firma (Amber). La publicación saldrá a su hora sin que hagas nada más.</string>
     <string name="schedule_sign">Firmar y programar</string>
+    <string name="compose_mention_own">Tu cuenta</string>
 </resources>

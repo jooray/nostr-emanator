@@ -77,6 +77,8 @@ en:
       saved: Photo upload settings saved.
 
   js:
+    mention:
+      own: Your account
     media_compress:
       video_compressing: "Re-encoding %{name}… %{percent}%"
       compressing: Shrinking %{name}…

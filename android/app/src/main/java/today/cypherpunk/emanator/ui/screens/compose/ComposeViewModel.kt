@@ -23,6 +23,7 @@ import today.cypherpunk.emanator.data.ApiException
 import today.cypherpunk.emanator.data.AppJson
 import today.cypherpunk.emanator.data.Billing
 import today.cypherpunk.emanator.data.MediaSettings
+import today.cypherpunk.emanator.data.Mention
 import today.cypherpunk.emanator.data.SseEvent
 import today.cypherpunk.emanator.media.ImageShrinker
 import today.cypherpunk.emanator.media.TextInsert
@@ -94,6 +95,10 @@ class ComposeViewModel(
 ) : ViewModel() {
     val ui = MutableStateFlow(ComposeUi(editing = postId != null))
     val text = MutableStateFlow(TextFieldValue(""))
+    /** @mention suggestions for the word being typed (Mentions::Search on the server). */
+    val mentions = MutableStateFlow<List<Mention>>(emptyList())
+    private var mentionToken: MentionRules.Token? = null
+    private var mentionJob: Job? = null
     private val events = Channel<ComposeEvent>(Channel.BUFFERED)
     val navigation = events.receiveAsFlow()
 
@@ -180,6 +185,39 @@ class ComposeViewModel(
         val changed = value.text != text.value.text
         text.value = value
         if (changed) saveDraft(value.text)
+        lookUpMention(value)
+    }
+
+    private fun lookUpMention(value: TextFieldValue) {
+        val token = MentionRules.token(value)
+        if (token == mentionToken) return
+        mentionToken = token
+        mentionJob?.cancel()
+        if (token == null) {
+            mentions.value = emptyList()
+            return
+        }
+        mentionJob = viewModelScope.launch {
+            delay(150)
+            val found = runCatching { container.api.mentions(token.query).mentions }.getOrDefault(emptyList())
+            if (mentionToken == token) mentions.value = found
+        }
+    }
+
+    /** Inserts `nostr:npub…` in place of the "@word"; the server tags it as a mention. */
+    fun pickMention(mention: Mention) {
+        val token = mentionToken ?: return
+        val updated = MentionRules.apply(text.value, token, mention.mention)
+        mentionJob?.cancel()
+        mentionToken = null
+        mentions.value = emptyList()
+        text.value = updated
+        saveDraft(updated.text)
+    }
+
+    fun dismissMentions() {
+        mentionJob?.cancel()
+        mentions.value = emptyList()
     }
 
     private fun setText(value: String, save: Boolean = true) {

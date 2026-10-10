@@ -75,6 +75,8 @@ es:
       saved: Ajustes de subida de fotos guardados.
 
   js:
+    mention:
+      own: Tu cuenta
     media_compress:
       video_compressing: "Recodificando %{name}… %{percent} %"
       compressing: Reduciendo %{name}…

@@ -49,6 +49,9 @@ Rails.application.routes.draw do
     end
   end
 
+  # @mention lookup for the composer (Mentions::Search)
+  get "mentions", to: "mentions#index", as: :mentions
+
   # Interactions (global view across all accounts)
   resources :interactions, only: [:index]
 
@@ -157,6 +160,7 @@ Rails.application.routes.draw do
       get "dashboard", to: "dashboard#show"
       get "calendar", to: "calendar#index"
       get "interactions", to: "interactions#index"
+      get "mentions", to: "mentions#index"
 
       resources :accounts, only: %i[index show update destroy] do
         member do

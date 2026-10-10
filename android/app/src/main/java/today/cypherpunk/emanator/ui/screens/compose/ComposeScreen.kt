@@ -60,6 +60,9 @@ import today.cypherpunk.emanator.ui.components.MediaStrip
 import today.cypherpunk.emanator.ui.components.NoteBlock
 import today.cypherpunk.emanator.ui.components.PrimaryButton
 import today.cypherpunk.emanator.ui.components.Rule
+import today.cypherpunk.emanator.ui.components.Avatar
+import today.cypherpunk.emanator.data.Mention
+import androidx.compose.ui.text.style.TextOverflow
 import today.cypherpunk.emanator.ui.components.SecondaryButton
 import today.cypherpunk.emanator.ui.components.SlugButton
 import today.cypherpunk.emanator.ui.components.SlugTone
@@ -157,6 +160,8 @@ fun ComposeScreen(nav: NavHostController, accountId: Long?, postId: Long?, fromS
                 enabled = ui.canEdit,
                 modifier = Modifier.fillMaxWidth().heightIn(min = 200.dp),
             )
+            val mentions by vm.mentions.collectAsState()
+            if (mentions.isNotEmpty()) MentionSuggestions(mentions, vm::pickMention)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     pluralStringResource(R.plurals.compose_chars, text.text.length, text.text.length),
@@ -383,3 +388,31 @@ private fun BillingNote(billing: Billing, onBilling: () -> Unit) {
 }
 
 private const val MAX_PICK = 10
+
+/** Who "@word" could mean: your own accounts first, then people they follow. */
+@Composable
+private fun MentionSuggestions(mentions: List<Mention>, onPick: (Mention) -> Unit) {
+    val c = LocalConsole.current
+    Column(Modifier.fillMaxWidth().border(1.dp, c.rule).background(c.panel)) {
+        mentions.forEachIndexed { index, m ->
+            if (index > 0) Rule()
+            Row(
+                Modifier.fillMaxWidth().clickable { onPick(m) }.padding(horizontal = 12.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                Avatar(m.pictureUrl, m.label, 32.dp)
+                Column(Modifier.weight(1f)) {
+                    Text(m.label, style = Type.bodyDense, color = c.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    val sub = when {
+                        m.own -> stringResource(R.string.compose_mention_own)
+                        !m.nip05.isNullOrBlank() -> m.nip05
+                        !m.name.isNullOrBlank() -> "@${m.name}"
+                        else -> m.npub.take(20) + "…"
+                    }
+                    Text(sub, style = Type.small, color = c.muted, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
+            }
+        }
+    }
+}

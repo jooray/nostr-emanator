@@ -44,7 +44,20 @@ class CacheRefreshDispatcher
            InteractionsCache.claim_inflight(:reactions, "pubkey_#{pubkey}")
           SyncReactionsJob.perform_later(pubkey)
         end
+
+        refresh_follow_profiles(pubkey)
       end
+    end
+
+    # Names of the people an account follows, for the @mention lookup. Checked
+    # at most twice a day per account; the job itself only fetches what is
+    # missing or stale, so a check with nothing to do costs one query.
+    def refresh_follow_profiles(pubkey, force: false)
+      return if InteractionsCache.contacts_missing?(pubkey)
+      return unless force || Rails.cache.write("follow_profiles_checked_#{pubkey}", true, expires_in: 12.hours, unless_exist: true)
+      return unless InteractionsCache.claim_inflight(:follow_profiles, "pubkey_#{pubkey}")
+
+      SyncFollowProfilesJob.perform_later(pubkey)
     end
 
     def refresh_profiles(pubkeys)

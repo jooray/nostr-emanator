@@ -22,7 +22,10 @@ class SyncContactListsJob < ApplicationJob
     # under the cross-account rule, a follow by one account promotes the sender
     # for every other account this user manages. Only on an actual change: this
     # runs on staleness, not on edits.
-    reclassify(pubkey_hex) if changed
+    if changed
+      reclassify(pubkey_hex)
+      CacheRefreshDispatcher.refresh_follow_profiles(pubkey_hex, force: true)
+    end
   ensure
     InteractionsCache.release_inflight(:contacts, "pubkey_#{pubkey_hex}")
   end

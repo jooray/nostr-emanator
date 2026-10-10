@@ -132,7 +132,8 @@ module Nostr
         display_name: profile_data["display_name"] || profile_data["displayName"] || profile_data["name"],
         username: profile_data["name"] || profile_data["username"],
         about: profile_data["about"],
-        picture: profile_data["picture"]
+        picture: profile_data["picture"],
+        nip05: profile_data["nip05"]
       }
     rescue JSON::ParserError
       nil

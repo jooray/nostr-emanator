@@ -93,4 +93,5 @@
     <string name="schedule_max_delay_help">Reposty se náhodně rozprostřou v tomto časovém okně po zveřejnění původního příspěvku.</string>
     <string name="schedule_approve_note">Po klepnutí na Podepsat a naplánovat schval podpis ve svém podepisovači (Amber). Příspěvek se pak v daný čas zveřejní bez tebe.</string>
     <string name="schedule_sign">Podepsat a naplánovat</string>
+    <string name="compose_mention_own">Tvůj účet</string>
 </resources>

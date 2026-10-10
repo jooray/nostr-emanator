@@ -43,6 +43,22 @@ class ApiSerializer
     }
   end
 
+  # One @mention suggestion (Mentions::Search::Result). `mention` is the text
+  # the composer inserts.
+  def mention(result)
+    {
+      pubkey: result.pubkey_hex,
+      npub: result.npub,
+      name: result.name,
+      display_name: result.display_name,
+      nip05: result.nip05,
+      picture_url: result.picture_url,
+      own: result.own,
+      account_id: result.account_id,
+      mention: "nostr:#{result.npub}"
+    }
+  end
+
   def account_mini(account)
     return nil unless account
 

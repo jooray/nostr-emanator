@@ -90,4 +90,5 @@
     <string name="schedule_max_delay_help">Reposts will be randomly spread out within this time window after the original post is published.</string>
     <string name="schedule_approve_note">After you tap Sign &amp; schedule, approve the signature in your signer app (Amber). The post publishes at its time without you.</string>
     <string name="schedule_sign">Sign &amp; schedule</string>
+    <string name="compose_mention_own">Your account</string>
 </resources>

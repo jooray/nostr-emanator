@@ -74,3 +74,6 @@ application.register("elapsed", ElapsedController)
 
 import AndroidAppBannerController from "./android_app_banner_controller"
 application.register("android-app-banner", AndroidAppBannerController)
+
+import MentionController from "./mention_controller"
+application.register("mention", MentionController)

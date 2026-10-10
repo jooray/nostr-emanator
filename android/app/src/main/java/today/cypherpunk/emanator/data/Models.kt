@@ -570,3 +570,22 @@ data class PairingStatus(
 
 @Serializable
 data class OkMessage(val ok: Boolean = true, val message: String? = null)
+
+/** One @mention suggestion (ApiSerializer#mention). [mention] is the text to insert. */
+@Serializable
+data class Mention(
+    val pubkey: String,
+    val npub: String,
+    val name: String? = null,
+    @SerialName("display_name") val displayName: String? = null,
+    val nip05: String? = null,
+    @SerialName("picture_url") val pictureUrl: String? = null,
+    val own: Boolean = false,
+    @SerialName("account_id") val accountId: Long? = null,
+    val mention: String,
+) {
+    val label: String get() = displayName?.takeIf { it.isNotBlank() } ?: name?.takeIf { it.isNotBlank() } ?: npub.take(16)
+}
+
+@Serializable
+data class MentionsResponse(val mentions: List<Mention> = emptyList())

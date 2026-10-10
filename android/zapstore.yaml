@@ -1,9 +1,11 @@
 # Zapstore listing for the Android app. Releases come from GitHub: each one
 # carries the signed emanator-<version>.apk (see AGENTS.md, "Releasing the app").
 name: Emanator
-summary: Schedule and write Nostr posts across all your accounts
+summary: Schedule posts and handle replies and messages for all your Nostr accounts
 description: |
   Emanator schedules posts and reposts for every Nostr account you manage. Write with AI help that knows each account's voice, attach photos, pick a time, and approve the signature in Amber. Emanator publishes at that time.
+
+  It also gathers the replies, mentions and private messages of every account in one place, so you can answer as the right identity. Type @ in a post to mention one of your accounts or someone they follow.
 
   The app works with the same Emanator server as the website, so drafts, schedules, private messages and settings are shared between them.
 

@@ -46,6 +46,7 @@
         </button>
       </div>
     </div>
+    <div class="relative" data-controller="mention" data-mention-url-value="<%= mentions_path %>">
     <%= form.text_area :content,
       rows: 8,
       class: "w-full rounded-lg border border-gray-200 dark:border-[color:var(--color-rule-dark)] bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-4 py-3 text-sm placeholder-gray-400 dark:placeholder-gray-500 resize-y",
@@ -54,8 +55,10 @@
         media_preview_target: "content",
         content_builder_target: "textarea",
         blossom_upload_target: "textarea",
-        action: "input->media-preview#updatePreview dragover->blossom-upload#dragover dragleave->blossom-upload#dragleave drop->blossom-upload#drop paste->blossom-upload#paste"
+        mention_target: "textarea",
+        action: "input->media-preview#updatePreview input->mention#input keydown->mention#keydown blur->mention#blur dragover->blossom-upload#dragover dragleave->blossom-upload#dragleave drop->blossom-upload#drop paste->blossom-upload#paste"
       } %>
+    </div>
 
     <%= file_field_tag :file, multiple: true, class: "hidden",
       data: { blossom_upload_target: "input", action: "change->blossom-upload#picked" } %>

@@ -38,6 +38,7 @@ class EmanatorApi(val client: ApiClient) {
     suspend fun dashboard(): Dashboard = client.get("/api/v1/dashboard")
     suspend fun calendar(from: String, to: String): CalendarResponse = client.get("/api/v1/calendar", mapOf("from" to from, "to" to to))
     suspend fun interactions(): InteractionsResponse = client.get("/api/v1/interactions")
+    suspend fun mentions(query: String): MentionsResponse = client.get("/api/v1/mentions", mapOf("q" to query))
 
     // --- accounts -------------------------------------------------------------------
     suspend fun accounts(): AccountsResponse = client.get("/api/v1/accounts")
