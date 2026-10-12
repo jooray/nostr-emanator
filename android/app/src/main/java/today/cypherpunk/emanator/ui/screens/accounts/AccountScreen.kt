@@ -225,7 +225,12 @@ private fun LazyListScope.recentEvents(state: Loadable<EventsResponse>) {
                 verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
                 RichContent(event.content, event.references, style = Type.bodyDense, maxLines = 10)
-                Text(Times.dateTime(Times.parse(event.createdAt)), style = Type.mono, color = LocalConsole.current.muted)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(Times.dateTime(Times.parse(event.createdAt)), style = Type.mono, color = LocalConsole.current.muted, modifier = Modifier.weight(1f))
+                    event.nevent?.let { nevent ->
+                        SlugButton(stringResource(R.string.action_copy_nevent), { Links.copy(context, "nevent", nevent) })
+                    }
+                }
             }
             Rule()
         }

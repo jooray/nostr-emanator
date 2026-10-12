@@ -47,6 +47,7 @@
     <string name="action_refresh">Actualizar</string>
     <string name="action_copy">Copiar</string>
     <string name="action_copied">Copiado</string>
+    <string name="action_copy_nevent">Copiar nevent</string>
     <string name="action_share">Compartir</string>
     <string name="action_back">Atrás</string>
     <string name="action_done">Hecho</string>

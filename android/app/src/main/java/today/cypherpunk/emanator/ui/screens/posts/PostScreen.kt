@@ -291,6 +291,9 @@ fun PostScreen(nav: NavHostController, id: Long) {
                     if (p.nevent != null || p.viewerUrl != null) {
                         SecondaryButton(stringResource(R.string.action_open_in_client), { Links.openNostr(context, p.nevent, p.viewerUrl) })
                     }
+                    p.nevent?.let { nevent ->
+                        SecondaryButton(stringResource(R.string.action_copy_nevent), { Links.copy(context, "nevent", nevent) })
+                    }
                     SecondaryButton(stringResource(R.string.post_delete), { confirm = Confirm.Delete }, danger = true, enabled = !busy)
                 }
             }

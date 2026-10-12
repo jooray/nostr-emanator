@@ -1,0 +1,9 @@
+<%# The button holds only text: clipboard#flash swaps textContent for "Copied". %>
+<% if nevent.present? %>
+  <button type="button"
+          class="text-xs text-gray-400 dark:text-gray-500 hover:text-amber-600 dark:hover:text-amber-400 underline underline-offset-2 transition-colors"
+          data-controller="clipboard"
+          data-clipboard-text-value="<%= nevent %>"
+          data-action="clipboard#copy"
+          title="<%= nevent %>"><%= t("shared.copy_nevent.label") %></button>
+<% end %>

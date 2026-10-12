@@ -168,6 +168,8 @@ sk:
       logged_out: Odhlásenie prebehlo.
 
   shared:
+    copy_nevent:
+      label: Kopírovať nevent
     locale_switcher:
       label: Jazyk
     qr_phishing_warning:

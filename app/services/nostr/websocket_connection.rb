@@ -91,6 +91,16 @@ module Nostr
       end
     end
 
+    # --- Client -> server frames ---------------------------------------------
+    #
+    # Client frames MUST be masked (RFC 6455 §5.3). Every write is bounded by the
+    # caller's deadline via write_all.
+
+    OPCODE_TEXT = 0x1
+    OPCODE_CLOSE = 0x8
+    OPCODE_PING = 0x9
+    OPCODE_PONG = 0xA
+
     # Encode a text payload as a masked client->server WebSocket frame.
     # Every relay client in the app frames through here (RFC 6455 requires the
     # mask to be unpredictable, hence SecureRandom rather than rand).
@@ -125,9 +135,11 @@ module Nostr
       write_all(socket, frame_text(data), deadline)
     end
 
-    # Answer a server ping (opcode 0x9) with a pong carrying the same payload.
-    def self.send_pong(socket, payload, deadline)
-      write_all(socket, frame(0xA, payload), deadline)
+    # Keepalive: relays that enforce ping/pong drop clients that never answer.
+    # Same signature as lievik's WebsocketConnection#send_pong so the shared
+    # frame reader stays byte-identical across both apps.
+    def self.send_pong(socket, payload, deadline:)
+      write_all(socket, frame(OPCODE_PONG, payload), deadline)
     end
 
     # Seconds to hand IO.select: clamped to [0, cap] so a deadline that has just

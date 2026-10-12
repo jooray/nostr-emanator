@@ -28,6 +28,16 @@
     <string name="upload_shrinking">Shrinking %1$s…</string>
     <string name="upload_encoding">Re-encoding %1$s… %2$d%%</string>
     <string name="upload_shrunk">%1$s: %2$s → %3$s</string>
+    <string name="upload_kept_original">%1$s: kept the original (%2$s, re-encoded was %3$s)</string>
+    <string name="video_choice_title">Upload this video as it is?</string>
+    <string name="video_choice_help">It is small enough to go up without converting. Re-encoding makes an MP4 every Nostr client plays and drops location and camera metadata.</string>
+    <string name="video_choice_smaller">Smaller of the two</string>
+    <string name="video_choice_smaller_help">Re-encode, then upload whichever file is smaller</string>
+    <string name="video_choice_reencode">Re-encoded video</string>
+    <string name="video_choice_reencode_help">Always upload the converted MP4</string>
+    <string name="video_choice_original">Original video</string>
+    <string name="video_choice_original_help">Upload the file untouched, metadata included</string>
+    <string name="video_choice_cancel">Don\'t upload</string>
     <string name="upload_uploading">Uploading…</string>
     <string name="upload_done">%1$s attached.</string>
     <string name="upload_done_shrunk">%1$s attached (%2$s → %3$s).</string>

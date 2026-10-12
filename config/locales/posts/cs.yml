@@ -1,6 +1,16 @@
 cs:
   posts:
     form:
+      video_choice:
+        title: Nahrát video tak, jak je?
+        help: Je dost malé na to, aby šlo nahoru bez konverze. Překódování vyrobí MP4, které přehraje každý Nostr klient, a odstraní polohu i údaje o fotoaparátu.
+        smaller: Menší z obou
+        smaller_help: Překóduje se a nahraje se ten soubor, který je menší
+        reencode: Překódované video
+        reencode_help: Vždy nahrát zkonvertované MP4
+        original: Původní video
+        original_help: Nahrát soubor beze změny, i s metadaty
+        cancel: Nenahrávat
       errors_prevented:
         one: "%{count} chyba zabránila uložení tohoto příspěvku:"
         few: "%{count} chyby zabránily uložení tohoto příspěvku:"

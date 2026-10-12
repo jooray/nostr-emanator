@@ -34,7 +34,7 @@ class BlossomUploadTest < ActiveSupport::TestCase
   end
 
   def test_size_cap_is_enforced_at_25_megabytes
-    assert_equal 25.megabytes, BlossomUpload::MAX_BYTES
+    assert_equal 99.megabytes, BlossomUpload::MAX_BYTES
 
     assert build_upload(byte_size: BlossomUpload::MAX_BYTES).valid?
     refute build_upload(byte_size: BlossomUpload::MAX_BYTES + 1).valid?

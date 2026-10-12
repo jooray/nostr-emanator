@@ -27,6 +27,8 @@ data class PreparedFile(
     val mime: String,
     val originalBytes: Long,
     val shrunk: Boolean,
+    /** Set when a video was re-encoded but the original went up, being smaller. */
+    val reencodedBytes: Long? = null,
 ) {
     val bytes: Long get() = file.length()
 }
@@ -37,7 +39,8 @@ data class PreparedFile(
  * recompressed after the upload. Re-encoding also drops every byte of metadata
  * (EXIF, GPS position, camera serials). The rules are in [ShrinkRules].
  *
- * Videos are handed to [VideoShrinker]; `onProgress` reports its percent.
+ * Videos are handed to [VideoShrinker]; `onProgress` reports its percent, and
+ * `videoMode` is the user's answer when [VideoRules.offerChoice] asked.
  *
  * Any failure falls back to the original bytes: shrinking must never block an
  * upload.
@@ -46,16 +49,40 @@ class ImageShrinker(private val context: Context) {
     private val dir = File(context.cacheDir, "uploads").apply { mkdirs() }
     private val videos = VideoShrinker(context)
 
-    suspend fun prepare(uri: Uri, settings: MediaSettings, onProgress: (Int) -> Unit = {}): PreparedFile {
+    suspend fun prepare(
+        uri: Uri,
+        settings: MediaSettings,
+        videoMode: VideoRules.Mode = VideoRules.Mode.Reencode,
+        onProgress: (Int) -> Unit = {},
+    ): PreparedFile {
         val copied = copyIn(uri)
         if (!VideoRules.shouldShrink(copied.mime, settings)) return shrinkImage(copied, settings)
+        if (videoMode == VideoRules.Mode.Original) return copied
         onProgress(0)
         val shrunk = try {
             videos.shrink(copied.file, copied.name, settings, onProgress)
         } catch (e: Exception) {
             null
+        } ?: return copied
+        if (!VideoRules.useReencoded(videoMode, copied.bytes, shrunk.bytes)) {
+            shrunk.file.delete()
+            return copied.copy(reencodedBytes = shrunk.bytes)
         }
-        return if (shrunk != null) shrunk.also { copied.file.delete() } else copied
+        copied.file.delete()
+        return shrunk
+    }
+
+    /** Type and size of a picked file, without copying it; size is null when unknown. */
+    suspend fun describe(uri: Uri): Pair<String, Long?> = withContext(Dispatchers.IO) {
+        val resolver = context.contentResolver
+        val name = displayName(uri) ?: "file"
+        val mime = ShrinkRules.normalize(resolver.getType(uri)).ifBlank { guessMime(name) }
+        val size = if (uri.scheme == "file") uri.path?.let { File(it).length() } else runCatching {
+            resolver.query(uri, arrayOf(OpenableColumns.SIZE), null, null, null)?.use { cursor ->
+                if (cursor.moveToFirst() && !cursor.isNull(0)) cursor.getLong(0) else null
+            }
+        }.getOrNull()
+        mime to size
     }
 
     private suspend fun copyIn(uri: Uri): PreparedFile = withContext(Dispatchers.IO) {

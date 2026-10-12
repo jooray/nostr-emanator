@@ -96,6 +96,20 @@ class AccountsRendersTest < ActionDispatch::IntegrationTest
     assert_match "Re-connect Signer", response.body
   end
 
+  def test_recent_events_offer_the_nevent
+    account = paired_account
+    event = { "id" => SecureRandom.hex(32), "pubkey" => account.pubkey_hex, "content" => "hello", "created_at" => 1.hour.ago.to_i }
+    events_fetcher = Object.new
+    events_fetcher.define_singleton_method(:fetch) { |*, **| [ event ] }
+    stub_new(Nostr::EventFetcher, events_fetcher) do
+      get recent_events_account_path(account)
+    end
+    assert_response :success
+    nevent = Nostr::KeyConverter.hex_to_nevent(event["id"], author_pubkey: account.pubkey_hex)
+    assert_match %(data-clipboard-text-value="#{nevent}"), response.body
+    assert_match "Copy nevent", response.body
+  end
+
   def test_recent_frames
     account = paired_account
     events_fetcher = Object.new

@@ -29,7 +29,8 @@
   <div data-controller="media-preview blossom-upload"
        data-blossom-upload-upload-url-value="<%= account_blossom_uploads_path(@account) %>"
        data-blossom-upload-media-value="<%= MediaPreferences.for(current_user).to_json %>"
-       data-blossom-upload-video-compress-url-value="<%= asset_path("video_compress.js") %>">
+       data-blossom-upload-video-compress-url-value="<%= asset_path("video_compress.js") %>"
+       data-blossom-upload-max-bytes-value="<%= BlossomUpload::MAX_BYTES %>">
     <div class="flex items-center justify-between mb-2">
       <label for="post_content" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
         <%= t(".content") %>
@@ -62,6 +63,31 @@
 
     <%= file_field_tag :file, multiple: true, class: "hidden",
       data: { blossom_upload_target: "input", action: "change->blossom-upload#picked" } %>
+
+    <%# Asked before a video that could go up unconverted is re-encoded. Buttons, not a
+        method="dialog" form: this already sits inside the post's form. %>
+    <dialog data-blossom-upload-target="videoChoice"
+            aria-labelledby="video-choice-title"
+            class="m-auto w-[min(32rem,calc(100vw-2rem))] border rule bg-white dark:bg-gray-900 p-6 text-gray-900 dark:text-gray-100 backdrop:bg-black/50">
+      <h2 id="video-choice-title" class="text-base font-medium"><%= t(".video_choice.title") %></h2>
+      <p class="mt-2 text-sm text-gray-600 dark:text-gray-300 break-words" data-blossom-upload-target="videoChoiceNames"></p>
+      <p class="mt-2 text-sm text-gray-500 dark:text-gray-400"><%= t(".video_choice.help") %></p>
+      <div class="mt-5 flex flex-col gap-2">
+        <% { "smaller" => true, "reencode" => false, "original" => false }.each do |mode, primary| %>
+          <button type="button" <%= "autofocus" if primary %>
+                  data-action="blossom-upload#chooseVideoMode"
+                  data-blossom-upload-mode-param="<%= mode %>"
+                  class="w-full px-4 py-2 text-left text-sm rounded-lg border transition-colors cursor-pointer <%= primary ? "border-amber-600 bg-amber-600 text-white hover:bg-amber-700" : "border-gray-300 dark:border-[color:var(--color-rule-dark)] hover:bg-gray-50 dark:hover:bg-gray-800" %>">
+            <span class="block font-medium"><%= t(".video_choice.#{mode}") %></span>
+            <span class="block text-xs <%= primary ? "text-amber-50" : "text-gray-500 dark:text-gray-400" %>"><%= t(".video_choice.#{mode}_help") %></span>
+          </button>
+        <% end %>
+        <button type="button" data-action="blossom-upload#chooseVideoMode" data-blossom-upload-mode-param=""
+                class="mt-1 self-end px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 cursor-pointer">
+          <%= t(".video_choice.cancel") %>
+        </button>
+      </div>
+    </dialog>
 
     <!-- Media Preview -->
     <div data-media-preview-target="preview"></div>

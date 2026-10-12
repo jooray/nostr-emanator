@@ -80,6 +80,7 @@ en:
     mention:
       own: Your account
     media_compress:
+      kept_original: "%{name}: kept the original (%{original}, re-encoded was %{reencoded})"
       video_compressing: "Re-encoding %{name}… %{percent}%"
       compressing: Shrinking %{name}…
       saved: "%{name}: %{from} → %{to}"

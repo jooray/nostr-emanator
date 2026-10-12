@@ -29,7 +29,7 @@ data class ReleaseInfo(
 
 @Serializable
 data class Limits(
-    @SerialName("upload_max_bytes") val uploadMaxBytes: Long = 25L * 1024 * 1024,
+    @SerialName("upload_max_bytes") val uploadMaxBytes: Long = 99L * 1024 * 1024,
     @SerialName("personality_max_length") val personalityMaxLength: Int = 8000,
 )
 

@@ -27,6 +27,16 @@
     <string name="upload_shrinking">Zmenšujem %1$s…</string>
     <string name="upload_encoding">Prekódovávam %1$s… %2$d %%</string>
     <string name="upload_shrunk">%1$s: %2$s → %3$s</string>
+    <string name="upload_kept_original">%1$s: ponechaný originál (%2$s, prekódované malo %3$s)</string>
+    <string name="video_choice_title">Nahrať video tak, ako je?</string>
+    <string name="video_choice_help">Je dosť malé na to, aby išlo hore bez konverzie. Prekódovanie vyrobí MP4, ktoré prehrá každý Nostr klient, a odstráni polohu aj údaje o fotoaparáte.</string>
+    <string name="video_choice_smaller">Menšie z dvoch</string>
+    <string name="video_choice_smaller_help">Prekóduje sa a nahrá sa ten súbor, ktorý je menší</string>
+    <string name="video_choice_reencode">Prekódované video</string>
+    <string name="video_choice_reencode_help">Vždy nahrať skonvertované MP4</string>
+    <string name="video_choice_original">Pôvodné video</string>
+    <string name="video_choice_original_help">Nahrať súbor bez zmeny, aj s metadátami</string>
+    <string name="video_choice_cancel">Nenahrávať</string>
     <string name="upload_uploading">Nahráva sa…</string>
     <string name="upload_done">%1$s je priložený.</string>
     <string name="upload_done_shrunk">%1$s je priložený (%2$s → %3$s).</string>

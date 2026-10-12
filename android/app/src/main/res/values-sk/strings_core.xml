@@ -48,6 +48,7 @@
     <string name="action_refresh">Obnoviť</string>
     <string name="action_copy">Kopírovať</string>
     <string name="action_copied">Skopírované</string>
+    <string name="action_copy_nevent">Kopírovať nevent</string>
     <string name="action_share">Zdieľať</string>
     <string name="action_back">Späť</string>
     <string name="action_done">Hotovo</string>

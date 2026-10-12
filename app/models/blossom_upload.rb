@@ -5,7 +5,9 @@
 # in BlossomUploadJob, and the browser polls this row for progress.
 class BlossomUpload < ApplicationRecord
   # M5: hard limits enforced before the request body is ever read into memory.
-  MAX_BYTES = 25.megabytes
+  # Just under nginx's client_max_body_size (100M), which also has to fit the
+  # multipart framing. A video this size or smaller may go up unconverted.
+  MAX_BYTES = 99.megabytes
   ALLOWED_CONTENT_TYPES = %w[application/pdf].freeze
   ALLOWED_CONTENT_TYPE_PREFIXES = %w[image/ video/ audio/].freeze
 

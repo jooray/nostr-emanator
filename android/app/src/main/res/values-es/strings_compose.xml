@@ -26,6 +26,16 @@
     <string name="upload_shrinking">Reduciendo %1$s…</string>
     <string name="upload_encoding">Recodificando %1$s… %2$d %%</string>
     <string name="upload_shrunk">%1$s: %2$s → %3$s</string>
+    <string name="upload_kept_original">%1$s: se mantiene el original (%2$s, recodificado pesaba %3$s)</string>
+    <string name="video_choice_title">¿Subir este vídeo tal cual?</string>
+    <string name="video_choice_help">Es lo bastante pequeño para subirlo sin convertir. Recodificarlo genera un MP4 que reproduce cualquier cliente de Nostr y elimina la ubicación y los datos de la cámara.</string>
+    <string name="video_choice_smaller">El más pequeño de los dos</string>
+    <string name="video_choice_smaller_help">Se recodifica y se sube el archivo que pese menos</string>
+    <string name="video_choice_reencode">Vídeo recodificado</string>
+    <string name="video_choice_reencode_help">Subir siempre el MP4 convertido</string>
+    <string name="video_choice_original">Vídeo original</string>
+    <string name="video_choice_original_help">Subir el archivo sin cambios, con sus metadatos</string>
+    <string name="video_choice_cancel">No subir</string>
     <string name="upload_uploading">Subiendo…</string>
     <string name="upload_done">%1$s adjuntado.</string>
     <string name="upload_done_shrunk">%1$s adjuntado (%2$s → %3$s).</string>

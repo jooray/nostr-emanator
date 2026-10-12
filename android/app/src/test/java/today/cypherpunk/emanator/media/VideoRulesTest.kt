@@ -42,4 +42,22 @@ class VideoRulesTest {
         assertEquals("clip.mp4", VideoRules.rename("clip.MOV"))
         assertEquals("video.mp4", VideoRules.rename(null))
     }
+
+    @Test fun aChoiceIsOfferedOnlyForAClipThatCouldGoUpAsItIs() {
+        val on = MediaSettings()
+        val limit = 99L * 1024 * 1024
+        assertTrue(VideoRules.offerChoice("video/mp4", 40L * 1024 * 1024, on, limit))
+        assertTrue(VideoRules.offerChoice("video/mp4", limit, on, limit))
+        assertFalse(VideoRules.offerChoice("video/mp4", limit + 1, on, limit))
+        assertFalse(VideoRules.offerChoice("video/mp4", 1024, on.copy(videoCompress = false), limit))
+        assertFalse(VideoRules.offerChoice("image/jpeg", 1024, on, limit))
+    }
+
+    @Test fun smallerKeepsWhicheverCopyIsSmaller() {
+        assertTrue(VideoRules.useReencoded(VideoRules.Mode.Smaller, 1000, 999))
+        assertFalse(VideoRules.useReencoded(VideoRules.Mode.Smaller, 1000, 1000))
+        assertFalse(VideoRules.useReencoded(VideoRules.Mode.Smaller, 1000, 2000))
+        assertTrue(VideoRules.useReencoded(VideoRules.Mode.Reencode, 1000, 2000))
+        assertFalse(VideoRules.useReencoded(VideoRules.Mode.Original, 1000, 10))
+    }
 }

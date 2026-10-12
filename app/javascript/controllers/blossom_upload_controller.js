@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 import { t } from "../lib/i18n"
 import { shouldShrink, shrinkImage, humanSize } from "../lib/media_compress"
-import { shouldShrinkVideo } from "../lib/video_rules"
+import { offerVideoChoice, shouldShrinkVideo, useReencoded } from "../lib/video_rules"
 
 // Uploads dropped/selected/pasted files to the account's Blossom server and
 // inserts the returned URL at the cursor in the post textarea.
@@ -12,10 +12,11 @@ import { shouldShrinkVideo } from "../lib/video_rules"
 // While anything is in flight the form's submit buttons are disabled so the
 // draft can't be saved without the media URL.
 export default class extends Controller {
-  static targets = ["textarea", "input", "status"]
+  static targets = ["textarea", "input", "status", "videoChoice", "videoChoiceNames"]
   // media: the user's MediaPreferences (shared with the Android app).
   // videoCompressUrl: the separately bundled video encoder, loaded on demand.
-  static values = { uploadUrl: String, media: Object, videoCompressUrl: String }
+  // maxBytes: the server's upload limit; a video within it may go up unconverted.
+  static values = { uploadUrl: String, media: Object, videoCompressUrl: String, maxBytes: Number }
 
   POLL_INTERVAL = 1000
   POLL_TIMEOUT = 6 * 60 * 1000
@@ -94,9 +95,16 @@ export default class extends Controller {
       this.insertionPoint = ta.selectionStart ?? ta.value.length
     }
 
+    // A video that could go up as it is asks how (once for the whole batch).
+    // Cancelling drops those videos; everything else still uploads.
+    const askable = files.filter((file) => this.canReencodeVideo() && offerVideoChoice(file, this.mediaValue, this.maxBytesValue))
+    const videoMode = askable.length ? await this.askVideoMode(askable) : null
+    const queued = videoMode ? files : files.filter((file) => !askable.includes(file))
+    if (queued.length === 0) return
+
     // H10: one file failing must not drop the rest — run them all and report
     // per-file errors.
-    const results = await Promise.all(files.map((file) => this.uploadOne(file)))
+    const results = await Promise.all(queued.map((file) => this.uploadOne(file, askable.includes(file) ? videoMode : "reencode")))
     const errors = results.filter((r) => r && r.error)
 
     if (this.uploads.size === 0) {
@@ -108,12 +116,12 @@ export default class extends Controller {
     }
   }
 
-  async uploadOne(file) {
+  async uploadOne(file, videoMode) {
     const key = this.nextKey++
     this.track(key, file.name, t("js.blossom_upload.uploading"))
 
     try {
-      file = await this.shrink(key, file)
+      file = await this.shrink(key, file, videoMode)
       const formData = new FormData()
       formData.append("file", file)
 
@@ -139,8 +147,8 @@ export default class extends Controller {
   // Photos are shrunk (and stripped of metadata) before they leave the
   // browser — see lib/media_compress.js. A failure here never blocks the
   // upload: the original goes up instead.
-  async shrink(key, file) {
-    if (shouldShrinkVideo(file, this.mediaValue)) return this.shrinkVideo(key, file)
+  async shrink(key, file, videoMode) {
+    if (shouldShrinkVideo(file, this.mediaValue)) return this.shrinkVideo(key, file, videoMode)
     if (!shouldShrink(file, this.mediaValue)) return file
 
     this.track(key, file.name, t("js.media_compress.compressing", { name: file.name }))
@@ -158,9 +166,9 @@ export default class extends Controller {
   }
 
   // Videos too, where the browser has WebCodecs; elsewhere, and on any error,
-  // the original goes up.
-  async shrinkVideo(key, file) {
-    if (!this.hasVideoCompressUrlValue) return file
+  // the original goes up. `videoMode` is the answer to askVideoMode.
+  async shrinkVideo(key, file, videoMode) {
+    if (!this.hasVideoCompressUrlValue || videoMode === "original") return file
 
     this.track(key, file.name, t("js.media_compress.video_compressing", { name: file.name, percent: 0 }))
     try {
@@ -170,6 +178,12 @@ export default class extends Controller {
           name: file.name, percent: Math.min(99, Math.round(progress * 100))
         }))
       })
+      if (result.shrunk && !useReencoded(videoMode, file.size, result.file.size)) {
+        this.track(key, file.name, t("js.media_compress.kept_original", {
+          name: file.name, original: humanSize(file.size), reencoded: humanSize(result.file.size)
+        }))
+        return file
+      }
       if (result.shrunk) {
         this.track(key, file.name, t("js.media_compress.saved", {
           name: result.file.name, from: humanSize(result.original), to: humanSize(result.file.size)
@@ -179,6 +193,27 @@ export default class extends Controller {
     } catch {
       return file
     }
+  }
+
+  // Only worth asking where this browser can re-encode at all.
+  canReencodeVideo() {
+    return this.hasVideoCompressUrlValue && this.hasVideoChoiceTarget &&
+      typeof VideoEncoder !== "undefined" && typeof VideoDecoder !== "undefined"
+  }
+
+  // Resolves to "original" | "reencode" | "smaller", or null when dismissed.
+  askVideoMode(files) {
+    const dialog = this.videoChoiceTarget
+    this.videoChoiceNamesTarget.textContent = files.map((f) => `${f.name} (${humanSize(f.size)})`).join(", ")
+    return new Promise((resolve) => {
+      dialog.addEventListener("close", () => resolve(dialog.returnValue || null), { once: true })
+      dialog.returnValue = ""
+      dialog.showModal()
+    })
+  }
+
+  chooseVideoMode({ params: { mode } }) {
+    this.videoChoiceTarget.close(mode || "")
   }
 
   async pollUntilDone(key, name, statusUrl) {

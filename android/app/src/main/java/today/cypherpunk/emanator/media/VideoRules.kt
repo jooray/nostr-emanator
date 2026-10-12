@@ -19,6 +19,9 @@ import kotlin.math.roundToLong
  *  - Audio is re-encoded to AAC (copied when nothing else changes).
  *  - No metadata (location, camera) is written.
  *  - Anything that cannot be re-encoded goes up as it is.
+ *  - A clip small enough to upload unconverted (within the server's upload
+ *    limit) asks first: the original, the re-encoded copy, or whichever of
+ *    the two comes out smaller.
  */
 object VideoRules {
     val BITS_PER_PIXEL = mapOf("small" to 0.05, "balanced" to 0.08, "high" to 0.12)
@@ -29,6 +32,19 @@ object VideoRules {
 
     fun shouldShrink(mime: String?, settings: MediaSettings): Boolean =
         settings.videoCompress && ShrinkRules.normalize(mime) in VIDEO_TYPES
+
+    /** The answers to that question, in the order they are offered. */
+    enum class Mode { Original, Reencode, Smaller }
+
+    fun offerChoice(mime: String?, bytes: Long, settings: MediaSettings, maxBytes: Long): Boolean =
+        shouldShrink(mime, settings) && maxBytes > 0 && bytes <= maxBytes
+
+    /** After re-encoding: true to upload the re-encoded copy, false for the original. */
+    fun useReencoded(mode: Mode, originalBytes: Long, reencodedBytes: Long): Boolean = when (mode) {
+        Mode.Original -> false
+        Mode.Smaller -> reencodedBytes < originalBytes
+        Mode.Reencode -> true
+    }
 
     /** Upright display size → output size, both sides even (H.264 needs it). */
     fun targetSize(width: Int, height: Int, resolution: Int): Pair<Int, Int> {

@@ -7,6 +7,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import today.cypherpunk.emanator.media.VideoRules
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.material3.AlertDialog
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -114,6 +118,8 @@ fun ComposeScreen(nav: NavHostController, accountId: Long?, postId: Long?, fromS
     val takePicture = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { ok ->
         captureUri?.let { if (ok) vm.attach(listOf(it)) }
     }
+
+    ui.videoChoice?.let { VideoChoiceDialog(it, vm::chooseVideoMode) }
 
     ConsoleScaffold(
         title = stringResource(if (postId != null) R.string.compose_title_edit else R.string.compose_title_new),
@@ -239,6 +245,36 @@ private fun AccountPicker(accounts: List<Account>, selected: Account?, enabled: 
     }
 }
 
+/** Asked before a video that could go up unconverted is re-encoded; mirrors the web composer. */
+@Composable
+private fun VideoChoiceDialog(choice: VideoChoice, onChoose: (VideoRules.Mode?) -> Unit) {
+    val c = LocalConsole.current
+    AlertDialog(
+        onDismissRequest = { onChoose(null) },
+        containerColor = c.panel,
+        title = { Text(stringResource(R.string.video_choice_title).uppercase(), style = Type.label, color = c.legend) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(choice.names.joinToString(", "), style = Type.bodyDense, color = c.text)
+                Text(stringResource(R.string.video_choice_help), style = Type.bodyDense, color = c.muted)
+                Spacer(Modifier.height(8.dp))
+                listOf(
+                    Triple(VideoRules.Mode.Smaller, R.string.video_choice_smaller, R.string.video_choice_smaller_help),
+                    Triple(VideoRules.Mode.Reencode, R.string.video_choice_reencode, R.string.video_choice_reencode_help),
+                    Triple(VideoRules.Mode.Original, R.string.video_choice_original, R.string.video_choice_original_help),
+                ).forEach { (mode, label, help) ->
+                    Column(Modifier.fillMaxWidth().clickable { onChoose(mode) }.padding(vertical = 10.dp)) {
+                        Text(stringResource(label), style = Type.body, color = if (mode == VideoRules.Mode.Smaller) Palette.amber else c.text)
+                        Text(stringResource(help), style = Type.bodyDense, color = c.muted)
+                    }
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = { SlugButton(stringResource(R.string.video_choice_cancel), { onChoose(null) }) },
+    )
+}
+
 @Composable
 private fun UploadStatus(line: UploadLine, onDismiss: () -> Unit) {
     val c = LocalConsole.current
@@ -247,6 +283,7 @@ private fun UploadStatus(line: UploadLine, onDismiss: () -> Unit) {
         UploadPhase.Shrinking -> stringResource(R.string.upload_shrinking, line.name)
         is UploadPhase.Encoding -> stringResource(R.string.upload_encoding, line.name, phase.percent)
         is UploadPhase.Shrunk -> stringResource(R.string.upload_shrunk, line.name, ShrinkRules.humanSize(phase.from), ShrinkRules.humanSize(phase.to))
+        is UploadPhase.KeptOriginal -> stringResource(R.string.upload_kept_original, line.name, ShrinkRules.humanSize(phase.original), ShrinkRules.humanSize(phase.reencoded))
         UploadPhase.Uploading -> "${line.name}: ${stringResource(R.string.upload_uploading)}"
         is UploadPhase.Step -> "${line.name}: ${phase.text}"
         is UploadPhase.Done -> if (phase.from != null && phase.to != null) {

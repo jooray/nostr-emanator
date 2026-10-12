@@ -4,7 +4,7 @@ require "fileutils"
 
 # Accepts one uploaded file for an account: validates it, stages the bytes on
 # disk, creates the BlossomUpload row and enqueues BlossomUploadJob. The web
-# composer and the native app both come through here, so the limits (25 MB,
+# composer and the native app both come through here, so the limits (99 MB,
 # the content-type allowlist, a paired signer) cannot differ between them.
 class BlossomUploadIntake
   Result = Struct.new(:upload, :error, :status, keyword_init: true) do

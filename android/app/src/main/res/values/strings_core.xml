@@ -55,6 +55,7 @@
     <string name="action_refresh">Refresh</string>
     <string name="action_copy">Copy</string>
     <string name="action_copied">Copied</string>
+    <string name="action_copy_nevent">Copy nevent</string>
     <string name="action_share">Share</string>
     <string name="action_back">Back</string>
     <string name="action_done">Done</string>

@@ -163,6 +163,8 @@ cs:
       logged_out: Odhlášen
 
   shared:
+    copy_nevent:
+      label: Kopírovat nevent
     locale_switcher:
       label: Jazyk
     qr_phishing_warning:

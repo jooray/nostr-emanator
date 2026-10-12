@@ -11,6 +11,9 @@
 //   * Audio is copied when it already is AAC, re-encoded to AAC otherwise.
 //   * No metadata tags (location, camera, software) are written.
 //   * Anything that cannot be re-encoded here goes up as it is.
+//   * A clip small enough to upload unconverted (within the server's upload
+//     limit) asks first: the original, the re-encoded copy, or whichever of the
+//     two comes out smaller.
 
 const VIDEO_TYPES = /^video\/(mp4|quicktime|webm|x-matroska|3gpp)$/
 
@@ -20,6 +23,20 @@ const MIN_BITRATE = 250_000
 
 export function shouldShrinkVideo(file, prefs) {
   return !!(prefs && prefs.video_compress && VIDEO_TYPES.test(file.type))
+}
+
+// The answers to that question, in the order they are offered.
+export const VIDEO_MODES = ["original", "reencode", "smaller"]
+
+export function offerVideoChoice(file, prefs, maxBytes) {
+  return shouldShrinkVideo(file, prefs) && maxBytes > 0 && file.size <= maxBytes
+}
+
+// After re-encoding: true to upload the re-encoded copy, false for the original.
+export function useReencoded(mode, originalBytes, reencodedBytes) {
+  if (mode === "original") return false
+  if (mode === "smaller") return reencodedBytes < originalBytes
+  return true
 }
 
 // Upright display size → output size, both sides even (H.264 needs it).

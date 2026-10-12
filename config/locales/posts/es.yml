@@ -1,6 +1,16 @@
 es:
   posts:
     form:
+      video_choice:
+        title: ¿Subir este vídeo tal cual?
+        help: Es lo bastante pequeño para subirlo sin convertir. Recodificarlo genera un MP4 que reproduce cualquier cliente de Nostr y elimina la ubicación y los datos de la cámara.
+        smaller: El más pequeño de los dos
+        smaller_help: Se recodifica y se sube el archivo que pese menos
+        reencode: Vídeo recodificado
+        reencode_help: Subir siempre el MP4 convertido
+        original: Vídeo original
+        original_help: Subir el archivo sin cambios, con sus metadatos
+        cancel: No subir
       errors_prevented:
         one: "%{count} error impidió guardar esta publicación:"
         other: "%{count} errores impidieron guardar esta publicación:"

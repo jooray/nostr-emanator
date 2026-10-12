@@ -1,6 +1,16 @@
 en:
   posts:
     form:
+      video_choice:
+        title: Upload this video as it is?
+        help: It is small enough to go up without converting. Re-encoding makes an MP4 every Nostr client plays and drops location and camera metadata.
+        smaller: Smaller of the two
+        smaller_help: Re-encode, then upload whichever file is smaller
+        reencode: Re-encoded video
+        reencode_help: Always upload the converted MP4
+        original: Original video
+        original_help: Upload the file untouched, metadata included
+        cancel: Don't upload
       errors_prevented:
         one: "%{count} error prevented this post from being saved:"
         other: "%{count} errors prevented this post from being saved:"

@@ -154,6 +154,8 @@ es:
       logged_out: Sesión cerrada correctamente
 
   shared:
+    copy_nevent:
+      label: Copiar nevent
     locale_switcher:
       label: Idioma
     qr_phishing_warning:

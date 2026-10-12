@@ -27,6 +27,7 @@ import today.cypherpunk.emanator.data.Mention
 import today.cypherpunk.emanator.data.SseEvent
 import today.cypherpunk.emanator.media.ImageShrinker
 import today.cypherpunk.emanator.media.TextInsert
+import today.cypherpunk.emanator.media.VideoRules
 
 /** One file on its way into the post. The UI words it; see [UploadPhase]. */
 data class UploadLine(val key: Int, val name: String, val phase: UploadPhase)
@@ -36,6 +37,8 @@ sealed interface UploadPhase {
     /** A video being re-encoded on the phone. */
     data class Encoding(val percent: Int) : UploadPhase
     data class Shrunk(val from: Long, val to: Long) : UploadPhase
+    /** "Smaller of the two" kept the original: re-encoding came out at [reencoded]. */
+    data class KeptOriginal(val original: Long, val reencoded: Long) : UploadPhase
     data object Uploading : UploadPhase
     /** The server's own progress line ("Approve the upload in your signer app…"). */
     data class Step(val text: String) : UploadPhase
@@ -44,7 +47,7 @@ sealed interface UploadPhase {
     data object TimedOut : UploadPhase
     data class Failed(val message: String?) : UploadPhase
 
-    val inFlight get() = this is Shrinking || this is Encoding || this is Shrunk || this is Uploading || this is Step
+    val inFlight get() = this is Shrinking || this is Encoding || this is Shrunk || this is KeptOriginal || this is Uploading || this is Step
 }
 
 /** Where an AI request stands. `phase` is "connecting", "generating", "humanizing" or "refining". */
@@ -60,6 +63,9 @@ data class AiState(
     val replaced: String? = null,
 )
 
+/** Videos that could go up unconverted, waiting for the user to say how. */
+data class VideoChoice(val names: List<String>, val uris: List<Uri>, val askable: Set<Uri>, val accountId: Long)
+
 data class ComposeUi(
     val loading: Boolean = true,
     val accounts: List<Account> = emptyList(),
@@ -68,6 +74,7 @@ data class ComposeUi(
     val canEdit: Boolean = true,
     val restoredDraft: Boolean = false,
     val uploads: List<UploadLine> = emptyList(),
+    val videoChoice: VideoChoice? = null,
     val saving: Boolean = false,
     val error: String? = null,
     val ai: AiState = AiState(),
@@ -247,16 +254,40 @@ class ComposeViewModel(
         if (uris.isEmpty()) return
         // Every URL from this batch goes where the caret was when it started.
         if (!ui.value.uploading) insertionPoint = text.value.selection.start
-        uris.forEach { uri ->
-            val key = nextKey++
-            track(UploadLine(key, shrinker.displayName(uri) ?: uri.lastPathSegment ?: "…", UploadPhase.Shrinking))
-            viewModelScope.launch { uploadOne(key, uri, accountId) }
+        viewModelScope.launch {
+            // A video that could go up as it is asks how (once for the whole batch).
+            val settings = mediaSettings()
+            val limit = limit()
+            val askable = uris.filter { uri ->
+                val (mime, size) = runCatching { shrinker.describe(uri) }.getOrNull() ?: return@filter false
+                size != null && VideoRules.offerChoice(mime, size, settings, limit)
+            }.toSet()
+            if (askable.isEmpty()) start(uris, accountId) { VideoRules.Mode.Reencode }
+            else ui.update { it.copy(videoChoice = VideoChoice(askable.map(::nameOf), uris, askable, accountId)) }
         }
     }
 
-    private suspend fun uploadOne(key: Int, uri: Uri, accountId: Long) {
+    /** The answer to [VideoChoice]; null drops those videos, the rest still upload. */
+    fun chooseVideoMode(mode: VideoRules.Mode?) {
+        val choice = ui.value.videoChoice ?: return
+        ui.update { it.copy(videoChoice = null) }
+        val uris = if (mode == null) choice.uris.filterNot { it in choice.askable } else choice.uris
+        start(uris, choice.accountId) { uri -> if (uri in choice.askable && mode != null) mode else VideoRules.Mode.Reencode }
+    }
+
+    private fun start(uris: List<Uri>, accountId: Long, modeOf: (Uri) -> VideoRules.Mode) {
+        uris.forEach { uri ->
+            val key = nextKey++
+            track(UploadLine(key, nameOf(uri), UploadPhase.Shrinking))
+            viewModelScope.launch { uploadOne(key, uri, accountId, modeOf(uri)) }
+        }
+    }
+
+    private fun nameOf(uri: Uri) = shrinker.displayName(uri) ?: uri.lastPathSegment ?: "…"
+
+    private suspend fun uploadOne(key: Int, uri: Uri, accountId: Long, videoMode: VideoRules.Mode) {
         val prepared = try {
-            shrinker.prepare(uri, mediaSettings()) { percent -> setPhase(key, UploadPhase.Encoding(percent)) }
+            shrinker.prepare(uri, mediaSettings(), videoMode) { percent -> setPhase(key, UploadPhase.Encoding(percent)) }
         } catch (e: Exception) {
             setPhase(key, UploadPhase.Failed(e.message))
             return
@@ -264,6 +295,7 @@ class ComposeViewModel(
         rename(key, prepared.name)
         try {
             if (prepared.shrunk) setPhase(key, UploadPhase.Shrunk(prepared.originalBytes, prepared.bytes))
+            prepared.reencodedBytes?.let { setPhase(key, UploadPhase.KeptOriginal(prepared.bytes, it)) }
             val limit = limit()
             if (prepared.bytes > limit) {
                 setPhase(key, UploadPhase.TooLarge(prepared.bytes, limit))
@@ -422,6 +454,6 @@ class ComposeViewModel(
 
     private companion object {
         const val POLL_TIMEOUT_MS = 6 * 60 * 1000L
-        const val DEFAULT_LIMIT = 25L * 1024 * 1024
+        const val DEFAULT_LIMIT = 99L * 1024 * 1024
     }
 }
