@@ -23,6 +23,7 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
+import okio.buffer
 import java.io.File
 import java.io.IOException
 
@@ -179,11 +180,36 @@ class ApiClient(
     suspend inline fun <reified T> deleteFor(path: String, query: Map<String, Any?> = emptyMap()): T =
         call(request(path, query).delete().build(), serializer<T>())!!
 
-    suspend fun upload(path: String, file: File, fileName: String, mimeType: String): Upload {
+    /** `onProgress` gets the percent of the file sent so far (0..100), on the I/O thread. */
+    suspend fun upload(path: String, file: File, fileName: String, mimeType: String, onProgress: (Int) -> Unit = {}): Upload {
+        val body = ProgressBody(file.asRequestBody(mimeType.toMediaType()), onProgress)
         val multipart = MultipartBody.Builder().setType(MultipartBody.FORM)
-            .addFormDataPart("file", fileName, file.asRequestBody(mimeType.toMediaType()))
+            .addFormDataPart("file", fileName, body)
             .build()
         return call(request(path).post(multipart).build(), Upload.serializer())!!
+    }
+
+    /** Counts bytes as OkHttp writes them, reporting each new whole percent once. */
+    private class ProgressBody(private val inner: RequestBody, private val onProgress: (Int) -> Unit) : RequestBody() {
+        override fun contentType() = inner.contentType()
+        override fun contentLength() = inner.contentLength()
+
+        override fun writeTo(sink: okio.BufferedSink) {
+            val total = contentLength().coerceAtLeast(1)
+            var sent = 0L
+            var reported = -1
+            val counting = object : okio.ForwardingSink(sink) {
+                override fun write(source: okio.Buffer, byteCount: Long) {
+                    super.write(source, byteCount)
+                    sent += byteCount
+                    val percent = (sent * 100 / total).toInt()
+                    if (percent != reported) { reported = percent; onProgress(percent) }
+                }
+            }
+            val buffered = counting.buffer()
+            inner.writeTo(buffered)
+            buffered.flush()
+        }
     }
 
     /**

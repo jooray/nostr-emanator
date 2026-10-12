@@ -13,7 +13,7 @@ description: |
 
   Logins and account pairing go through Amber on the same phone, with no QR code to scan. Without a signer on the phone, the QR code for one on another device shows up right away. Emanator never sees your private key.
 
-  Videos are re-encoded on the phone too (H.264, at most 30 frames per second, without location metadata), and on a tablet a side rail replaces the bottom bar.
+  Videos are re-encoded on the phone too (H.264, at most 30 frames per second, without location metadata). A clip small enough to upload as it is lets you choose: the original, the re-encoded copy, or whichever of the two is smaller. On a tablet a side rail replaces the bottom bar.
 
   Available in English, Slovak, Czech and Spanish. Open source: self-hosters can point the app at their own server.
 website: https://emanator.cypherpunk.today

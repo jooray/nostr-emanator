@@ -30,24 +30,32 @@ import today.cypherpunk.emanator.media.TextInsert
 import today.cypherpunk.emanator.media.VideoRules
 
 /** One file on its way into the post. The UI words it; see [UploadPhase]. */
-data class UploadLine(val key: Int, val name: String, val phase: UploadPhase)
+data class UploadLine(val key: Int, val name: String, val phase: UploadPhase, val note: UploadNote? = null)
+
+/** What shrinking did, shown under the file's progress bar. */
+sealed interface UploadNote {
+    data class Shrunk(val from: Long, val to: Long) : UploadNote
+    /** "Smaller of the two" kept the original: re-encoding came out at [reencoded]. */
+    data class KeptOriginal(val original: Long, val reencoded: Long) : UploadNote
+}
 
 sealed interface UploadPhase {
-    data object Shrinking : UploadPhase
+    /** Copying the file in, and shrinking it if it is a photo. */
+    data object Preparing : UploadPhase
     /** A video being re-encoded on the phone. */
     data class Encoding(val percent: Int) : UploadPhase
-    data class Shrunk(val from: Long, val to: Long) : UploadPhase
-    /** "Smaller of the two" kept the original: re-encoding came out at [reencoded]. */
-    data class KeptOriginal(val original: Long, val reencoded: Long) : UploadPhase
+    /** Sending the file to Emanator. */
+    data class Sending(val percent: Int) : UploadPhase
+    /** Emanator passes it on to the media server. */
     data object Uploading : UploadPhase
     /** The server's own progress line ("Approve the upload in your signer app…"). */
     data class Step(val text: String) : UploadPhase
-    data class Done(val from: Long?, val to: Long?) : UploadPhase
+    data object Done : UploadPhase
     data class TooLarge(val size: Long, val limit: Long) : UploadPhase
     data object TimedOut : UploadPhase
     data class Failed(val message: String?) : UploadPhase
 
-    val inFlight get() = this is Shrinking || this is Encoding || this is Shrunk || this is KeptOriginal || this is Uploading || this is Step
+    val inFlight get() = this is Preparing || this is Encoding || this is Sending || this is Uploading || this is Step
 }
 
 /** Where an AI request stands. `phase` is "connecting", "generating", "humanizing" or "refining". */
@@ -278,7 +286,7 @@ class ComposeViewModel(
     private fun start(uris: List<Uri>, accountId: Long, modeOf: (Uri) -> VideoRules.Mode) {
         uris.forEach { uri ->
             val key = nextKey++
-            track(UploadLine(key, nameOf(uri), UploadPhase.Shrinking))
+            track(UploadLine(key, nameOf(uri), UploadPhase.Preparing))
             viewModelScope.launch { uploadOne(key, uri, accountId, modeOf(uri)) }
         }
     }
@@ -286,26 +294,34 @@ class ComposeViewModel(
     private fun nameOf(uri: Uri) = shrinker.displayName(uri) ?: uri.lastPathSegment ?: "…"
 
     private suspend fun uploadOne(key: Int, uri: Uri, accountId: Long, videoMode: VideoRules.Mode) {
+        val settings = mediaSettings()
         val prepared = try {
-            shrinker.prepare(uri, mediaSettings(), videoMode) { percent -> setPhase(key, UploadPhase.Encoding(percent)) }
+            shrinker.prepare(uri, settings, videoMode) { percent -> setPhase(key, UploadPhase.Encoding(percent)) }
         } catch (e: Exception) {
             setPhase(key, UploadPhase.Failed(e.message))
             return
         }
         rename(key, prepared.name)
+        when {
+            prepared.reencodedBytes != null -> setNote(key, UploadNote.KeptOriginal(prepared.bytes, prepared.reencodedBytes))
+            prepared.shrunk -> setNote(key, UploadNote.Shrunk(prepared.originalBytes, prepared.bytes))
+        }
         try {
-            if (prepared.shrunk) setPhase(key, UploadPhase.Shrunk(prepared.originalBytes, prepared.bytes))
-            prepared.reencodedBytes?.let { setPhase(key, UploadPhase.KeptOriginal(prepared.bytes, it)) }
             val limit = limit()
             if (prepared.bytes > limit) {
                 setPhase(key, UploadPhase.TooLarge(prepared.bytes, limit))
                 return
             }
+            setPhase(key, UploadPhase.Sending(0))
+            val started = container.api.upload(accountId, prepared.file, prepared.name, prepared.mime) { percent ->
+                setPhase(key, UploadPhase.Sending(percent.coerceAtMost(99)))
+            }
             setPhase(key, UploadPhase.Uploading)
-            val started = container.api.upload(accountId, prepared.file, prepared.name, prepared.mime)
             val url = poll(key, started.id) ?: return
             insertUrl(url)
-            setPhase(key, UploadPhase.Done(prepared.originalBytes.takeIf { prepared.shrunk }, prepared.bytes.takeIf { prepared.shrunk }))
+            setPhase(key, UploadPhase.Done)
+            delay(DONE_VISIBLE_MS)
+            dismissUpload(key)
         } catch (e: ApiException) {
             setPhase(key, UploadPhase.Failed(e.message))
         } finally {
@@ -355,6 +371,10 @@ class ComposeViewModel(
 
     private fun setPhase(key: Int, phase: UploadPhase) = ui.update { s ->
         s.copy(uploads = s.uploads.map { if (it.key == key) it.copy(phase = phase) else it })
+    }
+
+    private fun setNote(key: Int, note: UploadNote) = ui.update { s ->
+        s.copy(uploads = s.uploads.map { if (it.key == key) it.copy(note = note) else it })
     }
 
     private fun rename(key: Int, name: String) = ui.update { s ->
@@ -454,6 +474,7 @@ class ComposeViewModel(
 
     private companion object {
         const val POLL_TIMEOUT_MS = 6 * 60 * 1000L
+        const val DONE_VISIBLE_MS = 4000L
         const val DEFAULT_LIMIT = 99L * 1024 * 1024
     }
 }

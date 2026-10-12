@@ -78,7 +78,7 @@ sk:
     mention:
       own: Tvoj účet
     media_compress:
-      kept_original: "%{name}: ponechaný originál (%{original}, prekódované malo %{reencoded})"
-      video_compressing: "Prekódovávam %{name}… %{percent} %"
-      compressing: Zmenšujem %{name}…
-      saved: "%{name}: %{from} → %{to}"
+      compressing: Zmenšujem fotku…
+      video_compressing: "Prekódovávam… %{percent} %"
+      saved: "%{from} → %{to}"
+      kept_original: "Ostal originál (%{original}), prekódovaná kópia vyšla väčšia: %{reencoded}."

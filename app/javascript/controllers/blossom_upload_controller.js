@@ -11,8 +11,13 @@ import { offerVideoChoice, shouldShrinkVideo, useReencoded } from "../lib/video_
 // and can show step-level progress ("Approve the upload in your signer app…").
 // While anything is in flight the form's submit buttons are disabled so the
 // draft can't be saved without the media URL.
+//
+// Each file gets a row under the textarea (the `list` target): its name, what
+// is happening now, a progress bar (with a percentage where one is known:
+// re-encoding and sending to Emanator; moving otherwise), and a note such as
+// the size saved. Finished rows fade out; failed ones stay until dismissed.
 export default class extends Controller {
-  static targets = ["textarea", "input", "status", "videoChoice", "videoChoiceNames"]
+  static targets = ["textarea", "input", "list", "videoChoice", "videoChoiceNames"]
   // media: the user's MediaPreferences (shared with the Android app).
   // videoCompressUrl: the separately bundled video encoder, loaded on demand.
   // maxBytes: the server's upload limit; a video within it may go up unconverted.
@@ -22,7 +27,7 @@ export default class extends Controller {
   POLL_TIMEOUT = 6 * 60 * 1000
 
   connect() {
-    this.uploads = new Map() // key -> { name, message, error }
+    this.uploads = new Map() // key -> { name, message, percent, note, state: "active" | "done" | "failed" }
     this.nextKey = 0
     // A file dropped anywhere outside the textarea (still inside the window)
     // would otherwise navigate the browser to it and lose the draft — block
@@ -32,7 +37,7 @@ export default class extends Controller {
     window.addEventListener("drop", this.preventWindowDrop)
     // Belt and braces: warn if the page is closed mid-upload.
     this.beforeUnload = (event) => {
-      if (this.uploads.size === 0) return
+      if (this.activeCount() === 0) return
       event.preventDefault()
       event.returnValue = ""
     }
@@ -90,7 +95,7 @@ export default class extends Controller {
     // Remember where the caret was when the upload started; every inserted URL
     // goes there and moves the point forward, so results land in order even
     // when the user keeps typing (or a later file finishes first).
-    if (this.uploads.size === 0) {
+    if (this.activeCount() === 0) {
       const ta = this.textareaTarget
       this.insertionPoint = ta.selectionStart ?? ta.value.length
     }
@@ -102,46 +107,53 @@ export default class extends Controller {
     const queued = videoMode ? files : files.filter((file) => !askable.includes(file))
     if (queued.length === 0) return
 
-    // H10: one file failing must not drop the rest — run them all and report
-    // per-file errors.
-    const results = await Promise.all(queued.map((file) => this.uploadOne(file, askable.includes(file) ? videoMode : "reencode")))
-    const errors = results.filter((r) => r && r.error)
-
-    if (this.uploads.size === 0) {
-      if (errors.length > 0) {
-        this.setStatus(errors.map((e) => `${e.name}: ${e.error}`).join(" · "), true)
-      } else {
-        this.setStatus("", false)
-      }
-    }
+    // H10: one file failing must not drop the rest — each reports on its own row.
+    await Promise.all(queued.map((file) => this.uploadOne(file, askable.includes(file) ? videoMode : "reencode")))
   }
 
   async uploadOne(file, videoMode) {
     const key = this.nextKey++
-    this.track(key, file.name, t("js.blossom_upload.uploading"))
+    this.track(key, { name: file.name, message: t("js.blossom_upload.preparing"), percent: null })
 
     try {
       file = await this.shrink(key, file, videoMode)
-      const formData = new FormData()
-      formData.append("file", file)
-
-      const response = await fetch(this.uploadUrlValue, {
-        method: "POST",
-        headers: { "X-CSRF-Token": this.csrfToken(), "Accept": "application/json" },
-        body: formData // no Content-Type: browser sets the multipart boundary
-      })
-
-      const data = await response.json().catch(() => ({}))
-      if (!response.ok) throw new Error(data.error || t("js.blossom_upload.failed_status", { status: response.status }))
-
-      const url = await this.pollUntilDone(key, file.name, data.status_url || `/blossom_uploads/${data.id}`)
+      const data = await this.send(key, file)
+      this.track(key, { message: t("js.blossom_upload.uploading"), percent: null })
+      const url = await this.pollUntilDone(key, data.status_url || `/blossom_uploads/${data.id}`)
       this.insertAtCursor(url)
-      this.untrack(key)
-      return { name: file.name }
+      this.track(key, { message: t("js.blossom_upload.attached"), percent: 100, state: "done" })
+      setTimeout(() => this.untrack(key), 4000)
     } catch (error) {
-      this.untrack(key)
-      return { name: file.name, error: error.message || t("js.blossom_upload.failed") }
+      this.track(key, { message: error.message || t("js.blossom_upload.failed"), percent: null, state: "failed" })
     }
+  }
+
+  // The POST to Emanator, as XHR rather than fetch: only XHR reports upload
+  // progress, and a large video takes a while to leave the browser.
+  send(key, file) {
+    const formData = new FormData()
+    formData.append("file", file)
+
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest()
+      xhr.open("POST", this.uploadUrlValue)
+      xhr.setRequestHeader("X-CSRF-Token", this.csrfToken())
+      xhr.setRequestHeader("Accept", "application/json")
+      xhr.upload.onprogress = (event) => {
+        if (!event.lengthComputable) return
+        const percent = Math.min(99, Math.round((event.loaded / event.total) * 100))
+        this.track(key, { message: t("js.blossom_upload.sending", { percent }), percent })
+      }
+      xhr.onload = () => {
+        let data = {}
+        try { data = JSON.parse(xhr.responseText) } catch { /* not JSON */ }
+        if (xhr.status >= 200 && xhr.status < 300) resolve(data)
+        else reject(new Error(data.error || t("js.blossom_upload.failed_status", { status: xhr.status })))
+      }
+      xhr.onerror = () => reject(new Error(t("js.blossom_upload.failed")))
+      this.track(key, { message: t("js.blossom_upload.sending", { percent: 0 }), percent: 0 })
+      xhr.send(formData) // no Content-Type: the browser sets the multipart boundary
+    })
   }
 
   // Photos are shrunk (and stripped of metadata) before they leave the
@@ -151,13 +163,14 @@ export default class extends Controller {
     if (shouldShrinkVideo(file, this.mediaValue)) return this.shrinkVideo(key, file, videoMode)
     if (!shouldShrink(file, this.mediaValue)) return file
 
-    this.track(key, file.name, t("js.media_compress.compressing", { name: file.name }))
+    this.track(key, { message: t("js.media_compress.compressing"), percent: null })
     try {
       const result = await shrinkImage(file, this.mediaValue)
       if (result.shrunk) {
-        this.track(key, file.name, t("js.media_compress.saved", {
-          name: result.file.name, from: humanSize(result.original), to: humanSize(result.file.size)
-        }))
+        this.track(key, {
+          name: result.file.name,
+          note: t("js.media_compress.saved", { from: humanSize(result.original), to: humanSize(result.file.size) })
+        })
       }
       return result.file
     } catch {
@@ -170,24 +183,24 @@ export default class extends Controller {
   async shrinkVideo(key, file, videoMode) {
     if (!this.hasVideoCompressUrlValue || videoMode === "original") return file
 
-    this.track(key, file.name, t("js.media_compress.video_compressing", { name: file.name, percent: 0 }))
+    this.track(key, { message: t("js.media_compress.video_compressing", { percent: 0 }), percent: 0 })
     try {
       const { shrinkVideo } = await import(this.videoCompressUrlValue)
       const result = await shrinkVideo(file, this.mediaValue, (progress) => {
-        this.track(key, file.name, t("js.media_compress.video_compressing", {
-          name: file.name, percent: Math.min(99, Math.round(progress * 100))
-        }))
+        const percent = Math.min(99, Math.round(progress * 100))
+        this.track(key, { message: t("js.media_compress.video_compressing", { percent }), percent })
       })
       if (result.shrunk && !useReencoded(videoMode, file.size, result.file.size)) {
-        this.track(key, file.name, t("js.media_compress.kept_original", {
-          name: file.name, original: humanSize(file.size), reencoded: humanSize(result.file.size)
-        }))
+        this.track(key, {
+          note: t("js.media_compress.kept_original", { original: humanSize(file.size), reencoded: humanSize(result.file.size) })
+        })
         return file
       }
       if (result.shrunk) {
-        this.track(key, file.name, t("js.media_compress.saved", {
-          name: result.file.name, from: humanSize(result.original), to: humanSize(result.file.size)
-        }))
+        this.track(key, {
+          name: result.file.name,
+          note: t("js.media_compress.saved", { from: humanSize(result.original), to: humanSize(result.file.size) })
+        })
       }
       return result.file
     } catch {
@@ -216,7 +229,7 @@ export default class extends Controller {
     this.videoChoiceTarget.close(mode || "")
   }
 
-  async pollUntilDone(key, name, statusUrl) {
+  async pollUntilDone(key, statusUrl) {
     const deadline = Date.now() + this.POLL_TIMEOUT
 
     while (Date.now() < deadline) {
@@ -229,7 +242,7 @@ export default class extends Controller {
       if (data.status === "completed") return data.url
       if (data.status === "failed") throw new Error(data.error || t("js.blossom_upload.failed"))
 
-      this.track(key, name, data.step || t("js.blossom_upload.uploading"))
+      this.track(key, { message: data.step || t("js.blossom_upload.uploading"), percent: null })
     }
 
     throw new Error(t("js.blossom_upload.timed_out"))
@@ -243,31 +256,71 @@ export default class extends Controller {
     return document.querySelector('meta[name="csrf-token"]')?.content
   }
 
-  // --- status + submit locking ----------------------------------------------
+  // --- status rows + submit locking -----------------------------------------
 
-  track(key, name, message) {
-    this.uploads.set(key, { name, message })
-    this.renderStatus()
-    this.setSubmitDisabled(true)
+  // Merges `changes` into the file's row (created on first call) and redraws.
+  track(key, changes) {
+    const row = { state: "active", note: null, ...this.uploads.get(key), ...changes }
+    this.uploads.set(key, row)
+    this.render()
+    this.setSubmitDisabled(this.activeCount() > 0)
   }
 
   untrack(key) {
     this.uploads.delete(key)
-    this.renderStatus()
-    if (this.uploads.size === 0) this.setSubmitDisabled(false)
+    this.render()
+    this.setSubmitDisabled(this.activeCount() > 0)
   }
 
-  renderStatus() {
-    if (this.uploads.size === 0) return
-    const lines = Array.from(this.uploads.values()).map((u) => `${u.name}: ${u.message}`)
-    this.setStatus(lines.join(" · "), false)
+  dismiss(event) {
+    this.untrack(Number(event.params.key))
   }
 
-  setStatus(message, isError) {
-    if (!this.hasStatusTarget) return
-    this.statusTarget.textContent = message
-    this.statusTarget.classList.toggle("text-red-500", !!isError)
-    this.statusTarget.classList.toggle("text-gray-400", !isError)
+  activeCount() {
+    let n = 0
+    this.uploads.forEach((row) => { if (row.state === "active") n++ })
+    return n
+  }
+
+  // Built with DOM calls, not innerHTML: file names and server errors are text.
+  render() {
+    if (!this.hasListTarget) return
+    const list = this.listTarget
+    list.replaceChildren()
+    list.hidden = this.uploads.size === 0
+
+    this.uploads.forEach((row, key) => {
+      const failed = row.state === "failed"
+      const item = el("li", "py-2")
+
+      const head = el("div", "flex items-baseline gap-3 text-xs")
+      head.append(
+        el("span", "min-w-0 truncate font-medium text-gray-700 dark:text-gray-200", row.name),
+        el("span", `ml-auto shrink-0 text-right ${failed ? "text-red-600 dark:text-red-400" : "text-gray-500 dark:text-gray-400"}`, row.message)
+      )
+      if (failed) {
+        const close = el("button", "shrink-0 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 cursor-pointer", "×")
+        close.type = "button"
+        close.setAttribute("aria-label", t("js.blossom_upload.dismiss"))
+        close.dataset.action = "blossom-upload#dismiss"
+        close.dataset.blossomUploadKeyParam = key
+        head.append(close)
+      }
+      item.append(head)
+
+      if (!failed) {
+        const track = el("div", "mt-1.5 h-1 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700")
+        const bar = el("div", "h-full rounded-full bg-amber-500 transition-[width] duration-300")
+        if (row.percent == null) bar.classList.add("upload-bar-indeterminate")
+        else bar.style.width = `${row.percent}%`
+        track.setAttribute("role", "progressbar")
+        if (row.percent != null) track.setAttribute("aria-valuenow", row.percent)
+        track.append(bar)
+        item.append(track)
+      }
+      if (row.note) item.append(el("p", "mt-1 text-xs text-gray-400 dark:text-gray-500", row.note))
+      list.append(item)
+    })
   }
 
   // C6: submitting during an upload used to navigate away and lose the media URL.
@@ -317,4 +370,11 @@ export default class extends Controller {
     // Refresh media-preview thumbnails + any content-builder listeners.
     ta.dispatchEvent(new Event("input", { bubbles: true }))
   }
+}
+
+function el(tag, className, text) {
+  const node = document.createElement(tag)
+  node.className = className
+  if (text != null) node.textContent = text
+  return node
 }

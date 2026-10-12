@@ -36,7 +36,6 @@
         <%= t(".content") %>
       </label>
       <div class="flex items-center gap-3">
-        <span data-blossom-upload-target="status" class="text-xs text-gray-400"></span>
         <button type="button"
           data-action="blossom-upload#openPicker"
           class="inline-flex items-center gap-1 text-xs font-medium text-amber-600 hover:text-amber-700 cursor-pointer">
@@ -60,6 +59,10 @@
         action: "input->media-preview#updatePreview input->mention#input keydown->mention#keydown blur->mention#blur dragover->blossom-upload#dragover dragleave->blossom-upload#dragleave drop->blossom-upload#drop paste->blossom-upload#paste"
       } %>
     </div>
+
+    <%# One row per attachment while it uploads: step, progress bar, size note. %>
+    <ul data-blossom-upload-target="list" hidden aria-live="polite"
+        class="mt-2 divide-y divide-gray-200 dark:divide-[color:var(--color-rule-dark)]"></ul>
 
     <%= file_field_tag :file, multiple: true, class: "hidden",
       data: { blossom_upload_target: "input", action: "change->blossom-upload#picked" } %>

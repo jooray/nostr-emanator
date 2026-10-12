@@ -78,7 +78,7 @@ es:
     mention:
       own: Tu cuenta
     media_compress:
-      kept_original: "%{name}: se mantiene el original (%{original}, recodificado pesaba %{reencoded})"
-      video_compressing: "Recodificando %{name}… %{percent} %"
-      compressing: Reduciendo %{name}…
-      saved: "%{name}: %{from} → %{to}"
+      compressing: Reduciendo la foto…
+      video_compressing: "Recodificando… %{percent} %"
+      saved: "%{from} → %{to}"
+      kept_original: "Se mantiene el original (%{original}). La copia recodificada salió más grande: %{reencoded}."

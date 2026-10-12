@@ -548,3 +548,17 @@ span.flatpickr-weekday { color: var(--color-gray-500); font-family: var(--font-c
 .dark .EasyMDEContainer .cm-header { color: var(--color-amber-400); }
 .dark .EasyMDEContainer .cm-link,
 .dark .EasyMDEContainer .cm-url { color: var(--color-legend); }
+
+/* Upload progress with no percentage to show (waiting on the signer, the
+   media server): a segment sweeping across the track. */
+.upload-bar-indeterminate {
+  width: 35%;
+  animation: upload-bar-sweep 1.2s ease-in-out infinite;
+}
+@keyframes upload-bar-sweep {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(290%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .upload-bar-indeterminate { width: 100%; animation: none; opacity: 0.5; }
+}

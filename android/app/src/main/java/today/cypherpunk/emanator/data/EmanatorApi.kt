@@ -124,8 +124,8 @@ class EmanatorApi(val client: ApiClient) {
         client.stream("/api/v1/ai/refine_stream", mapOf("account_id" to accountId, "current_content" to current, "user_prompt" to prompt))
 
     // --- uploads -----------------------------------------------------------------------------
-    suspend fun upload(accountId: Long, file: File, fileName: String, mimeType: String): Upload =
-        client.upload("/api/v1/accounts/$accountId/uploads", file, fileName, mimeType)
+    suspend fun upload(accountId: Long, file: File, fileName: String, mimeType: String, onProgress: (Int) -> Unit = {}): Upload =
+        client.upload("/api/v1/accounts/$accountId/uploads", file, fileName, mimeType, onProgress)
     suspend fun uploadStatus(id: Long): Upload = client.get("/api/v1/uploads/$id")
 
     // --- billing --------------------------------------------------------------------------

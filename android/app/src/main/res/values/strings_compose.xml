@@ -25,10 +25,9 @@
     <string name="compose_save_draft">Save draft</string>
     <string name="compose_waiting_upload">Waiting for upload…</string>
 
-    <string name="upload_shrinking">Shrinking %1$s…</string>
-    <string name="upload_encoding">Re-encoding %1$s… %2$d%%</string>
-    <string name="upload_shrunk">%1$s: %2$s → %3$s</string>
-    <string name="upload_kept_original">%1$s: kept the original (%2$s, re-encoded was %3$s)</string>
+    <string name="upload_encoding">Re-encoding… %1$d%%</string>
+    <string name="upload_shrunk">%1$s → %2$s</string>
+    <string name="upload_kept_original">Kept the original (%1$s). The re-encoded copy came out bigger: %2$s.</string>
     <string name="video_choice_title">Upload this video as it is?</string>
     <string name="video_choice_help">It is small enough to go up without converting. Re-encoding makes an MP4 every Nostr client plays and drops location and camera metadata.</string>
     <string name="video_choice_smaller">Smaller of the two</string>
@@ -38,10 +37,11 @@
     <string name="video_choice_original">Original video</string>
     <string name="video_choice_original_help">Upload the file untouched, metadata included</string>
     <string name="video_choice_cancel">Don\'t upload</string>
-    <string name="upload_uploading">Uploading…</string>
-    <string name="upload_done">%1$s attached.</string>
-    <string name="upload_done_shrunk">%1$s attached (%2$s → %3$s).</string>
-    <string name="upload_too_large">%1$s is too large (%2$s). The limit is %3$s.</string>
+    <string name="upload_preparing">Preparing…</string>
+    <string name="upload_sending">Sending to Emanator… %1$d%%</string>
+    <string name="upload_uploading">Uploading to the media server…</string>
+    <string name="upload_done">Attached</string>
+    <string name="upload_too_large">Too large (%1$s). The limit is %2$s.</string>
     <string name="upload_failed">Upload failed</string>
     <string name="upload_timed_out">Upload timed out</string>
 

@@ -7,6 +7,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.material3.LinearProgressIndicator
 import today.cypherpunk.emanator.media.VideoRules
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Spacer
@@ -275,37 +277,56 @@ private fun VideoChoiceDialog(choice: VideoChoice, onChoose: (VideoRules.Mode?) 
     )
 }
 
+/** One attachment: name, what is happening now, a progress bar and any size note. */
 @Composable
 private fun UploadStatus(line: UploadLine, onDismiss: () -> Unit) {
     val c = LocalConsole.current
     val phase = line.phase
     val message = when (phase) {
-        UploadPhase.Shrinking -> stringResource(R.string.upload_shrinking, line.name)
-        is UploadPhase.Encoding -> stringResource(R.string.upload_encoding, line.name, phase.percent)
-        is UploadPhase.Shrunk -> stringResource(R.string.upload_shrunk, line.name, ShrinkRules.humanSize(phase.from), ShrinkRules.humanSize(phase.to))
-        is UploadPhase.KeptOriginal -> stringResource(R.string.upload_kept_original, line.name, ShrinkRules.humanSize(phase.original), ShrinkRules.humanSize(phase.reencoded))
-        UploadPhase.Uploading -> "${line.name}: ${stringResource(R.string.upload_uploading)}"
-        is UploadPhase.Step -> "${line.name}: ${phase.text}"
-        is UploadPhase.Done -> if (phase.from != null && phase.to != null) {
-            stringResource(R.string.upload_done_shrunk, line.name, ShrinkRules.humanSize(phase.from), ShrinkRules.humanSize(phase.to))
-        } else stringResource(R.string.upload_done, line.name)
-        is UploadPhase.TooLarge -> stringResource(R.string.upload_too_large, line.name, ShrinkRules.humanSize(phase.size), ShrinkRules.humanSize(phase.limit))
-        UploadPhase.TimedOut -> "${line.name}: ${stringResource(R.string.upload_timed_out)}"
-        is UploadPhase.Failed -> "${line.name}: ${phase.message?.takeIf { it.isNotBlank() } ?: stringResource(R.string.upload_failed)}"
+        UploadPhase.Preparing -> stringResource(R.string.upload_preparing)
+        is UploadPhase.Encoding -> stringResource(R.string.upload_encoding, phase.percent)
+        is UploadPhase.Sending -> stringResource(R.string.upload_sending, phase.percent)
+        UploadPhase.Uploading -> stringResource(R.string.upload_uploading)
+        is UploadPhase.Step -> phase.text
+        UploadPhase.Done -> stringResource(R.string.upload_done)
+        is UploadPhase.TooLarge -> stringResource(R.string.upload_too_large, ShrinkRules.humanSize(phase.size), ShrinkRules.humanSize(phase.limit))
+        UploadPhase.TimedOut -> stringResource(R.string.upload_timed_out)
+        is UploadPhase.Failed -> phase.message?.takeIf { it.isNotBlank() } ?: stringResource(R.string.upload_failed)
+    }
+    val note = when (val n = line.note) {
+        is UploadNote.Shrunk -> stringResource(R.string.upload_shrunk, ShrinkRules.humanSize(n.from), ShrinkRules.humanSize(n.to))
+        is UploadNote.KeptOriginal -> stringResource(R.string.upload_kept_original, ShrinkRules.humanSize(n.original), ShrinkRules.humanSize(n.reencoded))
+        null -> null
     }
     val failed = phase is UploadPhase.Failed || phase is UploadPhase.TooLarge || phase is UploadPhase.TimedOut
-    Row(
-        Modifier.fillMaxWidth().then(if (failed) Modifier.background(c.alarmFill) else Modifier).padding(horizontal = 10.dp, vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    val percent = when (phase) {
+        is UploadPhase.Encoding -> phase.percent
+        is UploadPhase.Sending -> phase.percent
+        UploadPhase.Done -> 100
+        else -> null
+    }
+    Column(
+        Modifier.fillMaxWidth().then(if (failed) Modifier.background(c.alarmFill) else Modifier).padding(horizontal = 10.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        if (phase.inFlight) CircularProgressIndicator(Modifier.size(14.dp), color = Palette.amber, strokeWidth = 2.dp)
-        Text(message, style = Type.small, color = if (failed) c.redText else c.legend, modifier = Modifier.weight(1f))
-        if (!phase.inFlight) {
-            IconButton(onClick = onDismiss) {
-                Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.action_close), tint = c.muted)
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Text(line.name, style = Type.small, color = c.text, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false))
+            Text(message, style = Type.small, color = if (failed) c.redText else c.legend, modifier = Modifier.weight(1f), textAlign = TextAlign.End)
+            if (failed) {
+                IconButton(onClick = onDismiss, modifier = Modifier.size(24.dp)) {
+                    Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.action_close), tint = c.muted)
+                }
             }
         }
+        if (!failed) {
+            val barModifier = Modifier.fillMaxWidth().height(4.dp)
+            if (percent != null) {
+                LinearProgressIndicator(progress = { percent / 100f }, modifier = barModifier, color = Palette.amber, trackColor = c.rule, drawStopIndicator = {})
+            } else {
+                LinearProgressIndicator(modifier = barModifier, color = Palette.amber, trackColor = c.rule)
+            }
+        }
+        note?.let { Text(it, style = Type.small, color = c.muted) }
     }
 }
 
