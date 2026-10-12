@@ -16,7 +16,7 @@ module Nostr
 
     def initialize(additional_relays: [])
       @config = Rails.application.config_for(:emanator)
-      global_relays = @config.dig(:nostr, :relays) || ["wss://relay.damus.io"]
+      global_relays = @config.dig(:nostr, :relays) || [ "wss://relay.damus.io" ]
       @relays = (global_relays + Array(additional_relays)).map { |r| r.chomp("/") }.uniq
     end
 
@@ -56,8 +56,8 @@ module Nostr
       limit = options[:limit] || 50
 
       filter = {
-        "kinds" => [KIND_SHORT_TEXT],
-        "#p" => [pubkey_hex],
+        "kinds" => [ KIND_SHORT_TEXT ],
+        "#p" => [ pubkey_hex ],
         "limit" => limit
       }
       filter["since"] = since_ts if since_ts
@@ -65,7 +65,7 @@ module Nostr
       threads = @relays.map do |relay_url|
         Thread.new do
           events = fetch_from_relay(relay_url, filter)
-          events.each { |event| event["_seen_on_relays"] = [relay_url] }
+          events.each { |event| event["_seen_on_relays"] = [ relay_url ] }
           events
         rescue StandardError => e
           Rails.logger.warn("Failed to fetch mentions from #{relay_url}: #{e.message}")
@@ -102,10 +102,10 @@ module Nostr
       limit = options[:limit] || 50
 
       # Scale relay limit with account count so less popular accounts aren't crowded out
-      relay_limit = [limit, limit * pubkey_hexes.size].max
+      relay_limit = [ limit, limit * pubkey_hexes.size ].max
 
       filter = {
-        "kinds" => [KIND_SHORT_TEXT],
+        "kinds" => [ KIND_SHORT_TEXT ],
         "#p" => pubkey_hexes,
         "limit" => relay_limit
       }
@@ -116,7 +116,7 @@ module Nostr
         Thread.new do
           events = fetch_from_relay(relay_url, filter)
           events.each do |event|
-            event["_seen_on_relays"] = [relay_url]
+            event["_seen_on_relays"] = [ relay_url ]
           end
           events
         rescue StandardError => e
@@ -154,10 +154,10 @@ module Nostr
       limit = options[:limit] || 50
 
       # Scale relay limit with account count so less popular accounts aren't crowded out
-      relay_limit = [limit, limit * pubkey_hexes.size].max
+      relay_limit = [ limit, limit * pubkey_hexes.size ].max
 
       filter = {
-        "kinds" => [KIND_SHORT_TEXT],
+        "kinds" => [ KIND_SHORT_TEXT ],
         "#p" => pubkey_hexes,
         "limit" => relay_limit
       }
@@ -174,11 +174,11 @@ module Nostr
             relay_events.each do |event|
               next if pubkey_hexes.include?(event["pubkey"])
 
-              event["_seen_on_relays"] = [relay_url]
+              event["_seen_on_relays"] = [ relay_url ]
 
               if events_by_id[event["id"]]
                 existing_relays = events_by_id[event["id"]]["_seen_on_relays"] || []
-                events_by_id[event["id"]]["_seen_on_relays"] = (existing_relays + [relay_url]).uniq
+                events_by_id[event["id"]]["_seen_on_relays"] = (existing_relays + [ relay_url ]).uniq
               else
                 events_by_id[event["id"]] = event
               end
@@ -234,7 +234,7 @@ module Nostr
 
       filter = {
         "authors" => pubkey_hexes,
-        "kinds" => [3],
+        "kinds" => [ 3 ],
         "limit" => pubkey_hexes.size
       }
 
@@ -276,7 +276,7 @@ module Nostr
 
       filter = {
         "authors" => pubkey_hexes,
-        "kinds" => [KIND_MUTE_LIST],
+        "kinds" => [ KIND_MUTE_LIST ],
         "limit" => pubkey_hexes.size
       }
 
@@ -308,8 +308,8 @@ module Nostr
       return Set.new if pubkey_hex.blank?
 
       filter = {
-        "kinds" => [7],
-        "authors" => [pubkey_hex],
+        "kinds" => [ 7 ],
+        "authors" => [ pubkey_hex ],
         "limit" => limit
       }
 
@@ -345,7 +345,7 @@ module Nostr
       return Set.new if author_pubkeys.empty? || event_ids.empty?
 
       filter = {
-        "kinds" => [7],
+        "kinds" => [ 7 ],
         "authors" => author_pubkeys,
         "#e" => event_ids,
         "limit" => event_ids.size * author_pubkeys.size
@@ -372,7 +372,7 @@ module Nostr
         e_tag = (event["tags"] || []).find { |t| t[0] == "e" }
         next unless e_tag
 
-        result << [event["pubkey"], e_tag[1]]
+        result << [ event["pubkey"], e_tag[1] ]
       end
 
       result
@@ -411,7 +411,7 @@ module Nostr
     end
 
     def fetch(pubkey_hex, options = {})
-      kinds = options[:kinds] || [KIND_SHORT_TEXT]
+      kinds = options[:kinds] || [ KIND_SHORT_TEXT ]
       kinds << KIND_REPOST if options[:include_reposts] && !kinds.include?(KIND_REPOST)
 
       since_ts = options[:since].is_a?(Time) ? options[:since].to_i : options[:since]
@@ -419,7 +419,7 @@ module Nostr
       limit = options[:limit] || 50
 
       filter = {
-        "authors" => [pubkey_hex],
+        "authors" => [ pubkey_hex ],
         "kinds" => kinds.uniq,
         "limit" => limit
       }
@@ -429,7 +429,7 @@ module Nostr
       threads = @relays.map do |relay_url|
         Thread.new do
           events = fetch_from_relay(relay_url, filter)
-          events.each { |event| event["_seen_on_relays"] = [relay_url] }
+          events.each { |event| event["_seen_on_relays"] = [ relay_url ] }
           events
         rescue StandardError => e
           Rails.logger.warn("Failed to fetch from #{relay_url}: #{e.message}")

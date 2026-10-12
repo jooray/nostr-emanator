@@ -49,11 +49,11 @@ module Nostr
       resubscribed = false
 
       begin
-        WebsocketConnection.send_text(socket, ["REQ", sub_id, filter].to_json, deadline)
+        WebsocketConnection.send_text(socket, [ "REQ", sub_id, filter ].to_json, deadline)
 
         while Time.current < deadline
           ready = WebsocketConnection.readable_now?(socket) ||
-            IO.select([socket], nil, nil, WebsocketConnection.select_timeout(deadline, 0.5))
+            IO.select([ socket ], nil, nil, WebsocketConnection.select_timeout(deadline, 0.5))
           next unless ready
 
           data = read_frame(socket, deadline)
@@ -96,7 +96,7 @@ module Nostr
 
             resubscribed = true
             sub_id = SecureRandom.hex(4)
-            WebsocketConnection.send_text(socket, ["REQ", sub_id, filter].to_json, deadline)
+            WebsocketConnection.send_text(socket, [ "REQ", sub_id, filter ].to_json, deadline)
           end
         end
 
@@ -112,11 +112,11 @@ module Nostr
       signed = auth.call(relay_url, challenge)
       return false unless signed
 
-      WebsocketConnection.send_text(socket, ["AUTH", signed].to_json, deadline)
+      WebsocketConnection.send_text(socket, [ "AUTH", signed ].to_json, deadline)
 
       while Time.current < deadline
         ready = WebsocketConnection.readable_now?(socket) ||
-          IO.select([socket], nil, nil, WebsocketConnection.select_timeout(deadline, 0.5))
+          IO.select([ socket ], nil, nil, WebsocketConnection.select_timeout(deadline, 0.5))
         next unless ready
 
         data = read_frame(socket, deadline)
@@ -174,7 +174,7 @@ module Nostr
     end
 
     def self.close(socket, sub_id, deadline)
-      WebsocketConnection.send_text(socket, ["CLOSE", sub_id].to_json, deadline) rescue nil
+      WebsocketConnection.send_text(socket, [ "CLOSE", sub_id ].to_json, deadline) rescue nil
       socket.close rescue nil
     end
 

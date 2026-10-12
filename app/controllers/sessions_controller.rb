@@ -156,7 +156,7 @@ class SessionsController < ApplicationController
   end
 
   def consume_pending_sessions!
-    [pending_nip46_session, pending_pairing_session].compact.uniq.each(&:consume!)
+    [ pending_nip46_session, pending_pairing_session ].compact.uniq.each(&:consume!)
   end
 
   def complete_authentication!(user)

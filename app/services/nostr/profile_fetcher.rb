@@ -12,7 +12,7 @@ module Nostr
 
     def initialize(additional_relays: [])
       @config = Rails.application.config_for(:emanator)
-      global_relays = @config.dig(:nostr, :relays) || ["wss://relay.damus.io", "wss://nos.lol"]
+      global_relays = @config.dig(:nostr, :relays) || [ "wss://relay.damus.io", "wss://nos.lol" ]
       @relays = (global_relays + Array(additional_relays)).map { |r| r.chomp("/") }.uniq
     end
 
@@ -67,7 +67,7 @@ module Nostr
       pubkey_hexes = Array(pubkey_hexes).compact.uniq
       return {} if pubkey_hexes.empty?
 
-      filter = { "kinds" => [0], "authors" => pubkey_hexes }
+      filter = { "kinds" => [ 0 ], "authors" => pubkey_hexes }
 
       # Query all relays in parallel
       threads = @relays.map do |relay_url|
@@ -113,7 +113,7 @@ module Nostr
     def fetch_from_relay(relay_url, pubkey_hex)
       events = RelayQuery.run(
         relay_url,
-        { "kinds" => [0], "authors" => [pubkey_hex], "limit" => 1 },
+        { "kinds" => [ 0 ], "authors" => [ pubkey_hex ], "limit" => 1 },
         timeout: TIMEOUT,
         stop_after_first: true,
         kind: 0,
@@ -138,6 +138,5 @@ module Nostr
     rescue JSON::ParserError
       nil
     end
-
   end
 end

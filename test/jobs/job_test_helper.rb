@@ -16,7 +16,7 @@ module JobTestHelper
       display_name: "Account #{n}",
       signer_pubkey: signer ? SecureRandom.hex(32) : nil,
       app_privkey: signer ? SecureRandom.hex(32) : nil,
-      write_relays: ["wss://relay.example"]
+      write_relays: [ "wss://relay.example" ]
     )
   end
 
@@ -50,7 +50,7 @@ module JobTestHelper
   def pending_keypair
     @pending_keypair ||= begin
       pair = ::Nostr::Keygen.new.generate_key_pair
-      [pair.public_key.to_s, pair.private_key.to_s]
+      [ pair.public_key.to_s, pair.private_key.to_s ]
     end
   end
 
@@ -70,7 +70,7 @@ module JobTestHelper
       "content" => content
     }
     event["id"] = Nostr::EventValidator.event_id(event)
-    event["sig"] = Schnorr.sign([event["id"]].pack("H*"), [privkey].pack("H*")).encode.unpack1("H*")
+    event["sig"] = Schnorr.sign([ event["id"] ].pack("H*"), [ privkey ].pack("H*")).encode.unpack1("H*")
     event
   end
 
@@ -81,7 +81,7 @@ module JobTestHelper
     privkey = pair.private_key.to_s
     event = { "pubkey" => pubkey, "created_at" => Time.now.to_i, "kind" => 1, "tags" => [], "content" => "not yours" }
     event["id"] = Nostr::EventValidator.event_id(event)
-    event["sig"] = Schnorr.sign([event["id"]].pack("H*"), [privkey].pack("H*")).encode.unpack1("H*")
+    event["sig"] = Schnorr.sign([ event["id"] ].pack("H*"), [ privkey ].pack("H*")).encode.unpack1("H*")
     event
   end
 

@@ -51,7 +51,7 @@ module Mcp
         time_column = upcoming ? :scheduled_at : :created_at
 
         if upcoming
-          scope = scope.where(status: [:scheduled, :awaiting_signature])
+          scope = scope.where(status: [ :scheduled, :awaiting_signature ])
             .where("posts.scheduled_at > ?", Time.current)
             .order(scheduled_at: :asc)
         else

@@ -15,7 +15,7 @@ Dir[File.expand_path("support/**/*.rb", __dir__)].each { |file| require file }
 module NostrTestHelper
   def keypair
     pair = ::Nostr::Keygen.new.generate_key_pair
-    [pair.public_key.to_s, pair.private_key.to_s]
+    [ pair.public_key.to_s, pair.private_key.to_s ]
   end
 
   def signed_event(privkey:, pubkey:, kind:, content:, tags: [], created_at: Time.now.to_i)
@@ -27,7 +27,7 @@ module NostrTestHelper
       "content" => content
     }
     event["id"] = Nostr::EventValidator.event_id(event)
-    event["sig"] = Schnorr.sign([event["id"]].pack("H*"), [privkey].pack("H*")).encode.unpack1("H*")
+    event["sig"] = Schnorr.sign([ event["id"] ].pack("H*"), [ privkey ].pack("H*")).encode.unpack1("H*")
     event
   end
 end

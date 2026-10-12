@@ -8,10 +8,10 @@ class NostrNip44Test < Minitest::Test
   VECTOR_PAYLOAD = "AgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABee0G5VSK0/9YypIObAtDKfYEAjD35uVkHyB0F4DwrcNaCXlCWZKaArsGrY6M9wnuTMxWfp1RTN9Xga8no+kF5Vsb"
 
   def test_official_encryption_vector
-    payload = Nostr::Nip44.encrypt([VECTOR_KEY].pack("H*"), "a", nonce: [VECTOR_NONCE].pack("H*"))
+    payload = Nostr::Nip44.encrypt([ VECTOR_KEY ].pack("H*"), "a", nonce: [ VECTOR_NONCE ].pack("H*"))
 
     assert_equal VECTOR_PAYLOAD, payload
-    assert_equal "a", Nostr::Nip44.decrypt([VECTOR_KEY].pack("H*"), payload)
+    assert_equal "a", Nostr::Nip44.decrypt([ VECTOR_KEY ].pack("H*"), payload)
   end
 
   def test_rejects_tampered_payload
@@ -19,7 +19,7 @@ class NostrNip44Test < Minitest::Test
     payload.setbyte(40, payload.getbyte(40) ^ 1)
 
     assert_raises(Nostr::Nip44::DecryptionError) do
-      Nostr::Nip44.decrypt([VECTOR_KEY].pack("H*"), Base64.strict_encode64(payload))
+      Nostr::Nip44.decrypt([ VECTOR_KEY ].pack("H*"), Base64.strict_encode64(payload))
     end
   end
 end

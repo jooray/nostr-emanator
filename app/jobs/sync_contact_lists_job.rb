@@ -12,7 +12,7 @@ class SyncContactListsJob < ApplicationJob
     additional = Account.where(pubkey_hex: pubkey_hex).first&.write_relays || []
     fetcher = Nostr::EventFetcher.new(additional_relays: additional)
 
-    contact_lists = fetcher.fetch_contact_lists([pubkey_hex])
+    contact_lists = fetcher.fetch_contact_lists([ pubkey_hex ])
     followed = contact_lists[pubkey_hex] || Set.new
 
     changed = InteractionsCache.read_contact_list(pubkey_hex) != followed

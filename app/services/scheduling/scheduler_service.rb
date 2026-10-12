@@ -9,7 +9,7 @@ module Scheduling
     # Suggest the next available slot for a post
     def suggest_next_slot(account)
       last_scheduled = account.posts.where.not(scheduled_at: nil)
-        .where(status: [:scheduled, :awaiting_signature])
+        .where(status: [ :scheduled, :awaiting_signature ])
         .order(scheduled_at: :desc)
         .first
 
@@ -28,7 +28,7 @@ module Scheduling
       # but never earlier than tomorrow.
       tomorrow = Date.current.in_time_zone(@tz).to_date + 1.day
       candidate = last_time.in_time_zone(@tz).to_date + 1.day
-      next_day = [candidate, tomorrow].max
+      next_day = [ candidate, tomorrow ].max
       random_time_on_day(next_day)
     end
 

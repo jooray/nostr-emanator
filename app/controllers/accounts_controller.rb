@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class AccountsController < ApplicationController
-  before_action :set_account, only: [:show, :edit, :update, :destroy, :refresh_profile, :refresh_relays, :re_pair, :re_pair_poll, :settings, :recent_events, :recent_interactions, :profile, :update_profile, :profile_status]
+  before_action :set_account, only: [ :show, :edit, :update, :destroy, :refresh_profile, :refresh_relays, :re_pair, :re_pair_poll, :settings, :recent_events, :recent_interactions, :profile, :update_profile, :profile_status ]
 
   # L1: generate_connect_uri creates a NostrAuthSession and a subscription on
   # the supervisor's shared relay sockets; cap how often a user can mint new
@@ -237,7 +237,7 @@ class AccountsController < ApplicationController
     fetcher = Nostr::InteractionsFetcher.new
     interactions = fetcher.fetch_for_account(@account, since: 7.days.ago, limit: 10)
     fetcher.enrich_with_profiles(interactions)
-    fetcher.enrich_with_original_posts(interactions, [@account])
+    fetcher.enrich_with_original_posts(interactions, [ @account ])
     interactions
   rescue StandardError => e
     Rails.logger.warn("Failed to fetch interactions for account #{@account.id}: #{e.message}")
@@ -247,7 +247,7 @@ class AccountsController < ApplicationController
   def fetch_recent_events
     Rails.cache.fetch("account_events_#{@account.id}", expires_in: 5.minutes) do
       fetcher = Nostr::EventFetcher.new
-      fetcher.fetch(@account.pubkey_hex, kinds: [1], limit: 20, since: 30.days.ago)
+      fetcher.fetch(@account.pubkey_hex, kinds: [ 1 ], limit: 20, since: 30.days.ago)
     end
   end
 end

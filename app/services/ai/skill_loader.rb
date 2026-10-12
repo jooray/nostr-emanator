@@ -53,11 +53,11 @@ module Ai
           if parts.length >= 3
             frontmatter = YAML.safe_load(parts[1]) || {}
             prompt = parts[2]
-            return [frontmatter, prompt]
+            return [ frontmatter, prompt ]
           end
         end
 
-        [{}, content]
+        [ {}, content ]
       rescue Psych::SyntaxError => e
         raise SkillParseError, "Failed to parse YAML frontmatter: #{e.message}"
       end

@@ -9,7 +9,7 @@ class NostrAuthSessionTest < ActiveSupport::TestCase
       temp_pubkey: "1" * 64,
       temp_privkey: "2" * 64,
       secret: "secret",
-      relay_url: ["wss://relay.example"].to_json,
+      relay_url: [ "wss://relay.example" ].to_json,
       expires_at: 10.minutes.from_now
     )
   end

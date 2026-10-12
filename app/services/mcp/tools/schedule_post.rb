@@ -26,7 +26,7 @@ module Mcp
         {
           type: "object",
           additionalProperties: false,
-          required: ["post_id"],
+          required: [ "post_id" ],
           properties: {
             post_id: { type: "integer", description: "Id of a draft (or awaiting_signature) post you manage." },
             scheduled_at: { type: "string", description: "ISO8601 time in the future. Default: next free slot for the account." },

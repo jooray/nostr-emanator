@@ -16,7 +16,7 @@ module Scheduling
       raise ArgumentError, "post must have a scheduled_at before reposts can be scheduled" if post.scheduled_at.blank?
 
       max_delay_hours = max_delay_hours.to_i.clamp(1, MAX_DELAY_HOURS)
-      max_delay_minutes = [max_delay_hours * 60, MIN_DELAY_MINUTES].max
+      max_delay_minutes = [ max_delay_hours * 60, MIN_DELAY_MINUTES ].max
 
       accounts = Account.where(id: account_ids, user_id: post.account.user_id)
         .where.not(id: post.account_id) # Don't repost to the same account

@@ -80,7 +80,7 @@ namespace :migrate_sqlite do
 
         ActiveRecord::Base.connection.execute(
           ActiveRecord::Base.sanitize_sql_array(
-            ["INSERT INTO `#{table_name}` (#{col_names}) VALUES (#{placeholders})", *values]
+            [ "INSERT INTO `#{table_name}` (#{col_names}) VALUES (#{placeholders})", *values ]
           )
         )
         count += 1

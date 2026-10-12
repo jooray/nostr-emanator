@@ -64,7 +64,7 @@ class InteractionsCache
     # Incremental add after a successful mute publish — avoid waiting for a full sync.
     def add_muted_pubkey(user, pubkey)
       current = read_muted_pubkeys(user)
-      write_muted_pubkeys(user, current + [pubkey])
+      write_muted_pubkeys(user, current + [ pubkey ])
     end
 
     # ----- full kind-10000 events (needed to append new mutes) -----

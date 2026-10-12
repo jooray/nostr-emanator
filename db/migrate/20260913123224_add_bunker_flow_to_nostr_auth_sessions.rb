@@ -18,6 +18,6 @@ class AddBunkerFlowToNostrAuthSessions < ActiveRecord::Migration[8.1]
     add_column :nostr_auth_sessions, :signer_pubkey, :string
 
     # The supervisor's hot loop scans pending rows every second.
-    add_index :nostr_auth_sessions, [:flow, :expires_at]
+    add_index :nostr_auth_sessions, [ :flow, :expires_at ]
   end
 end

@@ -17,6 +17,6 @@ class CreateProfileUpdates < ActiveRecord::Migration[8.1]
     end
 
     # The poll endpoint looks up recent rows per account.
-    add_index :profile_updates, [:account_id, :created_at]
+    add_index :profile_updates, [ :account_id, :created_at ]
   end
 end

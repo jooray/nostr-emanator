@@ -13,7 +13,7 @@ module Mcp
         {
           type: "object",
           additionalProperties: false,
-          required: ["account_id"],
+          required: [ "account_id" ],
           properties: {
             account_id: { type: "integer" }
           }

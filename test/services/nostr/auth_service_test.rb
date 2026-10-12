@@ -13,7 +13,7 @@ class NostrAuthServiceTest < Minitest::Test
       pubkey: pubkey,
       kind: 22_242,
       content: "Sign in to Emanator",
-      tags: [["challenge", challenge], ["domain", "emanator.cypherpunk.today"]]
+      tags: [ [ "challenge", challenge ], [ "domain", "emanator.cypherpunk.today" ] ]
     )
     service = Nostr::AuthService.new
 

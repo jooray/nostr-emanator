@@ -85,8 +85,8 @@ module Nostr
     def initialize
       @config = Rails.application.config_for(:emanator)
       @auth_relays = @config.dig(:nostr, :auth_relays) ||
-                     [@config.dig(:nostr, :auth_relay)].compact.presence ||
-                     ["wss://relay.nsec.app"]
+                     [ @config.dig(:nostr, :auth_relay) ].compact.presence ||
+                     [ "wss://relay.nsec.app" ]
     end
 
     # The whole URI becomes a QR code, and past ~600 characters it gets dense
@@ -213,8 +213,8 @@ module Nostr
 
         return false unless EventValidator.valid?(event_data, kind: 22_242, author: pubkey_hex)
         return false unless event_data["created_at"].between?(NIP07_MAX_AGE.ago.to_i, 1.minute.from_now.to_i)
-        return false unless event_data["tags"].include?(["challenge", challenge])
-        return false unless event_data["tags"].include?(["domain", domain])
+        return false unless event_data["tags"].include?([ "challenge", challenge ])
+        return false unless event_data["tags"].include?([ "domain", domain ])
 
         true
       rescue JSON::ParserError, StandardError => e

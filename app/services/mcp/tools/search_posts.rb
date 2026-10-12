@@ -14,7 +14,7 @@ module Mcp
         {
           type: "object",
           additionalProperties: false,
-          required: ["query"],
+          required: [ "query" ],
           properties: {
             query: { type: "string", description: "Text to match within post content." },
             account_id: { type: "integer", description: "Restrict to a single account you manage." },

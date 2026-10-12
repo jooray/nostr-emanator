@@ -13,7 +13,7 @@ class HomeController < ApplicationController
     # with the installable web app for everyone else. The page varies by user
     # agent, so no shared cache may hand one variant to the other.
     @android_visitor = request.user_agent.to_s.match?(/Android/i)
-    response.headers["Vary"] = [response.headers["Vary"], "User-Agent"].compact_blank.join(", ")
+    response.headers["Vary"] = [ response.headers["Vary"], "User-Agent" ].compact_blank.join(", ")
     # Render app/views/home/index.html.erb (no app chrome).
   end
 

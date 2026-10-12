@@ -47,7 +47,7 @@ class SweepStuckRecordsJob < ApplicationJob
     count = 0
     klass.stale_signing.find_each do |record|
       stuck_since = record.updated_at
-      from = klass == Repost ? [:awaiting_signature, :pending_signature] : [:awaiting_signature]
+      from = klass == Repost ? [ :awaiting_signature, :pending_signature ] : [ :awaiting_signature ]
       next unless record.transition_status(
         from: from, to: :failed,
         attributes: { publish_results: merged_error(record, STUCK_SIGNING_ERROR) }

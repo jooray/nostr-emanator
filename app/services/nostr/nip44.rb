@@ -24,9 +24,9 @@ module Nostr
       raise Error, "invalid private key" unless our_private_key.between?(1, group.order - 1)
       raise Error, "invalid public key" unless pubkey_hex.match?(/\A[0-9a-f]{64}\z/i)
 
-      their_point = ECDSA::Format::PointOctetString.decode_from_x([pubkey_hex].pack("H*"), group)
+      their_point = ECDSA::Format::PointOctetString.decode_from_x([ pubkey_hex ].pack("H*"), group)
       shared_point = their_point.multiply_by_scalar(our_private_key)
-      shared_x = [shared_point.x.to_s(16).rjust(64, "0")].pack("H*")
+      shared_x = [ shared_point.x.to_s(16).rjust(64, "0") ].pack("H*")
 
       # HKDF-Extract: PRK = HMAC-SHA256(salt, IKM)
       salt = "nip44-v2"
@@ -41,7 +41,7 @@ module Nostr
       chacha_key, chacha_nonce, hmac_key = message_keys(conv_key, nonce)
       ciphertext = chacha20(chacha_key, chacha_nonce, padded, encrypt: true)
       mac = OpenSSL::HMAC.digest("SHA256", hmac_key, nonce + ciphertext)
-      Base64.strict_encode64([PROTOCOL_VERSION].pack("C") + nonce + ciphertext + mac)
+      Base64.strict_encode64([ PROTOCOL_VERSION ].pack("C") + nonce + ciphertext + mac)
     end
 
     # Decrypt a NIP-44 v2 payload.
@@ -79,7 +79,7 @@ module Nostr
 
     def self.message_keys(conv_key, nonce)
       keys = hkdf_expand(conv_key, nonce, 76)
-      [keys.byteslice(0, 32), keys.byteslice(32, 12), keys.byteslice(44, 32)]
+      [ keys.byteslice(0, 32), keys.byteslice(32, 12), keys.byteslice(44, 32) ]
     end
 
     def self.chacha20(key, nonce, content, encrypt:)
@@ -103,7 +103,7 @@ module Nostr
       length = bytes.bytesize
       raise Error, "invalid plaintext length" unless length.between?(1, MAX_PLAINTEXT_SIZE)
 
-      prefix = length < 65_536 ? [length].pack("n") : [0, length].pack("nN")
+      prefix = length < 65_536 ? [ length ].pack("n") : [ 0, length ].pack("nN")
       prefix + bytes + ("\0" * (calc_padded_len(length) - length))
     end
 
@@ -115,7 +115,7 @@ module Nostr
       t = +""
 
       (1..n).each do |i|
-        t = OpenSSL::HMAC.digest("SHA256", prk, t + info + [i].pack("C"))
+        t = OpenSSL::HMAC.digest("SHA256", prk, t + info + [ i ].pack("C"))
         okm << t
       end
 

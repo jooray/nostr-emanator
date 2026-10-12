@@ -68,7 +68,7 @@ module Nostr
       end
 
       target_event_id = pick_target_event_id(interaction_type, e_tags, q_tags)
-      referenced_event_ids = ([target_event_id] + e_tags.map { |t| t[1] } + q_tags.map { |t| t[1] }).compact.uniq
+      referenced_event_ids = ([ target_event_id ] + e_tags.map { |t| t[1] } + q_tags.map { |t| t[1] }).compact.uniq
 
       {
         event_id: event["id"],
@@ -238,11 +238,11 @@ module Nostr
 
         interaction[:already_following] =
           (contact_lists[account.pubkey_hex]&.include?(author_pk) || false) ||
-          existing_follows.include?([account.id, author_pk])
+          existing_follows.include?([ account.id, author_pk ])
 
         interaction[:already_liked] =
           (account_reactions[account.pubkey_hex]&.include?(interaction[:event_id]) || false) ||
-          existing_reactions.include?([account.id, interaction[:event_id]])
+          existing_reactions.include?([ account.id, interaction[:event_id] ])
 
         interaction[:relay_hint] = interaction.dig(:raw_event, "_seen_on_relays")&.first || ""
       end

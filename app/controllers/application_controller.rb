@@ -68,7 +68,7 @@ class ApplicationController < ActionController::Base
 
   def resolve_locale
     available = I18n.available_locales.map(&:to_s)
-    candidates = [current_user&.locale, cookies[LOCALE_COOKIE]]
+    candidates = [ current_user&.locale, cookies[LOCALE_COOKIE] ]
     candidates += accepted_languages
     candidates.compact.map { |c| c.to_s.downcase }.find { |c| available.include?(c) } || I18n.default_locale
   end
@@ -78,7 +78,7 @@ class ApplicationController < ActionController::Base
     request.headers["Accept-Language"].to_s.split(",").filter_map do |part|
       tag, q = part.strip.split(";q=")
       next if tag.blank?
-      [tag.split("-").first.downcase, (q || 1).to_f]
+      [ tag.split("-").first.downcase, (q || 1).to_f ]
     end.sort_by { |_, q| -q }.map(&:first)
   end
 

@@ -42,9 +42,9 @@ class ProcessNostrActionJob < ApplicationJob
       pubkey: @action.account.pubkey_hex,
       created_at: Time.current,
       tags: [
-        ["e", @action.target_event_id, relay_hint],
-        ["p", @action.target_pubkey],
-        ["k", @action.target_event_kind.to_s]
+        [ "e", @action.target_event_id, relay_hint ],
+        [ "p", @action.target_pubkey ],
+        [ "k", @action.target_event_kind.to_s ]
       ]
     )
     @action.update!(unsigned_event: unsigned)
@@ -91,7 +91,7 @@ class ProcessNostrActionJob < ApplicationJob
     end
 
     # Append new follow
-    new_tags = existing_follows + [["p", @action.target_pubkey, "", ""]]
+    new_tags = existing_follows + [ [ "p", @action.target_pubkey, "", "" ] ]
 
     @action.update!(status: :awaiting_signature)
 
@@ -153,7 +153,7 @@ class ProcessNostrActionJob < ApplicationJob
       return
     end
 
-    new_tags = existing_tags + [["p", @action.target_pubkey]]
+    new_tags = existing_tags + [ [ "p", @action.target_pubkey ] ]
 
     @action.update!(status: :awaiting_signature)
 

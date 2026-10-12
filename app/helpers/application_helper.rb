@@ -36,11 +36,11 @@ module ApplicationHelper
     # instant itself — and the title keeps the unambiguous absolute one (L24).
     local = time.in_time_zone(Time.zone)
     fallback = case format
-               when "time" then I18n.l(local, format: :app_time)
-               when "date" then I18n.l(local, format: :app_date)
-               when "short" then I18n.l(local, format: :app_short)
-               else I18n.l(local, format: :app_datetime)
-               end
+    when "time" then I18n.l(local, format: :app_time)
+    when "date" then I18n.l(local, format: :app_date)
+    when "short" then I18n.l(local, format: :app_short)
+    else I18n.l(local, format: :app_datetime)
+    end
     tag.time(
       fallback,
       datetime: local.iso8601,

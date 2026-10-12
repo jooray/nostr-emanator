@@ -41,20 +41,20 @@ class NostrContentRefsTest < ActiveSupport::TestCase
     text = "#{NPUB} then #{nevent(author: 'cd' * 32)}"
     refs = Nostr::ContentRefs.scan(text)
 
-    assert_equal [:npub, :nevent], refs.map(&:type)
+    assert_equal [ :npub, :nevent ], refs.map(&:type)
     assert_equal "11" * 32, refs.first.pubkey
     assert_equal "ab" * 32, refs.last.event_id
     assert_equal "cd" * 32, refs.last.author
   end
 
   def test_scan_keeps_only_websocket_relay_hints
-    ref = Nostr::ContentRefs.scan(nevent(relays: ["wss://relay.damus.io", "http://evil.example"])).first
+    ref = Nostr::ContentRefs.scan(nevent(relays: [ "wss://relay.damus.io", "http://evil.example" ])).first
 
-    assert_equal ["wss://relay.damus.io"], ref.relays
+    assert_equal [ "wss://relay.damus.io" ], ref.relays
   end
 
   def test_hashtags_need_a_letter_and_are_downcased
-    assert_equal ["nostrautica", "ekonómia"],
+    assert_equal [ "nostrautica", "ekonómia" ],
                  Nostr::ContentRefs.hashtags("#Nostrautica a #ekonómia, ale nie #2026")
   end
 

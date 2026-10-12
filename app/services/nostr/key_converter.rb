@@ -14,14 +14,14 @@ module Nostr
       def hex_to_npub(hex_pubkey)
         return nil if hex_pubkey.blank?
 
-        bytes = [hex_pubkey].pack("H*").bytes
+        bytes = [ hex_pubkey ].pack("H*").bytes
         ::Bech32.encode("npub", convert_bits(bytes, 8, 5), ::Bech32::Encoding::BECH32)
       end
 
       def hex_to_note(hex_event_id)
         return nil if hex_event_id.blank?
 
-        bytes = [hex_event_id].pack("H*").bytes
+        bytes = [ hex_event_id ].pack("H*").bytes
         ::Bech32.encode("note", convert_bits(bytes, 8, 5), ::Bech32::Encoding::BECH32)
       end
 
@@ -63,7 +63,7 @@ module Nostr
 
         tlv = []
         # Type 0: event id (32 bytes)
-        event_bytes = [hex_event_id].pack("H*").bytes
+        event_bytes = [ hex_event_id ].pack("H*").bytes
         tlv << 0 << 32
         tlv.concat(event_bytes)
 
@@ -76,7 +76,7 @@ module Nostr
 
         # Type 2: author pubkey (32 bytes)
         if author_pubkey.present?
-          author_bytes = [author_pubkey].pack("H*").bytes
+          author_bytes = [ author_pubkey ].pack("H*").bytes
           tlv << 2 << 32
           tlv.concat(author_bytes)
         end

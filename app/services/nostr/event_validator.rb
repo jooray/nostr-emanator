@@ -23,13 +23,13 @@ module Nostr
       id = event_id(event)
       return false unless ActiveSupport::SecurityUtils.secure_compare(id, event["id"].downcase)
 
-      Schnorr.valid_sig?([id].pack("H*"), [event["pubkey"]].pack("H*"), [event["sig"]].pack("H*"))
+      Schnorr.valid_sig?([ id ].pack("H*"), [ event["pubkey"] ].pack("H*"), [ event["sig"] ].pack("H*"))
     rescue StandardError
       false
     end
 
     def self.event_id(event)
-      serialized = [0, event["pubkey"], event["created_at"], event["kind"], event["tags"], event["content"]]
+      serialized = [ 0, event["pubkey"], event["created_at"], event["kind"], event["tags"], event["content"] ]
       Digest::SHA256.hexdigest(JSON.generate(serialized))
     end
   end

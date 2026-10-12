@@ -2,8 +2,8 @@
 
 class PostsController < ApplicationController
   include ActionView::Helpers::TextHelper
-  before_action :set_post, only: [:show, :edit, :update, :destroy, :schedule, :sign, :retry_sign, :retry_publish, :rebroadcast, :cancel, :reschedule]
-  before_action :set_account, only: [:new, :create]
+  before_action :set_post, only: [ :show, :edit, :update, :destroy, :schedule, :sign, :retry_sign, :retry_publish, :rebroadcast, :cancel, :reschedule ]
+  before_action :set_account, only: [ :new, :create ]
 
   # How far ahead the schedule screen's "Soon" button sets the publish time:
   # enough to approve the signature(s) in Amber before it comes due.

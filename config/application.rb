@@ -52,7 +52,7 @@ module NostrEmanator
     # rendering "translation missing". Locale choice: see ApplicationController.
     config.i18n.available_locales = %i[en sk cs es]
     config.i18n.default_locale = :en
-    config.i18n.fallbacks = [:en]
+    config.i18n.fallbacks = [ :en ]
     config.i18n.load_path += Dir[Rails.root.join("config/locales/**/*.yml")]
 
     # Don't generate system test files.

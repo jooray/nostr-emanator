@@ -34,12 +34,12 @@ class Post < ApplicationRecord
   before_validation :normalize_nostr_references
 
   validates :content, presence: true
-  validates :event_kind, inclusion: { in: [1] }
+  validates :event_kind, inclusion: { in: [ 1 ] }
   # H8: a post without a scheduled time can never be picked up by
   # EnqueueScheduledPostsJob — it would sit "Scheduled" forever, silently.
   validates :scheduled_at, presence: true, if: -> { scheduled? || awaiting_signature? }
 
-  scope :upcoming, -> { where(status: [:scheduled, :awaiting_signature]).where("scheduled_at > ?", Time.current).order(scheduled_at: :asc) }
+  scope :upcoming, -> { where(status: [ :scheduled, :awaiting_signature ]).where("scheduled_at > ?", Time.current).order(scheduled_at: :asc) }
   scope :past, -> { where(status: :published).order(published_at: :desc) }
   scope :stale_publishing, -> { where(status: :publishing).where(updated_at: ..STALE_PUBLISHING_AFTER.ago) }
   scope :stale_signing, -> { where(status: :awaiting_signature).where(updated_at: ..STALE_SIGNING_AFTER.ago) }

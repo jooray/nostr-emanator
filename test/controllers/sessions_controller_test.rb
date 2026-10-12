@@ -24,7 +24,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
       pubkey: pubkey,
       kind: 22_242,
       content: "Sign in to Emanator",
-      tags: [["challenge", challenge], ["domain", "emanator.cypherpunk.today"]]
+      tags: [ [ "challenge", challenge ], [ "domain", "emanator.cypherpunk.today" ] ]
     )
 
     post auth_nostr_callback_path, params: { pubkey: pubkey, signed_event: event.to_json }

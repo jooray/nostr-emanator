@@ -1,0 +1,51 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "File Access",
+      "warning_code": 16,
+      "fingerprint": "248e0a7568de33d11eb1fbe79d78aa3e26de40a4e237c9306ec2b3365b5b8418",
+      "check_name": "FileAccess",
+      "message": "Model attribute used in file name",
+      "file": "app/services/blossom_upload_intake.rb",
+      "line": 77,
+      "link": "https://brakemanscanner.org/docs/warning_types/file_access/",
+      "code": "FileUtils.mkdir_p(BlossomUpload.staging_dir)",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "BlossomUploadIntake",
+        "method": "stage_file!"
+      },
+      "user_input": "BlossomUpload.staging_dir",
+      "confidence": "Medium",
+      "cwe_id": [
+        22
+      ],
+      "note": "False positive: BlossomUpload.staging_dir is the fixed Rails.root/tmp/blossom_uploads; the file name is the row id plus SecureRandom hex. No user input reaches the path."
+    },
+    {
+      "warning_type": "File Access",
+      "warning_code": 16,
+      "fingerprint": "afbc33ca7ddb9ddfb8c459155e38433b31ea9e648d50d9a3635038f89df591ad",
+      "check_name": "FileAccess",
+      "message": "Model attribute used in file name",
+      "file": "app/services/blossom_upload_intake.rb",
+      "line": 80,
+      "link": "https://brakemanscanner.org/docs/warning_types/file_access/",
+      "code": "File.open(BlossomUpload.staging_dir.join(\"#{upload.id}-#{SecureRandom.hex(8)}\").to_s, \"wb\")",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "BlossomUploadIntake",
+        "method": "stage_file!"
+      },
+      "user_input": "BlossomUpload.staging_dir.join(\"#{upload.id}-#{SecureRandom.hex(8)}\").to_s",
+      "confidence": "Medium",
+      "cwe_id": [
+        22
+      ],
+      "note": "False positive: BlossomUpload.staging_dir is the fixed Rails.root/tmp/blossom_uploads; the file name is the row id plus SecureRandom hex. No user input reaches the path."
+    }
+  ],
+  "brakeman_version": "8.1.0"
+}

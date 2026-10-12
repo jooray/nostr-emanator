@@ -36,14 +36,14 @@ Rails.application.routes.draw do
       get :profile_status
     end
     resources :posts, shallow: true
-    resources :nostr_actions, only: [:create], shallow: true
-    resources :blossom_uploads, only: [:create]
+    resources :nostr_actions, only: [ :create ], shallow: true
+    resources :blossom_uploads, only: [ :create ]
   end
 
   # Upload progress polling (C6): created nested under an account, polled by id.
-  resources :blossom_uploads, only: [:show]
+  resources :blossom_uploads, only: [ :show ]
 
-  resources :nostr_actions, only: [:show] do
+  resources :nostr_actions, only: [ :show ] do
     member do
       post :retry
     end
@@ -53,12 +53,12 @@ Rails.application.routes.draw do
   get "mentions", to: "mentions#index", as: :mentions
 
   # Interactions (global view across all accounts)
-  resources :interactions, only: [:index]
+  resources :interactions, only: [ :index ]
 
   # Messages — one private-DM inbox across every paired account.
   get "messages", to: "conversations#index", as: :messages
   post "messages/mark_all_read", to: "conversations#mark_all_read", as: :mark_all_read_messages
-  resources :conversations, only: [:show], path: "messages" do
+  resources :conversations, only: [ :show ], path: "messages" do
     member do
       post :accept
       post :block
@@ -67,7 +67,7 @@ Rails.application.routes.draw do
       # a peer's DM relay list is still being looked up.
       get :composer
     end
-    resources :messages, only: [:create]
+    resources :messages, only: [ :create ]
   end
   post "messages/:id/retry", to: "messages#retry", as: :retry_message
   # Resend a failed private message as an acknowledged legacy one, for a
@@ -83,7 +83,7 @@ Rails.application.routes.draw do
   # id="failed", raised RecordNotFound, and Turbo swallowed the 404 — the button
   # appeared to do nothing at all.
   delete "failed_posts", to: "posts#discard_failed", as: :discard_failed_posts
-  resources :posts, only: [:index] do
+  resources :posts, only: [ :index ] do
     member do
       get :schedule
       post :sign
@@ -93,7 +93,7 @@ Rails.application.routes.draw do
       post :cancel
       post :reschedule
     end
-    resources :reposts, only: [:destroy] do
+    resources :reposts, only: [ :destroy ] do
       member do
         post :retry_sign
         post :rebroadcast
@@ -126,7 +126,7 @@ Rails.application.routes.draw do
   post "locale", to: "locales#update", as: :locale
 
   # API tokens (for MCP access)
-  resources :api_tokens, only: [:create, :destroy]
+  resources :api_tokens, only: [ :create, :destroy ]
 
   # MCP (Model Context Protocol) endpoint — auth via Authorization: Bearer <api token>
   post "/mcp", to: "mcp/server#handle"

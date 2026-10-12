@@ -29,10 +29,10 @@ class Repost < ApplicationRecord
 
   validates :account_id, uniqueness: { scope: :post_id }
 
-  scope :upcoming, -> { where(status: [:scheduled, :awaiting_signature]).where("scheduled_at > ?", Time.current).order(scheduled_at: :asc) }
+  scope :upcoming, -> { where(status: [ :scheduled, :awaiting_signature ]).where("scheduled_at > ?", Time.current).order(scheduled_at: :asc) }
   scope :stale_publishing, -> { where(status: :publishing).where(updated_at: ..STALE_PUBLISHING_AFTER.ago) }
   # L17: `pending_signature` reposts are touched by no job — sweep them too.
-  scope :stale_signing, -> { where(status: [:awaiting_signature, :pending_signature]).where(updated_at: ..STALE_SIGNING_AFTER.ago) }
+  scope :stale_signing, -> { where(status: [ :awaiting_signature, :pending_signature ]).where(updated_at: ..STALE_SIGNING_AFTER.ago) }
 
   # C4: allow cancelling a repost abandoned mid-publish.
   def can_cancel?

@@ -196,9 +196,9 @@ module Nostr
 
       report(:signing, if attempt && attempts
                          I18n.t("blossom_uploads.steps.approve_attempt", attempt: attempt, count: attempts)
-                       else
+      else
                          I18n.t("blossom_uploads.steps.approve")
-                       end)
+      end)
 
       signed = @signer.request_signature(@account, unsigned)
       raise SigningError, "Signing timed out or was rejected" unless signed

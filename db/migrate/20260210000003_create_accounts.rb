@@ -20,6 +20,6 @@ class CreateAccounts < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :accounts, [:user_id, :pubkey_hex], unique: true
+    add_index :accounts, [ :user_id, :pubkey_hex ], unique: true
   end
 end

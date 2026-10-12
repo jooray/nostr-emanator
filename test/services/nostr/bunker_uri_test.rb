@@ -36,14 +36,14 @@ class NostrBunkerUriTest < ActiveSupport::TestCase
   test "extracts pubkey, relays and secret" do
     uri = "bunker://#{PUBKEY}?relay=wss%3A%2F%2Fnos.lol&relay=wss%3A%2F%2Frelay.primal.net&secret=s3cr3t"
 
-    assert_equal({ pubkey: PUBKEY, relays: ["wss://nos.lol", "wss://relay.primal.net"], secret: "s3cr3t" },
+    assert_equal({ pubkey: PUBKEY, relays: [ "wss://nos.lol", "wss://relay.primal.net" ], secret: "s3cr3t" },
                  Nostr::KeyConverter.parse_bunker_uri(uri))
   end
 
   test "accepts unescaped relay values, which signers do emit" do
     result = Nostr::KeyConverter.parse_bunker_uri("bunker://#{PUBKEY}?relay=wss://nos.lol")
 
-    assert_equal ["wss://nos.lol"], result[:relays]
+    assert_equal [ "wss://nos.lol" ], result[:relays]
   end
 
   test "treats a missing secret as nil rather than empty string" do
@@ -68,7 +68,7 @@ class NostrBunkerUriTest < ActiveSupport::TestCase
   end
 
   test "returns nil rather than raising on junk" do
-    ["", "bunker://", "not a uri", "bunker://%%%?relay=x"].each do |junk|
+    [ "", "bunker://", "not a uri", "bunker://%%%?relay=x" ].each do |junk|
       assert_nil Nostr::KeyConverter.parse_bunker_uri(junk), "expected nil for #{junk.inspect}"
     end
   end
@@ -128,7 +128,7 @@ class NostrBunkerUriTest < ActiveSupport::TestCase
     session = NostrAuthSession.new(
       session_id: SecureRandom.uuid, flow: "nostrconnect",
       temp_pubkey: PUBKEY, temp_privkey: "b" * 64, secret: "",
-      relay_url: ["wss://nos.lol"].to_json, expires_at: 5.minutes.from_now
+      relay_url: [ "wss://nos.lol" ].to_json, expires_at: 5.minutes.from_now
     )
 
     refute session.valid?
@@ -139,7 +139,7 @@ class NostrBunkerUriTest < ActiveSupport::TestCase
     session = NostrAuthSession.new(
       session_id: SecureRandom.uuid, flow: "bunker",
       temp_pubkey: PUBKEY, temp_privkey: "b" * 64, secret: "",
-      relay_url: ["wss://nos.lol"].to_json, expires_at: 5.minutes.from_now
+      relay_url: [ "wss://nos.lol" ].to_json, expires_at: 5.minutes.from_now
     )
 
     refute session.valid?

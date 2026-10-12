@@ -15,7 +15,7 @@ class CreateReposts < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :reposts, [:post_id, :account_id], unique: true
+    add_index :reposts, [ :post_id, :account_id ], unique: true
     add_index :reposts, :scheduled_at
   end
 end

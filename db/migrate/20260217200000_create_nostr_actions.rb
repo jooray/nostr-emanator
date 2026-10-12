@@ -17,8 +17,8 @@ class CreateNostrActions < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :nostr_actions, [:account_id, :action_type, :status]
-    add_index :nostr_actions, [:account_id, :target_event_id]
-    add_index :nostr_actions, [:account_id, :target_pubkey]
+    add_index :nostr_actions, [ :account_id, :action_type, :status ]
+    add_index :nostr_actions, [ :account_id, :target_event_id ]
+    add_index :nostr_actions, [ :account_id, :target_pubkey ]
   end
 end

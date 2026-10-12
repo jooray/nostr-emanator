@@ -54,10 +54,10 @@ module Nostr
       end
 
       mention_tags = mention_hints.map do |pubkey, hint|
-        hint.present? ? ["p", pubkey, hint] : ["p", pubkey]
+        hint.present? ? [ "p", pubkey, hint ] : [ "p", pubkey ]
       end
 
-      quote_tags + mention_tags + ContentRefs.hashtags(@content).map { |tag| ["t", tag] }
+      quote_tags + mention_tags + ContentRefs.hashtags(@content).map { |tag| [ "t", tag ] }
     end
 
     private
@@ -73,7 +73,7 @@ module Nostr
 
       # The 4th element is positional, so the relay slot has to be present (even
       # empty) for a reader to find the author.
-      author ? ["q", ref.event_id, hint, author] : ["q", ref.event_id, hint]
+      author ? [ "q", ref.event_id, hint, author ] : [ "q", ref.event_id, hint ]
     end
 
     def address_tag(ref, mention_hints)
@@ -82,7 +82,7 @@ module Nostr
 
       hint = ref.relays.first.to_s
       record_mention(mention_hints, ref.pubkey, hint)
-      hint.present? ? ["a", coordinate, hint] : ["a", coordinate]
+      hint.present? ? [ "a", coordinate, hint ] : [ "a", coordinate ]
     end
 
     def record_mention(mention_hints, pubkey, hint)
@@ -122,7 +122,7 @@ module Nostr
         return nil
       end
 
-      event = Nostr::EventFetcher.new.fetch_by_ids([event_id])&.values&.first
+      event = Nostr::EventFetcher.new.fetch_by_ids([ event_id ])&.values&.first
       return nil if event.blank?
 
       Rails.cache.write(

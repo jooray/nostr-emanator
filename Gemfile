@@ -43,7 +43,7 @@ gem "ecdsa"
 gem "httpx"
 
 # Environment variables management
-gem "dotenv-rails", groups: [:development, :test]
+gem "dotenv-rails", groups: [ :development, :test ]
 
 # Billing client for the hosted service (vendored from nostr-billing; inert
 # unless BILLING_API_URL is set)

@@ -88,11 +88,11 @@ module Nostr
       return :error unless socket
 
       begin
-        WebsocketConnection.send_text(socket, ["EVENT", signed_event].to_json, deadline)
+        WebsocketConnection.send_text(socket, [ "EVENT", signed_event ].to_json, deadline)
 
         while Time.current < deadline
           ready = WebsocketConnection.readable_now?(socket) ||
-            IO.select([socket], nil, nil, WebsocketConnection.select_timeout(deadline))
+            IO.select([ socket ], nil, nil, WebsocketConnection.select_timeout(deadline))
           next unless ready
 
           data = read_websocket_frame(socket, deadline)

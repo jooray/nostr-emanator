@@ -16,7 +16,7 @@ class CreatePosts < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :posts, [:account_id, :status]
+    add_index :posts, [ :account_id, :status ]
     add_index :posts, :scheduled_at
   end
 end

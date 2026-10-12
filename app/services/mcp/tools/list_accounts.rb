@@ -24,7 +24,7 @@ module Mcp
         totals = Post.where(account_id: ids).group(:account_id).count
         published = Post.where(account_id: ids, status: :published).group(:account_id).count
         drafts = Post.where(account_id: ids, status: :draft).group(:account_id).count
-        upcoming = Post.where(account_id: ids, status: [:scheduled, :awaiting_signature])
+        upcoming = Post.where(account_id: ids, status: [ :scheduled, :awaiting_signature ])
           .where("scheduled_at > ?", Time.current)
           .group(:account_id).count
 

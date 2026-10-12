@@ -9,7 +9,7 @@ class EnqueueScheduledPostsJobTest < ActiveSupport::TestCase
   def test_enqueues_due_signed_posts
     post = build_post(status: :scheduled, scheduled_at: 1.minute.ago, signed_event: fake_event)
 
-    assert_enqueued_with(job: PublishPostJob, args: [post.id]) do
+    assert_enqueued_with(job: PublishPostJob, args: [ post.id ]) do
       EnqueueScheduledPostsJob.perform_now
     end
   end
@@ -46,7 +46,7 @@ class EnqueueScheduledPostsJobTest < ActiveSupport::TestCase
     repost = build_repost(post: post, status: :scheduled, scheduled_at: 1.minute.ago, signed_event: fake_event)
     post.update_columns(status: Post.statuses[:published], published_at: Time.current)
 
-    assert_enqueued_with(job: PublishRepostJob, args: [repost.id]) do
+    assert_enqueued_with(job: PublishRepostJob, args: [ repost.id ]) do
       EnqueueScheduledPostsJob.perform_now
     end
   end

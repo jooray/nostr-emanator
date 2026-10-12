@@ -37,7 +37,7 @@ class SyncMuteListsJob < ApplicationJob
   private
 
   def mute_list_sources(user)
-    ([user.pubkey_hex] + user.accounts.pluck(:pubkey_hex)).compact.uniq
+    ([ user.pubkey_hex ] + user.accounts.pluck(:pubkey_hex)).compact.uniq
   end
 
   def collect_relays(user)

@@ -6,7 +6,7 @@ module Nostr
 
     def initialize
       @config = Rails.application.config_for(:emanator)
-      @relays = @config.dig(:nostr, :relays) || ["wss://relay.damus.io"]
+      @relays = @config.dig(:nostr, :relays) || [ "wss://relay.damus.io" ]
     end
 
     # Fetch kind 10002 (NIP-65) relay list for a pubkey
@@ -43,7 +43,7 @@ module Nostr
     def fetch_relay_list_event(relay_url, pubkey_hex)
       events = RelayQuery.run(
         relay_url,
-        { "kinds" => [10002], "authors" => [pubkey_hex], "limit" => 1 },
+        { "kinds" => [ 10002 ], "authors" => [ pubkey_hex ], "limit" => 1 },
         timeout: TIMEOUT,
         stop_after_first: true,
         kind: 10002,

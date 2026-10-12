@@ -12,7 +12,7 @@ module Mcp
         {
           type: "object",
           additionalProperties: false,
-          required: ["post_id"],
+          required: [ "post_id" ],
           properties: {
             post_id: { type: "integer" }
           }

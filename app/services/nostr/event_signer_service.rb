@@ -93,14 +93,14 @@ module Nostr
 
       if root_event_id && root_event_id != parent_event_id
         # Threaded reply: root + reply markers
-        tags << ["e", root_event_id, relay_hint, "root"]
-        tags << ["e", parent_event_id, relay_hint, "reply"]
+        tags << [ "e", root_event_id, relay_hint, "root" ]
+        tags << [ "e", parent_event_id, relay_hint, "reply" ]
       else
         # Direct reply to root post
-        tags << ["e", parent_event_id, relay_hint, "root"]
+        tags << [ "e", parent_event_id, relay_hint, "root" ]
       end
 
-      tags << ["p", parent_author_pubkey]
+      tags << [ "p", parent_author_pubkey ]
 
       # Mentions and quotes written into the reply body still need tags, but the
       # thread's own events must not be restated: the parent is an `e` tag, and
@@ -108,8 +108,8 @@ module Nostr
       tags += ContentTagger.tags_for(
         content,
         author_pubkey: pubkey,
-        exclude_event_ids: [parent_event_id, root_event_id].compact,
-        exclude_pubkeys: [parent_author_pubkey],
+        exclude_event_ids: [ parent_event_id, root_event_id ].compact,
+        exclude_pubkeys: [ parent_author_pubkey ],
         allow_fetch: allow_fetch
       )
 
@@ -125,8 +125,8 @@ module Nostr
     # Build unsigned repost event (kind 6)
     def build_unsigned_repost(original_event:, pubkey:, created_at:)
       tags = [
-        ["e", original_event["id"], ""],
-        ["p", original_event["pubkey"]]
+        [ "e", original_event["id"], "" ],
+        [ "p", original_event["pubkey"] ]
       ]
 
       build_unsigned_event(
@@ -150,7 +150,7 @@ module Nostr
       nip46_request = {
         "id" => request_id,
         "method" => "sign_event",
-        "params" => [JSON.generate(unsigned_event)]
+        "params" => [ JSON.generate(unsigned_event) ]
       }
       encrypted = Nip44.encrypt(
         Nip44.conversation_key(account.app_privkey, account.signer_pubkey),
@@ -215,26 +215,26 @@ module Nostr
       while Time.now < deadline
         socket = create_websocket(uri, deadline: deadline)
         unless socket
-          sleep [backoff, [deadline - Time.now, 0].max].min
-          backoff = [backoff * 2, 10].min
+          sleep [ backoff, [ deadline - Time.now, 0 ].max ].min
+          backoff = [ backoff * 2, 10 ].min
           next
         end
 
         # Subscribe before publishing so fast responses cannot be missed.
         sub_id = "sign-#{SecureRandom.hex(4)}"
-        req = ["REQ", sub_id, {
-          "kinds" => [24133],
-          "#p" => [account.app_pubkey],
-          "authors" => [account.signer_pubkey],
+        req = [ "REQ", sub_id, {
+          "kinds" => [ 24133 ],
+          "#p" => [ account.app_pubkey ],
+          "authors" => [ account.signer_pubkey ],
           "since" => Time.now.to_i - 5
-        }]
+        } ]
         write_message(socket, req, deadline)
 
-        write_message(socket, ["EVENT", sign_request_event], deadline)
+        write_message(socket, [ "EVENT", sign_request_event ], deadline)
 
         while Time.now < deadline
           ready = WebsocketConnection.readable_now?(socket) ||
-            IO.select([socket], nil, nil, WebsocketConnection.select_timeout(deadline))
+            IO.select([ socket ], nil, nil, WebsocketConnection.select_timeout(deadline))
           next unless ready
 
           data = read_websocket_frame(socket, deadline: deadline)
@@ -298,8 +298,8 @@ module Nostr
         end
 
         close_socket(socket, sub_id)
-        sleep [backoff, [deadline - Time.now, 0].max].min
-        backoff = [backoff * 2, 10].min
+        sleep [ backoff, [ deadline - Time.now, 0 ].max ].min
+        backoff = [ backoff * 2, 10 ].min
       end
 
       nil
@@ -334,7 +334,7 @@ module Nostr
     end
 
     def close_socket(socket, sub_id)
-      write_message(socket, ["CLOSE", sub_id], 1.second.from_now) rescue nil
+      write_message(socket, [ "CLOSE", sub_id ], 1.second.from_now) rescue nil
       socket.close rescue nil
     end
 

@@ -25,7 +25,7 @@ module Api
 
         return render_error(user.errors.full_messages.join(" ")) unless user.save
 
-        MediaPreferences.update!(user, params[:media].permit!.to_h) if params[:media].respond_to?(:permit!)
+        MediaPreferences.update!(user, params[:media].permit(*MediaPreferences::DEFAULTS.keys).to_h) if params[:media].respond_to?(:permit)
         I18n.locale = user.locale || I18n.locale
         render json: me_payload
       end

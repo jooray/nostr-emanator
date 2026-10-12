@@ -11,7 +11,7 @@ class LocaleFilesTest < ActiveSupport::TestCase
 
   def flatten(hash, prefix = nil)
     hash.each_with_object({}) do |(key, value), out|
-      path = [prefix, key].compact.join(".")
+      path = [ prefix, key ].compact.join(".")
       if value.is_a?(Hash) && !plural?(value)
         out.merge!(flatten(value, path))
       else
@@ -67,7 +67,7 @@ class LocaleFilesTest < ActiveSupport::TestCase
       area = File.basename(File.dirname(english_file))
       plural_keys = keys_in(english_file, "en").select { |_, v| v.is_a?(Hash) }.keys
 
-      (LOCALES + ["en"]).each do |locale|
+      (LOCALES + [ "en" ]).each do |locale|
         rule = I18n.t("i18n.plural.rule", locale: locale, resolve: false)
         next unless rule.respond_to?(:call)
 

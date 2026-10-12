@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class NostrActionsController < ApplicationController
-  before_action :set_account, only: [:create]
-  before_action :set_nostr_action, only: [:show, :retry]
+  before_action :set_account, only: [ :create ]
+  before_action :set_nostr_action, only: [ :show, :retry ]
 
   def create
     action, error = NostrAction.request!(@account, action_params)

@@ -33,9 +33,9 @@ class NostrAuthSession < ApplicationRecord
   # relay_url stores a JSON array of relay URLs (backwards-compatible with single string)
   def relay_urls
     parsed = JSON.parse(relay_url)
-    parsed.is_a?(Array) ? parsed : [parsed]
+    parsed.is_a?(Array) ? parsed : [ parsed ]
   rescue JSON::ParserError
-    [relay_url]
+    [ relay_url ]
   end
 
   def expired?
