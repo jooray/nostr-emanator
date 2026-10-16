@@ -19,6 +19,26 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntRect
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupPositionProvider
+import androidx.compose.ui.window.PopupProperties
+import kotlin.math.roundToInt
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -160,16 +180,31 @@ fun ComposeScreen(nav: NavHostController, accountId: Long?, postId: Long?, fromS
                 NoteRow(stringResource(R.string.compose_restored_draft), vm::dismissRestored)
             }
 
-            OutlinedTextField(
-                value = text,
-                onValueChange = vm::onTextChange,
-                placeholder = { Text(stringResource(R.string.compose_placeholder), style = Type.body, color = c.muted) },
-                textStyle = Type.body.copy(color = c.text),
-                enabled = ui.canEdit,
-                modifier = Modifier.fillMaxWidth().heightIn(min = 200.dp),
-            )
-            val mentions by vm.mentions.collectAsState()
-            if (mentions.isNotEmpty()) MentionSuggestions(mentions, vm::pickMention)
+            // The @mention list is a popup at the caret: below the field it ended
+            // up under the keyboard as soon as the text filled the screen.
+            val measurer = rememberTextMeasurer()
+            val density = LocalDensity.current
+            var fieldBounds by remember { mutableStateOf<Rect?>(null) }
+            Box {
+                OutlinedTextField(
+                    value = text,
+                    onValueChange = vm::onTextChange,
+                    placeholder = { Text(stringResource(R.string.compose_placeholder), style = Type.body, color = c.muted) },
+                    textStyle = Type.body.copy(color = c.text),
+                    enabled = ui.canEdit,
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 200.dp)
+                        .onGloballyPositioned { fieldBounds = it.boundsInWindow() },
+                )
+                val mentions by vm.mentions.collectAsState()
+                val bounds = fieldBounds
+                if (mentions.isNotEmpty() && bounds != null) {
+                    // Same text, style and width as inside the field, to find the caret's line.
+                    val inner = (bounds.width - 2 * with(density) { FieldPadding.toPx() }).roundToInt().coerceAtLeast(1)
+                    val layout = measurer.measure(text.text, Type.body, constraints = Constraints(maxWidth = inner))
+                    val caret = layout.getCursorRect(text.selection.start.coerceIn(0, text.text.length))
+                    MentionSuggestions(mentions, caret, bounds, vm::pickMention, vm::dismissMentions)
+                }
+            }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     pluralStringResource(R.plurals.compose_chars, text.text.length, text.text.length),
@@ -447,11 +482,56 @@ private fun BillingNote(billing: Billing, onBilling: () -> Unit) {
 
 private const val MAX_PICK = 10
 
-/** Who "@word" could mean: your own accounts first, then people they follow. */
+/** OutlinedTextField's inner padding: [caret] is relative to the text, not the field. */
+private val FieldPadding = 16.dp
+private val SuggestionRow = 53.dp
+
+/**
+ * Who "@word" could mean: your own accounts first, then people they follow.
+ * Shown under the caret's line, or above it when there is more room there
+ * (the keyboard takes the bottom half), never stealing focus from the field.
+ */
 @Composable
-private fun MentionSuggestions(mentions: List<Mention>, onPick: (Mention) -> Unit) {
+private fun MentionSuggestions(
+    mentions: List<Mention>,
+    caret: Rect,
+    field: Rect,
+    onPick: (Mention) -> Unit,
+    onDismiss: () -> Unit,
+) {
     val c = LocalConsole.current
-    Column(Modifier.fillMaxWidth().border(1.dp, c.rule).background(c.panel)) {
+    val density = LocalDensity.current
+    val view = LocalView.current
+    val pad = with(density) { FieldPadding.toPx() }
+    val gap = with(density) { 4.dp.toPx() }
+    val caretTop = field.top + pad + caret.top
+    val caretBottom = field.top + pad + caret.bottom
+    val bottomEdge = view.rootView.height - maxOf(WindowInsets.ime.getBottom(density), WindowInsets.navigationBars.getBottom(density))
+    val topEdge = WindowInsets.statusBars.getTop(density).toFloat()
+    val roomBelow = bottomEdge - caretBottom - gap
+    val roomAbove = caretTop - topEdge - gap
+    val wanted = with(density) { (SuggestionRow * mentions.size.coerceAtMost(4)).toPx() }
+    val below = roomBelow >= wanted || roomBelow >= roomAbove
+    val maxHeight = with(density) { (if (below) roomBelow else roomAbove).coerceAtLeast(0f).toDp() }
+    val provider = remember(below, caretTop, caretBottom, field.left) {
+        object : PopupPositionProvider {
+            override fun calculatePosition(
+                anchorBounds: IntRect, windowSize: IntSize, layoutDirection: LayoutDirection, popupContentSize: IntSize,
+            ): IntOffset {
+                val y = if (below) caretBottom + gap else caretTop - gap - popupContentSize.height
+                return IntOffset(field.left.roundToInt(), y.roundToInt())
+            }
+        }
+    }
+    Popup(popupPositionProvider = provider, onDismissRequest = onDismiss, properties = PopupProperties(focusable = false)) {
+        MentionList(mentions, Modifier.width(with(density) { field.width.toDp() }).heightIn(max = maxHeight), onPick)
+    }
+}
+
+@Composable
+private fun MentionList(mentions: List<Mention>, modifier: Modifier, onPick: (Mention) -> Unit) {
+    val c = LocalConsole.current
+    Column(modifier.border(1.dp, c.rule).background(c.panel).verticalScroll(rememberScrollState())) {
         mentions.forEachIndexed { index, m ->
             if (index > 0) Rule()
             Row(

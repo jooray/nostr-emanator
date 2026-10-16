@@ -27,8 +27,8 @@ android {
         targetSdk = 36
         // The server compares versionCode against config/emanator.yml →
         // android.min_version_code (X-Emanator-Client). Bump on every release.
-        versionCode = 4
-        versionName = "1.3.0"
+        versionCode = 5
+        versionName = "1.3.1"
         buildConfigField("String", "DEFAULT_SERVER", "\"https://emanator.cypherpunk.today\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
