@@ -163,6 +163,8 @@ sk:
       kind_set_ago_html: Kind %{kind} &middot; nastavené pred %{ago}
       due: Vyjde
       due_in: o %{time}
+      in_reply_to: Odpoveď na
+      view_parent: Zobraziť poznámku
       event: "Udalosť:"
       view_on: Zobraziť na %{viewer}
       show_event_id: Zobraziť ID udalosti
@@ -260,6 +262,7 @@ sk:
       retrying_signature: Žiadosť o podpis sa skúša znova...
       cannot_retry_publish: Zverejnenie nie je možné skúsiť znova.
       retrying_publish: Zverejnenie sa skúša znova...
+      resigning_stale: "Príspevok bol podpísaný príliš dávno a v časovej osi by sa stratil. Podpisovač ťa požiada o nový podpis s aktuálnym časom."
       cannot_rebroadcast: Tento príspevok nie je možné odoslať znova.
       rebroadcasting: Odosiela sa znova na relaye...
       cannot_cancel: Tento príspevok nie je možné zrušiť.

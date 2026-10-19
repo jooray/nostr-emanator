@@ -239,6 +239,8 @@ data class PostItem(
     val status: String,
     @SerialName("is_reply") val isReply: Boolean = false,
     @SerialName("reply_to_event_id") val replyToEventId: String? = null,
+    @SerialName("reply_to_nevent") val replyToNevent: String? = null,
+    @SerialName("reply_to_viewer_url") val replyToViewerUrl: String? = null,
     @SerialName("scheduled_at") val scheduledAt: String? = null,
     @SerialName("published_at") val publishedAt: String? = null,
     @SerialName("created_at") val createdAt: String? = null,

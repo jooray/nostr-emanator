@@ -112,6 +112,8 @@ class ApiSerializer
       is_reply: post.is_reply?,
       reply_to_event_id: post.reply_to_event_id,
       reply_to_pubkey: post.reply_to_pubkey,
+      reply_to_nevent: (nevent_for(post.reply_to_event_id, post.reply_to_pubkey) if post.is_reply?),
+      reply_to_viewer_url: (viewer_event_url(post.reply_to_event_id, post.reply_to_pubkey) if post.is_reply?),
       root_event_id: post.root_event_id,
       scheduled_at: time(post.scheduled_at),
       published_at: time(post.published_at),

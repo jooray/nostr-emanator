@@ -34,6 +34,7 @@
     <string name="post_edit">Upraviť</string>
     <string name="post_schedule">Naplánovať</string>
     <string name="post_reschedule">Preplánovať</string>
+    <string name="post_in_reply_to">Odpoveď na: zobraziť poznámku</string>
     <string name="post_reschedule_confirm">Preplánovať tento príspevok? Vráti sa do konceptu na opätovné podpísanie.</string>
     <string name="post_cancel_schedule">Zrušiť naplánovanie</string>
     <string name="post_cancel_confirm">Zrušiť tento príspevok? Všetky reposty sa odstránia a príspevok sa vráti do konceptu.</string>

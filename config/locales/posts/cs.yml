@@ -152,6 +152,8 @@ cs:
       kind_set_ago_html: "Kind %{kind} &middot; nastaveno před %{ago}"
       due: Termín
       due_in: "za %{time}"
+      in_reply_to: Odpověď na
+      view_parent: Zobrazit poznámku
       event: "Událost:"
       view_on: "Zobrazit na %{viewer}"
       show_event_id: Zobrazit ID události
@@ -244,6 +246,7 @@ cs:
       retrying_signature: Znovu se žádá o podpis...
       cannot_retry_publish: Zveřejnění nelze zkusit znovu.
       retrying_publish: Zkouší se zveřejnit znovu...
+      resigning_stale: "Příspěvek byl podepsán příliš dávno a na časové ose by zapadl. Podepisovač tě požádá o nový podpis s aktuálním časem."
       cannot_rebroadcast: Tento příspěvek nelze znovu odeslat.
       rebroadcasting: Odesílá se znovu na relaye...
       cannot_cancel: Tento příspěvek nelze zrušit.

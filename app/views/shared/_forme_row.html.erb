@@ -74,9 +74,13 @@
       <% end %>
     <% elsif failed %>
       <%# A failed repost retries through its own signing path: it has its own
-          signed event, and retrying the note would not resend it. %>
+          signed event, and retrying the note would not resend it. A note that
+          was never signed has nothing to publish, so it is signed first. %>
       <%= button_to t(".retry"),
-            is_repost ? retry_sign_post_repost_path(post.post, post) : retry_publish_post_path(post),
+            if is_repost then retry_sign_post_repost_path(post.post, post)
+            elsif post.can_retry_publish? then retry_publish_post_path(post)
+            else retry_sign_post_path(post)
+            end,
             method: :post,
             class: "slug slug--short", form_class: "inline" %>
     <% else %>

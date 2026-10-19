@@ -62,8 +62,10 @@ class Post < ApplicationRecord
     awaiting_signature? || scheduled? || failed? || publishing?
   end
 
+  # A reply is sent the moment it is signed, never scheduled: the scheduler
+  # builds a plain note, so rescheduling one would drop its reply tags.
   def can_reschedule?
-    awaiting_signature? || scheduled? || failed?
+    !is_reply? && (awaiting_signature? || scheduled? || failed?)
   end
 
   def can_retry_publish?
@@ -149,12 +151,34 @@ class Post < ApplicationRecord
     (awaiting_signature? || (failed? && signed_event.blank?)) && unsigned_event.present?
   end
 
+  # A failed note is rebuilt rather than re-signed as it was. Feeds are sorted
+  # by created_at, so a note signed with the time its first attempt failed
+  # would go out already buried: nobody saw it then, and nobody would see it
+  # now. A reply is dated now; a note keeps its hour while that is still ahead.
   def retry_signing!
-    update!(status: :awaiting_signature, publish_results: nil) if failed?
-    SignPostJob.perform_later(id)
+    return SignPostJob.perform_later(id) unless failed?
+
+    self.publish_results = nil
+    rebuild_and_sign!
   end
 
+  # A signed note that reached no relay and is older than this is signed again,
+  # dated now, rather than sent as it was: the same burial as above.
+  RESIGN_AFTER = 15.minutes
+
+  def resign_on_retry?
+    failed? && delivery_ok_count.zero? && account.has_signer? &&
+      signed_event.present? && Time.at(signed_event["created_at"].to_i) < RESIGN_AFTER.ago
+  end
+
+  # Returns :sign when the note went back to the signer, :publish otherwise.
   def retry_publishing!
+    if resign_on_retry?
+      assign_attributes(signed_event: nil, event_id: nil, publish_results: nil)
+      rebuild_and_sign!
+      return :sign
+    end
+
     update!(status: :scheduled, publish_results: nil)
     PublishPostJob.perform_later(id)
 
@@ -162,6 +186,7 @@ class Post < ApplicationRecord
       repost.update!(status: :scheduled, publish_results: nil)
       PublishRepostJob.perform_later(repost.id)
     end
+    :publish
   end
 
   # Everything of this user's that never went out, posts and reposts alike —
@@ -182,6 +207,32 @@ class Post < ApplicationRecord
   end
 
   private
+
+  def rebuild_and_sign!
+    is_reply? ? start_reply_signing! : redate_and_sign!
+  end
+
+  # Reposts embed the note's event, so a re-dated note invalidates every one
+  # not yet out. Each keeps its own delay after the note's new time; reposts the
+  # sweeper failed while the note waited come back with it.
+  def redate_and_sign!
+    signer = Nostr::EventSignerService.new
+    at = [ scheduled_at, Time.current ].compact.max
+    unsigned = signer.build_unsigned_note(content: content, kind: event_kind, pubkey: account.pubkey_hex, created_at: at)
+
+    transaction do
+      update!(unsigned_event: unsigned, scheduled_at: at, status: :awaiting_signature)
+      reposts.where.not(status: :published).includes(:account).find_each do |repost|
+        repost_at = at + repost.delay_minutes.to_i.minutes
+        repost.update!(
+          unsigned_event: signer.build_unsigned_repost(original_event: unsigned, pubkey: repost.account.pubkey_hex, created_at: repost_at),
+          scheduled_at: repost_at, signed_event: nil, event_id: nil,
+          status: :awaiting_signature, publish_results: nil
+        )
+      end
+    end
+    SignPostJob.perform_later(id)
+  end
 
   def normalize_nostr_references
     return unless will_save_change_to_content?

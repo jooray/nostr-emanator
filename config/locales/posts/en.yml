@@ -141,6 +141,8 @@ en:
       kind_set_ago_html: "Kind %{kind} &middot; set %{ago} ago"
       due: Due
       due_in: "in %{time}"
+      in_reply_to: In reply to
+      view_parent: View the note
       event: "Event:"
       view_on: "View on %{viewer}"
       show_event_id: Show event ID
@@ -228,6 +230,7 @@ en:
       retrying_signature: Retrying signature request...
       cannot_retry_publish: Cannot retry publishing.
       retrying_publish: Retrying publish...
+      resigning_stale: "It was signed too long ago and would be buried in the timeline. Your signer will ask you to sign it again, dated now."
       cannot_rebroadcast: Cannot rebroadcast this post.
       rebroadcasting: Rebroadcasting to relays...
       cannot_cancel: Cannot cancel this post.

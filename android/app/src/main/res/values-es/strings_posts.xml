@@ -34,6 +34,7 @@
     <string name="post_edit">Editar</string>
     <string name="post_schedule">Programar</string>
     <string name="post_reschedule">Reprogramar</string>
+    <string name="post_in_reply_to">En respuesta a: ver la nota</string>
     <string name="post_reschedule_confirm">¿Reprogramar esta publicación? Volverá a borrador para firmarla de nuevo.</string>
     <string name="post_cancel_schedule">Cancelar programación</string>
     <string name="post_cancel_confirm">¿Cancelar esta publicación? Se eliminarán todos los reposts y volverá a borrador.</string>

@@ -34,6 +34,7 @@
     <string name="post_edit">Upravit</string>
     <string name="post_schedule">Naplánovat</string>
     <string name="post_reschedule">Přeplánovat</string>
+    <string name="post_in_reply_to">Odpověď na: zobrazit poznámku</string>
     <string name="post_reschedule_confirm">Přeplánovat tento příspěvek? Vrátí se do konceptu kvůli novému podpisu.</string>
     <string name="post_cancel_schedule">Zrušit naplánování</string>
     <string name="post_cancel_confirm">Zrušit tento příspěvek? Všechny reposty se odstraní a příspěvek se vrátí do konceptu.</string>

@@ -34,6 +34,7 @@
     <string name="post_edit">Edit</string>
     <string name="post_schedule">Schedule</string>
     <string name="post_reschedule">Reschedule</string>
+    <string name="post_in_reply_to">In reply to: view the note</string>
     <string name="post_reschedule_confirm">Reschedule this post? It will return to draft for re-signing.</string>
     <string name="post_cancel_schedule">Cancel Schedule</string>
     <string name="post_cancel_confirm">Cancel this post? All reposts will be removed and the post will return to draft.</string>

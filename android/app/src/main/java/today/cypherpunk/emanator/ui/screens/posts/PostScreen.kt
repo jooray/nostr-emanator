@@ -241,7 +241,7 @@ fun PostScreen(nav: NavHostController, id: Long) {
                     Identity(p.account, Modifier.weight(1f), size = 28.dp)
                     StatusSlug(p.status)
                 }
-                Stamps(p)
+                Stamps(p, onOpenParent = { Links.openNostr(context, p.replyToNevent, p.replyToViewerUrl) })
                 RichContent(p.content, p.references)
                 Rule()
 
@@ -327,7 +327,7 @@ fun PostScreen(nav: NavHostController, id: Long) {
 }
 
 @Composable
-private fun Stamps(p: PostItem) {
+private fun Stamps(p: PostItem, onOpenParent: () -> Unit) {
     val c = LocalConsole.current
     val scheduled = Times.parse(p.scheduledAt)
     val published = Times.parse(p.publishedAt)
@@ -336,6 +336,16 @@ private fun Stamps(p: PostItem) {
             Text(stringResource(R.string.post_published_at, Times.dateTime(published)), style = Type.mono, color = c.legend)
         } else if (scheduled != null) {
             Text(stringResource(R.string.post_scheduled_for, Times.dateTime(scheduled)), style = Type.mono, color = c.legend)
+        }
+        // A reply has no other trace on this screen; without it a failed reply
+        // looks like a standalone note.
+        if (p.isReply && (p.replyToNevent != null || p.replyToViewerUrl != null)) {
+            Text(
+                stringResource(R.string.post_in_reply_to),
+                Modifier.clickable(onClick = onOpenParent),
+                style = Type.mono,
+                color = c.amberText,
+            )
         }
     }
 }

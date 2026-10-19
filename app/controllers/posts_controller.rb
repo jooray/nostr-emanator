@@ -212,14 +212,16 @@ class PostsController < ApplicationController
   end
 
   def retry_publish
+    # Nothing was signed, so there is nothing to publish yet: sign it first.
+    return retry_sign if !@post.can_retry_publish? && @post.can_retry_sign?
+
     unless @post.can_retry_publish?
       redirect_to @post, alert: t("posts.flash.cannot_retry_publish")
       return
     end
 
-    @post.retry_publishing!
-
-    redirect_to @post, notice: t("posts.flash.retrying_publish")
+    notice = @post.retry_publishing! == :sign ? t("posts.flash.resigning_stale") : t("posts.flash.retrying_publish")
+    redirect_to @post, notice: notice
   end
 
   def rebroadcast

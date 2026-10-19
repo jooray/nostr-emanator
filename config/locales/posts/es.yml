@@ -141,6 +141,8 @@ es:
       kind_set_ago_html: "Kind %{kind} &middot; fijado hace %{ago}"
       due: Sale
       due_in: "en %{time}"
+      in_reply_to: En respuesta a
+      view_parent: Ver la nota
       event: "Evento:"
       view_on: "Ver en %{viewer}"
       show_event_id: Mostrar el ID del evento
@@ -228,6 +230,7 @@ es:
       retrying_signature: Reintentando la solicitud de firma…
       cannot_retry_publish: No se puede reintentar la publicación.
       retrying_publish: Reintentando la publicación…
+      resigning_stale: "Se firmó hace demasiado y quedaría enterrado en el feed. Tu firmador te pedirá firmarlo de nuevo con la hora actual."
       cannot_rebroadcast: No se puede retransmitir esta publicación.
       rebroadcasting: Retransmitiendo a los relays…
       cannot_cancel: No se puede cancelar esta publicación.

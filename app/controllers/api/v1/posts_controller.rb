@@ -102,10 +102,11 @@ module Api
       end
 
       def retry_publish
+        return retry_sign if !@post.can_retry_publish? && @post.can_retry_sign?
         return render_error(I18n.t("posts.flash.cannot_retry_publish")) unless @post.can_retry_publish?
 
-        @post.retry_publishing!
-        respond_with_post(I18n.t("posts.flash.retrying_publish"))
+        outcome = @post.retry_publishing!
+        respond_with_post(I18n.t(outcome == :sign ? "posts.flash.resigning_stale" : "posts.flash.retrying_publish"))
       end
 
       def rebroadcast
