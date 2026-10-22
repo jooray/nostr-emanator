@@ -22,6 +22,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -48,6 +49,7 @@ import today.cypherpunk.emanator.data.Loadable
 import today.cypherpunk.emanator.data.PostItem
 import today.cypherpunk.emanator.data.PostResponse
 import today.cypherpunk.emanator.data.cachedFlow
+import today.cypherpunk.emanator.ui.LocalContainer
 import today.cypherpunk.emanator.ui.Routes
 import today.cypherpunk.emanator.ui.appViewModel
 import today.cypherpunk.emanator.ui.components.AlarmBlock
@@ -203,6 +205,9 @@ fun PostScreen(nav: NavHostController, id: Long) {
     val deleted by vm.deleted.collectAsState()
     val busy by vm.busy.collectAsState()
     val snackbar = rememberSnackbar()
+    val scope = rememberCoroutineScope()
+    val container = LocalContainer.current
+    val me by container.me.collectAsState()
     val context = LocalContext.current
     val c = LocalConsole.current
     var confirm by remember { mutableStateOf<Confirm?>(null) }
@@ -293,6 +298,31 @@ fun PostScreen(nav: NavHostController, id: Long) {
                     }
                     p.nevent?.let { nevent ->
                         SecondaryButton(stringResource(R.string.action_copy_nevent), { Links.copy(context, "nevent", nevent) })
+                    }
+                    // Optional in settings (web: users/edit): Emanator does not
+                    // hand notes to other networks unless asked. Copy and the
+                    // generic share icon are in the header and stay untouched.
+                    val sharing = me?.user?.settings
+                    val text = p.content?.trim().orEmpty()
+                    if (sharing?.xShare == true && text.isNotEmpty()) {
+                        SecondaryButton(stringResource(R.string.post_share_on_x), { Links.composeX(context, text) })
+                    }
+                    // Facebook and LinkedIn take no text from a URL: into their app
+                    // when it is installed, otherwise copied + their site open.
+                    val copiedNotice = context.getString(R.string.post_share_copied)
+                    if (sharing?.facebookShare == true && text.isNotEmpty()) {
+                        SecondaryButton(stringResource(R.string.post_share_on_facebook), {
+                            if (!Links.shareTextTo(context, Links.FACEBOOK_PACKAGE, text, Links.FACEBOOK_WEB)) {
+                                scope.launch { snackbar.showSnackbar(copiedNotice) }
+                            }
+                        })
+                    }
+                    if (sharing?.linkedinShare == true && text.isNotEmpty()) {
+                        SecondaryButton(stringResource(R.string.post_share_on_linkedin), {
+                            if (!Links.shareTextTo(context, Links.LINKEDIN_PACKAGE, text, Links.LINKEDIN_WEB)) {
+                                scope.launch { snackbar.showSnackbar(copiedNotice) }
+                            }
+                        })
                     }
                     SecondaryButton(stringResource(R.string.post_delete), { confirm = Confirm.Delete }, danger = true, enabled = !busy)
                 }

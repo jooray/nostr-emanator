@@ -77,6 +77,43 @@ object Links {
         clipboard.setPrimaryClip(ClipData.newPlainText(label, text))
     }
 
+    /** The apps Facebook and LinkedIn share text through, when they are installed. */
+    const val FACEBOOK_PACKAGE = "com.facebook.katana"
+    const val LINKEDIN_PACKAGE = "com.linkedin.android"
+
+    /** Where to compose when the app is not installed (the web's behaviour). */
+    const val FACEBOOK_WEB = "https://www.facebook.com/"
+    const val LINKEDIN_WEB = "https://www.linkedin.com/feed/?shareActive=true"
+
+    /** True when `packageName` is installed and handles a plain-text share. */
+    fun canShareTo(context: Context, packageName: String): Boolean =
+        Intent(Intent.ACTION_SEND).setType("text/plain").setPackage(packageName)
+            .resolveActivity(context.packageManager) != null
+
+    /**
+     * The note into one app's composer. Facebook and LinkedIn accept no
+     * prefilled text from a URL (only a link), so this is the only way to hand
+     * them the text — and without the app it does what the web does: the note
+     * on the clipboard, their site open, one paste away. Returns false on that
+     * copy-and-open path so the caller can say so.
+     */
+    fun shareTextTo(context: Context, packageName: String, text: String, webUrl: String): Boolean {
+        if (canShareTo(context, packageName)) {
+            val direct = Intent(Intent.ACTION_SEND).setType("text/plain")
+                .putExtra(Intent.EXTRA_TEXT, text).setPackage(packageName)
+            if (runCatching { context.startActivity(direct.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }.isSuccess) return true
+        }
+        copy(context, "note", text)
+        openUrl(context, webUrl)
+        return false
+    }
+
+    /** x.com's compose window with `text` already in it (the X app, else a browser). */
+    fun composeX(context: Context, text: String) {
+        val url = "https://x.com/intent/post?text=" + Uri.encode(text)
+        runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
+    }
+
     fun share(context: Context, text: String) {
         val intent = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text)
         context.startActivity(Intent.createChooser(intent, null).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))

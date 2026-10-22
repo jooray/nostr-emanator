@@ -146,6 +146,29 @@ fun SettingsScreen(nav: NavHostController) {
                     )
                 }
 
+                Section(stringResource(R.string.set_sharing), stringResource(R.string.set_sharing_help)) {
+                    val c = LocalConsole.current
+                    listOf(
+                        Triple("x_share", R.string.set_x_share, R.string.set_x_share_help),
+                        Triple("facebook_share", R.string.set_facebook_share, R.string.set_facebook_share_help),
+                        Triple("linkedin_share", R.string.set_linkedin_share, R.string.set_linkedin_share_help),
+                    ).forEach { (key, label, help) ->
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(stringResource(label), style = Type.bodyDense, color = c.text, modifier = Modifier.weight(1f))
+                            Switch(
+                                checked = when (key) {
+                                    "x_share" -> user.settings.xShare
+                                    "facebook_share" -> user.settings.facebookShare
+                                    else -> user.settings.linkedinShare
+                                },
+                                onCheckedChange = { on -> scope.launch { save(mapOf(key to on)) } },
+                                colors = SwitchDefaults.colors(checkedTrackColor = Palette.amber, checkedThumbColor = Palette.contactBlack),
+                            )
+                        }
+                        Text(stringResource(help), style = Type.small, color = c.muted)
+                    }
+                }
+
                 CustomRelaysSection(user) { relays, done ->
                     scope.launch {
                         try {

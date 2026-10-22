@@ -153,6 +153,10 @@ cs:
       due: Termín
       due_in: "za %{time}"
       in_reply_to: Odpověď na
+      copy_text: Kopírovat text
+      share_on_x: Sdílet na X
+      share_on_facebook: Sdílet na Facebooku
+      share_on_linkedin: Sdílet na LinkedIn
       view_parent: Zobrazit poznámku
       event: "Událost:"
       view_on: "Zobrazit na %{viewer}"

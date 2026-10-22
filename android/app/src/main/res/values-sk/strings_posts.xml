@@ -117,6 +117,10 @@
     <string name="post_published_at">Zverejnené %1$s</string>
     <string name="post_version_history">Staršie verzie</string>
     <string name="post_copy_text">Kopírovať text</string>
+    <string name="post_share_on_x">Zdieľať na X</string>
+    <string name="post_share_on_facebook">Zdieľať na Facebooku</string>
+    <string name="post_share_on_linkedin">Zdieľať na LinkedIne</string>
+    <string name="post_share_copied">Skopírované — vlož to</string>
     <string name="post_approve_in_signer">Schváľ žiadosť v podpisovej aplikácii. Podpisovanie beží na pozadí, túto obrazovku môžeš zavrieť.</string>
     <string name="post_relays">Relaye</string>
     <string name="posts_all_accounts">Všetky účty</string>

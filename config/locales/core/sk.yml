@@ -202,12 +202,22 @@ sk:
         refresh: Obnoviť z relayov
       language:
         title: Jazyk
-        help: Jazyk rozhrania Emanatora. Tvoje príspevky to neovplyvní.
+        help: "Skopírovať text poznámky sa dá vždy na jej stránke. X je voliteľné."
         save: Uložiť
       event_viewer:
         title: Prehliadač udalostí
         help: Vyber, ktorý Nostr klient sa otvorí, keď klikneš na odkaz na profil alebo udalosť.
         save: Uložiť
+      sharing:
+        title: "Zdieľanie"
+        help: "Skopírovať text poznámky sa dá vždy na jej stránke. X je voliteľné."
+        x_share: "Zdieľať na X"
+        x_share_help: "Pridá k príspevku tlačidlo, ktoré otvorí x.com s poznámkou už napísanou."
+        facebook_share: "Zdieľať na Facebooku"
+        facebook_share_help: "Facebook nevie prevziať text príspevku z odkazu, takže tlačidlo skopíruje poznámku a otvorí tvoje okno na písanie, kde ju vložíš. Android appka ju pošle priamo do Facebook appky."
+        linkedin_share: "Zdieľať na LinkedIne"
+        linkedin_share_help: "LinkedIn tiež nevie prevziať text z odkazu: tlačidlo skopíruje poznámku a otvorí okno na písanie príspevku, kde ju vložíš. Android appka ju pošle priamo do LinkedIn appky."
+        save: "Uložiť"
       custom_relays:
         title: Vlastné relaye
         help: Tieto relaye dostanú každý príspevok, ktorý zverejníš, popri zápisových relayoch NIP-65 každého účtu.
@@ -216,6 +226,7 @@ sk:
     update:
       language_updated: Jazyk aktualizovaný.
       event_viewer_updated: Prehliadač udalostí aktualizovaný.
+      x_share_updated: Nastavenia zdieľania aktualizované.
       custom_relays_updated: Vlastné relaye aktualizované.
       settings_updated: Nastavenia aktualizované.
     api_tokens:
@@ -289,6 +300,9 @@ sk:
     clipboard:
       copied: Skopírované!
       copy_failed: Kopírovanie zlyhalo
+    share_text:
+      copied: Skopírované — vlož to
+      copy_failed: Kopírovanie zlyhalo — vyber text ručne
     expandable:
       show_more: Zobraziť viac
       show_less: Zobraziť menej

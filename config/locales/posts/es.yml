@@ -142,6 +142,10 @@ es:
       due: Sale
       due_in: "en %{time}"
       in_reply_to: En respuesta a
+      copy_text: Copiar texto
+      share_on_x: Compartir en X
+      share_on_facebook: Compartir en Facebook
+      share_on_linkedin: Compartir en LinkedIn
       view_parent: Ver la nota
       event: "Evento:"
       view_on: "Ver en %{viewer}"

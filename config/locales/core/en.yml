@@ -186,12 +186,22 @@ en:
         refresh: Refresh from Relays
       language:
         title: Language
-        help: The language of the Emanator interface. Your posts are not affected.
+        help: "Copying a note's text is always available on its page. X is optional."
         save: Save
       event_viewer:
         title: Event Viewer
         help: Choose which Nostr client opens when you click profile or event links.
         save: Save
+      sharing:
+        title: "Sharing"
+        help: "Copying a note's text is always available on its page. X is optional."
+        x_share: "Share on X"
+        x_share_help: "Adds a button to every post that opens x.com with the note already written."
+        facebook_share: "Share on Facebook"
+        facebook_share_help: "Facebook cannot take a post's text from a link, so the button copies the note and opens your Facebook composer to paste it. The Android app shares it straight into the Facebook app."
+        linkedin_share: "Share on LinkedIn"
+        linkedin_share_help: "LinkedIn cannot take a post's text from a link either: the button copies the note and opens the post composer to paste it. The Android app shares it straight into the LinkedIn app."
+        save: "Save"
       custom_relays:
         title: Custom Relays
         help: These relays will receive every post you publish, in addition to each account's NIP-65 write relays.
@@ -200,6 +210,7 @@ en:
     update:
       language_updated: Language updated.
       event_viewer_updated: Event viewer updated.
+      x_share_updated: Sharing settings updated.
       custom_relays_updated: Custom relays updated.
       settings_updated: Settings updated.
     api_tokens:
@@ -274,6 +285,9 @@ en:
     clipboard:
       copied: Copied!
       copy_failed: Copy failed
+    share_text:
+      copied: Copied — paste it
+      copy_failed: Copy failed — select the text yourself
     expandable:
       show_more: Show more
       show_less: Show less

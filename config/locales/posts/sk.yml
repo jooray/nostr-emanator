@@ -164,6 +164,10 @@ sk:
       due: Vyjde
       due_in: o %{time}
       in_reply_to: Odpoveď na
+      copy_text: Kopírovať text
+      share_on_x: Zdieľať na X
+      share_on_facebook: Zdieľať na Facebooku
+      share_on_linkedin: Zdieľať na LinkedIne
       view_parent: Zobraziť poznámku
       event: "Udalosť:"
       view_on: Zobraziť na %{viewer}

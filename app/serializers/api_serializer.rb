@@ -37,6 +37,9 @@ class ApiSerializer
         timezone: user.timezone,
         theme: user.theme,
         event_viewer: user.event_viewer,
+        x_share: user.x_share?,
+        facebook_share: user.facebook_share?,
+        linkedin_share: user.linkedin_share?,
         custom_relays: user.custom_relays,
         media: MediaPreferences.for(user)
       }

@@ -14,6 +14,14 @@
     <string name="set_timezone_help">Riadi sa týmto telefónom, aby naplánované časy všade sedeli.</string>
     <string name="set_event_viewer">Prehliadač udalostí</string>
     <string name="set_event_viewer_help">Ktorá webová stránka otvorí odkazy na profily a poznámky, keď ich nezvládne žiadna Nostr aplikácia v telefóne.</string>
+    <string name="set_sharing">Zdieľanie</string>
+    <string name="set_sharing_help">Skopírovať text poznámky sa dá vždy na jej stránke. Sieťami nižšie to len rozšíriš.</string>
+    <string name="set_x_share">Zdieľať na X</string>
+    <string name="set_x_share_help">Pridá k príspevku tlačidlo, ktoré otvorí x.com s poznámkou už napísanou.</string>
+    <string name="set_facebook_share">Zdieľať na Facebooku</string>
+    <string name="set_facebook_share_help">Facebook nevie prevziať text z odkazu: tlačidlo pošle poznámku do Facebook appky, alebo — keď appka nie je nainštalovaná — ju skopíruje a otvorí Facebook, kde ju vložíš.</string>
+    <string name="set_linkedin_share">Zdieľať na LinkedIne</string>
+    <string name="set_linkedin_share_help">LinkedIn tiež nevie prevziať text z odkazu: tlačidlo pošle poznámku do LinkedIn appky, alebo — keď appka nie je nainštalovaná — ju skopíruje a otvorí LinkedIn, kde ju vložíš.</string>
     <string name="set_custom_relays">Vlastné relaye</string>
     <string name="set_custom_relays_help">Tieto relaye dostanú každý príspevok, ktorý zverejníš, popri zápisových relayoch NIP-65 každého účtu.</string>
     <string name="set_custom_relays_label">URL adresy relayov (jedna na riadok)</string>

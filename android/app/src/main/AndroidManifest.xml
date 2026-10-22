@@ -20,6 +20,10 @@
         <intent>
             <action android:name="android.media.action.IMAGE_CAPTURE" />
         </intent>
+        <!-- Whether the Facebook / LinkedIn apps are there to share a note into
+             (post sharing falls back to copy + the site when they are not). -->
+        <package android:name="com.facebook.katana" />
+        <package android:name="com.linkedin.android" />
     </queries>
 
     <application

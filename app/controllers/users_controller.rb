@@ -44,6 +44,16 @@ class UsersController < ApplicationController
       return
     end
 
+    if params[:user] && User::SHARE_NETWORKS.any? { |network| params[:user].key?("#{network}_share") }
+      User::SHARE_NETWORKS.each do |network|
+        key = "#{network}_share"
+        @user.public_send("#{key}=", params[:user][key]) if params[:user].key?(key)
+      end
+      @user.save!
+      redirect_to edit_user_path(anchor: "sharing"), notice: t(".x_share_updated")
+      return
+    end
+
     if params[:user] && params[:user].key?(:custom_relays)
       @user.custom_relays = params[:user][:custom_relays]
       # H4: unsafe relay URLs are rejected by the model — show why.

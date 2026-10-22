@@ -75,6 +75,10 @@ data class UserSettings(
     val timezone: String = "UTC",
     val theme: String = "system",
     @SerialName("event_viewer") val eventViewer: String = "njump",
+    /** Off = Emanator never offers other networks; on = their share action appears. */
+    @SerialName("x_share") val xShare: Boolean = false,
+    @SerialName("facebook_share") val facebookShare: Boolean = false,
+    @SerialName("linkedin_share") val linkedinShare: Boolean = false,
     @SerialName("custom_relays") val customRelays: List<String> = emptyList(),
     val media: MediaSettings = MediaSettings(),
 )

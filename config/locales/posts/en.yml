@@ -142,6 +142,10 @@ en:
       due: Due
       due_in: "in %{time}"
       in_reply_to: In reply to
+      copy_text: Copy text
+      share_on_x: Share on X
+      share_on_facebook: Share on Facebook
+      share_on_linkedin: Share on LinkedIn
       view_parent: View the note
       event: "Event:"
       view_on: "View on %{viewer}"

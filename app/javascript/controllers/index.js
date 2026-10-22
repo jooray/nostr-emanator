@@ -76,4 +76,6 @@ import AndroidAppBannerController from "./android_app_banner_controller"
 application.register("android-app-banner", AndroidAppBannerController)
 
 import MentionController from "./mention_controller"
+import ShareTextController from "./share_text_controller"
 application.register("mention", MentionController)
+application.register("share-text", ShareTextController)

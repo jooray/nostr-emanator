@@ -117,6 +117,10 @@
     <string name="post_published_at">Zveřejněno %1$s</string>
     <string name="post_version_history">Starší verze</string>
     <string name="post_copy_text">Kopírovat text</string>
+    <string name="post_share_on_x">Sdílet na X</string>
+    <string name="post_share_on_facebook">Sdílet na Facebooku</string>
+    <string name="post_share_on_linkedin">Sdílet na LinkedIn</string>
+    <string name="post_share_copied">Zkopírováno — vlož to</string>
     <string name="post_approve_in_signer">Schval žádost v podepisovací aplikaci. Podepisování běží na pozadí, tuto obrazovku můžeš zavřít.</string>
     <string name="post_relays">Relaye</string>
     <string name="posts_all_accounts">Všechny účty</string>

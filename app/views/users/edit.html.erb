@@ -74,6 +74,34 @@
     <% end %>
   </div>
 
+  <!-- Sharing -->
+  <div id="sharing" class="border rule p-6">
+    <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4"><%= t(".sharing.title") %></h2>
+    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+      <%= t(".sharing.help") %>
+    </p>
+    <%= form_with url: user_path, method: :patch, class: "space-y-4" do |f| %>
+      <% User::SHARE_NETWORKS.each do |network| %>
+        <% label_key = network == "x" ? "x_share" : "#{network}_share" %>
+        <%= hidden_field_tag "user[#{network}_share]", "0" %>
+        <label class="flex items-start gap-2.5 cursor-pointer">
+          <%= tag.input type: "checkbox", name: "user[#{network}_share]", value: "1",
+                        checked: @user.public_send("#{network}_share?"),
+                        class: "mt-0.5 rounded border-gray-300 dark:border-[color:var(--color-rule-dark)] text-amber-600" %>
+          <span class="text-sm text-gray-700 dark:text-gray-300">
+            <%= t(".sharing.#{label_key}") %>
+            <span class="mt-1 block text-xs text-gray-500 dark:text-gray-400"><%= t(".sharing.#{label_key}_help") %></span>
+          </span>
+        </label>
+      <% end %>
+      <div>
+        <button type="submit" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors">
+          <%= t(".sharing.save") %>
+        </button>
+      </div>
+    <% end %>
+  </div>
+
   <!-- Custom Relays -->
   <div class="border rule p-6">
     <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4"><%= t(".custom_relays.title") %></h2>

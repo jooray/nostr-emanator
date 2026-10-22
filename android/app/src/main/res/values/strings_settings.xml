@@ -16,6 +16,14 @@
     <string name="set_timezone_help">Follows this phone, so scheduled times read the same everywhere.</string>
     <string name="set_event_viewer">Event viewer</string>
     <string name="set_event_viewer_help">Which website opens profile and note links when no Nostr app on this phone handles them.</string>
+    <string name="set_sharing">Sharing</string>
+    <string name="set_sharing_help">Copying a note\'s text is always available on its page. The networks below are optional.</string>
+    <string name="set_x_share">Share on X</string>
+    <string name="set_x_share_help">Adds a button to every post that opens x.com with the note already written.</string>
+    <string name="set_facebook_share">Share on Facebook</string>
+    <string name="set_facebook_share_help">Facebook takes no text from a link: the button shares the note into the Facebook app, or — when that app is not installed — copies it and opens Facebook to paste.</string>
+    <string name="set_linkedin_share">Share on LinkedIn</string>
+    <string name="set_linkedin_share_help">LinkedIn takes no text from a link either: the button shares the note into the LinkedIn app, or — when that app is not installed — copies it and opens LinkedIn to paste.</string>
     <string name="set_custom_relays">Custom relays</string>
     <string name="set_custom_relays_help">These relays will receive every post you publish, in addition to each account\'s NIP-65 write relays.</string>
     <string name="set_custom_relays_label">Relay URLs (one per line)</string>

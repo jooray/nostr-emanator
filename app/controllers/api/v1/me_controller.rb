@@ -20,6 +20,7 @@ module Api
         user.timezone = params[:timezone] if params[:timezone].present? && ActiveSupport::TimeZone[params[:timezone].to_s]
         user.theme = params[:theme] if THEMES.include?(params[:theme])
         user.event_viewer = params[:event_viewer] if VIEWERS.include?(params[:event_viewer])
+        User::SHARE_NETWORKS.each { |network| user.public_send("#{network}_share=", params["#{network}_share"]) if params.key?("#{network}_share") }
         user.custom_relays = params[:custom_relays] if params.key?(:custom_relays)
         %i[display_name username about].each { |field| user.public_send("#{field}=", params[field]) if params.key?(field) }
 

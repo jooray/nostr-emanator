@@ -103,6 +103,10 @@
     <string name="post_published_at">Published %1$s</string>
     <string name="post_version_history">Earlier versions</string>
     <string name="post_copy_text">Copy text</string>
+    <string name="post_share_on_x">Share on X</string>
+    <string name="post_share_on_facebook">Share on Facebook</string>
+    <string name="post_share_on_linkedin">Share on LinkedIn</string>
+    <string name="post_share_copied">Copied — paste it</string>
     <string name="post_approve_in_signer">Approve the request in your signer app. Signing continues in the background, you can leave this screen.</string>
     <string name="post_relays">Relays</string>
     <string name="posts_all_accounts">All accounts</string>

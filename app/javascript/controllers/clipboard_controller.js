@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { t } from "../lib/i18n"
+import { copyText, legacyCopy } from "../lib/clipboard"
 
 export default class extends Controller {
   static values = { text: String }
@@ -15,37 +16,20 @@ export default class extends Controller {
     const text = this.textValue
 
     try {
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(text)
-      } else {
-        this.legacyCopy(text)
-      }
+      await copyText(text)
       this.flash(t("js.clipboard.copied"))
     } catch (error) {
-      // navigator.clipboard.writeText can reject (permissions prompt denied,
-      // insecure context, focus lost, etc.) — fall back to the legacy
-      // execCommand path instead of leaving an unhandled rejection.
+      // copyText can reject (permissions prompt denied, insecure context, focus
+      // lost, etc.) — fall back to the legacy execCommand path instead of
+      // leaving an unhandled rejection.
       try {
-        this.legacyCopy(text)
+        legacyCopy(text)
         this.flash(t("js.clipboard.copied"))
       } catch (fallbackError) {
         console.error("Copy to clipboard failed:", fallbackError)
         this.flash(t("js.clipboard.copy_failed"))
       }
     }
-  }
-
-  legacyCopy(text) {
-    const textarea = document.createElement("textarea")
-    textarea.value = text
-    textarea.style.position = "fixed"
-    textarea.style.opacity = "0"
-    document.body.appendChild(textarea)
-    textarea.focus()
-    textarea.select()
-    const succeeded = document.execCommand("copy")
-    textarea.remove()
-    if (!succeeded) throw new Error("execCommand('copy') failed")
   }
 
   flash(message) {

@@ -14,6 +14,14 @@
     <string name="set_timezone_help">Sigue a este teléfono, para que las horas programadas coincidan en todas partes.</string>
     <string name="set_event_viewer">Visor de eventos</string>
     <string name="set_event_viewer_help">Qué sitio web abre los enlaces de perfiles y notas cuando ninguna app de Nostr del teléfono puede hacerlo.</string>
+    <string name="set_sharing">Compartir</string>
+    <string name="set_sharing_help">Copiar el texto de una nota siempre está disponible en su página. Las redes de abajo son opcionales.</string>
+    <string name="set_x_share">Compartir en X</string>
+    <string name="set_x_share_help">Añade a cada publicación un botón que abre x.com con la nota ya escrita.</string>
+    <string name="set_facebook_share">Compartir en Facebook</string>
+    <string name="set_facebook_share_help">Facebook no acepta texto desde un enlace: el botón comparte la nota en la app de Facebook o, si esa app no está instalada, la copia y abre Facebook para pegarla.</string>
+    <string name="set_linkedin_share">Compartir en LinkedIn</string>
+    <string name="set_linkedin_share_help">LinkedIn tampoco acepta texto desde un enlace: el botón comparte la nota en la app de LinkedIn o, si esa app no está instalada, la copia y abre LinkedIn para pegarla.</string>
     <string name="set_custom_relays">Relays personalizados</string>
     <string name="set_custom_relays_help">Estos relays recibirán cada publicación que publiques, además de los relays de escritura NIP-65 de cada cuenta.</string>
     <string name="set_custom_relays_label">URLs de relays (una por línea)</string>

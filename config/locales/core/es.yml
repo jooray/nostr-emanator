@@ -186,12 +186,22 @@ es:
         refresh: Actualizar desde los relays
       language:
         title: Idioma
-        help: El idioma de la interfaz de Emanator. No afecta a tus publicaciones.
+        help: "Copiar el texto de una nota siempre está disponible en su página. X es opcional."
         save: Guardar
       event_viewer:
         title: Visor de eventos
         help: Elige qué cliente de Nostr se abre al hacer clic en enlaces de perfil o de eventos.
         save: Guardar
+      sharing:
+        title: "Compartir"
+        help: "Copiar el texto de una nota siempre está disponible en su página. X es opcional."
+        x_share: "Compartir en X"
+        x_share_help: "Añade a cada publicación un botón que abre x.com con la nota ya escrita."
+        facebook_share: "Compartir en Facebook"
+        facebook_share_help: "Facebook no acepta el texto de una publicación desde un enlace, así que el botón copia la nota y abre tu ventana de redacción para pegarla. La app de Android la comparte directamente en la app de Facebook."
+        linkedin_share: "Compartir en LinkedIn"
+        linkedin_share_help: "LinkedIn tampoco acepta el texto desde un enlace: el botón copia la nota y abre la ventana de publicación para pegarla. La app de Android la comparte directamente en la app de LinkedIn."
+        save: "Guardar"
       custom_relays:
         title: Relays personalizados
         help: Estos relays recibirán cada publicación que publiques, además de los relays de escritura NIP-65 de cada cuenta.
@@ -200,6 +210,7 @@ es:
     update:
       language_updated: Idioma actualizado.
       event_viewer_updated: Visor de eventos actualizado.
+      x_share_updated: Ajustes de compartir actualizados.
       custom_relays_updated: Relays personalizados actualizados.
       settings_updated: Ajustes actualizados.
     api_tokens:
@@ -274,6 +285,9 @@ es:
     clipboard:
       copied: "¡Copiado!"
       copy_failed: Error al copiar
+    share_text:
+      copied: Copiado — pégalo
+      copy_failed: Error al copiar — selecciona el texto
     expandable:
       show_more: Mostrar más
       show_less: Mostrar menos

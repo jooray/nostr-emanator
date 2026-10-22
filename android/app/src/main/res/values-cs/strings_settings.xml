@@ -14,6 +14,14 @@
     <string name="set_timezone_help">Řídí se tímto telefonem, aby naplánované časy všude seděly.</string>
     <string name="set_event_viewer">Prohlížeč událostí</string>
     <string name="set_event_viewer_help">Která webová stránka otevře odkazy na profily a příspěvky, když je nezvládne žádná Nostr aplikace v telefonu.</string>
+    <string name="set_sharing">Sdílení</string>
+    <string name="set_sharing_help">Zkopírovat text poznámky jde vždy na její stránce. Sítěmi níže to jen rozšíříš.</string>
+    <string name="set_x_share">Sdílet na X</string>
+    <string name="set_x_share_help">Přidá k příspěvku tlačítko, které otevře x.com s poznámkou už napsanou.</string>
+    <string name="set_facebook_share">Sdílet na Facebooku</string>
+    <string name="set_facebook_share_help">Facebook neumí převzít text z odkazu: tlačítko pošle poznámku do aplikace Facebook, nebo — když aplikace není nainstalovaná — ji zkopíruje a otevře Facebook, kde ji vložíš.</string>
+    <string name="set_linkedin_share">Sdílet na LinkedIn</string>
+    <string name="set_linkedin_share_help">LinkedIn také neumí převzít text z odkazu: tlačítko pošle poznámku do aplikace LinkedIn, nebo — když aplikace není nainstalovaná — ji zkopíruje a otevře LinkedIn, kde ji vložíš.</string>
     <string name="set_custom_relays">Vlastní relaye</string>
     <string name="set_custom_relays_help">Tyto relaye dostanou každý příspěvek, který zveřejníš, navíc k zápisovým relayům NIP-65 každého účtu.</string>
     <string name="set_custom_relays_label">Adresy URL relayů (jedna na řádek)</string>

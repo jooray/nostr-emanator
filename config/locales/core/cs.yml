@@ -196,12 +196,22 @@ cs:
         refresh: Obnovit z relayů
       language:
         title: Jazyk
-        help: Jazyk rozhraní Emanatoru. Tvé příspěvky to neovlivní.
+        help: "Zkopírovat text poznámky jde vždy na její stránce. X je volitelné."
         save: Uložit
       event_viewer:
         title: Prohlížeč událostí
         help: Vyber, který klient Nostru se otevře, když klikneš na odkaz na profil nebo událost.
         save: Uložit
+      sharing:
+        title: "Sdílení"
+        help: "Zkopírovat text poznámky jde vždy na její stránce. X je volitelné."
+        x_share: "Sdílet na X"
+        x_share_help: "Přidá k příspěvku tlačítko, které otevře x.com s poznámkou už napsanou."
+        facebook_share: "Sdílet na Facebooku"
+        facebook_share_help: "Facebook neumí převzít text příspěvku z odkazu, takže tlačítko zkopíruje poznámku a otevře tvé okno pro psaní, kam ji vložíš. Android aplikace ji pošle přímo do aplikace Facebook."
+        linkedin_share: "Sdílet na LinkedIn"
+        linkedin_share_help: "LinkedIn také neumí převzít text z odkazu: tlačítko zkopíruje poznámku a otevře okno pro psaní příspěvku, kam ji vložíš. Android aplikace ji pošle přímo do aplikace LinkedIn."
+        save: "Uložit"
       custom_relays:
         title: Vlastní relaye
         help: Tyto relaye dostanou každý příspěvek, který zveřejníš, navíc k zápisovým relayům NIP-65 každého účtu.
@@ -210,6 +220,7 @@ cs:
     update:
       language_updated: Jazyk aktualizován.
       event_viewer_updated: Prohlížeč událostí aktualizován.
+      x_share_updated: Nastavení sdílení aktualizováno.
       custom_relays_updated: Vlastní relaye aktualizovány.
       settings_updated: Nastavení aktualizováno.
     api_tokens:
@@ -284,6 +295,9 @@ cs:
     clipboard:
       copied: Zkopírováno!
       copy_failed: Kopírování selhalo
+    share_text:
+      copied: Zkopírováno — vlož to
+      copy_failed: Kopírování selhalo — vyber text ručně
     expandable:
       show_more: Zobrazit více
       show_less: Zobrazit méně

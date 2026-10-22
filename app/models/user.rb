@@ -60,6 +60,23 @@ class User < ApplicationRecord
     self.settings = (settings || {}).merge("event_viewer" => value)
   end
 
+  # Off by default: a Nostr client has no business pushing notes to other
+  # networks unless the user asked for it. On, the post page offers that
+  # network's share next to "Copy text".
+  #
+  # X has a URL that prefills text; Facebook and LinkedIn do not (only a link,
+  # and a note is not a link), so theirs copies the text and opens the site —
+  # or, in the app, shares straight into the installed app.
+  SHARE_NETWORKS = %w[x facebook linkedin].freeze
+
+  SHARE_NETWORKS.each do |network|
+    define_method("#{network}_share?") { settings&.dig("#{network}_share") == true }
+    define_method("#{network}_share=") do |value|
+      on = ActiveModel::Type::Boolean.new.cast(value)
+      self.settings = (settings || {}).merge("#{network}_share" => on)
+    end
+  end
+
   def custom_relays
     settings&.dig("custom_relays") || []
   end

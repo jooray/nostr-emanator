@@ -42,6 +42,24 @@ class AccountApiTest < ActionDispatch::IntegrationTest
                    "video_compress" => true, "video_resolution" => 720, "video_quality" => "small" }, media)
   end
 
+  def test_sharing_settings_are_off_by_default_and_toggle_through_the_api
+    api_get "/api/v1/me"
+    %w[x facebook linkedin].each { |network| assert_equal false, json.dig("user", "settings", "#{network}_share") }
+
+    api_patch "/api/v1/me", params: { x_share: true, facebook_share: true, linkedin_share: true }
+    assert_response :success
+    %w[x facebook linkedin].each do |network|
+      assert_equal true, json.dig("user", "settings", "#{network}_share"), network
+      assert @user.reload.public_send("#{network}_share?"), network
+    end
+
+    api_patch "/api/v1/me", params: { x_share: false }
+    @user.reload
+    refute @user.x_share?
+    assert @user.facebook_share?
+    assert @user.linkedin_share?
+  end
+
   def test_invalid_media_values_are_ignored
     api_patch "/api/v1/me", params: { media: { max_edge: 999, quality: 5, photo_format: "gif" } }
     assert_equal MediaPreferences::DEFAULTS, json.dig("user", "settings", "media")

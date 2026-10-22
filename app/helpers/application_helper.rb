@@ -59,6 +59,22 @@ module ApplicationHelper
     end
   end
 
+  # X (Twitter)'s compose window with the text already in it. `intent/post` is
+  # the current path; the old `intent/tweet` still redirects, but no need to
+  # rely on that. The Android app builds the same URL from the same text.
+  def x_share_url(text)
+    "https://x.com/intent/post?text=#{URI.encode_www_form_component(text)}"
+  end
+
+  # The networks without a prefilled-text URL, in the order the post page shows
+  # them: [network, url to open, label] for the ones this user turned on.
+  def copy_share_targets(user)
+    [
+      [ "facebook", "https://www.facebook.com/", t("posts.show.share_on_facebook") ],
+      [ "linkedin", "https://www.linkedin.com/feed/?shareActive=true", t("posts.show.share_on_linkedin") ]
+    ].select { |network, _, _| user.public_send("#{network}_share?") }
+  end
+
   def interaction_type_badge_class(type)
     case type.to_sym
     when :reply

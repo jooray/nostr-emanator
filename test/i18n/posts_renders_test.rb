@@ -119,6 +119,48 @@ class PostsRendersTest < ActionDispatch::IntegrationTest
     assert_match(/Retry publishing/, response.body)
   end
 
+  def test_copy_text_is_always_offered_and_sharing_only_when_enabled
+    post = make_post(:published, signed_event: event, event_id: SecureRandom.hex(32), published_at: Time.current,
+                                 publish_results: { "wss://a" => "ok" }, content: "Hello world & friends",
+                                 scheduled_at: 2.hours.ago)
+
+    get post_path(post)
+    assert_response :success
+    assert_select "button[data-controller='clipboard'][data-clipboard-text-value='Hello world & friends']",
+                  text: "Copy text"
+    # Off by default: Emanator does not hand notes to other networks unasked.
+    assert_select "a[href^='https://x.com/intent/post']", count: 0
+    assert_select "button[data-controller='share-text']", count: 0
+
+    patch user_path, params: { user: { x_share: "1", facebook_share: "1", linkedin_share: "1" } }
+    assert_redirected_to edit_user_path(anchor: "sharing")
+    @user.reload
+    assert @user.x_share?
+    assert @user.facebook_share?
+    assert @user.linkedin_share?
+
+    get post_path(post)
+    assert_select "a[href='https://x.com/intent/post?text=Hello+world+%26+friends']", text: "Share on X"
+    # Facebook and LinkedIn take no prefilled text, so those buttons carry the
+    # note for the clipboard and the composer to open.
+    assert_select "button[data-share-text-url-value='https://www.facebook.com/']" \
+                  "[data-share-text-text-value='Hello world & friends']", text: "Share on Facebook"
+    assert_select "button[data-share-text-url-value='https://www.linkedin.com/feed/?shareActive=true']",
+                  text: "Share on LinkedIn"
+
+    # The form always posts all three (a hidden 0 per box), so turning X off
+    # does not disturb the others.
+    patch user_path, params: { user: { x_share: "0", facebook_share: "1", linkedin_share: "0" } }
+    @user.reload
+    refute @user.x_share?
+    assert @user.facebook_share?
+    refute @user.linkedin_share?
+    get post_path(post)
+    assert_select "a[href^='https://x.com/intent/post']", count: 0
+    assert_select "button[data-share-text-url-value='https://www.facebook.com/']", count: 1
+    assert_select "button[data-share-text-url-value^='https://www.linkedin.com']", count: 0
+  end
+
   def test_broadcast_partials_render_in_the_users_language
     awaiting = make_post(:awaiting_signature, unsigned_event: event)
     html = ApplicationController.render(partial: "posts/signing_progress",

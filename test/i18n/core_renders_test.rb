@@ -42,6 +42,30 @@ class CoreRendersTest < ActionDispatch::IntegrationTest
     assert_match "Skip to content", response.body
   end
 
+  # The sharing boxes are the only settings form built in a loop; a name that
+  # is not interpolated still renders, still looks right, and silently saves
+  # nothing (2026-10-22). Assert the names the browser will actually send.
+  def test_sharing_switches_post_the_names_the_controller_reads
+    user = create_nostr_user
+    sign_in_without_landing(user)
+    user.x_share = true
+    user.save!
+
+    get edit_user_path
+    assert_response :success
+    User::SHARE_NETWORKS.each do |network|
+      assert_select "input[type=checkbox][name='user[#{network}_share]'][value='1']", count: 1
+    end
+    assert_select "input[type=checkbox][name='user[x_share]'][checked]", count: 1
+    assert_select "input[type=checkbox][name='user[facebook_share]'][checked]", count: 0
+
+    patch user_path, params: { user: { x_share: "0", facebook_share: "1", linkedin_share: "1" } }
+    get edit_user_path
+    assert_select "input[type=checkbox][name='user[x_share]'][checked]", count: 0
+    assert_select "input[type=checkbox][name='user[facebook_share]'][checked]", count: 1
+    assert_select "input[type=checkbox][name='user[linkedin_share]'][checked]", count: 1
+  end
+
   def test_settings_flashes
     user = create_nostr_user
     sign_in_without_landing(user)
