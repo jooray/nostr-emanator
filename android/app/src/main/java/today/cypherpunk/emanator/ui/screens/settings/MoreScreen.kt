@@ -55,7 +55,7 @@ fun MoreScreen(nav: NavHostController) {
             }
             NavRow(stringResource(R.string.nav_new_post), { nav.navigate(Routes.compose()) })
             NavRow(stringResource(R.string.nav_accounts), { nav.navigate(Routes.ACCOUNTS) })
-            NavRow(stringResource(R.string.nav_interactions), { nav.navigate(Routes.INTERACTIONS) })
+            NavRow(stringResource(R.string.nav_calendar), { nav.navigate(Routes.CALENDAR) })
             NavRow(stringResource(R.string.nav_settings), { nav.navigate(Routes.SETTINGS) })
             if (me?.billingEnabled == true) NavRow(stringResource(R.string.nav_billing), { nav.navigate(Routes.BILLING) })
 

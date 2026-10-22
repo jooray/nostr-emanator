@@ -168,7 +168,11 @@ export default class extends Controller {
     document.body.appendChild(mirror)
     const lineHeight = parseFloat(style.lineHeight) || parseFloat(style.fontSize) * 1.4
     const top = el.offsetTop + marker.offsetTop - el.scrollTop + lineHeight + 4
-    const maxLeft = el.offsetLeft + el.clientWidth - 288
+    // The menu is 18rem wide unless the field is narrower (a phone, or the
+    // account page's reply box); never let it overhang the field.
+    const width = Math.min(288, el.clientWidth || 288)
+    this.menu.style.width = `${width}px`
+    const maxLeft = el.offsetLeft + el.clientWidth - width
     const left = Math.max(el.offsetLeft, Math.min(el.offsetLeft + marker.offsetLeft, maxLeft))
     mirror.remove()
     this.menu.style.top = `${top}px`

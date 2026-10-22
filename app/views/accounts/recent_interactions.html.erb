@@ -59,10 +59,15 @@
                 </button>
               </div>
               <div data-inline-reply-target="form" class="hidden mt-2">
-                <textarea data-inline-reply-target="textarea"
-                          rows="2"
-                          placeholder="<%= t(".reply_placeholder") %>"
-                          class="w-full rounded-lg border border-gray-300 dark:border-[color:var(--color-rule-dark)] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm p-2 focus:border-amber-500 resize-none"></textarea>
+                <%# The composer's @mention lookup, so a reply can name someone too. %>
+                <div class="relative" data-controller="mention" data-mention-url-value="<%= mentions_path %>">
+                  <textarea data-inline-reply-target="textarea"
+                            data-mention-target="textarea"
+                            data-action="input->mention#input keydown->mention#keydown blur->mention#blur"
+                            rows="2"
+                            placeholder="<%= t(".reply_placeholder") %>"
+                            class="w-full rounded-lg border border-gray-300 dark:border-[color:var(--color-rule-dark)] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm p-2 focus:border-amber-500 resize-none"></textarea>
+                </div>
                 <div class="mt-1 flex items-center justify-between">
                   <div data-inline-reply-target="status" class="text-xs text-gray-500 dark:text-gray-400"></div>
                   <div class="flex gap-2">

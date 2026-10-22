@@ -185,22 +185,37 @@ private suspend fun syncZoneAndLanguage(container: AppContainer, serverZone: Str
 
 private data class Tab(val route: String, val label: Int, val icon: ImageVector)
 
+/**
+ * The bottom bar. Interactions earns a place here over Calendar: a reply is a
+ * daily errand, the calendar is a plan looked at now and then. Five is the
+ * bar's maximum, so Calendar goes behind More (and keeps its own rail entry
+ * where the rail lists everything).
+ */
 private val Tabs = listOf(
     Tab(Routes.DASHBOARD, R.string.nav_dashboard, Icons.Filled.Speed),
     Tab(Routes.POSTS, R.string.nav_posts, Icons.AutoMirrored.Filled.List),
-    Tab(Routes.CALENDAR, R.string.nav_calendar, Icons.Filled.CalendarMonth),
+    Tab(Routes.INTERACTIONS, R.string.nav_interactions, Icons.Filled.Forum),
     Tab(Routes.MESSAGES, R.string.nav_messages, Icons.Filled.Mail),
     Tab(Routes.MORE, R.string.nav_more, Icons.Filled.Menu),
 )
 
-/** What More holds, listed in the side rail directly when the window is tall enough. */
+/** Destinations More holds; the rail lists them directly when the window is tall enough. */
 private fun moreTabs(billing: Boolean) = listOfNotNull(
     Tab(Routes.COMPOSE, R.string.nav_new_post, Icons.Filled.Edit),
     Tab(Routes.ACCOUNTS, R.string.nav_accounts, Icons.Filled.People),
-    Tab(Routes.INTERACTIONS, R.string.nav_interactions, Icons.Filled.Forum),
+    Tab(Routes.CALENDAR, R.string.nav_calendar, Icons.Filled.CalendarMonth),
     Tab(Routes.SETTINGS, R.string.nav_settings, Icons.Filled.Settings),
     if (billing) Tab(Routes.BILLING, R.string.nav_billing, Icons.Filled.CurrencyBitcoin) else null,
 )
+
+/**
+ * The rail lists every destination, so it keeps the bar's views in order and
+ * then what the bar folds into More.
+ */
+private fun railTabs(billing: Boolean) = Tabs.dropLast(1) + moreTabs(billing)
+
+/** Top-level destinations: the bar stays put on them, with More lit for Calendar. */
+private val BarRoutes = Tabs.map { it.route }.toSet() + Routes.CALENDAR
 
 /** A rail item with its label is about 56 dp tall, plus the rail's gaps. */
 private val RailItemHeight = 64.dp
@@ -218,8 +233,8 @@ private fun MainNav(nav: NavHostController, container: AppContainer) {
     // tablet gets a side rail listing every destination when they fit; a
     // landscape phone's rail does not have the height, so it keeps More.
     val billing = me?.billingEnabled == true
-    val railTabs = remember(billing) { Tabs.dropLast(1) + moreTabs(billing) }
-    val fullRail = wide && with(density) { window.height.toDp() } >= RailItemHeight * railTabs.size + 96.dp
+    val railItems = remember(billing) { railTabs(billing) }
+    val fullRail = wide && with(density) { window.height.toDp() } >= RailItemHeight * railItems.size + 96.dp
     val selected = if (fullRail) Routes.railItemOf(current) else Routes.tabOf(current)
     val badge: @Composable (Tab) -> Unit = { tab -> TabBadge(tab, me?.summary) }
     val go: (Tab) -> Unit = { tab -> nav.switchTo(tab.route) }
@@ -227,11 +242,11 @@ private fun MainNav(nav: NavHostController, container: AppContainer) {
     Scaffold(
         containerColor = c.chassis,
         bottomBar = {
-            if (!wide && Tabs.any { it.route == current }) {
+            if (!wide && current in BarRoutes) {
                 NavigationBar(containerColor = c.panel, tonalElevation = androidx.compose.ui.unit.Dp(0f)) {
                     Tabs.forEach { tab ->
                         NavigationBarItem(
-                            selected = current == tab.route,
+                            selected = tab.route == selected,
                             onClick = { go(tab) },
                             icon = { BadgedBox(badge = { badge(tab) }) { Icon(tab.icon, contentDescription = null) } },
                             label = { Text(stringResource(tab.label).uppercase(), style = Type.slug, maxLines = 1) },
@@ -255,7 +270,7 @@ private fun MainNav(nav: NavHostController, container: AppContainer) {
                     windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Start + WindowInsetsSides.Vertical),
                 ) {
                     Spacer(Modifier.height(8.dp))
-                    (if (fullRail) railTabs else Tabs).forEach { tab ->
+                    (if (fullRail) railItems else Tabs).forEach { tab ->
                         NavigationRailItem(
                             selected = selected == tab.route,
                             onClick = { go(tab) },

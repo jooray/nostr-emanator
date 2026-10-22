@@ -70,7 +70,16 @@ class ImportLegacyDmsJob < ApplicationJob
         parsed = decrypt(rpc, account, event)
         next unless parsed
 
-        ingestor.ingest(parsed, seen_at: Time.at(event["created_at"].to_i).utc, protocol: "nip04")
+        begin
+          ingestor.ingest(parsed, seen_at: Time.at(event["created_at"].to_i).utc, protocol: "nip04")
+        rescue ActiveRecord::RecordInvalid => e
+          # One unacceptable event must not cost the rest of the history. This used
+          # to raise straight out of the loop into the rescue in #perform, which
+          # aborted the entire run — so an account whose first unstored event was
+          # rejected never imported anything, and re-fetched and re-decrypted that
+          # same event on every poll.
+          Rails.logger.warn("Skipping legacy DM #{event["id"].inspect}: #{e.message}")
+        end
       end
     end
   end

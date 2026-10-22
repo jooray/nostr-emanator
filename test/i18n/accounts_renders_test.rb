@@ -137,6 +137,8 @@ class AccountsRendersTest < ActionDispatch::IntegrationTest
     assert_match "about 2 hours ago", response.body
     assert_match ">Your post</a>:", response.body
     assert_match "Sign &amp; Publish", response.body
+    # The reply box carries the composer's @mention lookup.
+    assert_select "div[data-controller='mention'][data-mention-url-value='#{mentions_path}'] textarea[data-mention-target='textarea'][data-inline-reply-target='textarea']"
   end
 
   def test_profile_editor

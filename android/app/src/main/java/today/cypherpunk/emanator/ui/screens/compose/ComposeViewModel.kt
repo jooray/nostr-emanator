@@ -28,6 +28,7 @@ import today.cypherpunk.emanator.data.SseEvent
 import today.cypherpunk.emanator.media.ImageShrinker
 import today.cypherpunk.emanator.media.TextInsert
 import today.cypherpunk.emanator.media.VideoRules
+import today.cypherpunk.emanator.ui.components.MentionLookup
 
 /** One file on its way into the post. The UI words it; see [UploadPhase]. */
 data class UploadLine(val key: Int, val name: String, val phase: UploadPhase, val note: UploadNote? = null)
@@ -111,9 +112,8 @@ class ComposeViewModel(
     val ui = MutableStateFlow(ComposeUi(editing = postId != null))
     val text = MutableStateFlow(TextFieldValue(""))
     /** @mention suggestions for the word being typed (Mentions::Search on the server). */
-    val mentions = MutableStateFlow<List<Mention>>(emptyList())
-    private var mentionToken: MentionRules.Token? = null
-    private var mentionJob: Job? = null
+    private val mentionLookup = MentionLookup(viewModelScope) { query -> container.api.mentions(query).mentions }
+    val mentions = mentionLookup.suggestions
     private val events = Channel<ComposeEvent>(Channel.BUFFERED)
     val navigation = events.receiveAsFlow()
 
@@ -200,42 +200,22 @@ class ComposeViewModel(
         val changed = value.text != text.value.text
         text.value = value
         if (changed) saveDraft(value.text)
-        lookUpMention(value)
-    }
-
-    private fun lookUpMention(value: TextFieldValue) {
-        val token = MentionRules.token(value)
-        if (token == mentionToken) return
-        mentionToken = token
-        mentionJob?.cancel()
-        if (token == null) {
-            mentions.value = emptyList()
-            return
-        }
-        mentionJob = viewModelScope.launch {
-            delay(150)
-            val found = runCatching { container.api.mentions(token.query).mentions }.getOrDefault(emptyList())
-            if (mentionToken == token) mentions.value = found
-        }
+        mentionLookup.onTextChange(value)
     }
 
     /** Inserts `nostr:npub…` in place of the "@word"; the server tags it as a mention. */
     fun pickMention(mention: Mention) {
-        val token = mentionToken ?: return
-        val updated = MentionRules.apply(text.value, token, mention.mention)
-        mentionJob?.cancel()
-        mentionToken = null
-        mentions.value = emptyList()
+        val updated = mentionLookup.pick(text.value, mention) ?: return
         text.value = updated
         saveDraft(updated.text)
     }
 
-    fun dismissMentions() {
-        mentionJob?.cancel()
-        mentions.value = emptyList()
-    }
+    fun dismissMentions() = mentionLookup.dismiss()
 
     private fun setText(value: String, save: Boolean = true) {
+        // A programmatic replacement (AI result, restored draft, undo) invalidates
+        // the "@word" token the suggestion list was built for.
+        mentionLookup.dismiss()
         text.value = TextFieldValue(value, TextRange(value.length))
         if (save) saveDraft(value)
     }

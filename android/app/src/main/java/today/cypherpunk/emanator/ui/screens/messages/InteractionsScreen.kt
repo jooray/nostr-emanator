@@ -21,6 +21,7 @@ import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -31,14 +32,19 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -59,6 +65,7 @@ import today.cypherpunk.emanator.data.ApiException
 import today.cypherpunk.emanator.data.Interaction
 import today.cypherpunk.emanator.data.InteractionsResponse
 import today.cypherpunk.emanator.data.Loadable
+import today.cypherpunk.emanator.data.Mention
 import today.cypherpunk.emanator.data.cachedFlow
 import today.cypherpunk.emanator.ui.Routes
 import today.cypherpunk.emanator.ui.appViewModel
@@ -67,6 +74,8 @@ import today.cypherpunk.emanator.ui.components.ConsoleScaffold
 import today.cypherpunk.emanator.ui.components.EmptyState
 import today.cypherpunk.emanator.ui.components.ErrorState
 import today.cypherpunk.emanator.ui.components.Gutter
+import today.cypherpunk.emanator.ui.components.MentionLookup
+import today.cypherpunk.emanator.ui.components.MentionPopup
 import today.cypherpunk.emanator.ui.components.PrimaryButton
 import today.cypherpunk.emanator.ui.components.RichContent
 import today.cypherpunk.emanator.ui.components.Rule
@@ -179,6 +188,10 @@ class InteractionsViewModel(private val container: AppContainer) : ViewModel() {
         "publishing" -> ActionPhase.Publishing
         else -> ActionPhase.Processing
     }
+
+    /** Mentions::Search for the reply box too — the same lookup as the composer. */
+    suspend fun searchMentions(query: String): List<Mention> =
+        runCatching { container.api.mentions(query).mentions }.getOrDefault(emptyList())
 
     /** Replies sign at once (no scheduling) — the same path as the web's inline reply. */
     fun reply(item: Interaction, text: String, alsoLike: Boolean, alsoFollow: Boolean) {
@@ -320,6 +333,7 @@ fun InteractionsScreen(nav: NavHostController) {
                             onMute = { vm.mute(item) },
                             onReply = { text, like, follow -> vm.reply(item, text, like, follow) },
                             onOpenPost = { id -> nav.navigate(Routes.post(id)) },
+                            onSearchMentions = vm::searchMentions,
                         )
                     }
                 }
@@ -367,11 +381,17 @@ private fun InteractionCard(
     onMute: () -> Unit,
     onReply: (String, Boolean, Boolean) -> Unit,
     onOpenPost: (Long) -> Unit,
+    onSearchMentions: suspend (String) -> List<Mention>,
 ) {
     val c = LocalConsole.current
     val context = LocalContext.current
     var replying by rememberSaveable(item.eventId) { mutableStateOf(false) }
-    var replyText by rememberSaveable(item.eventId) { mutableStateOf("") }
+    // TextFieldValue, not String: the mention lookup needs the caret.
+    var replyText by rememberSaveable(item.eventId, stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue("")) }
+    val replyScope = rememberCoroutineScope()
+    val mentionLookup = remember(item.eventId) { MentionLookup(replyScope, onSearchMentions) }
+    val mentioned by mentionLookup.suggestions.collectAsState()
+    var fieldBounds by remember { mutableStateOf<Rect?>(null) }
     var alsoLike by rememberSaveable(item.eventId) { mutableStateOf(false) }
     var alsoFollow by rememberSaveable(item.eventId) { mutableStateOf(false) }
     var confirmMute by remember { mutableStateOf(false) }
@@ -449,14 +469,30 @@ private fun InteractionCard(
         if (replying) {
             Column(Modifier.fillMaxWidth().background(c.panel).padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(stringResource(R.string.int_replying_as, item.account?.name.orEmpty()).uppercase(), style = Type.slug, color = c.muted)
-                OutlinedTextField(
-                    replyText, { replyText = it },
-                    placeholder = { Text(stringResource(R.string.int_reply_placeholder)) },
-                    minLines = 3, maxLines = 8,
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = card.reply == null || card.reply == ActionPhase.Failed,
-                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = Palette.amber, unfocusedBorderColor = c.rule, cursorColor = Palette.amber),
-                )
+                Box {
+                    OutlinedTextField(
+                        replyText,
+                        {
+                            replyText = it
+                            mentionLookup.onTextChange(it)
+                        },
+                        placeholder = { Text(stringResource(R.string.int_reply_placeholder)) },
+                        minLines = 3, maxLines = 8,
+                        modifier = Modifier.fillMaxWidth().onGloballyPositioned { fieldBounds = it.boundsInWindow() },
+                        enabled = card.reply == null || card.reply == ActionPhase.Failed,
+                        colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = Palette.amber, unfocusedBorderColor = c.rule, cursorColor = Palette.amber),
+                    )
+                    // The same @mention list the composer has: replying is where
+                    // you most often want to name someone.
+                    MentionPopup(
+                        mentions = mentioned,
+                        text = replyText,
+                        bounds = fieldBounds,
+                        textStyle = LocalTextStyle.current,
+                        onPick = { mention -> mentionLookup.pick(replyText, mention)?.let { replyText = it } },
+                        onDismiss = mentionLookup::dismiss,
+                    )
+                }
                 if (!item.alreadyLiked) CheckRow(stringResource(R.string.int_like_this_post), alsoLike) { alsoLike = it }
                 if (!item.alreadyFollowing) CheckRow(stringResource(R.string.int_follow_author, authorName), alsoFollow) { alsoFollow = it }
                 when {
@@ -475,8 +511,8 @@ private fun InteractionCard(
                 }
                 if (card.reply == null || (card.reply == ActionPhase.Failed && card.replyPostId == null)) {
                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
-                        PrimaryButton(stringResource(R.string.int_sign_and_publish), { onReply(replyText, alsoLike, alsoFollow) },
-                            enabled = replyText.isNotBlank(), busy = card.replyCreating)
+                        PrimaryButton(stringResource(R.string.int_sign_and_publish), { onReply(replyText.text, alsoLike, alsoFollow) },
+                            enabled = replyText.text.isNotBlank(), busy = card.replyCreating)
                         SlugButton(stringResource(R.string.action_cancel), { replying = false })
                     }
                 }

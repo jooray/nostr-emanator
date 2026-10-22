@@ -81,6 +81,11 @@ module Messaging
         record.relays = Array(relays).uniq
         record.direction = outbound ? "outbound" : "inbound"
         record.status = outbound ? "sent" : "received"
+        # Everything reaching this method came off a relay — including our own
+        # copies. That makes it history, not a send, which is the distinction the
+        # legacy acknowledgement guard keys on: the per-message ack belongs to
+        # the consent flow that published a message, and no such flow ran here.
+        record.imported_from_history = true
         record.pubkey_recovered = parsed.pubkey_recovered
         record.rumor_id_recomputed = parsed.rumor_id_recomputed
       end

@@ -23,11 +23,15 @@ object Routes {
     const val DEVICES = "devices"
     const val MCP_TOKENS = "mcp_tokens"
 
-    /** Which bottom-bar (or short rail) tab a route belongs to. */
+    /**
+     * Which bottom-bar (or short rail) tab a route belongs to. Interactions is
+     * a bar entry of its own; Calendar is read far less often, so it lives
+     * behind More and the bar lights More while it is open.
+     */
     fun tabOf(route: String?): String = when {
         route == null || route == DASHBOARD -> DASHBOARD
         route.startsWith("posts") || route.startsWith("post/") || route.startsWith("compose") || route.startsWith("schedule") -> POSTS
-        route == CALENDAR -> CALENDAR
+        route == INTERACTIONS -> INTERACTIONS
         route == MESSAGES || route.startsWith("conversation") -> MESSAGES
         else -> MORE
     }
@@ -37,7 +41,7 @@ object Routes {
         route == null -> DASHBOARD
         route.startsWith("compose") -> COMPOSE
         route.startsWith("account") || route.startsWith("pair") -> ACCOUNTS
-        route == INTERACTIONS -> INTERACTIONS
+        route == CALENDAR -> CALENDAR
         route == SETTINGS || route == DEVICES || route == MCP_TOKENS -> SETTINGS
         route == BILLING -> BILLING
         else -> tabOf(route)

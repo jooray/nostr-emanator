@@ -107,6 +107,13 @@ class Message < ApplicationRecord
   # "metadata was public" badge — this must never be a transient warning.
   def legacy_downgrade? = legacy? && outbound?
 
+  # Set only by Messaging::MessageIngestor. A row rebuilt from relay history is
+  # not a send: the event is already on the wire, it is stored as `sent`, and the
+  # acknowledgement below belongs to the consent flow that *produced* a send —
+  # which a row reconstructed from relays never went through. See
+  # legacy_sends_require_acknowledgement.
+  attr_accessor :imported_from_history
+
   def sending? = %w[pending sealing wrapping publishing].include?(status)
 
   def can_retry? = outbound? && failed?
@@ -140,8 +147,16 @@ class Message < ApplicationRecord
   # Requiring the acknowledgement at the model layer — rather than trusting the
   # composer to ask — means a future code path cannot quietly start leaking the
   # social graph because it forgot the confirm step.
+  #
+  # Imported history is exempt, and has to be. The acknowledgement is stored *per
+  # message* and only OutboundBuilder sets it, so a kind 4 rebuilt from relays can
+  # never satisfy this check. Without the exemption the importer rejected every
+  # outbound legacy message it tried to store, which raised out of the event loop
+  # and aborted the whole run — so an account with any outbound kind-4 history
+  # imported nothing at all, and every poll retried the same events forever.
   def legacy_sends_require_acknowledgement
     return unless legacy_downgrade?
+    return if imported_from_history
     return if legacy_downgrade_acked_at.present?
 
     errors.add(:base, I18n.t("messaging.errors.legacy_unacknowledged"))

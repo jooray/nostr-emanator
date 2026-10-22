@@ -1,4 +1,6 @@
-<div id="interaction_<%= interaction[:event_id] %>" data-account-id="<%= interaction[:target_account]&.id %>" data-author-pubkey="<%= interaction[:author_pubkey] %>" class="border rule overflow-hidden">
+<%# No overflow-hidden on the card: the reply box's @mention list is an
+    absolutely positioned popup and would be cut off at the card's edge. %>
+<div id="interaction_<%= interaction[:event_id] %>" data-account-id="<%= interaction[:target_account]&.id %>" data-author-pubkey="<%= interaction[:author_pubkey] %>" class="border rule">
   <div class="p-4">
     <% if interaction[:original_post_content].present? %>
       <% original_label = interaction[:original_post_is_owned] ? t(".your_post") : (interaction[:interaction_type] == :quote ? t(".quoted_post") : t(".in_reply_to")) %>
@@ -194,10 +196,15 @@
             <% end %>
           </div>
 
-          <textarea data-inline-reply-target="textarea"
-                    rows="3"
-                    placeholder="<%= t(".reply_placeholder") %>"
-                    class="w-full rounded-lg border border-gray-300 dark:border-[color:var(--color-rule-dark)] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm p-3 focus:border-amber-500 resize-none"></textarea>
+          <%# The composer's @mention lookup, so a reply can name someone too. %>
+          <div class="relative" data-controller="mention" data-mention-url-value="<%= mentions_path %>">
+            <textarea data-inline-reply-target="textarea"
+                      data-mention-target="textarea"
+                      data-action="input->mention#input keydown->mention#keydown blur->mention#blur"
+                      rows="3"
+                      placeholder="<%= t(".reply_placeholder") %>"
+                      class="w-full rounded-lg border border-gray-300 dark:border-[color:var(--color-rule-dark)] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm p-3 focus:border-amber-500 resize-none"></textarea>
+          </div>
             <div class="mt-2 flex items-center justify-between gap-3">
               <div class="flex items-center gap-2 min-w-0">
                 <div data-inline-reply-target="status" class="text-sm text-gray-500 dark:text-gray-400"></div>

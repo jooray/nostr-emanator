@@ -146,6 +146,39 @@ class MessagingMessageIngestorTest < ActiveSupport::TestCase
     assert_equal %w[wss://a.example wss://b.example], message.reload.relays
   end
 
+  # History rebuilt from relays is not a send, so it is not held to the legacy
+  # consent acknowledgement — which is stored per message and only ever written
+  # by OutboundBuilder. Requiring it here rejected every outbound kind-4 row the
+  # importer tried to store, so a legacy history was never imported at all.
+  def test_an_outbound_legacy_message_imports_without_a_consent_acknowledgement
+    message = @ingestor.ingest(
+      parsed_message(sender: @account.pubkey_hex, kind: Message::LEGACY_KIND, content: "old dm")
+    )
+
+    assert message, "imported history must be stored, not rejected"
+    assert message.outbound?
+    assert message.legacy?
+    assert_nil message.legacy_downgrade_acked_at
+    assert_equal "old dm", message.content
+  end
+
+  # The exemption must not leak into ordinary creation: a legacy send built
+  # anywhere but the importer still has to carry the acknowledgement. The
+  # composer path is covered by SendLegacyDirectMessageJobTest; this pins the
+  # model rule itself.
+  def test_a_legacy_outbound_message_created_normally_still_needs_the_acknowledgement
+    conversation = @ingestor.ingest(parsed_message(content: "hello")).conversation
+
+    message = conversation.messages.new(
+      account: @account, user: @account.user, rumor_id: SecureRandom.hex(32),
+      sender_pubkey: @account.pubkey_hex, kind: Message::LEGACY_KIND,
+      direction: "outbound", status: "pending", sort_at: Time.current, content: "sneaky"
+    )
+
+    refute message.valid?
+    assert_match(/metadata is public/, message.errors[:base].join)
+  end
+
   private
 
   def parsed_message(sender: nil, content: "hello", participants: nil, subject: nil,

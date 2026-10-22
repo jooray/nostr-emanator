@@ -81,6 +81,9 @@ class MessagingRendersTest < ActionDispatch::IntegrationTest
     assert_includes html, "Quoted post (Bob)"
     assert_includes html, "Mute @Alice"
     assert_includes html, "about 1 hour ago"
+    # Replying is where naming someone happens most: the box carries the composer's lookup.
+    assert_select Nokogiri::HTML::Document.parse(html),
+                  "div[data-controller='mention'][data-mention-url-value='#{mentions_path}'] textarea[data-mention-target='textarea'][data-inline-reply-target='textarea']"
 
     empty = ApplicationController.render(partial: "interactions/interactions_content", locals: { interactions: [] })
     assert_includes empty, "No interactions yet"
