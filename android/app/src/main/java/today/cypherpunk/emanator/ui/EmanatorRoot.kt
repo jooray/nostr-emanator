@@ -51,7 +51,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -249,7 +251,14 @@ private fun MainNav(nav: NavHostController, container: AppContainer) {
                             selected = tab.route == selected,
                             onClick = { go(tab) },
                             icon = { BadgedBox(badge = { badge(tab) }) { Icon(tab.icon, contentDescription = null) } },
-                            label = { Text(stringResource(tab.label).uppercase(), style = Type.slug, maxLines = 1) },
+                            label = {
+                                // "Interactions" (and "Interacciones") is wider than the
+                                // bar's slot for it: shrink rather than cut a word short.
+                                Text(
+                                    stringResource(tab.label).uppercase(), style = Type.slug, maxLines = 1,
+                                    autoSize = TextAutoSize.StepBased(minFontSize = 8.sp, maxFontSize = 11.5.sp),
+                                )
+                            },
                             colors = NavigationBarItemDefaults.colors(
                                 selectedIconColor = c.text, selectedTextColor = c.text,
                                 unselectedIconColor = c.muted, unselectedTextColor = c.muted,
