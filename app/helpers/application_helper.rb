@@ -70,7 +70,7 @@ module ApplicationHelper
   # them: [network, url to open, label] for the ones this user turned on.
   def copy_share_targets(user)
     [
-      [ "facebook", "https://www.facebook.com/", t("posts.show.share_on_facebook") ],
+      [ "facebook", "https://www.facebook.com/post/create", t("posts.show.share_on_facebook") ],
       [ "linkedin", "https://www.linkedin.com/feed/?shareActive=true", t("posts.show.share_on_linkedin") ]
     ].select { |network, _, _| user.public_send("#{network}_share?") }
   end

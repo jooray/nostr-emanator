@@ -82,7 +82,7 @@ object Links {
     const val LINKEDIN_PACKAGE = "com.linkedin.android"
 
     /** Where to compose when the app is not installed (the web's behaviour). */
-    const val FACEBOOK_WEB = "https://www.facebook.com/"
+    const val FACEBOOK_WEB = "https://www.facebook.com/post/create"
     const val LINKEDIN_WEB = "https://www.linkedin.com/feed/?shareActive=true"
 
     /** True when `packageName` is installed and handles a plain-text share. */

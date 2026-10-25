@@ -143,7 +143,7 @@ class PostsRendersTest < ActionDispatch::IntegrationTest
     assert_select "a[href='https://x.com/intent/post?text=Hello+world+%26+friends']", text: "Share on X"
     # Facebook and LinkedIn take no prefilled text, so those buttons carry the
     # note for the clipboard and the composer to open.
-    assert_select "button[data-share-text-url-value='https://www.facebook.com/']" \
+    assert_select "button[data-share-text-url-value='https://www.facebook.com/post/create']" \
                   "[data-share-text-text-value='Hello world & friends']", text: "Share on Facebook"
     assert_select "button[data-share-text-url-value='https://www.linkedin.com/feed/?shareActive=true']",
                   text: "Share on LinkedIn"
@@ -157,7 +157,7 @@ class PostsRendersTest < ActionDispatch::IntegrationTest
     refute @user.linkedin_share?
     get post_path(post)
     assert_select "a[href^='https://x.com/intent/post']", count: 0
-    assert_select "button[data-share-text-url-value='https://www.facebook.com/']", count: 1
+    assert_select "button[data-share-text-url-value='https://www.facebook.com/post/create']", count: 1
     assert_select "button[data-share-text-url-value^='https://www.linkedin.com']", count: 0
   end
 
