@@ -73,6 +73,10 @@ en:
         title: Let the right accounts carry the signal.
         body: Run your next Nostr launch from one calendar. Every account stays independently yours.
         button: Launch Emanator
+      follow:
+        title: "Follow Emanator on Nostr"
+        lead: "Updates and releases come from our own Nostr identity (emanator@cypherpunk.today)."
+        nostr: "Open in your Nostr app"
       footer:
         back_to_top: Back to top
         tagline: Post scheduling for the open social web.

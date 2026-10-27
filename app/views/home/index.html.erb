@@ -870,6 +870,54 @@
         padding-inline: 1.5rem;
       }
 
+      .follow {
+        display: grid;
+        gap: 0.7rem;
+        margin-block: 0 1.5rem;
+        padding: 1.2rem 1.4rem;
+        border: 1px solid var(--line);
+        border-radius: 1rem;
+        background: var(--surface);
+        font-size: 0.88rem;
+      }
+
+      .follow h2 {
+        margin: 0;
+        font-size: 1rem;
+      }
+
+      .follow p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .follow code {
+        display: block;
+        overflow-wrap: anywhere;
+        color: var(--ink);
+        font-size: 0.78rem;
+        user-select: all;
+      }
+
+      .follow-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem 1.2rem;
+      }
+
+      .follow-links a {
+        color: var(--amber-deep);
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      :root[data-theme="dark"] .follow-links a { color: var(--amber-bright); }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) .follow-links a { color: var(--amber-bright); }
+      }
+
+      .follow-links a:hover { text-decoration: underline; }
+
       footer {
         display: flex;
         align-items: center;
@@ -1731,6 +1779,17 @@
           <%= t(".cta.button") %>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
         </a>
+      </section>
+      <section class="follow shell" aria-labelledby="follow-title">
+        <h2 id="follow-title"><%= t(".follow.title") %></h2>
+        <p><%= t(".follow.lead") %></p>
+        <code>npub1e34xu4q2j7n8d4j2xeu4ax3l76yuvgpf82v7jtxzf4dtwq5nr0hs5h84vz</code>
+        <div class="follow-links">
+          <a href="nostr:npub1e34xu4q2j7n8d4j2xeu4ax3l76yuvgpf82v7jtxzf4dtwq5nr0hs5h84vz"><%= t(".follow.nostr") %></a>
+          <a href="https://njump.me/npub1e34xu4q2j7n8d4j2xeu4ax3l76yuvgpf82v7jtxzf4dtwq5nr0hs5h84vz" rel="noopener">njump.me</a>
+          <a href="https://primal.net/p/npub1e34xu4q2j7n8d4j2xeu4ax3l76yuvgpf82v7jtxzf4dtwq5nr0hs5h84vz" rel="noopener">Primal</a>
+          <a href="https://yakihonne.com/users/npub1e34xu4q2j7n8d4j2xeu4ax3l76yuvgpf82v7jtxzf4dtwq5nr0hs5h84vz" rel="noopener">YakiHonne</a>
+        </div>
       </section>
     </main>
 

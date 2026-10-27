@@ -22,6 +22,16 @@ and published at their scheduled time.
 I write about building things on [my blog](https://juraj.bednar.io/en/blog-en/). I also wrote a cypherpunk novel, [Tamers of Entropy](https://tamersofentropy.net/), and there is a [trailer](https://tamersofentropy.net/#trailer).
 <!-- jooray-links:end -->
 
+## Follow Emanator on Nostr
+
+Emanator has its own Nostr identity (NIP-05 `emanator@cypherpunk.today`):
+
+- npub: `npub1e34xu4q2j7n8d4j2xeu4ax3l76yuvgpf82v7jtxzf4dtwq5nr0hs5h84vz`
+- [nostr:npub1e34xu4q2j7n8d4j2xeu4ax3l76yuvgpf82v7jtxzf4dtwq5nr0hs5h84vz](nostr:npub1e34xu4q2j7n8d4j2xeu4ax3l76yuvgpf82v7jtxzf4dtwq5nr0hs5h84vz)
+- [njump.me](https://njump.me/npub1e34xu4q2j7n8d4j2xeu4ax3l76yuvgpf82v7jtxzf4dtwq5nr0hs5h84vz)
+- [Primal](https://primal.net/p/npub1e34xu4q2j7n8d4j2xeu4ax3l76yuvgpf82v7jtxzf4dtwq5nr0hs5h84vz)
+- [YakiHonne](https://yakihonne.com/users/npub1e34xu4q2j7n8d4j2xeu4ax3l76yuvgpf82v7jtxzf4dtwq5nr0hs5h84vz)
+
 ## Try it
 
 A live instance runs at [emanator.cypherpunk.today](https://emanator.cypherpunk.today) — no install

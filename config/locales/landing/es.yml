@@ -73,6 +73,10 @@ es:
         title: Deja que las cuentas adecuadas lleven la señal.
         body: Gestiona tu próximo lanzamiento en Nostr desde un solo calendario. Cada cuenta sigue siendo tuya de forma independiente.
         button: Abrir Emanator
+      follow:
+        title: "Sigue a Emanator en Nostr"
+        lead: "Las novedades y versiones salen de nuestra propia identidad en Nostr (emanator@cypherpunk.today)."
+        nostr: "Abrir en tu app de Nostr"
       footer:
         back_to_top: Volver arriba
         tagline: Programación de publicaciones para la web social abierta.

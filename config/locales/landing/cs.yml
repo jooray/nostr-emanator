@@ -73,6 +73,10 @@ cs:
         title: Ať signál nesou správné účty.
         body: Příští spuštění na Nostru řiď z jednoho kalendáře. Každý účet zůstává nezávisle tvůj.
         button: Spustit Emanator
+      follow:
+        title: "Sleduj Emanator na Nostru"
+        lead: "Novinky a vydání zveřejňujeme z vlastní identity na Nostru (emanator@cypherpunk.today)."
+        nostr: "Otevřít v aplikaci pro Nostr"
       footer:
         back_to_top: Nahoru
         tagline: Plánování příspěvků pro otevřenou sociální síť.
