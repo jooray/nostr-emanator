@@ -5,21 +5,31 @@ module Mentions
   # the app (Api::V1::MentionsController). The user's own accounts come first,
   # then people any of those accounts follow, from NostrProfile. Picking one
   # inserts `nostr:npub…`, which Nostr::ContentTagger turns into a `p` tag.
+  #
+  # The new-message recipient picker runs the same lookup with `peers: true`,
+  # which also offers people the user already has conversations with. A pasted
+  # npub, nprofile or hex key always resolves to exactly that person.
   class Search
     LIMIT = 8
     CANDIDATES = 200
 
     Result = Data.define(:pubkey_hex, :npub, :name, :display_name, :nip05, :picture_url, :own, :account_id)
 
-    def self.call(user, query, limit: LIMIT) = new(user, query, limit:).results
+    def self.call(user, query, limit: LIMIT, peers: false) = new(user, query, limit:, peers:).results
 
-    def initialize(user, query, limit: LIMIT)
+    def initialize(user, query, limit: LIMIT, peers: false)
       @user = user
-      @query = query.to_s.strip.delete_prefix("@").downcase.first(64)
+      @raw = query.to_s.strip.delete_prefix("@")
+      @query = @raw.downcase.first(64)
       @limit = limit
+      @peers = peers
     end
 
     def results
+      if (pubkey = identifier_pubkey)
+        return [ direct(pubkey) ]
+      end
+
       own = own_accounts
       (own + followed(exclude: own.map(&:pubkey_hex))).first(@limit)
     end
@@ -44,6 +54,7 @@ module Mentions
 
       counts = Hash.new(0)
       accounts.each { |a| InteractionsCache.read_contact_list(a.pubkey_hex).each { |pk| counts[pk] += 1 } }
+      conversation_peers.each { |pk| counts[pk] += 1 } if @peers
       exclude.each { |pk| counts.delete(pk) }
       return [] if counts.empty?
 
@@ -57,6 +68,32 @@ module Mentions
         Result.new(pubkey_hex: p.pubkey_hex, npub: p.npub, name: p.name, display_name: p.display_name,
                    nip05: p.nip05, picture_url: p.picture_url, own: false, account_id: nil)
       end
+    end
+
+    def conversation_peers
+      @user.conversations.where.not(peer_pubkey: nil).where.not(classification: "muted")
+           .distinct.pluck(:peer_pubkey)
+    end
+
+    def identifier_pubkey
+      return nil unless @raw.match?(/\A(?:nostr:)?(?:npub1|nprofile1)|\A\h{64}\z/i)
+
+      Messaging::NewConversation.resolve_pubkey(@raw)
+    end
+
+    # Whoever the key belongs to, profile known or not: the user pasted it.
+    def direct(pubkey)
+      account = accounts.find { |a| a.pubkey_hex.casecmp?(pubkey) }
+      if account
+        return Result.new(pubkey_hex: account.pubkey_hex, npub: account.npub, name: account.username,
+                          display_name: account.display_name, nip05: nil, picture_url: account.picture_url,
+                          own: true, account_id: account.id)
+      end
+
+      profile = NostrProfile.find_by(pubkey_hex: pubkey)
+      Result.new(pubkey_hex: pubkey, npub: Nostr::KeyConverter.hex_to_npub(pubkey), name: profile&.name,
+                 display_name: profile&.display_name, nip05: profile&.nip05, picture_url: profile&.picture_url,
+                 own: false, account_id: nil)
     end
 
     # Letters of a bech32 npub are noise to a name search ("nal" occurs in plenty

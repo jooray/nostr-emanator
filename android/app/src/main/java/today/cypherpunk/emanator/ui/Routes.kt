@@ -12,6 +12,7 @@ object Routes {
     const val COMPOSE = "compose?account={account}&post={post}&shared={shared}"
     const val SCHEDULE = "schedule/{id}?reposts={reposts}"
     const val CONVERSATION = "conversation/{id}"
+    const val NEW_MESSAGE = "new_message"
     const val INTERACTIONS = "interactions"
     const val ACCOUNTS = "accounts"
     const val ACCOUNT = "account/{id}"
@@ -32,7 +33,7 @@ object Routes {
         route == null || route == DASHBOARD -> DASHBOARD
         route.startsWith("posts") || route.startsWith("post/") || route.startsWith("compose") || route.startsWith("schedule") -> POSTS
         route == INTERACTIONS -> INTERACTIONS
-        route == MESSAGES || route.startsWith("conversation") -> MESSAGES
+        route == MESSAGES || route.startsWith("conversation") || route == NEW_MESSAGE -> MESSAGES
         else -> MORE
     }
 

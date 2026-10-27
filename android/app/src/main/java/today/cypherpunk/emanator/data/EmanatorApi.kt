@@ -39,6 +39,8 @@ class EmanatorApi(val client: ApiClient) {
     suspend fun calendar(from: String, to: String): CalendarResponse = client.get("/api/v1/calendar", mapOf("from" to from, "to" to to))
     suspend fun interactions(): InteractionsResponse = client.get("/api/v1/interactions")
     suspend fun mentions(query: String): MentionsResponse = client.get("/api/v1/mentions", mapOf("q" to query))
+    /** The same lookup plus people already in the inbox: the new-message recipient picker. */
+    suspend fun recipients(query: String): MentionsResponse = client.get("/api/v1/mentions", mapOf("q" to query, "peers" to "1"))
 
     // --- accounts -------------------------------------------------------------------
     suspend fun accounts(): AccountsResponse = client.get("/api/v1/accounts")
@@ -105,6 +107,9 @@ class EmanatorApi(val client: ApiClient) {
             if (accountIds != null) put("account_ids", if (accountIds.isEmpty()) listOf("") else accountIds)
         })
     suspend fun thread(id: Long, before: Long? = null): Thread = client.get("/api/v1/conversations/$id", mapOf("before" to before))
+    /** Starts a conversation, or continues the one that account already has with the recipient. */
+    suspend fun startConversation(accountId: Long, recipient: String, content: String): StartedConversation =
+        client.post("/api/v1/conversations", mapOf("account_id" to accountId, "recipient" to recipient, "content" to content))
     suspend fun acceptConversation(id: Long): ConversationResponse = client.post("/api/v1/conversations/$id/accept")
     suspend fun blockConversation(id: Long): ConversationResponse = client.post("/api/v1/conversations/$id/block")
     suspend fun markRead(id: Long) = client.postUnit("/api/v1/conversations/$id/mark_read")

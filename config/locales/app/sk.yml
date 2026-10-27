@@ -77,6 +77,8 @@ sk:
   js:
     mention:
       own: Tvoj účet
+    dm_recipient:
+      no_match: "Nikoho sme nenašli. Vlož radšej jeho npub."
     media_compress:
       compressing: Zmenšujem fotku…
       video_compressing: "Prekódovávam… %{percent} %"

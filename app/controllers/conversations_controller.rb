@@ -40,6 +40,31 @@ class ConversationsController < ApplicationController
     mark_conversation_read
   end
 
+  # The "New message" page. `account` and `to` prefill it (an npub or hex key),
+  # so other pages can link straight to a message for someone.
+  def new
+    @accounts = current_user.accounts.order(:created_at).to_a
+    @account_id = params[:account].presence&.to_i || default_sending_account&.id
+    @recipient = recipient_preview(params[:to])
+  end
+
+  def create
+    result = Messaging::NewConversation.call(
+      current_user, account_id: params[:account_id], recipient: params[:recipient], content: params[:content]
+    )
+
+    if result.ok?
+      redirect_to conversation_path(result.conversation)
+    else
+      @accounts = current_user.accounts.order(:created_at).to_a
+      @account_id = params[:account_id].to_i
+      @recipient = recipient_preview(params[:recipient])
+      @content = params[:content]
+      flash.now[:alert] = result.error
+      render :new, status: :unprocessable_entity
+    end
+  end
+
   # Re-rendered by the composer's own Turbo Frame while a peer's kind 10050 is
   # still being resolved, so the user never has to reload to find out.
   def composer
@@ -83,6 +108,22 @@ class ConversationsController < ApplicationController
   end
 
   private
+
+  # The account last written from is the likeliest next one.
+  def default_sending_account
+    capable = current_user.accounts.order(:created_at).select(&:messaging_capable?)
+    last = current_user.conversations.where(has_replied: true, account_id: capable.map(&:id))
+                       .order(last_message_at: :desc).pick(:account_id)
+    capable.find { |a| a.id == last } || capable.first
+  end
+
+  def recipient_preview(input)
+    return nil if input.blank?
+
+    Mentions::Search.call(current_user, input, limit: 1, peers: true).first&.then do |r|
+      ApiSerializer.new(current_user).mention(r)
+    end
+  end
 
   def base_scope
     current_user.conversations.active.includes(:account)

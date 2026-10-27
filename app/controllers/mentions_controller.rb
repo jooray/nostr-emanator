@@ -4,7 +4,7 @@
 # asks Api::V1::MentionsController; both run Mentions::Search.
 class MentionsController < ApplicationController
   def index
-    results = Mentions::Search.call(current_user, params[:q])
+    results = Mentions::Search.call(current_user, params[:q], peers: params[:peers] == "1")
     render json: { mentions: results.map { |r| ApiSerializer.new(current_user).mention(r) } }
   end
 end

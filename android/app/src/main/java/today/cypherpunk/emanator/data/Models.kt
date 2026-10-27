@@ -479,6 +479,9 @@ data class Thread(
 data class ConversationResponse(val conversation: Conversation, val message: String? = null)
 
 @Serializable
+data class StartedConversation(val conversation: Conversation, val message: Message)
+
+@Serializable
 data class SentMessage(val message: Message, @SerialName("conversation_id") val conversationId: Long? = null)
 
 @Serializable

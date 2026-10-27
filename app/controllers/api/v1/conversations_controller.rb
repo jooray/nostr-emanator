@@ -63,6 +63,18 @@ module Api
         }
       end
 
+      # Starts a conversation (or continues the room this account already has
+      # with that person): account_id, recipient (npub / nprofile / hex), content.
+      def create
+        result = Messaging::NewConversation.call(
+          current_user, account_id: params[:account_id], recipient: params[:recipient], content: params[:content]
+        )
+        return render_error(result.error) unless result.ok?
+
+        render json: { conversation: serializer.conversation(result.conversation), message: serializer.message(result.message) },
+               status: :created
+      end
+
       def accept
         @conversation.accept!
         render json: { conversation: serializer.conversation(@conversation), message: I18n.t("conversations.accept.moved") }

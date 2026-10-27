@@ -16,7 +16,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
@@ -225,7 +230,19 @@ fun MessagesScreen(nav: NavHostController) {
         }
     }
 
-    ConsoleScaffold(stringResource(R.string.nav_messages), snackbar = snackbar) { padding ->
+    ConsoleScaffold(
+        stringResource(R.string.nav_messages),
+        snackbar = snackbar,
+        floating = {
+            if (accounts.isNotEmpty()) {
+                FloatingActionButton(
+                    onClick = { nav.navigate(Routes.NEW_MESSAGE) },
+                    containerColor = Palette.amber, contentColor = Palette.contactBlack,
+                    shape = RoundedCornerShape(0.dp),
+                ) { Icon(Icons.Filled.Edit, contentDescription = stringResource(R.string.newmsg_title)) }
+            }
+        },
+    ) { padding ->
         PullToRefreshBox(
             isRefreshing = ui.loading && ui.inbox != null,
             onRefresh = { vm.refresh() },

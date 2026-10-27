@@ -1,7 +1,13 @@
 <div class="space-y-6" data-controller="dm-filter">
-  <header class="border-b rule pb-4">
-    <h1 class="condensed text-[33px] font-bold uppercase leading-none tracking-[0.06em]"><%= t(".title") %></h1>
-    <p class="eng mt-2.5"><%= t(".subtitle") %></p>
+  <header class="flex flex-wrap items-end justify-between gap-4 border-b rule pb-4">
+    <div>
+      <h1 class="condensed text-[33px] font-bold uppercase leading-none tracking-[0.06em]"><%= t(".title") %></h1>
+      <p class="eng mt-2.5"><%= t(".subtitle") %></p>
+    </div>
+    <% if @accounts.any?(&:messaging_capable?) %>
+      <%= link_to t(".new_message"), new_message_path,
+            class: "condensed inline-block border border-amber-500 bg-amber-500 px-4 py-2.5 text-[14px] font-semibold uppercase tracking-[0.16em] text-[#1a1714] hover:bg-amber-400" %>
+    <% end %>
   </header>
 
   <%= render "accounts/messaging_repair_list", accounts: @messaging_accounts %>

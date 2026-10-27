@@ -77,6 +77,8 @@ cs:
   js:
     mention:
       own: Tvůj účet
+    dm_recipient:
+      no_match: "Nikoho jsme nenašli. Vlož raději jeho npub."
     media_compress:
       compressing: Zmenšuji fotku…
       video_compressing: "Překódovávám… %{percent} %"

@@ -145,4 +145,18 @@
     <string name="reply_published">¡Respuesta publicada!</string>
     <string name="reply_signing_stalled">La firma se estancó. Abre la publicación para intentarlo de nuevo.</string>
     <string name="reply_publishing_failed">La publicación falló. Inténtalo de nuevo desde la página de la publicación.</string>
+
+    <!-- New message (web: conversations.new) -->
+    <string name="newmsg_title">Nuevo mensaje</string>
+    <string name="newmsg_from">De</string>
+    <string name="newmsg_to">Para</string>
+    <string name="newmsg_change">Cambiar</string>
+    <string name="newmsg_to_placeholder">Nombre, NIP-05 o npub</string>
+    <string name="newmsg_to_hint">Personas a las que siguen tus cuentas, personas con las que ya hablas, o pega un npub.</string>
+    <string name="newmsg_no_match">No encontramos a nadie. Pega su npub.</string>
+    <string name="newmsg_message">Mensaje</string>
+    <string name="newmsg_message_placeholder">Escribe un mensaje privado…</string>
+    <string name="newmsg_some_unavailable">Las cuentas sin mensajes activados no aparecen.</string>
+    <string name="newmsg_no_capable_accounts">Ninguna de tus cuentas puede enviar mensajes privados todavía. Activa los mensajes en una primero.</string>
+    <string name="newmsg_enable_messaging">Activar mensajes</string>
 </resources>

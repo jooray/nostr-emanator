@@ -77,6 +77,8 @@ es:
   js:
     mention:
       own: Tu cuenta
+    dm_recipient:
+      no_match: "No encontramos a nadie. Pega su npub."
     media_compress:
       compressing: Reduciendo la foto…
       video_compressing: "Recodificando… %{percent} %"

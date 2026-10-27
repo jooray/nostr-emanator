@@ -79,6 +79,8 @@ en:
   js:
     mention:
       own: Your account
+    dm_recipient:
+      no_match: "Nobody found. Paste their npub instead."
     media_compress:
       compressing: Shrinking the photo…
       video_compressing: "Re-encoding… %{percent}%"

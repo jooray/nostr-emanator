@@ -57,6 +57,9 @@ Rails.application.routes.draw do
 
   # Messages — one private-DM inbox across every paired account.
   get "messages", to: "conversations#index", as: :messages
+  # Start a conversation: pick the sending account, a recipient and write.
+  get "messages/new", to: "conversations#new", as: :new_message
+  post "messages", to: "conversations#create"
   post "messages/mark_all_read", to: "conversations#mark_all_read", as: :mark_all_read_messages
   resources :conversations, only: [ :show ], path: "messages" do
     member do
@@ -202,7 +205,7 @@ Rails.application.routes.draw do
       end
 
       post "messages/mark_all_read", to: "conversations#mark_all_read"
-      resources :conversations, only: %i[index show] do
+      resources :conversations, only: %i[index show create] do
         member do
           post :accept
           post :block

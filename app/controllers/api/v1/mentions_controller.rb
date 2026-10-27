@@ -6,7 +6,7 @@ module Api
     # MentionsController (Mentions::Search).
     class MentionsController < BaseController
       def index
-        results = Mentions::Search.call(current_user, params[:q])
+        results = Mentions::Search.call(current_user, params[:q], peers: params[:peers] == "1")
         render json: { mentions: results.map { |r| serializer.mention(r) } }
       end
     end

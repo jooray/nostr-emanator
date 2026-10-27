@@ -81,6 +81,7 @@ import today.cypherpunk.emanator.ui.screens.compose.ScheduleScreen
 import today.cypherpunk.emanator.ui.screens.messages.ConversationScreen
 import today.cypherpunk.emanator.ui.screens.messages.InteractionsScreen
 import today.cypherpunk.emanator.ui.screens.messages.MessagesScreen
+import today.cypherpunk.emanator.ui.screens.messages.NewMessageScreen
 import today.cypherpunk.emanator.ui.screens.posts.CalendarScreen
 import today.cypherpunk.emanator.ui.screens.posts.DashboardScreen
 import today.cypherpunk.emanator.ui.screens.posts.PostScreen
@@ -351,6 +352,7 @@ private fun MainNav(nav: NavHostController, container: AppContainer) {
                     composable(Routes.CONVERSATION, arguments = listOf(navArgument("id") { type = NavType.LongType })) { e ->
                         ConversationScreen(nav, e.arguments!!.getLong("id"))
                     }
+                    composable(Routes.NEW_MESSAGE) { NewMessageScreen(nav) }
                     composable(Routes.INTERACTIONS) { InteractionsScreen(nav) }
                     composable(Routes.ACCOUNTS) { AccountsScreen(nav) }
                     composable(Routes.ACCOUNT, arguments = listOf(navArgument("id") { type = NavType.LongType })) { e ->

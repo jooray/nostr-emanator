@@ -67,4 +67,25 @@ class MentionsApiTest < ActionDispatch::IntegrationTest
     get "/api/v1/mentions", params: { q: "nal" }
     assert_response :unauthorized
   end
+
+  # A pasted key is exactly that person, followed or not.
+  def test_a_pasted_npub_resolves_to_that_person
+    api_get "/api/v1/mentions", params: { q: Nostr::KeyConverter.hex_to_npub(@stranger) }
+    assert_equal [ @stranger ], json["mentions"].map { |m| m["pubkey"] }
+    assert_equal "Nala Stranger", json["mentions"].first["display_name"]
+  end
+
+  # The recipient picker also offers people already in the inbox.
+  def test_peers_adds_people_you_already_message
+    participants = [ @main.pubkey_hex, @stranger ].sort
+    @user.conversations.create!(account: @main, participant_pubkeys: participants, peer_pubkey: @stranger,
+                                participants_key: Nostr::Nip17.participants_key(participants),
+                                classification: "known", last_message_at: Time.current)
+
+    api_get "/api/v1/mentions", params: { q: "stranger" }
+    assert_empty json["mentions"]
+
+    api_get "/api/v1/mentions", params: { q: "stranger", peers: "1" }
+    assert_equal [ @stranger ], json["mentions"].map { |m| m["pubkey"] }
+  end
 end

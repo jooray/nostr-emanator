@@ -60,6 +60,9 @@ application.register("dm-thread", DmThreadController)
 import DmComposerController from "./dm_composer_controller"
 application.register("dm-composer", DmComposerController)
 
+import DmRecipientController from "./dm_recipient_controller"
+application.register("dm-recipient", DmRecipientController)
+
 import DmDeliveryController from "./dm_delivery_controller"
 application.register("dm-delivery", DmDeliveryController)
 

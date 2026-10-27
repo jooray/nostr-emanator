@@ -152,4 +152,18 @@
     <string name="reply_published">Odpoveď zverejnená!</string>
     <string name="reply_signing_stalled">Podpisovanie sa zaseklo. Otvor príspevok a skús to znova.</string>
     <string name="reply_publishing_failed">Zverejnenie zlyhalo. Skús to znova zo stránky príspevku.</string>
+
+    <!-- New message (web: conversations.new) -->
+    <string name="newmsg_title">Nová správa</string>
+    <string name="newmsg_from">Od</string>
+    <string name="newmsg_to">Komu</string>
+    <string name="newmsg_change">Zmeniť</string>
+    <string name="newmsg_to_placeholder">Meno, NIP-05 alebo npub</string>
+    <string name="newmsg_to_hint">Ľudia, ktorých sledujú tvoje účty, ľudia, s ktorými si už píšeš, alebo vlož npub.</string>
+    <string name="newmsg_no_match">Nikoho sme nenašli. Vlož radšej jeho npub.</string>
+    <string name="newmsg_message">Správa</string>
+    <string name="newmsg_message_placeholder">Napíš súkromnú správu…</string>
+    <string name="newmsg_some_unavailable">Účty bez zapnutých správ tu nie sú.</string>
+    <string name="newmsg_no_capable_accounts">Žiadny z tvojich účtov zatiaľ nevie posielať súkromné správy. Najprv na niektorom zapni správy.</string>
+    <string name="newmsg_enable_messaging">Zapnúť správy</string>
 </resources>

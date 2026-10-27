@@ -3,6 +3,7 @@ es:
     index:
       title: Mensajes
       subtitle: Privados, en todas las identidades vinculadas
+      new_message: "Nuevo mensaje"
       not_authenticated:
         one: "%{count} cuenta sin autenticar en el relay"
         other: "%{count} cuentas sin autenticar en el relay"
@@ -27,6 +28,20 @@ es:
       no_requests: No hay solicitudes de mensajes.
       no_messages: Todavía no hay mensajes.
       known_hint: Aquí aparecen los mensajes de las personas que sigues. El resto espera en Solicitudes.
+    new:
+      back: "Volver a mensajes"
+      title: "Nuevo mensaje"
+      no_capable_accounts: "Ninguna de tus cuentas puede enviar mensajes privados todavía. Activa los mensajes en una primero:"
+      from: "De"
+      cannot_message: "Esta cuenta necesita activar los mensajes primero"
+      some_unavailable: "Las cuentas en gris necesitan activar los mensajes antes de poder enviar."
+      to: "Para"
+      change: "Cambiar"
+      to_placeholder: "Nombre, NIP-05 o npub"
+      to_hint: "Personas a las que siguen tus cuentas, personas con las que ya hablas, o pega un npub."
+      message: "Mensaje"
+      message_placeholder: "Escribe un mensaje privado…"
+      send: "Enviar"
     show:
       title: Conversación
       conversation_between: conversación entre
@@ -130,6 +145,8 @@ es:
     errors:
       legacy_unacknowledged: un mensaje NIP-04 antiguo solo se puede enviar después de que el remitente reconozca que sus metadatos son públicos
       write_first: Escribe un mensaje primero.
+      choose_account: "Elige la cuenta desde la que enviar."
+      account_cannot_message: "Esta cuenta no puede enviar mensajes privados hasta que actives los mensajes."
       legacy_needs_confirmation: Enviar un mensaje antiguo necesita una confirmación explícita.
       no_recipient: Sin destinatario.
       no_signed_message: Tu firmante no devolvió ningún mensaje firmado.

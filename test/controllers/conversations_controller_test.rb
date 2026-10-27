@@ -593,6 +593,44 @@ class ConversationsControllerTest < ActionDispatch::IntegrationTest
     @user.conversations.active.known.to_a
   end
 
+  def test_new_message_page_offers_every_account_and_the_recipient_search
+    paired_account("Second")
+
+    get new_message_path
+
+    assert_response :success
+    assert_match(/Main/, response.body)
+    assert_match(/Second/, response.body)
+    assert_match(/data-controller="dm-recipient"/, response.body)
+  end
+
+  def test_new_message_prefills_a_recipient
+    get new_message_path(to: Nostr::KeyConverter.hex_to_npub(@peer))
+
+    assert_response :success
+    assert_match(Nostr::KeyConverter.hex_to_npub(@peer), response.body)
+  end
+
+  def test_sending_a_new_message_opens_its_thread
+    second = paired_account("Second")
+
+    assert_difference -> { Message.count }, 1 do
+      post messages_path, params: { account_id: second.id, recipient: Nostr::KeyConverter.hex_to_npub(@peer), content: "hello you" }
+    end
+
+    room = Conversation.last
+    assert_equal second, room.account, "sent from the account the user chose"
+    assert_redirected_to conversation_path(room)
+  end
+
+  def test_a_failed_new_message_keeps_what_was_typed
+    post messages_path, params: { account_id: @account.id, recipient: "", content: "keep me" }
+
+    assert_response :unprocessable_entity
+    assert_match(/keep me/, response.body)
+    assert_equal 0, Conversation.count
+  end
+
   def paired_account(name)
     @user.accounts.create!(
       pubkey_hex: SecureRandom.hex(32), display_name: name, npub: "npub_#{name.downcase}",

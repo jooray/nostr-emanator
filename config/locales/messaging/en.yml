@@ -3,6 +3,7 @@ en:
     index:
       title: Messages
       subtitle: Private, across every paired identity
+      new_message: "New message"
       not_authenticated:
         one: "%{count} account not relay-authenticated"
         other: "%{count} accounts not relay-authenticated"
@@ -27,6 +28,20 @@ en:
       no_requests: No message requests.
       no_messages: No messages yet.
       known_hint: Messages from people you follow appear here. Everyone else waits in Requests.
+    new:
+      back: "Back to messages"
+      title: "New message"
+      no_capable_accounts: "None of your accounts can send private messages yet. Enable messaging on one first:"
+      from: "From"
+      cannot_message: "This account needs messaging enabled first"
+      some_unavailable: "Greyed-out accounts need messaging enabled before they can send."
+      to: "To"
+      change: "Change"
+      to_placeholder: "Name, NIP-05 or npub"
+      to_hint: "People your accounts follow, people you already message, or paste an npub."
+      message: "Message"
+      message_placeholder: "Write a private message…"
+      send: "Send"
     show:
       title: Conversation
       conversation_between: conversation between
@@ -130,6 +145,8 @@ en:
     errors:
       legacy_unacknowledged: a legacy NIP-04 message can only be sent after the sender acknowledges that its metadata is public
       write_first: Write a message first.
+      choose_account: "Choose the account to send from."
+      account_cannot_message: "This account cannot send private messages until messaging is enabled for it."
       legacy_needs_confirmation: Sending a legacy message needs an explicit confirmation.
       no_recipient: No recipient.
       no_signed_message: Your signer did not return a signed message.

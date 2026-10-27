@@ -52,4 +52,22 @@ class MessagingApiTest < ActionDispatch::IntegrationTest
     api_get "/api/v1/conversations/#{@conversation.id}"
     assert_response :not_found
   end
+
+  def test_start_a_conversation_from_a_chosen_account
+    other = create_signed_account(@user, display_name: "Other")
+    peer = SecureRandom.hex(32)
+
+    api_post "/api/v1/conversations", params: { account_id: other.id, recipient: Nostr::KeyConverter.hex_to_npub(peer), content: "first" }
+
+    assert_response :created
+    assert_equal other.id, json.dig("conversation", "account", "id") || Conversation.find(json.dig("conversation", "id")).account_id
+    assert_equal "first", json.dig("message", "content")
+  end
+
+  def test_starting_a_conversation_without_recipient_is_an_error
+    api_post "/api/v1/conversations", params: { account_id: @account.id, recipient: "nope", content: "first" }
+
+    assert_response :unprocessable_entity
+    assert json["error"].present?
+  end
 end

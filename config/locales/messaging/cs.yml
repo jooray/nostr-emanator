@@ -3,6 +3,7 @@ cs:
     index:
       title: Zprávy
       subtitle: Soukromé, napříč všemi spárovanými identitami
+      new_message: "Nová zpráva"
       not_authenticated:
         one: "%{count} účet není ověřený u relaye"
         few: "%{count} účty nejsou ověřené u relaye"
@@ -29,6 +30,20 @@ cs:
       no_requests: Žádné žádosti o zprávy.
       no_messages: Zatím žádné zprávy.
       known_hint: Tady se zobrazují zprávy od lidí, které sleduješ. Všichni ostatní čekají v Žádostech.
+    new:
+      back: "Zpět na zprávy"
+      title: "Nová zpráva"
+      no_capable_accounts: "Žádný z tvých účtů zatím neumí posílat soukromé zprávy. Nejdřív na některém zapni zprávy:"
+      from: "Od"
+      cannot_message: "Tento účet potřebuje nejdřív zapnout zprávy"
+      some_unavailable: "Šedé účty mohou posílat až po zapnutí zpráv."
+      to: "Komu"
+      change: "Změnit"
+      to_placeholder: "Jméno, NIP-05 nebo npub"
+      to_hint: "Lidé, které sledují tvé účty, lidé, se kterými si už píšeš, nebo vlož npub."
+      message: "Zpráva"
+      message_placeholder: "Napiš soukromou zprávu…"
+      send: "Odeslat"
     show:
       title: Konverzace
       conversation_between: konverzace mezi
@@ -138,6 +153,8 @@ cs:
     errors:
       legacy_unacknowledged: starší zprávu NIP-04 lze odeslat, jen když odesílatel potvrdí, že její metadata jsou veřejná
       write_first: Nejdřív napiš zprávu.
+      choose_account: "Vyber účet, ze kterého chceš zprávu poslat."
+      account_cannot_message: "Tento účet nemůže posílat soukromé zprávy, dokud pro něj nezapneš zprávy."
       legacy_needs_confirmation: Odeslání starší zprávy vyžaduje výslovné potvrzení.
       no_recipient: Žádný příjemce.
       no_signed_message: Tvůj podepisovač nevrátil podepsanou zprávu.

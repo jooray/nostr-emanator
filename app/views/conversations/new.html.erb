@@ -1,0 +1,92 @@
+<%# Start a private conversation. Which account it is sent from is always an
+    explicit choice: one inbox spans several identities, and a message from the
+    wrong one cannot be taken back. %>
+<div class="mx-auto max-w-2xl space-y-6">
+  <div class="flex items-center gap-2">
+    <%= link_to messages_path, class: "text-gray-400 transition-colors hover:text-gray-600 dark:hover:text-gray-300",
+          aria: { label: t(".back") } do %>
+      <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+    <% end %>
+    <h1 class="condensed text-[26px] font-bold uppercase leading-none tracking-[0.06em]"><%= t(".title") %></h1>
+  </div>
+
+  <% capable = @accounts.select(&:messaging_capable?) %>
+  <% if capable.empty? %>
+    <div class="border rule p-6 text-sm text-gray-600 dark:text-gray-300">
+      <p><%= t(".no_capable_accounts") %></p>
+      <%= render "accounts/messaging_repair_list", accounts: @accounts.select(&:needs_messaging_repair?) %>
+    </div>
+  <% else %>
+    <%= form_with url: messages_path, method: :post, class: "space-y-6",
+                  data: { controller: "dm-recipient", dm_recipient_url_value: mentions_path(peers: "1") } do %>
+      <fieldset>
+        <legend class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"><%= t(".from") %></legend>
+        <div class="flex flex-wrap gap-2">
+          <% selected = capable.find { |a| a.id == @account_id } || capable.first %>
+          <% @accounts.each do |account| %>
+            <% usable = account.messaging_capable? %>
+            <label class="<%= usable ? 'cursor-pointer' : 'cursor-not-allowed opacity-50' %>"
+                   title="<%= t(".cannot_message") unless usable %>">
+              <%= radio_button_tag :account_id, account.id, account == selected,
+                    disabled: !usable, id: "dm-from-#{account.id}", class: "peer sr-only" %>
+              <span class="condensed inline-flex items-center gap-2 border border-gray-300 px-3 py-2 text-[13px] font-semibold uppercase tracking-[0.14em] text-gray-500 transition-colors peer-checked:border-amber-500 peer-checked:bg-amber-50 peer-checked:text-gray-900 peer-focus-visible:ring-2 peer-focus-visible:ring-amber-500 dark:border-[color:var(--color-rule-dark)] dark:text-gray-400 dark:peer-checked:bg-amber-500/10 dark:peer-checked:text-gray-100">
+                <span class="inline-block h-3 w-[3px] flex-none" style="background: <%= account.ink %>"></span>
+                <%= account.display_name_or_npub %>
+              </span>
+            </label>
+          <% end %>
+        </div>
+        <% if capable.size < @accounts.size %>
+          <p class="mt-2 text-xs text-gray-500 dark:text-gray-400"><%= t(".some_unavailable") %></p>
+        <% end %>
+      </fieldset>
+
+      <div>
+        <label for="dm-recipient-query" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"><%= t(".to") %></label>
+        <%= hidden_field_tag :recipient, @recipient&.dig(:npub), data: { dm_recipient_target: "value" } %>
+
+        <%# The chosen person, shown as a chip; clearing it brings the search back. %>
+        <div data-dm-recipient-target="chip" class="<%= 'hidden' unless @recipient %> flex items-center gap-3 border border-amber-500 px-3 py-2">
+          <img data-dm-recipient-target="chipImage" src="<%= @recipient&.dig(:picture_url) %>" alt=""
+               class="<%= 'hidden' if @recipient&.dig(:picture_url).blank? %> h-8 w-8 flex-none rounded-full object-cover">
+          <span class="min-w-0 flex-1">
+            <span data-dm-recipient-target="chipName" class="block truncate font-medium text-gray-900 dark:text-gray-100"><%= @recipient && (@recipient[:display_name].presence || @recipient[:name].presence || @recipient[:npub].first(16)) %></span>
+            <span data-dm-recipient-target="chipSub" class="block truncate font-mono text-xs text-gray-500 dark:text-gray-400"><%= @recipient&.dig(:npub) %></span>
+          </span>
+          <button type="button" data-action="dm-recipient#clear"
+                  class="text-sm font-medium text-amber-600 underline hover:text-amber-500 dark:text-amber-400"><%= t(".change") %></button>
+        </div>
+
+        <div data-dm-recipient-target="search" class="<%= 'hidden' if @recipient %> relative">
+          <input type="text" id="dm-recipient-query" autocomplete="off" spellcheck="false"
+                 placeholder="<%= t(".to_placeholder") %>"
+                 data-dm-recipient-target="query"
+                 data-action="input->dm-recipient#input keydown->dm-recipient#keydown blur->dm-recipient#blur focus->dm-recipient#input"
+                 role="combobox" aria-autocomplete="list" aria-expanded="false"
+                 class="w-full rounded-md border border-gray-300 bg-white p-2 text-sm dark:border-[color:var(--color-rule-dark)] dark:bg-gray-800 dark:text-white">
+          <p class="mt-1 text-xs text-gray-500 dark:text-gray-400"><%= t(".to_hint") %></p>
+        </div>
+      </div>
+
+      <div>
+        <label for="content" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"><%= t(".message") %></label>
+        <%= text_area_tag :content, @content, rows: 5, required: true,
+              placeholder: t(".message_placeholder"),
+              class: "w-full rounded-md border border-gray-300 bg-white p-2 text-sm dark:border-[color:var(--color-rule-dark)] dark:bg-gray-800 dark:text-white" %>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <p class="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-green-700 dark:text-green-400">
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+          </svg>
+          <%= t("conversations.composer_body.strong_private") %>
+        </p>
+        <%= submit_tag t(".send"), data: { dm_recipient_target: "submit" },
+              class: "rounded-md bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-500 disabled:cursor-not-allowed disabled:opacity-50" %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

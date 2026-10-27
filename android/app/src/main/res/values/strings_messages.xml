@@ -151,4 +151,18 @@
     <string name="reply_published">Reply published!</string>
     <string name="reply_signing_stalled">Signing stalled. Open the post to try again.</string>
     <string name="reply_publishing_failed">Publishing failed. Please try again from the post page.</string>
+
+    <!-- New message (web: conversations.new) -->
+    <string name="newmsg_title">New message</string>
+    <string name="newmsg_from">From</string>
+    <string name="newmsg_to">To</string>
+    <string name="newmsg_change">Change</string>
+    <string name="newmsg_to_placeholder">Name, NIP-05 or npub</string>
+    <string name="newmsg_to_hint">People your accounts follow, people you already message, or paste an npub.</string>
+    <string name="newmsg_no_match">Nobody found. Paste their npub instead.</string>
+    <string name="newmsg_message">Message</string>
+    <string name="newmsg_message_placeholder">Write a private message…</string>
+    <string name="newmsg_some_unavailable">Accounts without messaging enabled are not listed.</string>
+    <string name="newmsg_no_capable_accounts">None of your accounts can send private messages yet. Enable messaging on one first.</string>
+    <string name="newmsg_enable_messaging">Enable messaging</string>
 </resources>
