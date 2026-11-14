@@ -43,6 +43,36 @@ class ProcessNostrActionJobTest < ActiveSupport::TestCase
     { "kind" => 10000, "created_at" => created_at, "tags" => tags, "content" => "" }
   end
 
+  # A boost of any note: kind 6 for a kind-1 note, kind 16 + `k` for others.
+  # An original whose signature does not verify is left out of the content.
+  test "repost signs a NIP-18 repost of the target note" do
+    target = SecureRandom.hex(32)
+    author = SecureRandom.hex(32)
+    forged = { "id" => target, "pubkey" => author, "kind" => 1, "content" => "hi", "tags" => [],
+               "created_at" => 1.hour.ago.to_i, "sig" => SecureRandom.hex(64) }
+    fetcher = Object.new
+    fetcher.define_singleton_method(:fetch_by_ids) { |_ids| [ forged ] }
+
+    [ [ 1, 6, [ [ "e", target, "" ], [ "p", author ] ] ],
+      [ 30023, 16, [ [ "e", target, "" ], [ "p", author ], [ "k", "30023" ] ] ] ].each do |target_kind, kind, tags|
+      action = NostrAction.create!(account: build_account, action_type: :repost, target_event_id: target,
+                                   target_pubkey: author, target_event_kind: target_kind, status: :pending)
+      stub_class_method(Nostr::EventFetcher, :new, ->(*_a, **_k) { fetcher }) do
+        with_signing do
+          with_publisher({ "wss://relay.example" => :ok }) do
+            ProcessNostrActionJob.new.perform(action.id)
+          end
+        end
+      end
+
+      action.reload
+      assert action.published?, action.error_message
+      assert_equal kind, action.signed_event["kind"]
+      assert_equal tags, action.signed_event["tags"]
+      assert_equal "", action.signed_event["content"]
+    end
+  end
+
   test "mute aborts when no relay answered" do
     action = build_mute
 

@@ -26,6 +26,9 @@ class AccountsController < ApplicationController
 
   def recent_events
     @recent_events = fetch_recent_events
+    # "Boost as…" / "Quote as…" under each note.
+    @share_accounts = current_user.accounts.order(Arel.sql("LOWER(COALESCE(display_name, username, npub))")).to_a
+    @boosters = @share_accounts.select { |a| a.id != @account.id && a.has_signer? }
     render layout: false
   end
 

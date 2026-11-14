@@ -32,7 +32,11 @@ import kotlinx.coroutines.launch
 import today.cypherpunk.emanator.R
 import today.cypherpunk.emanator.data.Account
 import today.cypherpunk.emanator.data.AccountDetail
+import today.cypherpunk.emanator.data.AccountsResponse
 import today.cypherpunk.emanator.data.EventsResponse
+import today.cypherpunk.emanator.data.NostrEvent
+import today.cypherpunk.emanator.ui.SharedContent
+import today.cypherpunk.emanator.ui.screens.posts.AccountPickerDialog
 import today.cypherpunk.emanator.data.InteractionsResponse
 import today.cypherpunk.emanator.data.Loadable
 import today.cypherpunk.emanator.ui.LocalContainer
@@ -81,6 +85,11 @@ fun AccountScreen(nav: NavHostController, id: Long) {
     val eventsState by events.state.collectAsState()
     val heardState by heard.state.collectAsState()
     var confirmRemove by remember { mutableStateOf(false) }
+    // "Boost as…" / "Quote as…" under a note: which note, and which list is open.
+    var boosting by remember { mutableStateOf<NostrEvent?>(null) }
+    var quoting by remember { mutableStateOf<NostrEvent?>(null) }
+    val all = appViewModel("account-pickers") { c -> LoadVm(c.cache, "accounts", AccountsResponse.serializer()) { c.api.accounts() } }
+    val allState by all.state.collectAsState()
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { vm.load() }
     // Relay reads are slow (seconds): fetched once per visit, shown from the
@@ -88,6 +97,7 @@ fun AccountScreen(nav: NavHostController, id: Long) {
     LaunchedEffect(id) {
         events.load()
         heard.load()
+        all.load()
     }
 
     fun message(block: suspend () -> String?) = scope.launch {
@@ -121,7 +131,7 @@ fun AccountScreen(nav: NavHostController, id: Long) {
                     items(detail.upcoming, key = { "up-${it.id}" }) { post -> PostRow(post, onOpen = { nav.navigate(Routes.post(it.targetPostId)) }) }
                 }
 
-                recentEvents(eventsState)
+                recentEvents(eventsState, onBoost = { boosting = it }, onQuote = { quoting = it })
                 recentInteractions(heardState)
 
                 item { SettingsSection(account, nav, onRefreshProfile = { message { container.api.refreshAccountProfile(id).message } },
@@ -136,6 +146,28 @@ fun AccountScreen(nav: NavHostController, id: Long) {
                 }
             }
         }
+    }
+
+    boosting?.let { event ->
+        AccountPickerDialog(
+            title = stringResource(R.string.row_boost_as),
+            accounts = allState.data?.accounts.orEmpty().filter { it.id != id && it.hasSigner },
+            onPick = { booster ->
+                message { container.api.boostEvent(booster.id, event.id.orEmpty(), event.pubkey.orEmpty(), event.kind).message }
+            },
+            onDismiss = { boosting = null },
+        )
+    }
+    quoting?.let { event ->
+        AccountPickerDialog(
+            title = stringResource(R.string.row_quote_as),
+            accounts = allState.data?.accounts.orEmpty(),
+            onPick = { quoter ->
+                container.shared.value = SharedContent("\n\nnostr:${event.nevent}", emptyList())
+                nav.navigate(Routes.compose(account = quoter.id, shared = true))
+            },
+            onDismiss = { quoting = null },
+        )
     }
 
     if (confirmRemove) {
@@ -210,7 +242,11 @@ private fun SmallLoading() {
     }
 }
 
-private fun LazyListScope.recentEvents(state: Loadable<EventsResponse>) {
+private fun LazyListScope.recentEvents(
+    state: Loadable<EventsResponse>,
+    onBoost: (NostrEvent) -> Unit,
+    onQuote: (NostrEvent) -> Unit,
+) {
     item {
         SectionTitle(stringResource(R.string.acc_recent_events), stringResource(R.string.acc_recent_events_help))
     }
@@ -229,6 +265,12 @@ private fun LazyListScope.recentEvents(state: Loadable<EventsResponse>) {
                     Text(Times.dateTime(Times.parse(event.createdAt)), style = Type.mono, color = LocalConsole.current.muted, modifier = Modifier.weight(1f))
                     event.nevent?.let { nevent ->
                         SlugButton(stringResource(R.string.action_copy_nevent), { Links.copy(context, "nevent", nevent) })
+                    }
+                }
+                if (event.nevent != null && event.id != null && event.pubkey != null) {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                        SlugButton(stringResource(R.string.row_boost_as), { onBoost(event) })
+                        SlugButton(stringResource(R.string.row_quote_as), { onQuote(event) })
                     }
                 }
             }

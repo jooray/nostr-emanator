@@ -75,6 +75,43 @@ class BoostAndQuoteTest < ActionDispatch::IntegrationTest
     assert_no_match note.nostr_reference, response.body
   end
 
+
+  def test_boosting_any_note_on_nostr_is_a_signed_repost_action
+    pubkey = SecureRandom.hex(32)
+    event_id = SecureRandom.hex(32)
+    assert_enqueued_with(job: ProcessNostrActionJob) do
+      post boosts_path, params: { account_id: @booster.id, event_id: event_id, pubkey: pubkey, kind: 1 }
+    end
+    action = @booster.nostr_actions.last
+    assert action.repost?
+    assert_equal event_id, action.target_event_id
+    assert_match "Boosting as Booster", flash[:notice]
+
+    # Asking twice reuses the action under way.
+    post boosts_path, params: { account_id: @booster.id, event_id: event_id, pubkey: pubkey, kind: 1 }
+    assert_equal 1, @booster.nostr_actions.repost.count
+  end
+
+  def test_boosting_one_of_our_own_notes_from_the_account_page_is_a_tracked_repost
+    post boosts_path, params: { account_id: @booster.id, event_id: @post.event_id, pubkey: @author.pubkey_hex, kind: 1 }
+    assert @post.reposts.find_by(account: @booster)
+    assert_empty @booster.nostr_actions
+  end
+
+  def test_an_account_cannot_boost_its_own_note_from_the_relays
+    post boosts_path, params: { account_id: @booster.id, event_id: SecureRandom.hex(32), pubkey: @booster.pubkey_hex }
+    assert_equal I18n.t("posts.boost.own_note"), flash[:alert]
+  end
+
+  def test_quote_any_note_by_nevent
+    nevent = Nostr::KeyConverter.hex_to_nevent("12" * 32, author_pubkey: "34" * 32)
+    get new_account_post_path(@booster, quote_nevent: nevent)
+    assert_match "nostr:#{nevent}", response.body
+
+    get new_account_post_path(@booster, quote_nevent: "npub1nonsense")
+    assert_no_match "npub1nonsense", response.body
+  end
+
   private
 
   def paired_account(name)

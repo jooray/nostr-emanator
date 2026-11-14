@@ -66,6 +66,11 @@ class PostsController < ApplicationController
     if params[:quote].present?
       quoted = Post.joins(:account).where(accounts: { user_id: current_user.id }).find_by(id: params[:quote])
       @post.content = "\n\n#{quoted.nostr_reference}" if quoted&.nostr_reference
+    elsif params[:quote_nevent].present?
+      # Any note on Nostr (account page): only a well-formed note reference
+      # goes into the text.
+      parsed = Nostr::KeyConverter.parse_nostr_identifier(params[:quote_nevent].to_s.delete_prefix("nostr:"))
+      @post.content = "\n\nnostr:#{params[:quote_nevent].to_s.delete_prefix('nostr:')}" if parsed && %i[nevent note].include?(parsed[:type])
     end
   end
 

@@ -376,6 +376,8 @@ data class InteractionsResponse(
 @Serializable
 data class NostrEvent(
     val id: String? = null,
+    val pubkey: String? = null,
+    val kind: Int? = null,
     val content: String? = null,
     @SerialName("created_at") val createdAt: String? = null,
     val nevent: String? = null,

@@ -160,4 +160,16 @@ class PostsApiTest < ActionDispatch::IntegrationTest
     assert_equal I18n.t("posts.boost.own_note"), json["error"]
   end
 
+
+  def test_boost_any_note
+    booster = create_signed_account(@user, display_name: "Booster")
+    api_post "/api/v1/boosts", params: { account_id: booster.id, event_id: "12" * 32, pubkey: "34" * 32, kind: 1 }
+    assert_response :success
+    assert_match "Booster", json["message"]
+    assert booster.nostr_actions.repost.exists?(target_event_id: "12" * 32)
+
+    api_post "/api/v1/boosts", params: { account_id: booster.id, event_id: "12" * 32, pubkey: booster.pubkey_hex }
+    assert_response :unprocessable_entity
+  end
+
 end

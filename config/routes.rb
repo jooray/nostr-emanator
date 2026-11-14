@@ -43,6 +43,10 @@ Rails.application.routes.draw do
   # Upload progress polling (C6): created nested under an account, polled by id.
   resources :blossom_uploads, only: [ :show ]
 
+  # "Boost as…" for any note on Nostr (account page); the post list uses
+  # posts#boost, which this falls back to for our own notes anyway.
+  post "boosts", to: "boosts#create", as: :boosts
+
   resources :nostr_actions, only: [ :show ] do
     member do
       post :retry
@@ -184,6 +188,7 @@ Rails.application.routes.draw do
       resources :nostr_actions, only: :show do
         post :retry, on: :member
       end
+      post "boosts", to: "boosts#create"
 
       delete "failed_posts", to: "posts#discard_failed"
       resources :posts, only: %i[index show create update destroy] do

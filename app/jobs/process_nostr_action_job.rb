@@ -23,6 +23,8 @@ class ProcessNostrActionJob < ApplicationJob
         process_follow
       elsif @action.mute?
         process_mute
+      elsif @action.repost?
+        process_repost
       end
     end
   rescue => e
@@ -50,6 +52,37 @@ class ProcessNostrActionJob < ApplicationJob
     @action.update!(unsigned_event: unsigned)
 
     sign_and_publish
+  end
+
+  # NIP-18: kind 6 for a kind-1 note, kind 16 (with a `k` tag) for anything
+  # else. The content carries the original note when a relay hands it to us
+  # with a valid signature by its author; it may be empty otherwise.
+  def process_repost
+    @action.update!(status: :processing)
+    original = original_event
+    target_kind = @action.target_event_kind || original&.dig("kind") || 1
+
+    tags = [ [ "e", @action.target_event_id, "" ], [ "p", @action.target_pubkey ] ]
+    tags << [ "k", target_kind.to_s ] unless target_kind == 1
+    unsigned = @signer.build_unsigned_event(
+      content: original ? JSON.generate(original) : "",
+      kind: target_kind == 1 ? 6 : 16,
+      pubkey: @action.account.pubkey_hex,
+      created_at: Time.current,
+      tags: tags
+    )
+    @action.update!(status: :awaiting_signature, unsigned_event: unsigned)
+
+    sign_and_publish
+  end
+
+  def original_event
+    fetcher.fetch_by_ids([ @action.target_event_id ])
+      .map { |e| e.respond_to?(:stringify_keys) ? e.stringify_keys : e }
+      .find { |e| e["id"] == @action.target_event_id && Nostr::EventValidator.valid?(e, author: @action.target_pubkey) }
+  rescue StandardError => e
+    Rails.logger.warn("ProcessNostrActionJob: could not fetch #{@action.target_event_id} for a repost: #{e.message}")
+    nil
   end
 
   def process_follow

@@ -26,6 +26,25 @@ module Posts
       accounts.select { |a| a.id != post.account_id && a.has_signer? && !taken.include?(a.id) }
     end
 
+    # Boost any note on Nostr as `account`. One of the user's own published
+    # posts goes through the tracked Repost above (it then shows on the note's
+    # page); anything else is a signed NostrAction, like a reaction.
+    def self.event(user, account, event_id:, pubkey:, kind: nil)
+      post = Post.joins(:account).where(accounts: { user_id: user.id }).find_by(event_id: event_id)
+      return new(post, account).call if post && boostable?(post)
+
+      name = account.display_name_or_npub
+      return Result.new(ok: false, error: I18n.t("posts.boost.own_note")) if account.pubkey_hex == pubkey
+      return Result.new(ok: false, error: I18n.t("posts.boost.no_signer", name: name)) unless account.has_signer?
+
+      action, error = NostrAction.request!(account, action_type: "repost", target_event_id: event_id,
+                                                    target_pubkey: pubkey, target_event_kind: kind)
+      return Result.new(ok: false, error: error) if error
+      return Result.new(ok: false, error: I18n.t("posts.boost.already", name: name)) if action.published?
+
+      Result.new(ok: true)
+    end
+
     def initialize(post, account)
       @post = post
       @account = account

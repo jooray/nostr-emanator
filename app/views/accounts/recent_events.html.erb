@@ -11,6 +11,7 @@
               <a href="<%= nevent_url(nevent) %>" target="_blank" rel="noopener noreferrer"
                  class="hover:text-amber-600 dark:hover:text-amber-400 underline underline-offset-2 transition-colors"><%= t("posts.show.view_on", viewer: current_user.event_viewer.capitalize) %></a>
               <%= render "shared/copy_nevent", nevent: nevent %>
+              <%= render "accounts/share_menus", nevent: nevent, event: event, boosters: @boosters, quoters: @share_accounts %>
             <% end %>
           </div>
         </li>

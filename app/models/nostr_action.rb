@@ -7,7 +7,7 @@ class NostrAction < ApplicationRecord
 
   belongs_to :account
 
-  enum :action_type, { reaction: 0, follow: 1, mute: 2 }
+  enum :action_type, { reaction: 0, follow: 1, mute: 2, repost: 3 }
   enum :status, { pending: 0, awaiting_signature: 1, processing: 2, publishing: 3, published: 4, failed: 5 }
 
   # L2: target_event_id / target_pubkey / target_event_kind come straight from
@@ -18,12 +18,16 @@ class NostrAction < ApplicationRecord
   ALLOWED_TARGET_KINDS = [ 1, 6, 7, 20, 1111, 9802, 30023 ].freeze
 
   validates :target_pubkey, presence: true, format: { with: HEX_32, message: :invalid_hex_pubkey }
-  validates :target_event_id, presence: true, if: :reaction?
+  validates :target_event_id, presence: true, if: -> { reaction? || repost? }
   validates :target_event_id, format: { with: HEX_32, message: :invalid_hex_event_id }, allow_blank: true
   validates :target_event_kind, inclusion: { in: ALLOWED_TARGET_KINDS, message: :unsupported_kind }, allow_nil: true
 
   scope :reactions_for_event, ->(account_id, event_id) {
     where(account_id: account_id, action_type: :reaction, target_event_id: event_id).where.not(status: :failed)
+  }
+
+  scope :reposts_for_event, ->(account_id, event_id) {
+    where(account_id: account_id, action_type: :repost, target_event_id: event_id).where.not(status: :failed)
   }
 
   scope :follows_for_pubkey, ->(account_id, pubkey) {
@@ -34,7 +38,7 @@ class NostrAction < ApplicationRecord
     where(account_id: account_id, action_type: :mute, target_pubkey: pubkey).where.not(status: :failed)
   }
 
-  # Like / follow / mute on behalf of an account, from the web or the app.
+  # Like / follow / mute / repost on behalf of an account, from the web or the app.
   # Returns [action, error]. An identical action already under way is returned
   # instead of a second one; a permanently failed one is revived for a retry.
   def self.request!(account, attrs)
@@ -45,6 +49,7 @@ class NostrAction < ApplicationRecord
       when "reaction" then existing.reactions_for_event(account.id, attrs["target_event_id"]).first
       when "follow" then existing.follows_for_pubkey(account.id, attrs["target_pubkey"]).first
       when "mute" then existing.mutes_for_pubkey(account.id, attrs["target_pubkey"]).first
+      when "repost" then existing.reposts_for_event(account.id, attrs["target_event_id"]).first
       end
     return [ existing, nil ] if existing
 

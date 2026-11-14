@@ -49,6 +49,9 @@ class EmanatorApi(val client: ApiClient) {
         client.patch("/api/v1/accounts/$id", mapOf("account" to fields))
     suspend fun removeAccount(id: Long) = client.delete("/api/v1/accounts/$id")
     suspend fun refreshAccountProfile(id: Long): OkMessage = client.post("/api/v1/accounts/$id/refresh_profile")
+    /** "Boost as…" for any note on Nostr, signed by `accountId`. */
+    suspend fun boostEvent(accountId: Long, eventId: String, pubkey: String, kind: Int?): OkMessage =
+        client.post("/api/v1/boosts", mapOf("account_id" to accountId, "event_id" to eventId, "pubkey" to pubkey, "kind" to kind))
     suspend fun refreshAccountRelays(id: Long): OkMessage = client.post("/api/v1/accounts/$id/refresh_relays")
     suspend fun recentEvents(id: Long): EventsResponse = client.get("/api/v1/accounts/$id/recent_events")
     suspend fun recentInteractions(id: Long): InteractionsResponse = client.get("/api/v1/accounts/$id/recent_interactions")
