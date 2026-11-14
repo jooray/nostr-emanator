@@ -8,6 +8,7 @@ class BoostAndQuoteTest < ActionDispatch::IntegrationTest
   include NostrTestHelper
   include SessionHelper
   include ActiveJob::TestHelper
+  include CacheHelper
 
   def setup
     @user = create_signed_in_user
@@ -27,6 +28,8 @@ class BoostAndQuoteTest < ActionDispatch::IntegrationTest
     assert_match "Boost as…", response.body
     assert_match "Quote as…", response.body
     assert_match boost_post_path(@post), response.body
+    assert_match 'data-dropdown-target="input"', response.body
+    assert_match 'data-search-text="booster', response.body
   end
 
   def test_boost_creates_a_repost_that_publishes_now
@@ -110,6 +113,20 @@ class BoostAndQuoteTest < ActionDispatch::IntegrationTest
 
     get new_account_post_path(@booster, quote_nevent: "npub1nonsense")
     assert_no_match "npub1nonsense", response.body
+  end
+
+
+  def test_the_account_page_notes_carry_searchable_boost_and_quote_menus
+    event = { "id" => "56" * 32, "pubkey" => @author.pubkey_hex, "kind" => 1, "content" => "From a relay",
+              "created_at" => 1.hour.ago.to_i, "tags" => [] }
+    Rails.cache.write("account_events_#{@author.id}", [ event ])
+
+    get recent_events_account_path(@author)
+    assert_response :success
+    assert_match boosts_path, response.body
+    assert_match "quote_nevent=", response.body
+    assert_match 'data-dropdown-target="input"', response.body
+    assert_match 'data-turbo-frame="_top"', response.body
   end
 
   private

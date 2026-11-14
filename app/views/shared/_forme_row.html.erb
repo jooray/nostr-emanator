@@ -52,33 +52,13 @@
     <% if share_accounts && !is_repost && post.published? && post.nostr_reference %>
       <% boosters = Posts::Boost.candidates(post, share_accounts) %>
       <div class="mt-2 flex flex-wrap items-center gap-3">
+        <% summary_class = "slug cursor-pointer list-none select-none hover:text-amber-600 dark:hover:text-amber-400" %>
         <% if boosters.any? %>
-          <details class="relative" data-controller="dropdown">
-            <summary class="slug cursor-pointer list-none select-none hover:text-amber-600 dark:hover:text-amber-400"><%= t(".boost_as") %></summary>
-            <div class="absolute left-0 z-20 mt-1.5 max-h-72 min-w-56 overflow-y-auto border rule bg-white py-1 shadow-lg dark:bg-[color:var(--color-panel)]">
-              <% boosters.each do |account| %>
-                <%= button_to boost_post_path(post), params: { account_id: account.id }, method: :post,
-                      class: "flex w-full items-center gap-2 px-3 py-2 text-left text-[14px] text-gray-700 hover:bg-amber-500/10 dark:text-gray-200",
-                      form_class: "block" do %>
-                  <span class="wire" style="--wire-ink: <%= account.ink %>; min-height: 12px"></span>
-                  <span class="truncate"><%= account.display_name_or_npub %></span>
-                <% end %>
-              <% end %>
-            </div>
-          </details>
+          <%= render "shared/account_menu", label: t(".boost_as"), summary_class: summary_class, accounts: boosters,
+                href: ->(_account) { boost_post_path(post) }, form_params: ->(account) { { account_id: account.id } } %>
         <% end %>
-        <details class="relative" data-controller="dropdown">
-          <summary class="slug cursor-pointer list-none select-none hover:text-amber-600 dark:hover:text-amber-400"><%= t(".quote_as") %></summary>
-          <div class="absolute left-0 z-20 mt-1.5 max-h-72 min-w-56 overflow-y-auto border rule bg-white py-1 shadow-lg dark:bg-[color:var(--color-panel)]">
-            <% share_accounts.each do |account| %>
-              <%= link_to new_account_post_path(account, quote: post.id),
-                    class: "flex w-full items-center gap-2 px-3 py-2 text-[14px] text-gray-700 no-underline hover:bg-amber-500/10 dark:text-gray-200" do %>
-                <span class="wire" style="--wire-ink: <%= account.ink %>; min-height: 12px"></span>
-                <span class="truncate"><%= account.display_name_or_npub %></span>
-              <% end %>
-            <% end %>
-          </div>
-        </details>
+        <%= render "shared/account_menu", label: t(".quote_as"), summary_class: summary_class, accounts: share_accounts,
+              href: ->(account) { new_account_post_path(account, quote: post.id) } %>
       </div>
     <% end %>
     <% if failed && (why = delivery_failure_line(post)) %>

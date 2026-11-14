@@ -1,32 +1,11 @@
 <%# "Boost as…" and "Quote as…" under a note from the relays: plain links like
-    "View on …", each opening a list of the user's accounts. Both leave the
-    lazy turbo frame (_top), so the flash and the composer show up. %>
+    "View on …". Both leave the lazy turbo frame (_top), so the flash and the
+    composer show up. %>
 <% link_class = "cursor-pointer list-none select-none underline underline-offset-2 transition-colors hover:text-amber-600 dark:hover:text-amber-400" %>
-<% panel_class = "absolute left-0 z-20 mt-1.5 max-h-72 min-w-56 overflow-y-auto border rule bg-white py-1 text-sm shadow-lg dark:bg-[color:var(--color-panel)]" %>
-<% item_class = "flex w-full items-center gap-2 px-3 py-2 text-left text-gray-700 no-underline hover:bg-amber-500/10 dark:text-gray-200" %>
 <% if boosters.any? %>
-  <details class="relative" data-controller="dropdown">
-    <summary class="<%= link_class %>"><%= t("shared.forme_row.boost_as") %></summary>
-    <div class="<%= panel_class %>">
-      <% boosters.each do |account| %>
-        <%= button_to boosts_path, method: :post,
-              params: { account_id: account.id, event_id: event["id"], pubkey: event["pubkey"], kind: event["kind"] },
-              form: { data: { turbo_frame: "_top" } }, form_class: "block", class: item_class do %>
-          <span class="wire" style="--wire-ink: <%= account.ink %>; min-height: 12px"></span>
-          <span class="truncate"><%= account.display_name_or_npub %></span>
-        <% end %>
-      <% end %>
-    </div>
-  </details>
+  <%= render "shared/account_menu", label: t("shared.forme_row.boost_as"), summary_class: link_class, accounts: boosters, top: true,
+        href: ->(_account) { boosts_path },
+        form_params: ->(account) { { account_id: account.id, event_id: event["id"], pubkey: event["pubkey"], kind: event["kind"] } } %>
 <% end %>
-<details class="relative" data-controller="dropdown">
-  <summary class="<%= link_class %>"><%= t("shared.forme_row.quote_as") %></summary>
-  <div class="<%= panel_class %>">
-    <% quoters.each do |account| %>
-      <%= link_to new_account_post_path(account, quote_nevent: nevent), class: item_class, data: { turbo_frame: "_top" } do %>
-        <span class="wire" style="--wire-ink: <%= account.ink %>; min-height: 12px"></span>
-        <span class="truncate"><%= account.display_name_or_npub %></span>
-      <% end %>
-    <% end %>
-  </div>
-</details>
+<%= render "shared/account_menu", label: t("shared.forme_row.quote_as"), summary_class: link_class, accounts: quoters, top: true,
+      href: ->(account) { new_account_post_path(account, quote_nevent: nevent) } %>

@@ -1,0 +1,43 @@
+<%# A <details> menu that picks one of the user's accounts ("Boost as…",
+    "Quote as…"). Opening it focuses a filter box, as on the new-post account
+    picker; Enter takes the first account still shown.
+
+    Locals: label, summary_class, accounts, href (account -> url),
+    form_params (account -> params; when given each entry is a POST button,
+    otherwise a link), top (true: leave the surrounding turbo frame). %>
+<% form_params = local_assigns[:form_params] %>
+<% top = local_assigns[:top] %>
+<% item_class = "flex w-full items-center gap-2 px-3 py-2 text-left text-[14px] text-gray-700 no-underline hover:bg-amber-500/10 focus:bg-amber-500/10 focus:outline-none dark:text-gray-200" %>
+<details class="relative" data-controller="dropdown">
+  <summary class="<%= summary_class %>"><%= label %></summary>
+  <div class="absolute left-0 z-20 mt-1.5 w-72 max-w-[calc(100vw-2rem)] border rule bg-white shadow-lg dark:bg-[color:var(--color-panel)]">
+    <div class="border-b rule p-2">
+      <input type="search" autocomplete="off" spellcheck="false"
+             placeholder="<%= t("posts.select_account.filter_placeholder") %>"
+             aria-label="<%= t("posts.select_account.filter_placeholder") %>"
+             data-dropdown-target="input"
+             data-action="input->dropdown#filter keydown.enter->dropdown#pick"
+             class="block w-full border rule bg-transparent px-2.5 py-1.5 text-[14px] text-gray-900 placeholder:text-gray-400 focus:border-amber-500 focus:outline-none dark:text-white">
+    </div>
+    <div class="max-h-72 overflow-y-auto py-1">
+      <% accounts.each do |account| %>
+        <% search = [ account.display_name, account.username, account.npub ].compact.join(" ").downcase %>
+        <div data-dropdown-target="row" data-search-text="<%= search %>">
+          <% if form_params %>
+            <%= button_to href.call(account), method: :post, params: form_params.call(account),
+                  form: (top ? { data: { turbo_frame: "_top" } } : {}), form_class: "block", class: item_class do %>
+              <span class="wire" style="--wire-ink: <%= account.ink %>; min-height: 12px"></span>
+              <span class="truncate"><%= account.display_name_or_npub %></span>
+            <% end %>
+          <% else %>
+            <%= link_to href.call(account), class: item_class, data: (top ? { turbo_frame: "_top" } : {}) do %>
+              <span class="wire" style="--wire-ink: <%= account.ink %>; min-height: 12px"></span>
+              <span class="truncate"><%= account.display_name_or_npub %></span>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+      <p data-dropdown-target="empty" class="hidden px-3 py-2 text-[13px] text-gray-500 dark:text-gray-400"><%= t("posts.select_account.no_match") %></p>
+    </div>
+  </div>
+</details>

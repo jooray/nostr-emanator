@@ -5,6 +5,21 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.text.input.ImeAction
+import today.cypherpunk.emanator.ui.theme.Palette
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.AlertDialog
@@ -79,7 +94,10 @@ fun ConfirmDialog(
     )
 }
 
-/** Pick one of the user's accounts ("Boost as…", "Quote as…"). */
+/**
+ * Pick one of the user's accounts ("Boost as…", "Quote as…"). The filter box
+ * takes the focus at once, as on the web; Done picks the first account left.
+ */
 @Composable
 fun AccountPickerDialog(
     title: String,
@@ -88,23 +106,44 @@ fun AccountPickerDialog(
     onDismiss: () -> Unit,
 ) {
     val c = LocalConsole.current
+    var query by remember { mutableStateOf("") }
+    val focus = remember { FocusRequester() }
+    val shown = remember(query, accounts) {
+        val q = query.trim().lowercase()
+        if (q.isEmpty()) accounts
+        else accounts.filter { a -> listOfNotNull(a.name, a.username, a.npub).any { it.lowercase().contains(q) } }
+    }
+    fun pick(account: today.cypherpunk.emanator.data.Account) { onDismiss(); onPick(account) }
+    LaunchedEffect(Unit) { focus.requestFocus() }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = c.panel,
         title = { Text(title, style = Type.bodyDense, color = c.text) },
         text = {
-            androidx.compose.foundation.lazy.LazyColumn {
-                items(accounts.size) { index ->
-                    val account = accounts[index]
-                    Text(
-                        account.name,
-                        style = Type.bodyDense,
-                        color = c.text,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onDismiss(); onPick(account) }
-                            .padding(vertical = 12.dp),
-                    )
+            Column {
+                OutlinedTextField(
+                    query, { query = it },
+                    placeholder = { Text(stringResource(R.string.schedule_filter), style = Type.small) },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = { shown.firstOrNull()?.let(::pick) }),
+                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = Palette.amber, unfocusedBorderColor = c.rule, cursorColor = Palette.amber),
+                    modifier = Modifier.fillMaxWidth().focusRequester(focus),
+                )
+                if (shown.isEmpty()) {
+                    Text(stringResource(R.string.schedule_no_match), style = Type.small, color = c.muted, modifier = Modifier.padding(vertical = 12.dp))
+                }
+                androidx.compose.foundation.lazy.LazyColumn(Modifier.heightIn(max = 360.dp)) {
+                    items(shown.size, key = { shown[it].id }) { index ->
+                        val account = shown[index]
+                        Text(
+                            account.name,
+                            style = Type.bodyDense,
+                            color = c.text,
+                            modifier = Modifier.fillMaxWidth().clickable { pick(account) }.padding(vertical = 12.dp),
+                        )
+                    }
                 }
             }
         },
