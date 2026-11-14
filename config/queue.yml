@@ -45,6 +45,14 @@ default: &default
       threads: 1
       processes: 1
       polling_interval: 1
+    # Media uploads. Each BlossomUploadJob holds its thread through up to two
+    # Amber approvals (120 s each), so on `default` a handful of attachments
+    # filled all three threads and every upload sat at "Queued…" behind them —
+    # and behind publishing. A pool of their own keeps both moving.
+    - queues: [ "uploads" ]
+      threads: <%= ENV.fetch("UPLOAD_JOB_CONCURRENCY", 4) %>
+      processes: 1
+      polling_interval: 1
     - queues: [ "default", "solid_queue_recurring" ]
       threads: 3
       processes: <%= ENV.fetch("JOB_CONCURRENCY", 1) %>

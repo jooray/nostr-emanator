@@ -76,6 +76,14 @@ class Post < ApplicationRecord
     published? && signed_event.present?
   end
 
+  # The published note as a `nostr:` reference, which is all a quote needs:
+  # Nostr::ContentTagger turns it into the `q` tag when the quote is signed.
+  def nostr_reference
+    return nil if event_id.blank?
+
+    "nostr:#{Nostr::KeyConverter.hex_to_nevent(event_id, author_pubkey: account.pubkey_hex)}"
+  end
+
   def cancel!
     transaction do
       reposts.destroy_all

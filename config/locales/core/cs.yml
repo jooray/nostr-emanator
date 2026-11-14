@@ -176,6 +176,8 @@ cs:
       today: Dnes
       tomorrow: Zítra
       repost_of_note: Repost tohoto příspěvku
+      boost_as: "Repostovat jako…"
+      quote_as: "Citovat jako…"
       reposts:
         one: "%{count} repost"
         few: "%{count} reposty"

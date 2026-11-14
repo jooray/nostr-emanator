@@ -54,7 +54,7 @@
       <% @posts.each do |post| %>
         <%# `pending_signature` is a repost-only state and means the same thing to
             the operator: it is waiting on a tap. %>
-        <%= render "shared/forme_row", post: post,
+        <%= render "shared/forme_row", post: post, share_accounts: @accounts.to_a,
               waiting: post.awaiting_signature? || (post.respond_to?(:pending_signature?) && post.pending_signature?),
               short: post.delivery_alarming?,
               failed: post.failed?,

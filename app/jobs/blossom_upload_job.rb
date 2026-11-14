@@ -5,7 +5,7 @@
 # no longer pins a *Puma* thread for up to ~5 minutes, so the web app stays
 # responsive while the user approves the request in Amber.
 class BlossomUploadJob < ApplicationJob
-  queue_as :default
+  queue_as :uploads
   discard_on ActiveRecord::RecordNotFound
 
   def perform(upload_id)

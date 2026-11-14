@@ -260,9 +260,17 @@ data class PostItem(
     val reposts: List<PostItem> = emptyList(),
     @SerialName("version_history") val versionHistory: List<VersionEntry> = emptyList(),
     val references: List<Reference> = emptyList(),
+    /** The text for outside Nostr: mentions as names, notes as web links (detail only). */
+    @SerialName("share_text") val shareText: String? = null,
+    /** Accounts that may "Boost as…" this note; empty until it is published. */
+    @SerialName("boost_account_ids") val boostAccountIds: List<Long> = emptyList(),
     val post: ParentPostRef? = null,
 ) {
     val isRepost get() = type == "repost"
+    /** What copy and share hand to other apps; the raw note when the server sent none. */
+    val outsideText get() = (shareText ?: content)?.trim().orEmpty()
+    /** A published note of ours, which another account can boost or quote. */
+    val shareable get() = !isRepost && status == "published" && nevent != null
     /** The post whose page this row opens: itself, or the note a repost reposts. */
     val targetPostId get() = if (isRepost) (postId ?: post?.id ?: id) else id
 }

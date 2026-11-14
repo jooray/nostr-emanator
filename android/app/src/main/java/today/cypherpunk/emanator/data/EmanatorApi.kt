@@ -84,6 +84,8 @@ class EmanatorApi(val client: ApiClient) {
             "scheduled_at" to scheduledAtIso, "repost_account_ids" to repostAccountIds, "max_delay_hours" to maxDelayHours,
         ))
     suspend fun postAction(id: Long, action: String): PostResponse = client.post("/api/v1/posts/$id/$action")
+    suspend fun boost(id: Long, accountId: Long): PostResponse =
+        client.post("/api/v1/posts/$id/boost", mapOf("account_id" to accountId))
     suspend fun discardFailed(accountId: Long?): DiscardResult = client.deleteFor("/api/v1/failed_posts", mapOf("account_id" to accountId))
     suspend fun repostAction(postId: Long, repostId: Long, action: String): PostResponse =
         client.post("/api/v1/posts/$postId/reposts/$repostId/$action")

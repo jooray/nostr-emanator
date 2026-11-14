@@ -55,6 +55,8 @@ fun PostRow(
     kind: RowKind = rowKindFor(item),
     onRetry: ((PostItem) -> Unit)? = null,
     onRebroadcast: ((PostItem) -> Unit)? = null,
+    onBoost: ((PostItem) -> Unit)? = null,
+    onQuote: ((PostItem) -> Unit)? = null,
 ) {
     val c = LocalConsole.current
     val stampIso = if (kind == RowKind.Sent || kind == RowKind.Short) item.publishedAt else item.scheduledAt
@@ -99,6 +101,14 @@ fun PostRow(
             Text(stringResource(R.string.row_repost_of_note).uppercase(), style = Type.slug, color = c.muted)
         } else if (item.repostsCount > 0) {
             Text(pluralStringResource(R.plurals.row_reposts, item.repostsCount, item.repostsCount).uppercase(), style = Type.slug, color = c.muted)
+        }
+        if (item.shareable && (onBoost != null || onQuote != null)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                if (onBoost != null && item.boostAccountIds.isNotEmpty()) {
+                    SlugButton(stringResource(R.string.row_boost_as), { onBoost(item) })
+                }
+                if (onQuote != null) SlugButton(stringResource(R.string.row_quote_as), { onQuote(item) })
+            }
         }
         if (kind == RowKind.Failed) {
             Text(

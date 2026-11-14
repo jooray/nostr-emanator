@@ -93,6 +93,7 @@ Rails.application.routes.draw do
       post :retry_sign
       post :retry_publish
       post :rebroadcast
+      post :boost
       post :cancel
       post :reschedule
     end
@@ -192,6 +193,7 @@ Rails.application.routes.draw do
           post :retry_sign
           post :retry_publish
           post :rebroadcast
+          post :boost
           post :cancel
           post :reschedule
         end

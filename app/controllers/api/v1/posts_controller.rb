@@ -116,6 +116,14 @@ module Api
         respond_with_post(I18n.t("posts.flash.rebroadcasting"))
       end
 
+      def boost
+        account = current_user.accounts.find(params[:account_id])
+        result = Posts::Boost.new(@post, account).call
+        return render_error(result.error) unless result.ok
+
+        respond_with_post(I18n.t("posts.boost.started", name: account.display_name_or_npub))
+      end
+
       def cancel
         return render_error(I18n.t("posts.flash.cannot_cancel")) unless @post.can_cancel?
 

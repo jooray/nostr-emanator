@@ -53,6 +53,23 @@ class NostrContentHelperTest < ActionView::TestCase
     assert_includes view.render_nostr_content("nostr:#{NPUB}"), "@Alice"
     assert_no_enqueued_jobs only: WarmNostrReferenceJob
   end
+
+  test "shareable text names a known profile and links notes" do
+    Rails.cache.write(WarmNostrReferenceJob.profile_cache_key(PUBKEY), { display_name: "Alice" })
+    nevent = Nostr::KeyConverter.hex_to_nevent("ab" * 32)
+
+    text = view.shareable_text("  by nostr:#{NPUB} see nostr:#{nevent}  ")
+
+    assert_equal "by Alice see https://njump.me/#{nevent}", text
+  end
+
+  test "shareable text links a profile it cannot name yet" do
+    assert_equal "hi https://njump.me/#{NPUB}", view.shareable_text("hi nostr:#{NPUB}")
+  end
+
+  test "shareable text leaves plain text alone and does not escape it" do
+    assert_equal "a < b & c", view.shareable_text("a < b & c")
+  end
 end
 
 # Minimal seam so the test above can assert rendering never calls the fetcher

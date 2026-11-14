@@ -136,4 +136,28 @@ class PostsApiTest < ActionDispatch::IntegrationTest
     assert_equal "@Satoshi", ref["label"]
     assert_equal "nostr:#{npub}", ref["match"]
   end
+
+  def test_boost_as_another_account
+    booster = create_signed_account(@user, display_name: "Booster")
+    event_id = "ab" * 32
+    note = @account.posts.create!(content: "Out already", status: :published, published_at: 1.hour.ago, event_id: event_id,
+                                  signed_event: { "id" => event_id, "pubkey" => @account.pubkey_hex, "kind" => 1 })
+
+    api_get "/api/v1/posts", params: { status: "published" }
+    assert_response :success
+    item = json["items"].find { |i| i["type"] == "post" && i["id"] == note.id }
+    assert_equal [ booster.id ], item["boost_account_ids"]
+
+    assert_enqueued_with(job: PublishNowRepostJob) do
+      api_post "/api/v1/posts/#{note.id}/boost", params: { account_id: booster.id }
+    end
+    assert_response :success
+    assert_equal [ booster.id ], json.dig("post", "reposts").map { |r| r["account_id"] }
+    assert_empty json.dig("post", "boost_account_ids")
+
+    api_post "/api/v1/posts/#{note.id}/boost", params: { account_id: @account.id }
+    assert_response :unprocessable_entity
+    assert_equal I18n.t("posts.boost.own_note"), json["error"]
+  end
+
 end

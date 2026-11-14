@@ -46,6 +46,41 @@
     <% elsif post.reposts.loaded? && post.reposts.size.positive? %>
       <p class="eng mt-1.5"><%= t(".reposts", count: post.reposts.size) %></p>
     <% end %>
+    <%# "Boost as…" / "Quote as…": only on the post list, which passes the
+        accounts it has loaded, and only once the note is out. %>
+    <% share_accounts = local_assigns[:share_accounts] %>
+    <% if share_accounts && !is_repost && post.published? && post.nostr_reference %>
+      <% boosters = Posts::Boost.candidates(post, share_accounts) %>
+      <div class="mt-2 flex flex-wrap items-center gap-3">
+        <% if boosters.any? %>
+          <details class="relative" data-controller="dropdown">
+            <summary class="slug cursor-pointer list-none select-none hover:text-amber-600 dark:hover:text-amber-400"><%= t(".boost_as") %></summary>
+            <div class="absolute left-0 z-20 mt-1.5 max-h-72 min-w-56 overflow-y-auto border rule bg-white py-1 shadow-lg dark:bg-[color:var(--color-panel)]">
+              <% boosters.each do |account| %>
+                <%= button_to boost_post_path(post), params: { account_id: account.id }, method: :post,
+                      class: "flex w-full items-center gap-2 px-3 py-2 text-left text-[14px] text-gray-700 hover:bg-amber-500/10 dark:text-gray-200",
+                      form_class: "block" do %>
+                  <span class="wire" style="--wire-ink: <%= account.ink %>; min-height: 12px"></span>
+                  <span class="truncate"><%= account.display_name_or_npub %></span>
+                <% end %>
+              <% end %>
+            </div>
+          </details>
+        <% end %>
+        <details class="relative" data-controller="dropdown">
+          <summary class="slug cursor-pointer list-none select-none hover:text-amber-600 dark:hover:text-amber-400"><%= t(".quote_as") %></summary>
+          <div class="absolute left-0 z-20 mt-1.5 max-h-72 min-w-56 overflow-y-auto border rule bg-white py-1 shadow-lg dark:bg-[color:var(--color-panel)]">
+            <% share_accounts.each do |account| %>
+              <%= link_to new_account_post_path(account, quote: post.id),
+                    class: "flex w-full items-center gap-2 px-3 py-2 text-[14px] text-gray-700 no-underline hover:bg-amber-500/10 dark:text-gray-200" do %>
+                <span class="wire" style="--wire-ink: <%= account.ink %>; min-height: 12px"></span>
+                <span class="truncate"><%= account.display_name_or_npub %></span>
+              <% end %>
+            <% end %>
+          </div>
+        </details>
+      </div>
+    <% end %>
     <% if failed && (why = delivery_failure_line(post)) %>
       <p class="mt-1.5 font-mono text-[13px] text-red-600 dark:text-red-400"><%= why %></p>
     <% elsif failed %>

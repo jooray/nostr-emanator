@@ -167,6 +167,8 @@ en:
       today: Today
       tomorrow: Tomorrow
       repost_of_note: Repost of this note
+      boost_as: "Boost as…"
+      quote_as: "Quote as…"
       reposts:
         one: "%{count} repost"
         other: "%{count} reposts"

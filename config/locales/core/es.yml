@@ -167,6 +167,8 @@ es:
       today: Hoy
       tomorrow: Mañana
       repost_of_note: Repost de esta nota
+      boost_as: "Hacer repost como…"
+      quote_as: "Citar como…"
       reposts:
         one: "%{count} repost"
         other: "%{count} reposts"

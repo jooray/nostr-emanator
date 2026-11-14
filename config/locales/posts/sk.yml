@@ -1,5 +1,11 @@
 sk:
   posts:
+    boost:
+      not_published: "Repostovať sa dá len publikovaná poznámka."
+      own_note: "Poznámku nemôže repostovať jej vlastný autor."
+      no_signer: "Účet %{name} nemá spárovaný podpisovač, takže repost nepodpíše."
+      already: "Účet %{name} už túto poznámku repostoval."
+      started: "Repostujem ako %{name}. Ak sa podpisovač opýta, schváľ to."
     form:
       video_choice:
         title: Nahrať video tak, ako je?

@@ -1,5 +1,11 @@
 cs:
   posts:
+    boost:
+      not_published: "Repostovat lze jen publikovaný příspěvek."
+      own_note: "Příspěvek nemůže repostovat jeho vlastní autor."
+      no_signer: "Účet %{name} nemá spárovaný podepisovač, takže repost nepodepíše."
+      already: "Účet %{name} už tento příspěvek repostoval."
+      started: "Repostuji jako %{name}. Pokud se podepisovač zeptá, schval to."
     form:
       video_choice:
         title: Nahrát video tak, jak je?

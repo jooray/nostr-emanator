@@ -22,7 +22,45 @@ module NostrContentHelper
     resolved.html_safe
   end
 
+  # The note as plain text for somewhere that is not Nostr (copy, X, Facebook,
+  # LinkedIn): a `nostr:` link means nothing there, so a profile becomes the
+  # person's name and a note or article becomes a link to the web viewer. A
+  # profile we cannot name yet becomes a viewer link too, never a bare npub.
+  def shareable_text(content)
+    return "" if content.blank?
+
+    content.to_s.strip.gsub(NOSTR_URI_PATTERN) do |match|
+      identifier = match.sub(/\Anostr:/i, "")
+      parsed = Nostr::KeyConverter.parse_nostr_identifier(identifier)
+      next match unless parsed
+
+      case parsed[:type]
+      when :nprofile, :npub
+        next match unless parsed[:pubkey]
+
+        profile_display_name(parsed[:pubkey], relay_hints: parsed[:relays] || []).presence ||
+          nprofile_url(Nostr::KeyConverter.hex_to_npub(parsed[:pubkey]) || identifier)
+      when :nevent, :note, :naddr
+        nevent_url(identifier)
+      else
+        match
+      end
+    end
+  end
+
   private
+
+  # Our own records first, then the relay cache (a miss enqueues a warm-up).
+  def profile_display_name(pubkey_hex, relay_hints: [])
+    account = Account.find_by(pubkey_hex: pubkey_hex)
+    known_user = User.find_by(pubkey_hex: pubkey_hex) unless account
+    name = account&.display_name.presence || account&.username.presence ||
+           known_user&.display_name.presence || known_user&.username.presence
+    return name if name.present?
+
+    profile = cached_profile(pubkey_hex, relay_hints: relay_hints)
+    profile&.dig(:display_name).presence || profile&.dig(:username).presence
+  end
 
   def resolve_nostr_reference(identifier, fallback)
     parsed = Nostr::KeyConverter.parse_nostr_identifier(identifier)
@@ -45,19 +83,7 @@ module NostrContentHelper
     return fallback unless pubkey_hex
 
     npub = Nostr::KeyConverter.hex_to_npub(pubkey_hex)
-
-    # DB lookup first: Account then User
-    account = Account.find_by(pubkey_hex: pubkey_hex)
-    known_user = User.find_by(pubkey_hex: pubkey_hex) unless account
-    display_name = account&.display_name.presence || account&.username.presence ||
-                   known_user&.display_name.presence || known_user&.username.presence
-
-    # Fetch from relays if not found locally
-    unless display_name.present?
-      relay_hints = parsed[:relays] || []
-      profile = cached_profile(pubkey_hex, relay_hints: relay_hints)
-      display_name = profile&.dig(:display_name) || profile&.dig(:username)
-    end
+    display_name = profile_display_name(pubkey_hex, relay_hints: parsed[:relays] || [])
 
     label = display_name.present? ? "@#{display_name}" : "@#{npub&.truncate(20)}"
 

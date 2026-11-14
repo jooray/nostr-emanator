@@ -26,6 +26,8 @@
     <string name="row_today">Dnes</string>
     <string name="row_tomorrow">Zajtra</string>
     <string name="row_repost_of_note">Repost tejto poznámky</string>
+    <string name="row_boost_as">Repostovať ako…</string>
+    <string name="row_quote_as">Citovať ako…</string>
     <plurals name="row_reposts">
         <item quantity="one">%d repost</item>
         <item quantity="few">%d reposty</item>

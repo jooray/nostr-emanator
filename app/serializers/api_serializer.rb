@@ -116,6 +116,8 @@ class ApiSerializer
       reply_to_event_id: post.reply_to_event_id,
       reply_to_pubkey: post.reply_to_pubkey,
       reply_to_nevent: (nevent_for(post.reply_to_event_id, post.reply_to_pubkey) if post.is_reply?),
+      # Who may "Boost as…" this note (empty until it is published).
+      boost_account_ids: Posts::Boost.candidates(post, user_accounts).map(&:id),
       reply_to_viewer_url: (viewer_event_url(post.reply_to_event_id, post.reply_to_pubkey) if post.is_reply?),
       root_event_id: post.root_event_id,
       scheduled_at: time(post.scheduled_at),
@@ -143,6 +145,8 @@ class ApiSerializer
       data[:reposts] = post.reposts.includes(:account).sort_by { |r| r.scheduled_at || r.created_at }.map { |r| repost(r) }
       data[:version_history] = post.version_history || []
       data[:references] = references(post.content)
+      # Copy/share text for outside Nostr: mentions as names, notes as links.
+      data[:share_text] = shareable_text(post.content)
     end
     data
   end
@@ -355,6 +359,9 @@ class ApiSerializer
 
   # NostrContentHelper/MessagesHelper read the viewer preference from here.
   def current_user = @user
+
+  # Loaded once per serializer, so a page of posts costs one query for this.
+  def user_accounts = @user_accounts ||= (@user ? @user.accounts.to_a : [])
 
   def nevent_url(nevent, viewer = nil) = viewer_url_for(nevent, :event, viewer)
   def nprofile_url(npub, viewer = nil) = viewer_url_for(npub, :profile, viewer)

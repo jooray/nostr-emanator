@@ -227,10 +227,10 @@ fun PostScreen(nav: NavHostController, id: Long) {
         snackbar = snackbar,
         actions = {
             if (post != null) {
-                IconButton(onClick = { Links.copy(context, "post", post.content.orEmpty()) }) {
+                IconButton(onClick = { Links.copy(context, "post", post.outsideText) }) {
                     Icon(Icons.Filled.ContentCopy, contentDescription = stringResource(R.string.post_copy_text), tint = c.legend)
                 }
-                IconButton(onClick = { Links.share(context, post.content.orEmpty()) }) {
+                IconButton(onClick = { Links.share(context, post.outsideText) }) {
                     Icon(Icons.Filled.Share, contentDescription = stringResource(R.string.action_share), tint = c.legend)
                 }
             }
@@ -303,7 +303,7 @@ fun PostScreen(nav: NavHostController, id: Long) {
                     // hand notes to other networks unless asked. Copy and the
                     // generic share icon are in the header and stay untouched.
                     val sharing = me?.user?.settings
-                    val text = p.content?.trim().orEmpty()
+                    val text = p.outsideText
                     if (sharing?.xShare == true && text.isNotEmpty()) {
                         SecondaryButton(stringResource(R.string.post_share_on_x), { Links.composeX(context, text) })
                     }

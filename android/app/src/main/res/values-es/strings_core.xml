@@ -26,6 +26,8 @@
     <string name="row_today">Hoy</string>
     <string name="row_tomorrow">Mañana</string>
     <string name="row_repost_of_note">Repost de esta nota</string>
+    <string name="row_boost_as">Hacer repost como…</string>
+    <string name="row_quote_as">Citar como…</string>
     <plurals name="row_reposts">
         <item quantity="one">%d repost</item>
         <item quantity="many">%d reposts</item>

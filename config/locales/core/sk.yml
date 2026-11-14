@@ -181,6 +181,8 @@ sk:
       today: Dnes
       tomorrow: Zajtra
       repost_of_note: Repost tejto poznámky
+      boost_as: "Repostovať ako…"
+      quote_as: "Citovať ako…"
       reposts:
         one: "%{count} repost"
         few: "%{count} reposty"

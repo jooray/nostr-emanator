@@ -2,7 +2,7 @@
 
 class PostsController < ApplicationController
   include ActionView::Helpers::TextHelper
-  before_action :set_post, only: [ :show, :edit, :update, :destroy, :schedule, :sign, :retry_sign, :retry_publish, :rebroadcast, :cancel, :reschedule ]
+  before_action :set_post, only: [ :show, :edit, :update, :destroy, :schedule, :sign, :retry_sign, :retry_publish, :rebroadcast, :boost, :cancel, :reschedule ]
   before_action :set_account, only: [ :new, :create ]
 
   # How far ahead the schedule screen's "Soon" button sets the publish time:
@@ -60,6 +60,13 @@ class PostsController < ApplicationController
     # #create with a JSON body instead, so there's no reply-prefill branch
     # to run here (the reply-prefill branch that used to live here was dead).
     @post = @account.posts.build(event_kind: 1)
+
+    # "Quote as…" from the post list: the composer opens with the note's
+    # reference below an empty first line, ready for the commentary.
+    if params[:quote].present?
+      quoted = Post.joins(:account).where(accounts: { user_id: current_user.id }).find_by(id: params[:quote])
+      @post.content = "\n\n#{quoted.nostr_reference}" if quoted&.nostr_reference
+    end
   end
 
   def create
@@ -232,6 +239,15 @@ class PostsController < ApplicationController
 
     RebroadcastPostJob.perform_later(@post.id)
     redirect_to @post, notice: t("posts.flash.rebroadcasting")
+  end
+
+  # "Boost as…": another account reposts this published note right now.
+  def boost
+    account = current_user.accounts.find(params[:account_id])
+    result = Posts::Boost.new(@post, account).call
+    flash_key = result.ok ? :notice : :alert
+    message = result.ok ? t("posts.boost.started", name: account.display_name_or_npub) : result.error
+    redirect_back fallback_location: posts_path, flash_key => message
   end
 
   def cancel

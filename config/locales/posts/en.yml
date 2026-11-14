@@ -1,5 +1,11 @@
 en:
   posts:
+    boost:
+      not_published: "Only a published note can be boosted."
+      own_note: "A note cannot be boosted by its own author."
+      no_signer: "%{name} has no paired signer, so it cannot sign the boost."
+      already: "%{name} has already boosted this note."
+      started: "Boosting as %{name}. Approve it in the signer app if it asks."
     form:
       video_choice:
         title: Upload this video as it is?

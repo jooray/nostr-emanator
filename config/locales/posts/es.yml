@@ -1,5 +1,11 @@
 es:
   posts:
+    boost:
+      not_published: "Solo se puede hacer repost de una nota publicada."
+      own_note: "El autor de una nota no puede hacerle repost."
+      no_signer: "%{name} no tiene un firmante vinculado, así que no puede firmar el repost."
+      already: "%{name} ya ha hecho repost de esta nota."
+      started: "Haciendo repost como %{name}. Si el firmante lo pide, apruébalo."
     form:
       video_choice:
         title: ¿Subir este vídeo tal cual?

@@ -34,6 +34,8 @@
     <string name="row_today">Today</string>
     <string name="row_tomorrow">Tomorrow</string>
     <string name="row_repost_of_note">Repost of this note</string>
+    <string name="row_boost_as">Boost as…</string>
+    <string name="row_quote_as">Quote as…</string>
     <plurals name="row_reposts">
         <item quantity="one">%d repost</item>
         <item quantity="other">%d reposts</item>

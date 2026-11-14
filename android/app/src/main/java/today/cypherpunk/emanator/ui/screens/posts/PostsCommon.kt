@@ -1,6 +1,8 @@
 package today.cypherpunk.emanator.ui.screens.posts
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -73,6 +75,40 @@ fun ConfirmDialog(
         confirmButton = {
             SlugButton(confirmLabel, { onDismiss(); onConfirm() }, tone = if (danger) SlugTone.Short else SlugTone.Wait)
         },
+        dismissButton = { SlugButton(stringResource(R.string.action_cancel), onDismiss) },
+    )
+}
+
+/** Pick one of the user's accounts ("Boost as…", "Quote as…"). */
+@Composable
+fun AccountPickerDialog(
+    title: String,
+    accounts: List<today.cypherpunk.emanator.data.Account>,
+    onPick: (today.cypherpunk.emanator.data.Account) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val c = LocalConsole.current
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = c.panel,
+        title = { Text(title, style = Type.bodyDense, color = c.text) },
+        text = {
+            androidx.compose.foundation.lazy.LazyColumn {
+                items(accounts.size) { index ->
+                    val account = accounts[index]
+                    Text(
+                        account.name,
+                        style = Type.bodyDense,
+                        color = c.text,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onDismiss(); onPick(account) }
+                            .padding(vertical = 12.dp),
+                    )
+                }
+            }
+        },
+        confirmButton = {},
         dismissButton = { SlugButton(stringResource(R.string.action_cancel), onDismiss) },
     )
 }

@@ -22,7 +22,7 @@ class RecurringQueueConfigTest < ActiveSupport::TestCase
   # dm_supervisor is listed explicitly because DmSupervisorJob is reached from a
   # `command:` entry, so the derived check below cannot see its queue.
   def test_the_normal_queues_are_still_listened_on
-    %w[auth signing default messaging dm_supervisor].each do |queue|
+    %w[auth signing default messaging dm_supervisor uploads].each do |queue|
       assert_includes listened_queues, queue
     end
   end

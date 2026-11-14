@@ -50,6 +50,7 @@ import today.cypherpunk.emanator.ui.components.EmptyState
 import today.cypherpunk.emanator.ui.components.Gutter
 import today.cypherpunk.emanator.ui.components.LoadableContent
 import today.cypherpunk.emanator.ui.components.PostRow
+import today.cypherpunk.emanator.ui.SharedContent
 import today.cypherpunk.emanator.ui.components.Rule
 import today.cypherpunk.emanator.ui.components.SecondaryButton
 import today.cypherpunk.emanator.ui.components.SlugButton
@@ -154,6 +155,12 @@ class PostsViewModel(private val container: AppContainer, status: String?, accou
     fun retry(item: PostItem) = act { retryRow(container, item) }
     fun rebroadcast(item: PostItem) = act { rebroadcastRow(container, item) }
     fun discardFailed() = act { container.api.discardFailed(account.value).message }
+    fun boost(item: PostItem, accountId: Long) = act { container.api.boost(item.id, accountId).message }
+
+    /** "Quote as…": the composer opens for `accountId` with the note quoted below an empty line. */
+    fun quote(item: PostItem) {
+        container.shared.value = SharedContent("\n\nnostr:${item.nevent}", emptyList())
+    }
 }
 
 @Composable
@@ -166,6 +173,8 @@ fun PostsScreen(nav: NavHostController, status: String?, accountId: Long?) {
     val loadingMore by vm.loadingMore.collectAsState()
     val snackbar = rememberSnackbar()
     var confirmDiscard by remember { mutableStateOf(0) }
+    var boosting by remember { mutableStateOf<PostItem?>(null) }
+    var quoting by remember { mutableStateOf<PostItem?>(null) }
     val c = LocalConsole.current
 
     LaunchedEffect(Unit) { vm.messages.collect { snackbar.showSnackbar(it) } }
@@ -244,6 +253,8 @@ fun PostsScreen(nav: NavHostController, status: String?, accountId: Long?) {
                             onOpen = { nav.navigate(Routes.post(it.targetPostId)) },
                             onRetry = vm::retry,
                             onRebroadcast = vm::rebroadcast,
+                            onBoost = { boosting = it },
+                            onQuote = { quoting = it },
                         )
                     }
                     if (page.pagination.nextPage != null) {
@@ -258,6 +269,26 @@ fun PostsScreen(nav: NavHostController, status: String?, accountId: Long?) {
                 }
             }
         }
+    }
+
+    boosting?.let { item ->
+        AccountPickerDialog(
+            title = stringResource(R.string.row_boost_as),
+            accounts = accounts?.accounts.orEmpty().filter { it.id in item.boostAccountIds },
+            onPick = { vm.boost(item, it.id) },
+            onDismiss = { boosting = null },
+        )
+    }
+    quoting?.let { item ->
+        AccountPickerDialog(
+            title = stringResource(R.string.row_quote_as),
+            accounts = accounts?.accounts.orEmpty(),
+            onPick = {
+                vm.quote(item)
+                nav.navigate(Routes.compose(account = it.id, shared = true))
+            },
+            onDismiss = { quoting = null },
+        )
     }
 
     if (confirmDiscard > 0) {
