@@ -29,19 +29,21 @@
   <!-- Compact Profile Header -->
   <div class="border rule overflow-hidden">
     <div class="p-4 flex items-center gap-4">
-      <% if @account.picture_url.present? %>
-        <img src="<%= @account.picture_url %>" alt="<%= @account.display_name_or_npub %>" class="h-14 w-14 rounded-full object-cover flex-shrink-0">
-      <% else %>
-        <div class="h-14 w-14 flex items-center justify-center flex-shrink-0 flex items-center justify-center border border-gray-400 dark:border-gray-500"><span class="text-xl font-medium condensed font-bold uppercase tracking-wide text-gray-600 dark:text-gray-300"><%= @account.display_name_or_npub[0].upcase %></span></div>
-      <% end %>
-      <div class="flex-1 min-w-0">
-        <h2 class="text-lg font-bold text-gray-900 dark:text-white truncate">
-          <%= @account.display_name.presence || t("accounts.unnamed_account") %>
-        </h2>
-        <% if @account.username.present? %>
-          <p class="text-sm text-gray-500 dark:text-gray-400">@<%= @account.username %></p>
+      <%= link_to nprofile_url(@account.npub), target: "_blank", rel: "noopener noreferrer", title: t("accounts.index.view_profile"), class: "flex items-center gap-4 flex-1 min-w-0 group" do %>
+        <% if @account.picture_url.present? %>
+          <img src="<%= @account.picture_url %>" alt="<%= @account.display_name_or_npub %>" class="h-14 w-14 rounded-full object-cover flex-shrink-0">
+        <% else %>
+          <div class="h-14 w-14 flex items-center justify-center flex-shrink-0 flex items-center justify-center border border-gray-400 dark:border-gray-500"><span class="text-xl font-medium condensed font-bold uppercase tracking-wide text-gray-600 dark:text-gray-300"><%= @account.display_name_or_npub[0].upcase %></span></div>
         <% end %>
-      </div>
+        <div class="flex-1 min-w-0">
+          <h2 class="text-lg font-bold text-gray-900 dark:text-white truncate group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+            <%= @account.display_name.presence || t("accounts.unnamed_account") %>
+          </h2>
+          <% if @account.username.present? %>
+            <p class="text-sm text-gray-500 dark:text-gray-400">@<%= @account.username %></p>
+          <% end %>
+        </div>
+      <% end %>
       <div class="flex items-center gap-2 flex-shrink-0">
         <% if @account.has_signer? %>
           <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">

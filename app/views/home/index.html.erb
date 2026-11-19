@@ -870,53 +870,42 @@
         padding-inline: 1.5rem;
       }
 
-      .follow {
-        display: grid;
-        gap: 0.7rem;
-        margin-block: 0 1.5rem;
-        padding: 1.2rem 1.4rem;
-        border: 1px solid var(--line);
-        border-radius: 1rem;
-        background: var(--surface);
-        font-size: 0.88rem;
+      .news {
+        padding-block: 5rem 4rem;
       }
 
-      .follow h2 {
-        margin: 0;
-        font-size: 1rem;
-      }
-
-      .follow p {
-        margin: 0;
-        color: var(--muted);
-      }
-
-      .follow code {
-        display: block;
-        overflow-wrap: anywhere;
+      .news-feed {
+        --nl-fg: var(--ink);
+        --nl-muted: var(--muted);
+        --nl-card-bg: var(--surface-solid);
+        --nl-border: var(--line);
+        --nl-accent: var(--amber);
+        --nl-accent-fg: #1a1100;
+        --nl-link: var(--amber-deep);
+        --nl-radius: 1rem;
+        --nl-media-radius: 0.75rem;
+        --nl-gap: 1.1rem;
+        --nl-card-pad: 1.2rem;
+        --nl-font: inherit;
+        --nl-heading-font: Georgia, "Times New Roman", serif;
+        --nl-avatar-size: 56px;
+        min-height: 26rem;
         color: var(--ink);
-        font-size: 0.78rem;
-        user-select: all;
       }
 
-      .follow-links {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.4rem 1.2rem;
-      }
-
-      .follow-links a {
-        color: var(--amber-deep);
-        font-weight: 600;
-        text-decoration: none;
-      }
-
-      :root[data-theme="dark"] .follow-links a { color: var(--amber-bright); }
+      :root[data-theme="dark"] .news-feed { --nl-link: var(--amber-bright); --nl-accent-fg: #1a1100; }
       @media (prefers-color-scheme: dark) {
-        :root:not([data-theme="light"]) .follow-links a { color: var(--amber-bright); }
+        :root:not([data-theme="light"]) .news-feed { --nl-link: var(--amber-bright); --nl-accent-fg: #1a1100; }
       }
 
-      .follow-links a:hover { text-decoration: underline; }
+      .news-feed .nl__item--cards {
+        box-shadow: var(--shadow-small);
+      }
+
+      .news-feed .nl__name {
+        font-weight: 500;
+        letter-spacing: -0.02em;
+      }
 
       footer {
         display: flex;
@@ -1772,6 +1761,16 @@
         <p class="price-fine"><%= t(".pricing.fine") %> <%= t(".pricing.terms_html") %></p>
       </section>
 
+      <section class="section shell news" id="news" aria-labelledby="news-title">
+        <div class="section-heading">
+          <h2 id="news-title"><%= t(".follow.title") %></h2>
+          <p><%= t(".follow.lead") %></p>
+        </div>
+        <div class="news-feed" data-nostr-live data-layout="cards" data-limit="4" data-lang="<%= I18n.locale %>"
+             data-nprofile="nprofile1qqsvc6nw2s9f0fnk6e9rv727nglldzwxyq5n4x0f9npy6k4hq2f3hmcpr3mhxue69uhkummnw3ezucmewp5x2unsw4hxktn5dajxz7gpzemhxue69uhhyetvv9ujuurjd9kkzmpwdejhgqg5waehxw309aex2mrp0yhxgctdw4eju6t03mppya"
+             data-relays="wss://nostr.cypherpunk.today,wss://relay.primal.net"></div>
+      </section>
+
       <section class="cta shell" aria-labelledby="cta-title">
         <h2 id="cta-title"><%= t(".cta.title") %></h2>
         <p><%= t(".cta.body") %></p>
@@ -1779,17 +1778,6 @@
           <%= t(".cta.button") %>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
         </a>
-      </section>
-      <section class="follow shell" aria-labelledby="follow-title">
-        <h2 id="follow-title"><%= t(".follow.title") %></h2>
-        <p><%= t(".follow.lead") %></p>
-        <code>npub1e34xu4q2j7n8d4j2xeu4ax3l76yuvgpf82v7jtxzf4dtwq5nr0hs5h84vz</code>
-        <div class="follow-links">
-          <a href="nostr:npub1e34xu4q2j7n8d4j2xeu4ax3l76yuvgpf82v7jtxzf4dtwq5nr0hs5h84vz"><%= t(".follow.nostr") %></a>
-          <a href="https://njump.me/npub1e34xu4q2j7n8d4j2xeu4ax3l76yuvgpf82v7jtxzf4dtwq5nr0hs5h84vz" rel="noopener">njump.me</a>
-          <a href="https://primal.net/p/npub1e34xu4q2j7n8d4j2xeu4ax3l76yuvgpf82v7jtxzf4dtwq5nr0hs5h84vz" rel="noopener">Primal</a>
-          <a href="https://yakihonne.com/users/npub1e34xu4q2j7n8d4j2xeu4ax3l76yuvgpf82v7jtxzf4dtwq5nr0hs5h84vz" rel="noopener">YakiHonne</a>
-        </div>
       </section>
     </main>
 
@@ -1810,6 +1798,7 @@
       </div>
     </footer>
 
+    <%= javascript_include_tag "nostr-live", defer: true, nonce: true %>
     <%= javascript_tag nonce: true do %>
       (function () {
         var root = document.documentElement
