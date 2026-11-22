@@ -80,6 +80,7 @@ sk:
         back_to_top: Späť hore
         tagline: Plánovanie príspevkov pre otvorený sociálny web.
         github_label: Zobraziť zdrojový kód na GitHube
+        support: Podporiť projekt
       nav_pricing: Cenník
       language_menu: "Jazyk: %{language}"
       pricing:

@@ -80,6 +80,7 @@ es:
         back_to_top: Volver arriba
         tagline: Programación de publicaciones para la web social abierta.
         github_label: Ver el código fuente en GitHub
+        support: Apoyar el proyecto
       nav_pricing: Precios
       language_menu: "Idioma: %{language}"
       pricing:

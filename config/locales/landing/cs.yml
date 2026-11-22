@@ -80,6 +80,7 @@ cs:
         back_to_top: Nahoru
         tagline: Plánování příspěvků pro otevřenou sociální síť.
         github_label: Zobrazit zdrojový kód na GitHubu
+        support: Podpořit projekt
       nav_pricing: Ceník
       language_menu: "Jazyk: %{language}"
       pricing:

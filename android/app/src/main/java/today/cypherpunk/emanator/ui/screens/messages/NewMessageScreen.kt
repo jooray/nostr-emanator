@@ -46,6 +46,7 @@ import today.cypherpunk.emanator.data.Mention
 import today.cypherpunk.emanator.data.cachedFlow
 import today.cypherpunk.emanator.ui.Routes
 import today.cypherpunk.emanator.ui.appViewModel
+import today.cypherpunk.emanator.ui.components.AccountDropdown
 import today.cypherpunk.emanator.ui.components.AlarmBlock
 import today.cypherpunk.emanator.ui.components.Avatar
 import today.cypherpunk.emanator.ui.components.ConsoleScaffold
@@ -157,13 +158,7 @@ fun NewMessageScreen(nav: NavHostController) {
                 return@Column
             }
 
-            Text(stringResource(R.string.newmsg_from).uppercase(), style = Type.slug, color = c.muted)
-            AccountPills(
-                capable.map { it.mini() },
-                setOfNotNull(ui.accountId),
-                vm::selectAccount,
-                allWhenEmpty = false,
-            )
+            AccountDropdown(stringResource(R.string.newmsg_from), capable.map { it.mini() }, ui.accountId, vm::selectAccount)
             if (capable.size < ui.accounts.size) {
                 Text(stringResource(R.string.newmsg_some_unavailable), style = Type.small, color = c.muted)
             }

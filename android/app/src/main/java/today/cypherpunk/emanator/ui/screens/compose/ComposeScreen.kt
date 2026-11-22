@@ -59,6 +59,7 @@ import today.cypherpunk.emanator.data.Billing
 import today.cypherpunk.emanator.media.ShrinkRules
 import today.cypherpunk.emanator.ui.Routes
 import today.cypherpunk.emanator.ui.appViewModel
+import today.cypherpunk.emanator.ui.components.AccountDropdown
 import today.cypherpunk.emanator.ui.components.AlarmBlock
 import today.cypherpunk.emanator.ui.components.Chop
 import today.cypherpunk.emanator.ui.components.ConsoleScaffold
@@ -149,7 +150,7 @@ fun ComposeScreen(nav: NavHostController, accountId: Long?, postId: Long?, fromS
             Modifier.padding(padding).imePadding().verticalScroll(rememberScrollState()).padding(horizontal = Gutter, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            AccountPicker(ui.accounts, ui.account, enabled = !ui.editing, onSelect = vm::selectAccount)
+            AccountDropdown(stringResource(R.string.compose_posting_as), ui.accounts.map { it.mini() }, ui.account?.id, vm::selectAccount, enabled = !ui.editing)
 
             ui.account?.let { account ->
                 if (!account.hasSigner) {
@@ -228,37 +229,6 @@ fun ComposeScreen(nav: NavHostController, accountId: Long?, postId: Long?, fromS
                 Modifier.fillMaxWidth(),
                 enabled = ui.canEdit && !ui.uploading && !ui.saving && text.text.isNotBlank() && ui.accountId != null,
             )
-        }
-    }
-}
-
-@Composable
-private fun AccountPicker(accounts: List<Account>, selected: Account?, enabled: Boolean, onSelect: (Long) -> Unit) {
-    val c = LocalConsole.current
-    var open by remember { mutableStateOf(false) }
-    Box {
-        Row(
-            Modifier.fillMaxWidth().border(1.dp, c.rule)
-                .then(if (enabled && accounts.size > 1) Modifier.clickable { open = true } else Modifier)
-                .padding(horizontal = 12.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            Chop(selected?.mini(), 28.dp)
-            Column(Modifier.weight(1f)) {
-                Text(stringResource(R.string.compose_posting_as).uppercase(), style = Type.slug, color = c.muted)
-                Text(selected?.name ?: stringResource(R.string.compose_choose_account), style = Type.bodyDense, color = c.text)
-            }
-            if (enabled && accounts.size > 1) Icon(Icons.Filled.ArrowDropDown, contentDescription = null, tint = c.legend)
-        }
-        DropdownMenu(open, onDismissRequest = { open = false }) {
-            accounts.forEach { account ->
-                DropdownMenuItem(
-                    text = { Text(account.name, style = Type.bodyDense) },
-                    leadingIcon = { Chop(account.mini(), 24.dp) },
-                    onClick = { onSelect(account.id); open = false },
-                )
-            }
         }
     }
 }

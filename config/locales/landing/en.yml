@@ -80,6 +80,7 @@ en:
         back_to_top: Back to top
         tagline: Post scheduling for the open social web.
         github_label: View source on GitHub
+        support: Support the project
       nav_pricing: Pricing
       language_menu: "Language: %{language}"
       pricing:
